@@ -1,9 +1,10 @@
 class ClustersController < ApplicationController
-  before_action :set_cluster, only: [:show, :edit, :update, :destroy, :test_connection, :download_kubeconfig]
+  before_action :set_cluster, only: [ :show, :edit, :update, :destroy, :test_connection, :download_kubeconfig ]
 
   # GET /clusters
   def index
-    @pagy, @clusters = pagy(current_user.clusters.sort_by_params(params[:sort], sort_direction))
+        sortable_column = params[:sort] || "created_at"
+    @pagy, @clusters = pagy(current_user.clusters.order(sortable_column => "asc"))
 
     # Uncomment to authorize with Pundit
     # authorize @clusters

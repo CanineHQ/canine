@@ -86,3 +86,5 @@ gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 
 gem "annotate", "~> 3.2"
+
+gem "rack", "~> 2.2"

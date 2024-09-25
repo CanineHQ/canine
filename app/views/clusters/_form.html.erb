@@ -1,5 +1,4 @@
 <%= form_with(model: cluster) do |form| %>
-  <%= render "error_messages", resource: form.object %>
 
   <div class="form-group">
     <%= form.label :name %>
@@ -12,7 +11,7 @@
   </div>
 
   <div>
-    <%= form.button button_text(form.send(:submit_default_value)), class: "btn btn-primary" %>
+    <%= form.button "Submit", class: "btn btn-primary" %>
 
     <% if form.object.new_record? %>
       <%= link_to t("cancel"), clusters_path, class: "btn btn-secondary" %>

@@ -15,4 +15,5 @@
 #  fk_rails_...  (service_id => services.id)
 #
 class CronSchedule < ApplicationRecord
+  belongs_to :project_service
 end

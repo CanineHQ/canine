@@ -11,7 +11,7 @@
 #  name                           :string           not null
 #  predeploy_command              :string
 #  repository_url                 :string           not null
-#  status                         :integer          default(0), not null
+#  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null

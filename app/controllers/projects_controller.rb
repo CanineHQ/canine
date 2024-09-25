@@ -4,7 +4,8 @@ class ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    @pagy, @projects = pagy(current_user.projects.sort_by_params(params[:sort], sort_direction))
+    sortable_column = params[:sort] || "created_at"
+    @pagy, @projects = pagy(current_user.projects.order(sortable_column => "asc"))
 
     # Uncomment to authorize with Pundit
     # authorize @projects
@@ -31,7 +32,7 @@ class ProjectsController < ApplicationController
     @project = result.project
     respond_to do |format|
       if result.success?
-        format.html { redirect_to @project, notice: 'Project was successfully created.' }
+        format.html { redirect_to @project, notice: "Project was successfully created." }
         format.json { render :show, status: :created, location: @project }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -44,7 +45,7 @@ class ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to @project, notice: 'Project was successfully updated.' }
+        format.html { redirect_to @project, notice: "Project was successfully updated." }
         format.json { render :show, status: :ok, location: @project }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -57,7 +58,7 @@ class ProjectsController < ApplicationController
   def destroy
     @project.destroy!
     respond_to do |format|
-      format.html { redirect_to projects_url, status: :see_other, notice: 'Project was successfully destroyed.' }
+      format.html { redirect_to projects_url, status: :see_other, notice: "Project was successfully destroyed." }
       format.json { head :no_content }
     end
   end

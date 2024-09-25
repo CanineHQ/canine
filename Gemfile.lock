@@ -538,6 +538,7 @@ DEPENDENCIES
   pretender (~> 0.3.4)
   puma (>= 5.0)
   pundit (~> 2.1)
+  rack (~> 2.2)
   rails (~> 7.2.1)
   redis (~> 4.8)
   responders!

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_25_212945) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_25_213906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -100,11 +100,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_212945) do
   end
 
   create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
+    t.bigint "project_service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["service_id"], name: "index_domains_on_service_id"
+    t.index ["project_service_id"], name: "index_domains_on_project_service_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -169,6 +169,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_212945) do
     t.index ["project_id"], name: "index_project_add_ons_on_project_id"
   end
 
+  create_table "project_services", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "service_type", null: false
+    t.string "command", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_project_services_on_project_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "name", null: false
     t.string "repository_url", null: false
@@ -223,10 +233,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_212945) do
   add_foreign_key "clusters", "users"
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployments", "builds"
-  add_foreign_key "domains", "services"
+  add_foreign_key "domains", "project_services"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
+  add_foreign_key "project_services", "projects"
   add_foreign_key "projects", "clusters"
   add_foreign_key "services", "users"
 end

@@ -19,4 +19,6 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 class ProjectAddOn < ApplicationRecord
+  belongs_to :project
+  belongs_to :add_on
 end

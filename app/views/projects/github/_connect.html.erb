@@ -1,3 +1,0 @@
-<% unless current_user.connected_accounts.find_by_provider(:github).present? %>
-  <%= button_to "Connect Github", omniauth_authorize_path(:user, :github), class: "btn btn-github", data: { turbo: false, disable_with: "Redirecting..." } %>
-<% end %>
