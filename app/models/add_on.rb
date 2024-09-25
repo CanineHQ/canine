@@ -6,7 +6,7 @@
 #  chart_type :string           not null
 #  metadata   :jsonb
 #  name       :string           not null
-#  status     :integer          default(0), not null
+#  status     :integer          default("installing"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  cluster_id :bigint           not null

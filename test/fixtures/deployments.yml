@@ -3,7 +3,7 @@
 # Table name: deployments
 #
 #  id         :bigint           not null, primary key
-#  status     :integer          default(0), not null
+#  status     :integer          default("in_progress"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  build_id   :bigint           not null

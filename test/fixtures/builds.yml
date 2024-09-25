@@ -7,7 +7,7 @@
 #  commit_sha     :string           not null
 #  git_sha        :string
 #  repository_url :string
-#  status         :integer          default(0)
+#  status         :integer          default("in_progress")
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #  project_id     :bigint           not null
