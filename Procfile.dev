@@ -1,0 +1,4 @@
+web: bin/rails server -p 3000
+worker: bundle exec sidekiq
+js: yarn build --reload
+css: yarn build:css --watch
