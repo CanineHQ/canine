@@ -1,0 +1,16 @@
+<div class="page-header">
+  <%%= link_to <%= index_helper %>_path, class: 'btn btn-default' do %>
+    All <%= plural_table_name.capitalize %>
+  <%% end %>
+  <%%= link_to edit_<%= singular_table_name %>_path(@<%= singular_table_name %>), class: 'btn btn-primary' do %>
+    Edit
+  <%% end %>
+  <h1>Show <%= singular_table_name %></h1>
+</div>
+
+<dl class="dl-horizontal">
+  <%- attributes.each do |attribute| -%>
+  <dt><%= attribute.human_name %>:</dt>
+  <dd><%%= @<%= singular_table_name %>.<%= attribute.name %> %></dd>
+  <%- end -%>
+</dl>

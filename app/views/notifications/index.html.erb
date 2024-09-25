@@ -1,0 +1,10 @@
+<h1>Notifications</h1>
+
+<ul>
+  <% @notifications.each do |notification| %>
+    <%# Customize your notification format here. We typically recommend a `message` and `url` method on the Notifier classes. %>
+    <%#= link_to notification.message, notification.url %>
+
+    <li><%= notification.params %></li>
+  <% end %>
+</ul>

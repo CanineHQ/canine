@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col-lg-4 offset-lg-4">
+    <h1 class="text-center">Account</h1>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="mb-3">
+        <%= f.text_field :name, autofocus: false, class: 'form-control', placeholder: "Full name" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.email_field :email, class: 'form-control', placeholder: 'Email Address' %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :avatar, class: "form-label" %>
+        <%= f.file_field :avatar, accept:'image/*' %>
+      </div>
+
+      <%= image_tag avatar_path(f.object), class: "rounded border shadow-sm d-block mx-auto my-3" %>
+
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div class="alert alert-warning">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password'  %>
+        <p class="form-text text-muted"><small>Leave password blank if you don't want to change it</small></p>
+      </div>
+
+      <div class="mb-3">
+        <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password'  %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.password_field :current_password, autocomplete: "off", class: 'form-control', placeholder: 'Current Password'  %>
+        <p class="form-text text-muted"><small>We need your current password to confirm your changes</small></p>
+      </div>
+
+      <div class="mb-3 d-grid">
+        <%= f.submit "Save Changes", class: 'btn btn-lg btn-primary' %>
+      </div>
+    <% end %>
+    <hr>
+
+    <p class="text-center"><%= link_to "Deactivate my account", registration_path(resource_name), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete %></p>
+  </div>
+</div>
