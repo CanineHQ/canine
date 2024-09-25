@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html class="h-100">
+<html>
   <head>
-    <%= render 'shared/head' %>
+    <title>Myapp</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="d-flex flex-column h-100">
-    <main class="flex-shrink-0"> 
-      <%= render 'shared/navbar' %>
-      <%= render 'shared/notices' %>
-
-      <div class="container mt-4 mx-auto">
-        <%= yield %>
-      </div>
-    </main>
-
-    <%= render 'shared/footer' %>
+  <body>
+    <%= yield %>
   </body>
 </html>

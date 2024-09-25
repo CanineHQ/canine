@@ -1,0 +1,24 @@
+# == Schema Information
+#
+# Table name: announcements
+#
+#  id                :bigint           not null, primary key
+#  announcement_type :string
+#  description       :text
+#  name              :string
+#  published_at      :datetime
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#
+
+one:
+  published_at: 2024-09-25 11:41:33
+  announcement_type: MyString
+  name: MyString
+  description: MyText
+
+two:
+  published_at: 2024-09-25 11:41:33
+  announcement_type: MyString
+  name: MyString
+  description: MyText
