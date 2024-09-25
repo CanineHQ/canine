@@ -1,0 +1,10 @@
+<% if project.deployed? %>
+  <div class="text-green-500">
+    ●
+    <%= project.status.titleize %>
+  </div>
+<% elsif %>
+  <div class="text-danger-500">
+    <%= project.status.titleize %>
+  </div>
+<% end %>

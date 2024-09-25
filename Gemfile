@@ -84,3 +84,5 @@ gem "rqrcode", "~> 2.2"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
+
+gem "annotate", "~> 3.2"

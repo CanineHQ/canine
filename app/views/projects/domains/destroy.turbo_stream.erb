@@ -1,0 +1,5 @@
+<%= turbo_stream.remove dom_id(@domain) %>
+
+<%= turbo_stream.update "domain-list" do %>
+  <%= render partial: "projects/domains/list", locals: { project: @project } %>
+<% end %>

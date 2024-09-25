@@ -1,0 +1,20 @@
+<table class="table w-full">
+  <thead class="border-b-2 border-gray-300">
+    <tr>
+      <th class="text-left py-2">Name</th>
+      <th class="text-left py-2">Status</th>
+      <th class="text-left py-2">Cluster Name</th>
+      <th class="text-left py-2">Last Deployed At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% projects.each do |project| %>
+      <tr class="border-b border-gray-200">
+        <td class="py-4"><%= link_to project.name, project, class: "text-inherit hover:underline" %></td>
+        <td class="py-4"><%= project.status %></td>
+        <td class="py-4"><%= project.cluster&.name %></td>
+        <td class="py-4"><%= project.last_deployed_at&.strftime('%Y-%m-%d %H:%M:%S') || "Never" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

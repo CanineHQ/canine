@@ -1,0 +1,22 @@
+<table class="table w-full">
+  <thead class="border-b-2 border-gray-300">
+    <tr>
+      <th class="text-left py-2">Name</th>
+      <th class="text-left py-2">Helm Chart</th>
+      <th class="text-left py-2">Cluster</th>
+      <th class="text-left py-2">Status</th>
+      <th class="text-left py-2">Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% add_ons.each do |add_on| %>
+      <tr class="border-b border-gray-200">
+        <td class="py-4"><%= link_to add_on.name, add_on, class: "text-inherit hover:underline" %></td>
+        <td class="py-4"><%= add_on.chart_type %></td>
+        <td class="py-4"><%= link_to add_on.cluster.name, add_on.cluster, class: "text-inherit hover:underline" %></td>
+        <td class="py-4"><%= render "add_ons/status", add_on: %></td>
+        <td class="py-4"><%= time_ago_in_words(add_on.created_at) %> ago</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

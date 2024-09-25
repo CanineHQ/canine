@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: project_add_ons
+#
+#  id         :bigint           not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  add_on_id  :bigint           not null
+#  project_id :bigint           not null
+#
+# Indexes
+#
+#  index_project_add_ons_on_add_on_id   (add_on_id)
+#  index_project_add_ons_on_project_id  (project_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (add_on_id => add_ons.id)
+#  fk_rails_...  (project_id => projects.id)
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the "{}" from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value

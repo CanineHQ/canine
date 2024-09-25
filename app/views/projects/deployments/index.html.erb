@@ -1,0 +1,41 @@
+<%= content_for :title, "Projects ##{@project.id}" %>
+<%= turbo_stream_from @project %>
+
+<%= project_layout(@project) do %>
+  <h1 class="text-2xl font-bold mb-6">Deployments</h1>
+  
+  <% if @builds.empty? %>
+    <div>
+      <p class="text-gray-500">No deployments yet</p>
+    </div>
+  <% else %>
+    <ul class="space-y-4">
+      <% @builds.each do |build| %>
+        <li class="border rounded-lg p-4">
+          <div>
+            <p class="font-semibold"><%= build.commit_message %></p>
+            <p class="text-sm"><%= build.created_at.strftime("%B %d, %Y %H:%M") %></p>
+          </div>
+          <div class="mt-2 text-sm">
+            Status: <%= build.deployment&.status || build.status %>
+          </div>
+          <div class="mt-2 text-sm">
+            Commit: 
+            <%= link_to build.commit_sha[0..6], 
+                        "https://github.com/#{@project.repository_url}/commit/#{build.commit_sha}",
+                        class: "underline",
+                        target: "_blank",
+                        rel: "noopener noreferrer" %>
+          </div>
+          <div class="mt-2 text-sm">
+            <%= button_to "Redeploy", redeploy_project_deployment_path(@project, build), method: :post, class: "btn btn-primary" %>
+          </div>
+          <div class="mt-2 text-sm">
+            <%= link_to "View Logs", project_deployment_path(@project, build), class: "btn btn-primary" %>
+          </div>
+          <!-- Add more deployment details as needed -->
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

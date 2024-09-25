@@ -1,0 +1,6 @@
+<%= content_for :title, "Projects ##{@project.id}" %>
+<%= turbo_stream_from @project %>
+
+<%= project_layout(@project) do %>
+  <%= render @project %>
+<% end %>

@@ -1,0 +1,31 @@
+<%= project_layout(@project) do %>
+  <div class="flex items-center justify-between mb-4">
+    Services
+  </div>
+
+  <div>
+    <%= turbo_frame_tag "new_service" do %>
+      <%= link_to "New Service", new_project_service_path(@project), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full table-auto">
+      <thead class="">
+        <tr>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-left">Service Type</th>
+          <th class="px-4 py-2 text-left">Command</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @project.services.each do |service| %>
+          <tr class="border-b">
+            <td class="px-4 py-2"><%= service.name %></td>
+            <td class="px-4 py-2"><%= service.service_type.titleize %></td>
+            <td class="px-4 py-2"><%= service.command %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

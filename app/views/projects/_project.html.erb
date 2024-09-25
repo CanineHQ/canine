@@ -1,0 +1,14 @@
+<!-- How to represent a project on other surfaces -->
+<%= link_to project_path(project) do %>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="card-title">
+        <%= project.name %>
+      </h2>
+      <p class="card-text">
+        <%= render "projects/status", project: project %>
+        <%= project.repository_url %>
+      </p>
+    </div>
+  </div>
+<% end %>

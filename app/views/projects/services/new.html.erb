@@ -1,0 +1,45 @@
+<%= turbo_frame_tag "new_service" do %>
+  <div class="overflow-x-auto">
+    <%= form_with(model: [@project, @service]) do |form| %>
+      <%= form.label :name %>
+      <%= form.text_field :name, class: "input input-bordered", required: true %>
+
+      <div data-controller="partial-select">
+        <%= form.label :service_type %>
+        <%= form.select(
+          :service_type,
+          Service.service_types.keys.map { |type| [type.titleize, type] },
+          {},
+          class: "select select-bordered",
+          data: {
+            "partial-select-target": "select",
+            "select-attribute-value": "data-project-type",
+            "action": "change->partial-select#toggle",
+          }
+        ) %>
+      </div>
+
+      <%= form.label :command %>
+      <%= form.text_field :command, class: "input input-bordered", required: false %>
+      <%= form.button button_text(form.send(:submit_default_value)), class: "btn btn-primary" %>
+    <% end %>
+    <div class="text-sm mb-4">
+      <p>
+        <b>Web service</b>: Useful for publicly accessible services like web applications.
+      </p>
+      <p>
+        <b>Internal service</b>: Useful for services that should only be connected to within the cluster like microservices.
+      </p>
+      <p>
+        <b>Process</b>: Useful for services that should don't need to be connected to like background workers that are continuously running.
+      </p>
+      <p>
+        <b>Cron job</b>: Useful for running tasks at a specific time like backups.
+      </p>
+      <div class="mt-4 text-warning italic">
+        Do not create any databases here, create an <%= link_to "add on", add_ons_path %> and then connect it to your project.
+      </div>
+    </div>
+
+  </div>
+<% end %>

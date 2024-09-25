@@ -1,0 +1,74 @@
+<%= content_for :title, t("scaffold.new.title", model: "Add On") %>
+
+<div class="container px-4 mx-auto my-8">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="h3">
+      <%= link_to "Add Ons", add_ons_path, class: "text-black dark:text-white" %>
+      <span class="text-gray-400 font-light mx-2">\</span>
+      <%= t("scaffold.new.title", model: "Add On") %>
+    </h1>
+  </div>
+
+  <div class="p-8 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow" data-controller="new-add-ons">
+    <%= form_with(model: @add_on) do |form| %>
+      <%= render "error_messages", resource: form.object %>
+
+      <div class="form-group">
+        <%= form.label :name %>
+        <%= form.text_field :name, class: "form-control", value: RandomNameGenerator.generate_name %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :cluster_id %>
+        <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+      </div>
+
+      <div class="form-group">
+        <%= form.text_field :chart_type, class: "hidden", data: { 'new-add-ons-target': "input" } %>
+      </div>
+
+      <h4>Select a chart</h4>
+      <div class="text-sm text-gray-500">
+        More charts coming soon.
+      </div>
+      <div class="grid grid-cols-8 gap-4 my-4">
+        <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
+          <div class="card bg-base-100 shadow-xl cursor-pointer group overflow-hidden"
+              data-new-add-ons-target="card"
+              data-action="click->new-add-ons#selectChart"
+              data-chart-name="<%= chart['name'] %>">
+            <figure class="px-12 pt-12 overflow-visible">
+              <div class="w-full flex items-center justify-center">
+                <img
+                  src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
+                  class="h-[50px] object-contain transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+            </figure>
+            <div class="card-body items-center text-center">
+              <%= chart['name'].titleize %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
+        <div id="chart-<%= chart['name'] %>" class="chart-form hidden">
+          <h4><%= chart['name'].titleize %></h4>
+          <%= render "add_ons/chart_form", chart: chart, form: form %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.button button_text(form.send(:submit_default_value)), class: "btn btn-primary" %>
+
+        <% if form.object.new_record? %>
+          <%= link_to t("cancel"), add_ons_path, class: "btn btn-secondary" %>
+        <% else %>
+          <%= link_to t("cancel"), add_on_path(@add_on), class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<% if add_on.installed? %>
+  <div class="text-green-500">
+    ●
+    <%= add_on.status.titleize.upcase %>
+  </div>
+<% elsif %>
+  <div class="text-danger-500">
+    <%= add_on.status.titleize.upcase %>
+  </div>
+<% end %>

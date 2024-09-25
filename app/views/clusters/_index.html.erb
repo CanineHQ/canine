@@ -1,0 +1,18 @@
+<table class="table w-full">
+  <thead class="border-b-2 border-gray-300">
+    <tr>
+      <th class="text-left py-2">Name</th>
+      <th class="text-left py-2">Status</th>
+      <th class="text-left py-2">Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% clusters.each do |cluster| %>
+      <tr class="border-b border-gray-200">
+        <td class="py-4"><%= link_to cluster.name, cluster, class: "text-inherit hover:underline" %></td>
+        <td class="py-4"><%= cluster.status %></td>
+        <td class="py-4"><%= time_ago_in_words(cluster.created_at) %> ago</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

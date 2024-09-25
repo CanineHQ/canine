@@ -1,0 +1,30 @@
+# == Schema Information
+#
+# Table name: environment_variables
+#
+#  id         :bigint           not null, primary key
+#  name       :string           not null
+#  value      :text
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  project_id :bigint           not null
+#
+# Indexes
+#
+#  index_environment_variables_on_project_id           (project_id)
+#  index_environment_variables_on_project_id_and_name  (project_id,name) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_id => projects.id)
+#
+
+# This model initially had no columns defined. If you add columns to the
+# model remove the "{}" from the fixture names and add the columns immediately
+# below each fixture, per the syntax in the comments below
+#
+one: {}
+# column: value
+#
+two: {}
+# column: value

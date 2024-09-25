@@ -1,0 +1,15 @@
+<%= content_for :title, t("scaffold.new.title", model: "Cluster") %>
+
+<div class="container px-4 mx-auto my-8">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="h3">
+      <%= link_to "Clusters", clusters_path, class: "text-black dark:text-white" %>
+      <span class="text-gray-400 font-light mx-2">\</span>
+      <%= t("scaffold.new.title", model: "Cluster") %>
+    </h1>
+  </div>
+
+  <div class="p-8 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow">
+    <%= render "form", cluster: @cluster %>
+  </div>
+</div>

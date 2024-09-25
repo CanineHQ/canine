@@ -1,0 +1,10 @@
+<nav class="w-64 p-4">
+  <ul class="space-y-2 list-none">
+    <li><%= link_to "Services", project_services_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+    <li><%= link_to "Deployments", project_deployments_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+    <li><%= link_to "Environment Variables", project_environment_variables_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+    <li><%= link_to "Logs", "#", class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+    <li><%= link_to "Metrics", project_metrics_url(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+    <li><%= link_to "Settings", edit_project_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
+  </ul>
+</nav>

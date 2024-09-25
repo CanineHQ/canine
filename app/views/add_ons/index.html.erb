@@ -1,0 +1,23 @@
+<%= content_for :title, "Add Ons" %>
+<%= turbo_stream_from :add_ons %>
+
+<div class="container px-4 mx-auto my-8">
+  <div class="flex items-center justify-between mb-4">
+    <%= link_to t("scaffold.new.title", model: "Add On"), new_add_on_path, class: "btn btn-secondary" %>
+  </div>
+
+  <%= tag.div id: ("add_ons" if first_page?), class: "bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
+    <%= render "add_ons/index", add_ons: @add_ons, cached: true %>
+
+    <div class="hidden only:block text-center">
+      <p class="mb-4 h3">Create your first Add On</p>
+      <%= link_to t("scaffold.new.title", model: "Add On"), new_add_on_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div class="my-6 text-center">
+      <%== pagy_nav(@pagy) %>
+    </div>
+  <% end %>
+</div>

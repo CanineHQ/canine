@@ -1,0 +1,63 @@
+<%= form_with(model: project) do |form| %>
+  <%= render "error_messages", resource: form.object %>
+
+  <div class="form-group">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: "input input-bordered w-full", value: RandomNameGenerator.generate_name %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :cluster_id %>
+    <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+  </div>
+
+  <div data-controller="partial-select">
+    <div class="mb-4 hidden" data-partial-select-target="toggleable" data-project-type="cron_job">
+      <%= form.label :cron_schedule %>
+      <%= form.text_field :cron_schedule, class: "input input-bordered w-full" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label "Repository path *" %>
+    <div class="flex gap-2">
+      <%= form.text_field :repository_url, class: "input input-bordered w-full", placeholder: "accountname/repo" %>
+      <%= render "projects/github/connect" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :branch %>
+    <%= form.text_field :branch, class: "input input-bordered w-full" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :autodeploy %>
+    <%= form.check_box :autodeploy, class: "checkbox" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :dockerfile_path %>
+    <%= form.text_field :dockerfile_path, class: "input input-bordered w-full" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :docker_command %>
+    <%= form.text_field :docker_command, class: "input input-bordered w-full" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :predeploy_command %>
+    <%= form.text_field :predeploy_command, class: "input input-bordered w-full" %>
+  </div>
+
+  <div>
+    <%= form.button button_text(form.send(:submit_default_value)), class: "btn btn-primary" %>
+
+    <% if form.object.new_record? %>
+      <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
+    <% else %>
+      <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+<% end %>

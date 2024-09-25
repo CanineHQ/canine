@@ -1,0 +1,33 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Project") %>
+
+<%= project_layout(@project) do %>
+  <div class="flex items-center justify-between mb-4">
+    Metrics
+  </div>
+
+  <h5>Pods</h5>
+  <div class="overflow-x-auto">
+    <% if @pod_metrics.present? %>
+      <table class="w-full table-auto">
+        <thead class="">
+          <tr>
+            <th class="px-4 py-2 text-left text-gray-600">Pod Name</th>
+            <th class="px-4 py-2 text-left text-gray-600">CPU</th>
+            <th class="px-4 py-2 text-left text-gray-600">Memory</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pod_metrics.each do |metric| %>
+            <tr class="border-b">
+              <td class="px-4 py-2"><%= metric[:name] %></td>
+              <td class="px-4 py-2"><%= metric[:cpu] %></td>
+              <td class="px-4 py-2"><%= metric[:memory] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div class="text-gray-600">No metrics available</div>
+    <% end %>
+  </div>
+<% end %>

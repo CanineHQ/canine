@@ -1,0 +1,7 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Add On") %>
+<%= add_on_layout(@add_on) do %>
+  <div>
+    Delete Add-on
+  </div>
+  <%= button_to "Uninstall", add_on_path(@add_on), method: :delete, class: "btn btn-danger" %>
+<% end %>
