@@ -7,15 +7,7 @@ Rails.application.routes.draw do
   end
   get "/privacy", to: "home#privacy"
   get "/terms", to: "home#terms"
-authenticate :user, lambda { |u| u.admin? } do
-  mount Sidekiq::Web => "/sidekiq"
 
-  namespace :madmin do
-    resources :impersonates do
-      post :impersonate, on: :member
-      post :stop_impersonating, on: :collection
-    end
-  end
 
    resources :add_ons do
     member do
@@ -45,6 +37,15 @@ authenticate :user, lambda { |u| u.admin? } do
     member do
       post :test_connection
       post :restart
+    end
+  end
+authenticate :user, lambda { |u| u.admin? } do
+  mount Sidekiq::Web => "/sidekiq"
+
+  namespace :madmin do
+    resources :impersonates do
+      post :impersonate, on: :member
+      post :stop_impersonating, on: :collection
     end
   end
 end

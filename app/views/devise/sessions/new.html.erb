@@ -24,7 +24,7 @@
         <%= f.submit "Log in", class: "btn btn-primary btn-lg" %>
       </div>
     <% end %>
-
+  <%= button_to "Connect Github", omniauth_authorize_path(:user, :github), class: "btn btn-github", data: { turbo: false, disable_with: "Redirecting..." } %>
     <div class="text-center">
       <%= render "devise/shared/links" %>
     </div>
