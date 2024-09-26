@@ -1,24 +1,14 @@
-# README
+## Setup
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+- node 18
+- bundle install
+- cloudflared tunnel for development testing with github
+- set up .env file
+- TODO: beef up readme
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+APP_HOST=canine.example.com
+OMNIAUTH_GITHUB_WEBHOOK_SECRET=1234567890
+OMNIAUTH_GITHUB_PUBLIC_KEY=1234567890
+OMNIAUTH_GITHUB_PRIVATE_KEY=1234567890
+```
