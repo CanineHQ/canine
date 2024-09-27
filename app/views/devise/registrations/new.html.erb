@@ -1,33 +1,37 @@
-<div class="row">
-  <div class="col-lg-4 offset-lg-4">
-    <h1 class="text-center">Sign Up</h1>
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-2xl font-bold text-center">Sign Up</h2>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-      <div class="mb-3">
-        <%= f.text_field :name, autofocus: false, class: 'form-control', placeholder: "Full name" %>
+        <div class="form-control">
+          <%= f.text_field :name, autofocus: true, class: 'input input-bordered w-full', placeholder: "Full name" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.email_field :email, autocomplete: "email", class: 'input input-bordered w-full', placeholder: "Email Address" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.password_field :password, autocomplete: "new-password", class: 'input input-bordered w-full', placeholder: 'Password' %>
+        </div>
+
+        <div class="form-control">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'input input-bordered w-full', placeholder: 'Confirm Password' %>
+        </div>
+
+        <div class="form-control mt-6">
+          <%= f.submit "Sign up", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+
+      <div class="divider">OR</div>
+
+      <div class="text-center">
+        <%= render "devise/shared/links" %>
       </div>
-
-      <div class="mb-3">
-        <%= f.email_field :email, autofocus: false, class: 'form-control', placeholder: "Email Address" %>
-      </div>
-
-      <div class="mb-3">
-        <%= f.password_field :password, autocomplete: "off", class: 'form-control', placeholder: 'Password' %>
-      </div>
-
-      <div class="mb-3">
-        <%= f.password_field :password_confirmation, autocomplete: "off", class: 'form-control', placeholder: 'Confirm Password' %>
-      </div>
-
-      <div class="mb-3 d-grid">
-        <%= f.submit "Sign up", class: "btn btn-primary btn-lg" %>
-      </div>
-    <% end %>
-
-    <div class="text-center">
-      <%= render "devise/shared/links" %>
     </div>
   </div>
 </div>

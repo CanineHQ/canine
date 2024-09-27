@@ -22,6 +22,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chokidar": "^4.0.1",
+    "daisyui": "^4.12.10",
     "esbuild-rails": "^1.0.7",
     "local-time": "^3.0.2",
     "nodemon": "^3.1.7",
