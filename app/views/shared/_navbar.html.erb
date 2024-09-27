@@ -5,48 +5,94 @@
   </div>
 <% end %>
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">
-  <div class="container mx-auto">
-    <%= link_to Rails.configuration.application_name, root_path, class: "navbar-brand" %>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+<nav class="container mx-auto flex flex-wrap items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800 text-sm font-medium" data-controller="toggle">
+  <div class="flex items-center flex-shrink-0 mr-6">
+    <%= link_to root_path, class: "flex items-center text-gray-700 hover:text-gray-800 dark:text-gray-100 dark:hover:text-gray-300" do %>
+      <img src="/images/logo-compact.png" class="w-[40px] h-[40px]" />
+      <span class="sr-only"><%= Rails.configuration.application_name %></span>
+    <% end %>
+  </div>
+  <div class="block lg:hidden">
+    <button type="button" id="sidebar-open" class="flex items-center p-3 text-gray-500 lg:hidden focus:outline-none focus:text-gray-700" data-action="click->toggle#toggle touch->toggle#toggle">
+      <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path></svg>
     </button>
+  </div>
 
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav me-auto mt-2 mt-md-0">
-      </ul>
-
-      <ul class="navbar-nav">
-        <li class="nav-item"><%= link_to "What's New", announcements_path, class: "nav-link #{unread_announcements(current_user)}" %></li>
-        <% if user_signed_in? %>
-
-          <li class="nav-item">
-            <%= link_to notifications_path, class: "nav-link" do %>
-              <span><i class="far fa-bell" aria-hidden="true"></i></span>
-            <% end %>
-          </li>
-
-          <li class="nav-item dropdown">
+  <div class="flex-grow hidden w-full pb-6 opacity-0 lg:opacity-100 lg:flex lg:w-auto lg:pb-0"
+        data-toggle-target="toggleable"
+        data-transition-enter="transition-all ease-linear duration-300"
+        data-transition-enter-from="opacity-0 h-0"
+        data-transition-enter-to="opacity-100"
+        data-transition-leave="transition-all ease-linear duration-300"
+        data-transition-leave-from="opacity-100"
+        data-transition-leave-to="opacity-0">
+    <div class="lg:flex-grow">
+      <%= render "shared/left_nav" %>
+    </div>
+    <div>
+      <% if user_signed_in? %>
+        <div class="hidden lg:inline-block">
+          <li class="nav-item"><%= link_to "What's New", announcements_path, class: "nav-link #{unread_announcements(current_user)}" %></li>
+        </div>
+        <!-- Mobile menu -->
+        <div class="lg:hidden mt-2 pt-4 pb-2 border-t border-gray-200 dark:border-gray-800">
+          <div class="flex items-center px-2">
             <%= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: { target: "nav-account-dropdown", bs_toggle: "dropdown" }, aria: { haspopup: true, expanded: false } do %>
-              <%= image_tag avatar_path(current_user, size: 40), height: 20, width: 20, class: "rounded" %>
+              <%= image_tag avatar_path(current_user, size: 40), height: 20, width: 20, class: "rounded-full h-8 w-8" %>
+              <div class="ml-3 text-base font-medium text-gray-800 dark:text-white"><%= current_user.name %></div>
             <% end %>
-            <div id="nav-account-dropdown" class="dropdown-menu dropdown-menu-end" aria-labelledby="navbar-dropdown">
-              <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
-              <% if current_user.admin? && respond_to?(:madmin_root_path) %>
-                <div class="dropdown-divider"></div>
-                <%= link_to "Admin Area", madmin_root_path, class: "dropdown-item" %>
-              <% end %>
-              <div class="dropdown-divider"></div>
-              <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+            <%= link_to notifications_path, class: "ml-auto p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" do %>
+              <span class="sr-only">View notifications</span>
+              <svg class="h-6 w-6" x-description="Heroicon name: outline/bell" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+              </svg>
+            <% end %>
+          </div>
+          <div class="mt-3 space-y-1">
+            <%= link_to "Settings", edit_user_registration_path, class: 'block p-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-50 dark:bg-gray-900 dark:hover:bg-primary-800' %>
+            <%# <%= link_to t(".accounts"), accounts_path, class: 'block p-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-50 dark:bg-gray-900 dark:hover:bg-primary-800' %> 
+            <% if current_user.admin? && respond_to?(:madmin_root_path) %>
+              <%= link_to "Admin Area", madmin_root_path, class: 'block p-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-50 dark:bg-gray-900 dark:hover:bg-primary-800', data: { turbo: false } %>
+            <% end %>
+            <%= button_to "Logout", destroy_user_session_path, method: :delete, class: 'w-full text-left block p-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 dark:text-gray-50 dark:bg-gray-900 dark:hover:bg-primary-800' %>
+          </div>
+        </div>
+        <!-- Main menu -->
+        <div class="hidden lg:inline-flex z-10 items-center leading-none no-underline align-middle rounded text-gray-700 hover:text-gray-800 dark:text-gray-50 dark:hover:text-gray-200">
+          <div class="relative" data-controller="dropdown">
+            <button data-action="click->dropdown#toggle click@window->dropdown#hide" role="button" class="inline-block select-none" aria-label="Profile Menu">
+              <span class="flex items-center text-gray-700 dark:text-gray-100 appearance-none">
+                <%= image_tag avatar_path(current_user, size: 40), height: 40, width: 40, class: "rounded-full h-8 w-8 ring-2 ring-transparent hover:ring-gray-400 dark:hover:ring-gray-100" %>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="fill-current w-4 h-4"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"></path></svg>
+              </span>
+            </button>
+            <div data-dropdown-target="menu"
+                  data-transition-enter="transition ease-out duration-200"
+                  data-transition-enter-from="opacity-0 translate-y-1"
+                  data-transition-enter-to="opacity-100 translate-y-0"
+                  data-transition-leave="transition ease-in duration-150"
+                  data-transition-leave-from="opacity-100 translate-y-0"
+                  data-transition-leave-to="opacity-0 translate-y-1"
+                  class="z-20 hidden mt-2 lg:absolute lg:right-0 dropdown-menu">
+              <div class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow-md">
+                <%= link_to "Settings", edit_user_registration_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' %>
+                <%# <%= link_to t(".connected_accounts"), user_connected_accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Devise.omniauth_configs.any? %>
+                <%# <%= link_to t(".accounts"), accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' %>
+                <%#= link_to t(".api_tokens"), api_tokens_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Jumpstart.config.payments_enabled? %>
+                 <% if current_user.admin? && respond_to?(:madmin_root_path) %>
+                  <div class="px-6 py-3 text-xs font-bold text-gray-800 uppercase bg-white dark:text-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"><%= t(".admin") %></div>
+                  <%= link_to "Dashboard", admin_root_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3', target: :_blank, data: { turbo: false } %>
+                  <%= link_to 'Sidekiq', admin_sidekiq_web_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3', target: :_blank, data: { turbo: false } %>
+                <% end %>
+                <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: 'w-full text-left font-medium cursor-pointer px-6 py-3 border-t border-gray-200 dark:border-gray-700 text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap' %>
+              </div>
             </div>
-          </li>
-
-        <% else %>
-          <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %></li>
-          <li class="nav-item"><%= link_to "Login", new_user_session_path, class: "nav-link" %></li>
-        <% end %>
-      </ul>
+          </div>
+        </div>
+      <% else %>
+        <%= link_to "Log in", new_user_session_path, class: 'nav-link' %>
+        <%= link_to "Sign up", new_user_registration_path, class: 'btn btn-primary' %>
+      <% end %>
     </div>
   </div>
 </nav>
