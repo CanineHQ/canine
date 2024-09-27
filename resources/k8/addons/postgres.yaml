@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: <%= add_on.name %>
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <%= add_on.name %>
+  template:
+    metadata:
+      labels:
+        app: <%= add_on.name %>
+    spec:
+      containers:
+      - name: <%= add_on.name %>
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: <%= add_on.db %>
+        - name: POSTGRES_USER
+          value: <%= add_on.username %>
+        - name: POSTGRES_PASSWORD
+          value: <%= add_on.password %>
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres # mount in subpath of pv
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: <%= storage %>

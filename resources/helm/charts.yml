@@ -1,0 +1,61 @@
+helm:
+  charts:
+    - name: postgresql
+      logo: /images/helm/postgresql.png
+      version: 12.11.0
+      repository: oci://registry-1.docker.io/bitnamicharts/postgresql
+      install_command: helm install ${add_on_name} ${repository}
+      template:
+        - name: Storage
+          key: primary.persistence.size
+          type: size
+          default: 10Gi
+          required: true
+    - name: redis
+      logo: /images/helm/redis.png
+      version: 18.10.0
+      repository: oci://registry-1.docker.io/bitnamicharts/redis
+      install_command: helm install ${add_on_name} redis ${repository}
+      template:
+        - name: Storage
+          key: master.persistence.size
+          type: size
+          default: 2Gi
+          required: true
+        - name: Replicas
+          key: replica.replicaCount
+          type: integer
+          default: 0
+          hidden: true
+    #- name: elasticsearch
+    #  logo: /images/helm/elasticsearch.png
+    #  version: 18.10.0
+    #  repository: https://charts.bitnami.com/bitnami
+    #  template:
+    #    - name: resources.limits.storage
+    #      key: resources.limits.storage
+    #      type: size
+    #      default: 10Gi
+    #- name: sentry
+    #  logo: /images/helm/sentry.png
+    #  version: 2.10.0
+    #  repository: https://sentry-kubernetes.github.io/charts
+    #- name: grafana
+    #  logo: /images/helm/grafana.png
+    #  version: 6.56.0
+    #  repository: https://grafana.github.io/helm-charts
+    #- name: prometheus
+    #  logo: /images/helm/prometheus.png
+    #  version: 16.1.0
+    #  repository: https://prometheus-community.github.io/helm-charts
+    #- name: superset
+    #  logo: /images/helm/superset.png
+    #  version: 0.6.1
+    #  repository: https://apache.github.io/superset
+    #- name: clickhouse
+    #  logo: /images/helm/clickhouse.png
+    #  version: 2.1.0
+    #  repository: https://clickhouse.github.io/clickhouse-helm
+    #- name: wordpress
+    #  version: 12.1.0
+    #  repository: https://charts.bitnami.com/bitnami
