@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html class="h-100">
+<html class="h-full antialiased">
   <head>
     <%= render 'shared/head' %>
   </head>
 
-  <body class="d-flex flex-column h-100">
+   <body class="h-full font-sans antialiased font-normal leading-normal" data-controller="theme" data-theme-preference-value="dark">
     <main class="flex-shrink-0"> 
       <%= render 'shared/navbar' %>
       <%= render 'shared/notices' %>
 
-      <div class="container mt-4 mx-auto">
+     <main class="px-3 lg:px-0 h-full">
         <%= yield %>
       </div>
     </main>

@@ -1,0 +1,6 @@
+<div class="container mx-auto mt-8">
+  <h1 class="mb-4"><%= t(".title") %></h1>
+  <%= tag.p t("users.agreements.show.last_updated", date: l(@agreement.updated.to_date, format: :long)), class: "mb-4 text-gray-700 leading-normal italic" if @agreement %>
+
+  <%= render "users/agreements/terms_of_service" %>
+</div>
