@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: <%= name %>-pod
+  namespace: default
+spec:
+  containers:
+  - image: <%= container %>
+    command:
+      - sleep
+      - "3600"
+    imagePullPolicy: Always
+    name: <%= container %>
+  restartPolicy: Always
