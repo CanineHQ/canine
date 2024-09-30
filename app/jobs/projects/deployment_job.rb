@@ -1,5 +1,5 @@
-require 'base64'
-require 'json'
+require "base64"
+require "json"
 
 class Projects::DeploymentJob < ApplicationJob
   def perform(deployment)
@@ -27,7 +27,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def deploy_services(project, kubectl)
-    project.services.each do |service|
+    project.project_services.each do |service|
       deploy_service(service, kubectl)
     end
   end
@@ -64,9 +64,9 @@ class Projects::DeploymentJob < ApplicationJob
 
     # Create the JSON structure
     docker_config = {
-      'auths' => {
-        'ghcr.io' => {
-          'auth' => auth_value
+      "auths" => {
+        "ghcr.io" => {
+          "auth" => auth_value
         }
       }
     }

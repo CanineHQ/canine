@@ -20,7 +20,7 @@
 #
 class ProjectService < ApplicationRecord
   belongs_to :project
-  enum service_type: {
+  enum :service_type, {
     web_service: 0,
     background_service: 1,
     cron_job: 2

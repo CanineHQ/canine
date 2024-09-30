@@ -6,8 +6,8 @@ class Projects::MetricsController < Projects::BaseController
     @pod_metrics = if @service.present?
                      selector = "app=#{@service.metadata['labels'].app}"
                      K8::Metrics::Pods.call(@project.cluster, selector:)
-                   else
+    else
                      []
-                   end
+    end
   end
 end

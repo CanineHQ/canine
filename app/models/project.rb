@@ -37,7 +37,7 @@ class Project < ApplicationRecord
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
 
-  enum status: {
+  enum :status, {
     creating: 0,
     deployed: 1
   }
