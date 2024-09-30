@@ -2,7 +2,6 @@
   <h4>Custom Domains</h4>
 
   <%= form_with(model: [project, Domain.new], data: { turbo_frame: "domains" }) do |form| %>
-    <%= render "error_messages", resource: form.object %>
     <div class="flex gap-2">
       <%= form.text_field :domain_name, class: "form-control" %>
       <%= form.submit "Add Domain", class: "btn btn-primary" %>

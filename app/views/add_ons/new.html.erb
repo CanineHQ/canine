@@ -11,8 +11,6 @@
 
   <div class="p-8 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow" data-controller="new-add-ons">
     <%= form_with(model: @add_on) do |form| %>
-      <%= render "error_messages", resource: form.object %>
-
       <div class="form-group">
         <%= form.label :name %>
         <%= form.text_field :name, class: "form-control", value: RandomNameGenerator.generate_name %>

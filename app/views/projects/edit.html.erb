@@ -10,11 +10,11 @@
     <%= button_to t("delete"), @project, method: :delete, class: "btn btn-secondary", form: { data: { turbo_confirm: t("are_you_sure") } } %>
   </div>
 
-  <div class="mt-4 p-8 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow">
+  <div class="mt-4 p-8 dark:border dark:border-gray-700 rounded shadow">
     <%= render "projects/domains/index", project: @project %>
   </div>
 
-  <div class="p-8 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow">
+  <div class="p-8 dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow">
     <%= render "form", project: @project %>
   </div>
 <% end %>

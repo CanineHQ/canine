@@ -20,7 +20,7 @@ class Domain < ApplicationRecord
   belongs_to :project_service
   has_one :project, through: :project_service
   has_one :cluster, through: :project
-  validates :domain_name, presence: true, uniqueness: { scope: :service_id }
+  validates :domain_name, presence: true, uniqueness: { scope: :project_service_id }
   validate :domain_name_has_tld
   before_save :downcase_domain_name
   before_save :strip_protocol

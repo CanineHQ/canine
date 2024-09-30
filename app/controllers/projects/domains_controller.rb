@@ -5,11 +5,11 @@ class Projects::DomainsController < Projects::BaseController
 
   def create
     # TODO(chris): This is a bit of a hack, we should probably refactor this
-    @domain = @project.services.web_service.first.domains.new(domain_params)
+    @domain = @project.project_services.web_service.first.domains.new(domain_params)
     respond_to do |format|
       if @domain.save
         Projects::AddDomainJob.perform_later(@domain.cluster)
-        format.html { redirect_to project_path(@project), notice: 'Domain was successfully added.' }
+        format.html { redirect_to project_path(@project), notice: "Domain was successfully added." }
         format.json { render :show, status: :created, domain: @domain }
       else
         format.html { render :new, status: :unprocessable_entity }
