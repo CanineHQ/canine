@@ -1,5 +1,6 @@
 class Projects::RegisterGithubWebhook
   extend LightService::Action
+  WEBHOOK_SECRET = ENV["OMNIAUTH_GITHUB_WEBHOOK_SECRET"]
 
   expects :project
   promises :project
@@ -12,13 +13,18 @@ class Projects::RegisterGithubWebhook
       {
         url: Rails.application.routes.url_helpers.inbound_webhooks_github_index_url,
         content_type: "json",
-        secret: ENV.fetch("OMNIAUTH_GITHUB_WEBHOOK_SECRET",
-                          Omniauth.credentials_for(:github)[:webhook_secret])
+        secret: webhook_secret
       },
       {
         events: [ "push" ],
         active: true
       }
     )
+  end
+
+  def self.webhook_secret
+    return WEBHOOK_SECRET if WEBHOOK_SECRET.present?
+    credentials = Rails.application.credentials.dig(Rails.env, :github) || {}
+    credentials[:webhook_secret]
   end
 end

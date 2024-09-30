@@ -1,6 +1,5 @@
 require "active_support/core_ext/integer/time"
 
-Rails.application.routes.default_url_options[:host] = ENV.fetch("APP_HOST", "localhost")
 Rails.application.configure do
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost"), port: 3000 }
   config.hosts << /.*\.github\.dev/
