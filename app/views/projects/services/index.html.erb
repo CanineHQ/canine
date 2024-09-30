@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @project.services.each do |service| %>
+        <% @project.project_services.each do |service| %>
           <tr class="border-b">
             <td class="px-4 py-2"><%= service.name %></td>
             <td class="px-4 py-2"><%= service.service_type.titleize %></td>

@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "new_service" do %>
   <div class="overflow-x-auto">
-    <%= form_with(model: [@project, @service]) do |form| %>
+    <%= form_with(model: [@project, @service], url: project_services_path) do |form| %>
       <%= form.label :name %>
       <%= form.text_field :name, class: "input input-bordered", required: true %>
 
@@ -8,7 +8,7 @@
         <%= form.label :service_type %>
         <%= form.select(
           :service_type,
-          Service.service_types.keys.map { |type| [type.titleize, type] },
+          ProjectService.service_types.keys.map { |type| [type.titleize, type] },
           {},
           class: "select select-bordered",
           data: {
@@ -21,7 +21,7 @@
 
       <%= form.label :command %>
       <%= form.text_field :command, class: "input input-bordered", required: false %>
-      <%= form.button button_text(form.send(:submit_default_value)), class: "btn btn-primary" %>
+      <%= form.button "Submit", class: "btn btn-primary" %>
     <% end %>
     <div class="text-sm mb-4">
       <p>
@@ -40,6 +40,5 @@
         Do not create any databases here, create an <%= link_to "add on", add_ons_path %> and then connect it to your project.
       </div>
     </div>
-
   </div>
 <% end %>
