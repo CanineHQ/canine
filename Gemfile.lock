@@ -113,6 +113,7 @@ GEM
       xpath (~> 3.2)
     chronic (0.10.2)
     chunky_png (1.4.0)
+    coderay (1.1.3)
     concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
     crass (1.0.6)
@@ -245,6 +246,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
+    method_source (1.1.0)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2024.0903)
@@ -322,6 +324,9 @@ GEM
     pg (1.5.8)
     pretender (0.3.4)
       actionpack (>= 4.2)
+    pry (0.14.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     psych (5.1.2)
       stringio
     public_suffix (6.0.1)
@@ -531,6 +536,7 @@ DEPENDENCIES
   pagy (~> 9.0)
   pg (~> 1.1)
   pretender (~> 0.3.4)
+  pry (~> 0.14.2)
   puma (>= 5.0)
   pundit (~> 2.1)
   rack (~> 2.2)

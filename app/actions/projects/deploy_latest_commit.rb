@@ -11,7 +11,7 @@ class Projects::DeployLatestCommit
     commit = client.commits(project.repository_url).first
 
     build = Build.create!(
-      project: context.project,
+      project: project,
       commit_sha: commit.sha,
       commit_message: commit.commit[:message]
     )

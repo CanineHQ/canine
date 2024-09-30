@@ -42,7 +42,7 @@ class Projects::BuildJob < ApplicationJob
   def git_clone(project, build, repository_path)
     # Construct the git clone command with OAuth token
     git_clone_command = %w[git clone --depth 1 --branch] +
-                        [project.branch, project_git(project), repository_path]
+                        [ project.branch, project_git(project), repository_path ]
 
     # Execute the git clone command
     _stdout, stderr, status = Open3.capture3(*git_clone_command)
@@ -54,14 +54,14 @@ class Projects::BuildJob < ApplicationJob
 
   def build_docker_build_command(project, repository_path)
     docker_build_command = [
-      'docker', 'build',
-      '-t', project.container_registry_url,
-      '-f', File.join(repository_path, project.dockerfile_path)
+      "docker", "build",
+      "-t", project.container_registry_url,
+      "-f", File.join(repository_path, project.dockerfile_path)
     ]
 
     # Add environment variables to the build command
     project.environment_variables.each do |envar|
-      docker_build_command.push('--build-arg', "#{envar.name}=#{envar.value}")
+      docker_build_command.push("--build-arg", "#{envar.name}=#{envar.value}")
     end
 
     # Add the build context directory at the end
@@ -71,33 +71,33 @@ class Projects::BuildJob < ApplicationJob
 
   def execute_docker_build(project, build, repository_path)
     docker_build_command = build_docker_build_command(project, repository_path)
-    IO.popen(docker_build_command, 'r') do |io|
+    IO.popen(docker_build_command, "r") do |io|
       # Continuously print each line of output
       io.each { |line| build.info line }
       io.close
       exit_status = $CHILD_STATUS.exitstatus
       raise BuildFailure, "Command failed with exit status #{exit_status}" unless exit_status.zero?
 
-      build.info 'Command completed successfully.'
+      build.info "Command completed successfully."
     end
   end
 
   def login_to_docker(project, build)
     docker_login_command = %w[docker login ghcr.io --username] +
-                           [project.user.github_username, '--password', project.user.github_access_token]
+                           [ project.user.github_username, "--password", project.user.github_access_token ]
 
     build.info "Logging into ghcr.io as #{project.user.github_username}"
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
-      build.info 'Logged in to Docker Hub successfully.'
+      build.info "Logged in to Docker Hub successfully."
     else
       build.error "Docker Hub login failed with error:\n#{stderr}"
     end
   end
 
   def push_to_dockerhub(project, build)
-    docker_push_command = ['docker', 'push', "ghcr.io/#{project.repository_url}:latest"]
+    docker_push_command = [ "docker", "push", "ghcr.io/#{project.repository_url}:latest" ]
 
     build.info "Pushing Docker image to #{docker_push_command.last}"
     stdout, stderr, status = Open3.capture3(*docker_push_command)

@@ -10,6 +10,8 @@
 #  loggable_id   :bigint           not null
 #
 class LogOutput < ApplicationRecord
+  include ActionView::RecordIdentifier
+
   belongs_to :loggable, polymorphic: true
 
   after_update_commit :broadcast_log_output

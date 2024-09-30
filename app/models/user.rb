@@ -40,7 +40,7 @@ class User < ApplicationRecord
 
 
   def github_username
-    github_account.auth["info"]["nickname"]
+    JSON.parse(github_account.auth)["info"]["nickname"]
   end
 
   def github_access_token

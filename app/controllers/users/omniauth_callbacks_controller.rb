@@ -62,10 +62,14 @@ module Users
     end
 
     def service_attrs
+      auth_hash = auth.to_hash
+      auth_hash.delete("credentials")
+      auth_hash["extra"]&.delete("access_token")
       expires_at = auth.credentials.expires_at.present? ? Time.at(auth.credentials.expires_at) : nil
       {
           provider: auth.provider,
           uid: auth.uid,
+          auth: auth_hash.to_json,
           expires_at: expires_at,
           access_token: auth.credentials.token,
           access_token_secret: auth.credentials.secret
