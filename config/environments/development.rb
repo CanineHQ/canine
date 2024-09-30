@@ -4,6 +4,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
   config.hosts << /.*\.github\.dev/
   config.hosts << "canine.worthyofapenny.com"
+  config.hosts << "canine.chriszhu.me"
 
   # Settings specified here will take precedence over those in config/application.rb.
 
