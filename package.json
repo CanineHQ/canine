@@ -6,29 +6,39 @@
   },
   "scripts": {
     "build": "node esbuild.config.mjs",
-    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
-    "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
-    "build:css": "yarn build:css:compile && yarn build:css:prefix",
-    "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"yarn build:css\""
+    "build:css": "tailwindcss --postcss --minify -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css"
   },
   "dependencies": {
+    "@gorails/ninja-keys": "^1.2.1",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.10",
     "@popperjs/core": "^2.11.8",
+    "@rails/actioncable": "^7.1.0",
     "@rails/activestorage": "^7.2.100",
     "@rails/request.js": "^0.0.11",
     "@rails/ujs": "^7.1.3-4",
+    "@tailwindcss/aspect-ratio": "^0.4.0",
+    "@tailwindcss/forms": "^0.5.0",
+    "@tailwindcss/typography": "^0.5.15",
     "autoprefixer": "^10.4.20",
-    "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3",
     "chokidar": "^4.0.1",
+    "clipboard": "^2.0.8",
     "daisyui": "^4.12.10",
     "esbuild-rails": "^1.0.7",
+    "flatpickr": "^4.6.10",
+    "js-cookie": "^3.0.1",
     "local-time": "^3.0.2",
     "nodemon": "^3.1.7",
     "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",
-    "sass": "^1.79.3"
+    "sass": "^1.79.3",
+    "stimulus-flatpickr": "^3.0.0-0",
+    "tailwindcss": "^3.4.1",
+    "tailwindcss-stimulus-components": "^5.1.0",
+    "tippy.js": "^6.3.5",
+    "tom-select": "^2.2.2",
+    "tributejs": "^5.1.3",
+    "trix": "^2.0.0"
   },
   "browserslist": [
     "defaults"
