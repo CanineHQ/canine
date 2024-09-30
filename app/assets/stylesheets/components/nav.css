@@ -1,0 +1,27 @@
+.nav-link {
+  @apply block no-underline text-gray-500 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300 px-2 py-1 text-base font-medium whitespace-nowrap;
+  line-height: 30px;
+
+  &.active {
+    @apply font-semibold border-b-2 border-white;
+  }
+
+  &:focus {
+    @apply text-gray-900;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-link {
+    @apply inline-flex my-0 mr-3;
+    line-height: 40px;
+  }
+}
+
+.dropdown-menu {
+  min-width: 100%;
+
+  @screen lg {
+    min-width: 200px;
+  }
+}
