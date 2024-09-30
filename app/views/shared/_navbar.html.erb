@@ -31,10 +31,6 @@
     </div>
     <div>
       <% if user_signed_in? %>
-        <div class="hidden lg:inline-block">
-          <li class="nav-item"><%= link_to "What's New", announcements_path, class: "nav-link #{unread_announcements(current_user)}" %></li>
-        </div>
-        <!-- Mobile menu -->
         <div class="lg:hidden mt-2 pt-4 pb-2 border-t border-gray-200 dark:border-gray-800">
           <div class="flex items-center px-2">
             <%= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: { target: "nav-account-dropdown", bs_toggle: "dropdown" }, aria: { haspopup: true, expanded: false } do %>

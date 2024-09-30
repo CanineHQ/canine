@@ -4,7 +4,7 @@ class AddOnsController < ApplicationController
 
   # GET /add_ons
   def index
-    @pagy, @add_ons = pagy(AddOn.sort_by_params(params[:sort], sort_direction))
+    @pagy, @add_ons = pagy(AddOn.all)
 
     # Uncomment to authorize with Pundit
     # authorize @add_ons

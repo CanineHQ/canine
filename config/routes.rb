@@ -5,11 +5,16 @@ Rails.application.routes.draw do
   namespace :inbound_webhooks do
     resources :github, controller: :github, only: [ :create ]
   end
-  get "/privacy", to: "home#privacy"
-  get "/terms", to: "home#terms"
+  get "/privacy", to: "static#privacy"
+  get "/terms", to: "static#terms"
 
 
-   resources :add_ons do
+  authenticated :user do
+    root to: "home#index", as: :user_root
+    # Alternate route to use if logged in users should still see public root
+    # get "/dashboard", to: "dashboard#show", as: :user_root
+  end
+  resources :add_ons do
     member do
       get :logs, to: "add_ons#logs"
     end
