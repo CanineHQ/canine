@@ -2,18 +2,57 @@
 <%= turbo_stream_from :projects %>
 
 <div class="container px-4 mx-auto my-8">
-  <div class="flex items-center justify-between mb-4">
-    <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-secondary" %>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-medium">Projects</h3>
   </div>
 
-  <%= tag.div id: ("projects" if @pagy.page == 1), class: "bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
-    <%= render "projects/index", projects: @projects, cached: true %>
+  <div class="mt-5">
+    <div aria-label="Card" class="card card-bordered bg-base-100">
+      <div class="card-body p-0">
+        <div class="text-right px-5 pt-5">
+        <!--  Start: Project Action -->
+        <%= link_to new_project_path, title: t("scaffold.new.title", model: "Project") do %>
+          <button class="btn btn-primary btn-sm">
+            <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+            <span class="hidden sm:inline">New Project</span>
+          </button>
+        <% end %>
+        <!--  End: Project Action -->
+        </div>
 
-    <div class="hidden only:block text-center">
-      <p class="mb-4 h3">Create your first Project</p>
-      <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-primary" %>
+        <%= tag.div id: ("projects" if @pagy.page == 1), class: "dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
+          <%= render "projects/index", projects: @projects, cached: true %>
+
+          <div class="hidden only:block text-center">
+            <p class="mb-4 h3">Create your first Project</p>
+            <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-primary" %>
+          </div>
+        <% end %>
+
+ 
+        <div class="flex items-center justify-end px-5 pb-5 pt-3">
+          <!--  Start: Shop Table Pagination -->
+
+          <div class="join">
+            <button aria-label="pagination-prev" class="btn join-item btn-sm gap-2">
+              <iconify-icon icon="lucide:chevron-left" height="16"></iconify-icon>
+              <span class="iconify mdi-light--chevron-left"></span>
+            </button>
+            <button aria-label="pagination-1" class="btn btn-primary join-item btn-active btn-sm">
+              1
+            </button>
+            <button aria-label="pagination-2" class="btn join-item btn-sm">2</button>
+            <button aria-label="pagination-next" class="btn join-item btn-sm gap-2">
+              <iconify-icon icon="lucide:chevron-right" height="16"></iconify-icon>
+            </button>
+          </div>
+
+          <!--  End: Shop Table Pagination -->
+        </div>
+      </div>
     </div>
-  <% end %>
+  </div>
+
 
   <% if @pagy.pages > 1 %>
     <div class="my-6 text-center">

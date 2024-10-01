@@ -1,7 +1,7 @@
 // See the Tailwind default theme values here:
 // https://github.com/tailwindcss/tailwindcss/blob/master/stubs/defaultConfig.stub.js
 const colors = require('tailwindcss/colors')
-const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme');
 import theme from "daisyui/src/theming/themes"
 
 /** @type {import('tailwindcss').Config */
