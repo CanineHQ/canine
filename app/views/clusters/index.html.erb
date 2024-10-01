@@ -2,18 +2,33 @@
 <%= turbo_stream_from :clusters %>
 
 <div class="container px-4 mx-auto my-8">
-  <div class="flex items-center justify-between mb-4">
-    <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-secondary" %>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-medium">Clusters</h3>
   </div>
 
-  <%= tag.div id: ("clusters" if @pagy.pages == 1), class: "bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
-    <%= render "clusters/index", clusters: @clusters, cached: true %>
+  <div class="mt-5">
+    <div aria-label="Card" class="card card-bordered bg-base-100">
+      <div class="card-body p-0">
+        <div class="text-right px-5 pt-5">
+          <%= link_to new_cluster_path, title: t("scaffold.new.title", model: "Cluster") do %>
+            <button class="btn btn-primary btn-sm">
+              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+              <span class="hidden sm:inline">New Cluster</span>
+            </button>
+          <% end %>
+        </div>
+        <%= tag.div id: ("clusters" if @pagy.pages == 1) do %>
 
-    <div class="hidden only:block text-center">
-      <p class="mb-4 h3">Create your first Cluster</p>
-      <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-primary" %>
+          <%= render "clusters/index", clusters: @clusters, cached: true %>
+
+          <div class="hidden only:block text-center">
+            <p class="mb-4 h3">Create your first Cluster</p>
+            <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
     </div>
-  <% end %>
+  </div>
 
   <% if @pagy.pages > 1 %>
     <div class="flex items-center justify-end px-5 pb-5 pt-3">

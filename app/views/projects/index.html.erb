@@ -20,7 +20,7 @@
         <!--  End: Project Action -->
         </div>
 
-        <%= tag.div id: ("projects" if @pagy.page == 1), class: "dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
+        <%= tag.div id: ("projects" if @pagy.page == 1) do %>
           <%= render "projects/index", projects: @projects, cached: true %>
 
           <div class="hidden only:block text-center">
