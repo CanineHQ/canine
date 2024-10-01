@@ -3,7 +3,7 @@ module Cli
   class RunAndReturnOutput
     def call(command, envs: {})
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
-      output = `#{command}`
+      output = `#{command.strip}`
       output
     end
   end
@@ -15,18 +15,11 @@ module Cli
 
     def call(command, envs: {})
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
-      @loggable.info("`#{command.strip}`")
-      Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
+      @loggable.info(command.strip)
+      Open3.popen3(command.strip) do |stdin, stdout, stderr, wait_thr|
         stdin.close
-        out_reader = Thread.new do
-          stdout.each_line { |line| @loggable.info(line.chomp) }
-        end
-        err_reader = Thread.new do
-          stderr.each_line { |line| @loggable.info(line.chomp) }
-        end
-
-        out_reader.join
-        err_reader.join
+        stdout.each_line { |line| @loggable.info(line.chomp) }
+        stderr.each_line { |line| @loggable.info(line.chomp) }
 
         exit_status = wait_thr.value
         if exit_status.success?
@@ -38,5 +31,4 @@ module Cli
       end
     end
   end
-
 end

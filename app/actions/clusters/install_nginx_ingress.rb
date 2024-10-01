@@ -22,7 +22,7 @@ class Clusters::InstallNginxIngress
         rescue Cli::CommandFailedError => e
           cluster.failed!
           cluster.info("Cert manager failed to install")
-          context.fail!("Script failed with exit code #{exit_status.exitstatus}")
+          context.fail_and_return!("Script failed with exit code #{e.message}")
         end
       end
     end
