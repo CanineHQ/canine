@@ -1,10 +1,54 @@
-<nav class="w-64 p-4">
-  <ul class="space-y-2 list-none">
-    <li><%= link_to "Services", project_services_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-    <li><%= link_to "Deployments", project_deployments_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-    <li><%= link_to "Environment Variables", project_environment_variables_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-    <li><%= link_to "Logs", "#", class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-    <li><%= link_to "Metrics", project_metrics_url(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-    <li><%= link_to "Settings", edit_project_path(project), class: "block py-2 px-4 hover:bg-gray-200 rounded" %></li>
-  </ul>
-</nav>
+<div class="leftmenu-wrapper">
+  <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y"><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;"><div class="simplebar-content" style="padding: 0px;">
+    <ul class="menu mb-6">
+      <li class="mb-0.5">
+        <%= link_to project_services_path(project), class: "hover:bg-base-content/15" do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:package" height="18"></iconify-icon>
+            Services
+          </div>
+        <% end %>
+      </li>
+      <li class="mb-0.5">
+        <%= link_to project_deployments_path(project), class: "hover:bg-base-content/15" do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:rocket" height="18"></iconify-icon>
+            Deployments
+          </div>
+        <% end %>
+      </li>
+      <li class="mb-0.5">
+        <%= link_to project_environment_variables_path(project), class: "hover:bg-base-content/15" do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:server" height="18"></iconify-icon>
+            Environment Variables
+          </div>
+        <% end %>
+      </li>
+      <li class="mb-0.5">
+        <a href="#" class="hover:bg-base-content/15">
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:logs" height="18"></iconify-icon>
+            Logs
+          </div>
+        </a> 
+      </li>
+       <li class="mb-0.5">
+        <%= link_to project_metrics_url(project), class: "hover:bg-base-content/15" do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:chart-line" height="18"></iconify-icon>
+            Metrics
+          </div>
+        <% end %>
+      </li>
+       <li class="mb-0.5">
+        <%= link_to edit_project_path(project), class: "hover:bg-base-content/15" do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:settings" height="18"></iconify-icon>
+            Settings
+          </div>
+        <% end %>
+      </li>
+    </ul>
+  </div></div></div></div><div class="simplebar-placeholder" style="width: 239px; height: 1286px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: visible;"><div class="simplebar-scrollbar" style="height: 25px; transform: translate3d(0px, 31px, 0px); display: block;"></div></div><div class="simplebar-track simplebar-horizontal"><div class="simplebar-scrollbar"></div></div><div class="simplebar-track simplebar-vertical"><div class="simplebar-scrollbar"></div></div></div>
+</div>

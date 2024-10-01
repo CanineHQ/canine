@@ -28,35 +28,14 @@
             <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-primary" %>
           </div>
         <% end %>
-
- 
-        <div class="flex items-center justify-end px-5 pb-5 pt-3">
-          <!--  Start: Shop Table Pagination -->
-
-          <div class="join">
-            <button aria-label="pagination-prev" class="btn join-item btn-sm gap-2">
-              <iconify-icon icon="lucide:chevron-left" height="16"></iconify-icon>
-              <span class="iconify mdi-light--chevron-left"></span>
-            </button>
-            <button aria-label="pagination-1" class="btn btn-primary join-item btn-active btn-sm">
-              1
-            </button>
-            <button aria-label="pagination-2" class="btn join-item btn-sm">2</button>
-            <button aria-label="pagination-next" class="btn join-item btn-sm gap-2">
-              <iconify-icon icon="lucide:chevron-right" height="16"></iconify-icon>
-            </button>
-          </div>
-
-          <!--  End: Shop Table Pagination -->
-        </div>
       </div>
     </div>
   </div>
 
 
   <% if @pagy.pages > 1 %>
-    <div class="my-6 text-center">
-      <%== pagy_nav(@pagy) %>
+    <div class="flex items-center justify-end px-5 pb-5 pt-3">
+      <%== custom_pagy_nav(@pagy) %>
     </div>
   <% end %>
 </div>
