@@ -6,7 +6,7 @@
     <%= link_to t("scaffold.new.title", model: "Add On"), new_add_on_path, class: "btn btn-secondary" %>
   </div>
 
-  <%= tag.div id: ("add_ons" if first_page?), class: "bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
+  <%= tag.div id: ("add_ons" if @pagy.page == 1), class: "bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-md shadow p-6 space-y-8" do %>
     <%= render "add_ons/index", add_ons: @add_ons, cached: true %>
 
     <div class="hidden only:block text-center">
