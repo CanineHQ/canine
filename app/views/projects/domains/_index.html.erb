@@ -3,7 +3,7 @@
 
   <%= form_with(model: [project, Domain.new], data: { turbo_frame: "domains" }) do |form| %>
     <div class="flex gap-2">
-      <%= form.text_field :domain_name, class: "form-control" %>
+      <%= form.text_field :domain_name, class: "input input-bordered focus:outline-offset-0" %>
       <%= form.submit "Add Domain", class: "btn btn-primary" %>
     </div>
   <% end %>
