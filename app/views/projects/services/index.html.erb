@@ -1,14 +1,15 @@
 <%= project_layout(@project) do %>
-  <div class="flex items-center justify-between mb-4">
-    Services
-  </div>
-
   <div>
     <%= turbo_frame_tag "new_service" do %>
-      <%= link_to "New Service", new_project_service_path(@project), class: "btn btn-primary" %>
+      <%= link_to new_project_service_path(@project) do %>
+        <button class="btn btn-primary btn-sm inline-flex">
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          <span class="hidden md:inline">New Service</span>
+        </button>
+      <% end %>
     <% end %>
   </div>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto mt-2">
     <table class="w-full table-auto">
       <thead class="">
         <tr>
