@@ -1,0 +1,26 @@
+<div class="container px-4 mx-auto my-8">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-lg font-medium"><%= cluster.name %></h3>
+      <%= link_to download_kubeconfig_cluster_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(download_kubeconfig_cluster_path(cluster))}" do %>
+        <div class="flex items-center gap-2">
+          Download Kubeconfig File
+        </div>
+      <% end %>
+    </div>
+    <div class="flex">
+      <%= turbo_frame_tag "test_connection_frame" do %>
+        <%= button_to "Test Connection", test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" %>
+      <% end %>
+      <%= button_to "Restart", restart_cluster_url(cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
+    </div>
+  </div>
+  <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
+    <div class="flex">
+
+      <div class="block w-full">
+        <%= render "clusters/sidebar", cluster: cluster %>
+        <%= yield %>
+      </div>
+    </div>
+  </div>
