@@ -107,4 +107,7 @@ module.exports = {
       },
     ],
   },
+  safelist: [
+    'bg-success/10', 'text-success'
+  ]
 }
