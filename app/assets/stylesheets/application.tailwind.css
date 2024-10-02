@@ -3,4 +3,5 @@
 @tailwind utilities;
 
 @import "components/nav";
-@import "main"
+@import "main";
+@import "forms";

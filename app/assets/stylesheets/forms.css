@@ -1,0 +1,4 @@
+.form-footer {
+  margin-top: 1rem;
+  @apply mt-4;
+}
