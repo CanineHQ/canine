@@ -29,8 +29,8 @@ export default class extends Controller {
     // Make the value 3x the width of the name
     div.innerHTML = `
       <div class="flex items-center my-4 space-x-2">
-        <input type="text" name="environment_variables[][name]" class="form-control w-1/3" value="${name}" />
-        <input type="text" name="environment_variables[][value]" class="form-control w-2/3" value="${value}" />
+        <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" class="form-control w-1/3" value="${name}">
+        <input aria-label="Env value" placeholder="VALUE" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][value]" class="form-control w-1/3" value="${value}">
         <button type="button" class="btn btn-danger" data-action="environment-variables#remove">Delete</button>
       </div>
     `;

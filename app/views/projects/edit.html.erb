@@ -1,13 +1,11 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 
 <%= project_layout(@project) do %>
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="h3">
-      <%= link_to "Projects", projects_path, class: "text-black dark:text-white" %>
-      <span class="text-gray-400 font-light mx-2">\</span>
-      <%= t("scaffold.edit.title", model: "Project") %>
-    </h1>
-    <%= button_to t("delete"), @project, method: :delete, class: "btn btn-secondary", form: { data: { turbo_confirm: t("are_you_sure") } } %>
+  <div class="text-right mb-4">
+    <%= button_to @project, method: :delete, class: "btn btn-secondary btn-sm", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
+      <iconify-icon icon="lucide:trash" height="20" class="text-error-content"></iconify-icon>
+      Delete
+    <% end %>
   </div>
 
   <div class="mt-4 p-8 dark:border dark:border-gray-700 rounded shadow">
