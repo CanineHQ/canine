@@ -2,98 +2,94 @@
 <%= turbo_stream_from @project %>
 
 <%= project_layout(@project) do %>
-  <h1 class="text-2xl font-bold mb-6">Deployments</h1>
-  
   <% if @builds.empty? %>
     <div>
       <p class="text-gray-500">No deployments yet</p>
     </div>
   <% else %>
-
-<table class="table mt-2 rounded-box" id="order_table" data-component="table">
-                          <thead>
-                            <tr>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80">Commit</span>
-                              </th>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80">Sha</span>
-                              </th>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80">
-                                  Status
-                                </span>
-                              </th>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80">Deployed At</span>
-                              </th>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80"></span>
-                              </th>
-                              <th>
-                                <span class="text-sm font-medium text-base-content/80"></span>
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <% @builds.each do |build| %>
-                            <tr class="cursor-pointer hover:bg-base-200/40">
-                              <td>
-                                <div class="flex items-center space-x-3 truncate">
-                                  <div class="font-medium">
-                                   <%= build.commit_message %> 
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div class="font-medium">
-                                  <%= link_to build.commit_sha[0..6], 
-                                  "https://github.com/#{@project.repository_url}/commit/#{build.commit_sha}",
-                                    class: "underline",
-                                    target: "_blank",
-                                    rel: "noopener noreferrer" %>
-                                </div>
-                              </td>
-                              <td>
-                                <div class="flex items-center gap-2">
-                                  <%
-                                    status = (build.deployment&.status || build.status)
-                                    status = status == "in_progress" ? "pending" : status.humanize
-                                    badge_color = case status
-                                    when "pending"
-                                      "warning"
-                                    when "Failed"
-                                      "error"
-                                    when "Completed"
-                                      "success"
-                                    end
-                                  %>
-                                  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-                                    <%= status %>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div class="text-sm capitalize"><%= build.created_at.strftime("%B %d, %Y %H:%M") %></div>
-                              </td>
-                              <td>
-                                <div class="text-sm capitalize">
-                                  <%= button_to redeploy_project_deployment_path(@project, build), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
-                                    <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
-                                  <% end %>
-                                </div>
-                              </td>
-                              <td>
-                                <div class="text-sm capitalize">
-                                  <%= link_to project_deployment_path(@project, build), class: "btn btn-primary btn-sm min-w-max" do %>
-                                    <iconify-icon icon="lucide:logs"></iconify-icon> Logs
-                                  <% end %>
-                                </div>
-                              </td>
-                            </tr>
-                            <% end %>
-                          </tbody>
-                        </table>
-
+    <table class="table mt-2 rounded-box" id="order_table" data-component="table">
+      <thead>
+        <tr>
+          <th>
+            <span class="text-sm font-medium text-base-content/80">Commit</span>
+          </th>
+          <th>
+            <span class="text-sm font-medium text-base-content/80">Sha</span>
+          </th>
+          <th>
+            <span class="text-sm font-medium text-base-content/80">
+              Status
+            </span>
+          </th>
+          <th>
+            <span class="text-sm font-medium text-base-content/80">Deployed At</span>
+          </th>
+          <th>
+            <span class="text-sm font-medium text-base-content/80"></span>
+          </th>
+          <th>
+            <span class="text-sm font-medium text-base-content/80"></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @builds.each do |build| %>
+        <tr class="cursor-pointer hover:bg-base-200/40">
+          <td>
+            <div class="flex items-center space-x-3 truncate">
+              <div class="font-medium">
+                <%= build.commit_message %> 
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="font-medium">
+              <%= link_to build.commit_sha[0..6], 
+              "https://github.com/#{@project.repository_url}/commit/#{build.commit_sha}",
+                class: "underline",
+                target: "_blank",
+                rel: "noopener noreferrer" %>
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <%
+                status = (build.deployment&.status || build.status)
+                status = status == "in_progress" ? "pending" : status.humanize
+                badge_color = case status
+                when "pending"
+                  "warning"
+                when "Failed"
+                  "error"
+                when "Completed"
+                  "success"
+                end
+              %>
+              <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+                <%= status %>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="text-sm capitalize"><%= build.created_at.strftime("%B %d, %Y %H:%M") %></div>
+          </td>
+          <td>
+            <div class="text-sm capitalize">
+              <%= button_to redeploy_project_deployment_path(@project, build), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
+                <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
+              <% end %>
+            </div>
+          </td>
+          <td>
+            <div class="text-sm capitalize">
+              <%= link_to project_deployment_path(@project, build), class: "btn btn-primary btn-sm min-w-max" do %>
+                <iconify-icon icon="lucide:logs"></iconify-icon> Logs
+              <% end %>
+            </div>
+          </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
   <% end %>
 <% end %>

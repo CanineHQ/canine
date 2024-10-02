@@ -1,61 +1,32 @@
-<div class="leftmenu-wrapper">
-  <div class="flex items-center flex-shrink-0 mr-6">
-    <%= link_to root_path, class: "flex items-center text-gray-700 hover:text-gray-800 dark:text-gray-100 ml-auto mr-auto dark:hover:text-gray-300" do %>
-      <img src="/images/logo-compact.png" class="w-[40px] h-[40px]" />
-      <span class="sr-only"><%= Rails.configuration.application_name %></span>
-    <% end %>
-  </div>
-  <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y"><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;"><div class="simplebar-content" style="padding: 0px;">
-    <ul class="menu mb-6">
-      <li class="mb-0.5">
-        <%= link_to project_services_path(project), class: "hover:bg-base-content/15" do %>
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:package" height="18"></iconify-icon>
-            Services
-          </div>
-        <% end %>
-      </li>
-      <li class="mb-0.5">
-        <%= link_to project_deployments_path(project), class: "hover:bg-base-content/15" do %>
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:rocket" height="18"></iconify-icon>
-            Deployments
-          </div>
-        <% end %>
-      </li>
-      <li class="mb-0.5">
-        <%= link_to project_environment_variables_path(project), class: "hover:bg-base-content/15" do %>
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:server" height="18"></iconify-icon>
-            Environment Variables
-          </div>
-        <% end %>
-      </li>
-      <li class="mb-0.5">
-        <a href="#" class="hover:bg-base-content/15">
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:logs" height="18"></iconify-icon>
-            Logs
-          </div>
-        </a> 
-      </li>
-       <li class="mb-0.5">
-        <%= link_to project_metrics_url(project), class: "hover:bg-base-content/15" do %>
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:chart-line" height="18"></iconify-icon>
-            Metrics
-          </div>
-        <% end %>
-      </li>
-       <li class="mb-0.5">
-        <%= link_to edit_project_path(project), class: "hover:bg-base-content/15" do %>
-          <div class="flex items-center gap-2">
-            <iconify-icon icon="lucide:settings" height="18"></iconify-icon>
-            Settings
-          </div>
-        <% end %>
-      </li>
-    </ul>
-  </div></div></div></div><div class="simplebar-placeholder" style="width: 239px; height: 1286px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: visible;"><div class="simplebar-scrollbar" style="height: 25px; transform: translate3d(0px, 31px, 0px); display: block;"></div></div><div class="simplebar-track simplebar-horizontal"><div class="simplebar-scrollbar"></div></div><div class="simplebar-track simplebar-vertical"><div class="simplebar-scrollbar"></div></div></div>
+<div class="tabs tabs-bordered" role="tablist">
+  <%= link_to project_deployments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_deployments_path(project))}" do %>
+    <div class="flex items-center gap-2">
+      Deployments
+    </div>
+  <% end %>
+  <%= link_to project_services_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_services_path(project))}" do %>
+    <div class="flex items-center gap-2">
+      Services
+    </div>
+  <% end %>
+  <%= link_to project_environment_variables_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_environment_variables_path(project))}" do %>
+    <div class="flex items-center gap-2">
+      Environment
+    </div>
+  <% end %>
+  <%= link_to '#', class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?('#')}" do %>
+    <div class="flex items-center gap-2">
+      Logs
+    </div>
+  <% end %>
+  <%= link_to project_metrics_url(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_metrics_url(project))}" do %>
+    <div class="flex items-center gap-2">
+      Metrics
+    </div>
+  <% end %>
+  <%= link_to edit_project_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_project_path(project))}" do %>
+    <div class="flex items-center gap-2">
+      Settings
+    </div>
+  <% end %>
 </div>
-<div class="leftbar-backdrop"></div>
