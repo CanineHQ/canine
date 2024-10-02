@@ -6,7 +6,7 @@
             <div class="my-3">
               <% project.domains.each do |domain| %>
                 <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-                <i class="bi bi-box-arrow-up-right"></i>
+                <iconify-icon icon="lucide:external-link"></iconify-icon>
               <% end %>
             </div>
           <% end %>
@@ -17,7 +17,7 @@
               <iconify-icon icon="lucide:git-branch"></iconify-icon>
               <span class="underline"><%= project.branch %></span>
             <% end %>
-            <span class="ml-6"><iconify-icon icon="lucide:computer"></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
+            <span class="ml-6"><iconify-icon icon="lucide:boxes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
           </div>
         </div>
         <div class="flex">
