@@ -1,52 +1,72 @@
 <%= form_with(model: project) do |form| %>
 
-  <div class="form-group">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "input input-bordered w-full", value: RandomNameGenerator.generate_name %>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Name</span>
+    </label>
+    <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", value: RandomNameGenerator.generate_name %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
   </div>
 
-  <div class="form-group">
-    <%= form.label :cluster_id %>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Cluster</span>
+    </label>
     <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
   </div>
 
-  <div data-controller="partial-select">
-    <div class="mb-4 hidden" data-partial-select-target="toggleable" data-project-type="cron_job">
-      <%= form.label :cron_schedule %>
-      <%= form.text_field :cron_schedule, class: "input input-bordered w-full" %>
-    </div>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Repository path</span>
+    </label>
+    <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
   </div>
 
-  <div class="form-group">
-    <%= form.label "Repository path *" %>
-    <div class="flex gap-2">
-      <%= form.text_field :repository_url, class: "input input-bordered w-full", placeholder: "accountname/repo" %>
-    </div>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Branch</span>
+    </label>
+    <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
   </div>
 
-  <div class="form-group">
-    <%= form.label :branch %>
-    <%= form.text_field :branch, class: "input input-bordered w-full" %>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :autodeploy %>
+  <label class="label mt-1">
     <%= form.check_box :autodeploy, class: "checkbox" %>
+    <span class="label-text cursor-pointer">Autodeploy</span>
+  </label>
+
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Dockerfile path</span>
+    </label>
+    <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
   </div>
 
-  <div class="form-group">
-    <%= form.label :dockerfile_path %>
-    <%= form.text_field :dockerfile_path, class: "input input-bordered w-full" %>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Docker command</span>
+    </label>
+    <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
   </div>
 
-  <div class="form-group">
-    <%= form.label :docker_command %>
-    <%= form.text_field :docker_command, class: "input input-bordered w-full" %>
-  </div>
-
-  <div class="form-group">
-    <%= form.label :predeploy_command %>
-    <%= form.text_field :predeploy_command, class: "input input-bordered w-full" %>
+  <div class="form-control my-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Predeploy command</span>
+    </label>
+    <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
   </div>
 
   <div>
