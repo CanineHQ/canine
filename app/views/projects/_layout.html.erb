@@ -25,12 +25,10 @@
       <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
     </div>
   </div>
-  <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
-    <div class="flex">
+  <div class="card card-bordered bg-base-100">
+    <div class="card-body">
 
-      <div class="block w-full">
-        <%= render "projects/sidebar", project: project %>
-        <%= yield %>
-      </div>
+      <%= render "projects/sidebar", project: project %>
+      <%= yield %>
     </div>
   </div>

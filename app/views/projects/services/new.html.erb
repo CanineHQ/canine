@@ -2,7 +2,7 @@
   <div class="overflow-x-auto">
     <%= form_with(model: [@project, @service], url: project_services_path) do |form| %>
       <%= form.label :name %>
-      <%= form.text_field :name, class: "input input-bordered", required: true %>
+      <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "ex: web" %>
 
       <div data-controller="partial-select">
         <%= form.label :service_type %>

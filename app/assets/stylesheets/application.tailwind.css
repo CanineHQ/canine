@@ -1,8 +1,9 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
-@import "components/nav";
 @import "./main.css";
+@import "components/nav";
 @import "./forms.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "./weird_fixes.css";
+@import "pacman.css";

@@ -1,10 +1,14 @@
 <% if add_on.installing? %>
-  <div class="flex flex-col items-center justify-center">
-    <%= render "add_ons/installing" %>
-    <div class="mt-4 text-lg">
-      Your add-on is installing... Go grab a coffee, this could take a while.
+<div class="card card-bordered bg-base-100">
+  <div class="card-body">
+    <div class="flex flex-col items-center justify-center">
+      <%= render "add_ons/installing" %>
+      <div class="mt-4 text-lg">
+        Your add-on is installing... Go grab a coffee, this could take a while.
+      </div>
     </div>
   </div>
+</div>
 <% else %>
   <div class="container px-4 mx-auto my-8">
     <div class="flex items-center justify-between mb-4">
@@ -22,8 +26,8 @@
       </div>
     </div>
 
-    <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
-      <div class="container mx-auto flex">
+    <div class="card card-bordered bg-base-100">
+      <div class="card-body">
         <!-- Sidebar -->
         <%= render "add_ons/sidebar", add_on: add_on %>
         <div class="block w-full">
