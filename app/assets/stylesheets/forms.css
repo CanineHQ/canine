@@ -2,3 +2,6 @@
   margin-top: 1rem;
   @apply mt-4;
 }
+.form-group {
+  @apply mb-4;
+}

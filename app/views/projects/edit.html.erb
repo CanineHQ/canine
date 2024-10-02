@@ -14,7 +14,9 @@
     <%= render "projects/domains/index", project: @project %>
   </div>
 
-  <div class="p-8 dark:bg-gray-900 dark:border dark:border-gray-700 rounded shadow">
-    <%= render "form", project: @project %>
+  <div class="card card-bordered bg-base-100">
+    <div class="card-body">
+      <%= render "form", project: @project %>
+    </div>
   </div>
 <% end %>

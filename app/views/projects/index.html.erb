@@ -8,24 +8,33 @@
 
   <div class="mt-5">
     <div aria-label="Card" class="card card-bordered bg-base-100">
-      <div class="card-body p-0">
-        <div class="text-right px-5 pt-5">
-        <!--  Start: Project Action -->
-        <%= link_to new_project_path, title: t("scaffold.new.title", model: "Project") do %>
-          <button class="btn btn-primary btn-sm">
-            <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-            <span class="hidden sm:inline">New Project</span>
-          </button>
-        <% end %>
-        <!--  End: Project Action -->
-        </div>
+      <div class="card-body">
+        <% if current_user.clusters.empty? %>
+          <div class="text-center">
+            <p class="mb-4 h3">Create your first Cluster to get started</p>
+            <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-primary" %>
+          </div>
+        <% else %>
+          <div>
+            <div class="text-right px-5 pt-5">
+            <!--  Start: Project Action -->
+            <%= link_to new_project_path, title: t("scaffold.new.title", model: "Project") do %>
+              <button class="btn btn-primary btn-sm">
+                <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+                <span class="hidden sm:inline">New Project</span>
+              </button>
+            <% end %>
+            <!--  End: Project Action -->
+            </div>
 
-        <%= tag.div id: ("projects" if @pagy.page == 1) do %>
-          <%= render "projects/index", projects: @projects, cached: true %>
+            <%= tag.div id: ("projects" if @pagy.page == 1) do %>
+              <%= render "projects/index", projects: @projects, cached: true %>
 
-          <div class="hidden only:block text-center">
-            <p class="mb-4 h3">Create your first Project</p>
-            <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-primary" %>
+              <div class="hidden only:block text-center">
+                <p class="mb-4 h3">Create your first Project</p>
+                <%= link_to t("scaffold.new.title", model: "Project"), new_project_path, class: "btn btn-primary" %>
+              </div>
+            <% end %>
           </div>
         <% end %>
       </div>
