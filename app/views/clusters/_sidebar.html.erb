@@ -1,0 +1,12 @@
+<div class="tabs tabs-bordered" role="tablist">
+  <%= link_to cluster_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(cluster_path(cluster))}" do %>
+    <div class="flex items-center gap-2">
+      General
+    </div>
+  <% end %>
+  <%= link_to cluster_metrics_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(cluster_metrics_path(cluster))}" do %>
+    <div class="flex items-center gap-2">
+      Metrics
+    </div>
+  <% end %>
+</div>

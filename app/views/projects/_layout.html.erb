@@ -1,36 +1,36 @@
-    <div class="container px-4 mx-auto my-8">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h3 class="text-lg font-medium"><%= project.name %></h3>
-          <% if project.domains.any? %>
-            <div class="my-3">
-              <% project.domains.each do |domain| %>
-                <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-                <iconify-icon icon="lucide:external-link"></iconify-icon>
-              <% end %>
-            </div>
+<div class="container px-4 mx-auto my-8">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-lg font-medium"><%= project.name %></h3>
+      <% if project.domains.any? %>
+        <div class="my-3">
+          <% project.domains.each do |domain| %>
+            <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
+            <iconify-icon icon="lucide:external-link"></iconify-icon>
           <% end %>
-          <div class="text-sm">
-            <%= link_to project.full_repository_url, target: "_blank" do %>
-              <iconify-icon icon="lucide:github"></iconify-icon>
-              <span class="underline mr-2"><%= project.repository_url %></span>
-              <iconify-icon icon="lucide:git-branch"></iconify-icon>
-              <span class="underline"><%= project.branch %></span>
-            <% end %>
-            <span class="ml-6"><iconify-icon icon="lucide:boxes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
-          </div>
         </div>
-        <div class="flex">
-          <%= button_to "Restart", restart_cluster_url(project.cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
-          <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
-        </div>
+      <% end %>
+      <div class="text-sm">
+        <%= link_to project.full_repository_url, target: "_blank" do %>
+          <iconify-icon icon="lucide:github"></iconify-icon>
+          <span class="underline mr-2"><%= project.repository_url %></span>
+          <iconify-icon icon="lucide:git-branch"></iconify-icon>
+          <span class="underline"><%= project.branch %></span>
+        <% end %>
+        <span class="ml-6"><iconify-icon icon="lucide:boxes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
       </div>
-      <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
-        <div class="flex">
+    </div>
+    <div class="flex">
+      <%= button_to "Restart", restart_cluster_url(project.cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
+      <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+    </div>
+  </div>
+  <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
+    <div class="flex">
 
-          <div class="block w-full">
-            <%= render "projects/sidebar", project: project %>
-            <%= yield %>
-          </div>
-        </div>
+      <div class="block w-full">
+        <%= render "projects/sidebar", project: project %>
+        <%= yield %>
       </div>
+    </div>
+  </div>

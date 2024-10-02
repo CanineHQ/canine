@@ -1,15 +1,4 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="flex items-center justify-between mb-4">
-    <h1 class="h3">
-      <%= link_to "Clusters", clusters_path, class: "text-black dark:text-white" %>
-      <span class="text-gray-400 font-light mx-2">\</span>
-      <%= @cluster.name %> metrics
-    </h1>
-    <button onclick="location.reload()" class="btn btn-primary m-1">
-      Refresh
-    </button>
-  </div>
-
+<%= cluster_layout(@cluster) do %>
   <h2 class="text-xl font-semibold mb-4">Node Metrics</h2>
   <div class="overflow-x-auto">
     <table class="w-full table-auto">
@@ -57,6 +46,4 @@
 
     </table>
   </div>
-
-
-</div>
+<% end %>
