@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between mb-4">
     <div>
       <h3 class="text-lg font-medium"><%= cluster.name %></h3>
-      <%= link_to download_kubeconfig_cluster_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(download_kubeconfig_cluster_path(cluster))}" do %>
+      <%= link_to download_kubeconfig_cluster_path(cluster), class: "text-sm" do %>
         <div class="flex items-center gap-2">
           Download Kubeconfig File
         </div>
