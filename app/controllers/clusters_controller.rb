@@ -103,9 +103,10 @@ class ClustersController < ApplicationController
     if params[:cluster][:kubeconfig].present?
       kubeconfig_file = params[:cluster][:kubeconfig]
       yaml_content = kubeconfig_file.read
-      params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content).to_json
+      
+      params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
     end
 
-    params.require(:cluster).permit(:name, :kubeconfig)
+    params.require(:cluster).permit(:name, kubeconfig: {})
   end
 end
