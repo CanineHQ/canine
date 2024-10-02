@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html class="h-full antialiased" lang="en">
+<html class="h-full antialiased dark" data-theme="dark" lang="en">
   <head>
     <%= render 'shared/head' %>
   </head>
 
-   <body class="h-full font-sans antialiased font-normal leading-normal" data-controller="theme" data-theme-preference-value="dark">
-    <main class="flex-shrink-0"> 
-      <%= render 'shared/navbar' %>
-      <%= render 'shared/notices' %>
-
-     <main class="px-3 lg:px-0 h-full">
+   <body data-controller="theme" data-theme-preference-value="dark">
+    <div class="size-full">
+      <div class="flex overflow-hidden">
         <%= yield %>
       </div>
-    </main>
+    </div>
 
     <%= render 'shared/footer' %>
   </body>
 </html>
+
+

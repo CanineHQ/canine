@@ -1,22 +1,39 @@
-<table class="table w-full">
-  <thead class="border-b-2 border-gray-300">
-    <tr>
-      <th class="text-left py-2">Name</th>
-      <th class="text-left py-2">Helm Chart</th>
-      <th class="text-left py-2">Cluster</th>
-      <th class="text-left py-2">Status</th>
-      <th class="text-left py-2">Created</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% add_ons.each do |add_on| %>
-      <tr class="border-b border-gray-200">
-        <td class="py-4"><%= link_to add_on.name, add_on, class: "text-inherit hover:underline" %></td>
-        <td class="py-4"><%= add_on.chart_type %></td>
-        <td class="py-4"><%= link_to add_on.cluster.name, add_on.cluster, class: "text-inherit hover:underline" %></td>
-        <td class="py-4"><%= render "add_ons/status", add_on: %></td>
-        <td class="py-4"><%= time_ago_in_words(add_on.created_at) %> ago</td>
+<div class="overflow-auto">
+  <table class="table mt-2 rounded-box" id="shop_table" data-component="table">
+    <thead>
+      <tr>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Name</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Type</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Cluster</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Status</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Created</span>
+        </th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% add_ons.each do |add_on| %>
+        <tr class="cursor-pointer hover:bg-base-200/40">
+          <td>
+            <div class="font-medium"><%= link_to add_on.name, add_on, class: "text-inherit hover:underline" %></div>
+          </td>
+          <td class="py-4"><%= add_on.chart_type %></td>
+          <td class="py-4"><%= link_to add_on.cluster.name, add_on.cluster, class: "text-inherit hover:underline" %></td>
+          <td class="py-4"><%= render "add_ons/status", add_on: %></td>
+          <td>
+            <div><%= time_ago_in_words(add_on.created_at) %> ago</div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+        

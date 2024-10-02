@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
 
   authenticated :user do
-    root to: "home#index", as: :user_root
+    root to: "clusters#index", as: :user_root
     # Alternate route to use if logged in users should still see public root
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end

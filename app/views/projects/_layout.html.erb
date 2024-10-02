@@ -1,37 +1,44 @@
-<div class="container px-4 mx-auto my-8">
-  <div class="flex items-center justify-between mb-4">
-    <div>
-       <h3 class="text-lg font-medium">Projects</h3>
-      <% if project.domains.any? %>
-        <div class="my-3">
-          <% project.domains.each do |domain| %>
-            <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-            <i class="bi bi-box-arrow-up-right"></i>
-          <% end %>
-        </div>
-      <% end %>
-      <div class="text-sm">
-        <%= link_to project.full_repository_url, target: "_blank" do %>
-          <i class="bi bi-github"></i>
-          <span class="underline"><%= project.repository_url %></span>
-          <i class="bi bi-git ml-2"></i>
-          <span class="underline"><%= project.branch %></span>
-        <% end %>
-        <span class="ml-6"><i class="bi bi-diagram-3"></i> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
-      </div>
-    </div>
-    <div class="flex">
-      <%= button_to "Restart", restart_cluster_url(project.cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
-      <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
-    </div>
-  </div>
-  <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
-    <div class="flex">
-      <%= render "projects/sidebar", project: project %>
+<%= render "projects/sidebar", project: project %>
+<main class="main-wrapper overflow-auto"> 
+  <div class="flex h-full flex-col">
+    <%= render 'shared/navbar' %>
+    <%= render 'shared/notices' %>
 
-      <div class="block w-full">
-        <%= yield %>
+    <div class="container px-4 mx-auto my-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-lg font-medium">Projects</h3>
+          <% if project.domains.any? %>
+            <div class="my-3">
+              <% project.domains.each do |domain| %>
+                <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
+                <i class="bi bi-box-arrow-up-right"></i>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="text-sm">
+            <%= link_to project.full_repository_url, target: "_blank" do %>
+              <i class="bi bi-github"></i>
+              <span class="underline"><%= project.repository_url %></span>
+              <i class="bi bi-git ml-2"></i>
+              <span class="underline"><%= project.branch %></span>
+            <% end %>
+            <span class="ml-6"><i class="bi bi-diagram-3"></i> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
+          </div>
+        </div>
+        <div class="flex">
+          <%= button_to "Restart", restart_cluster_url(project.cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
+          <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+        </div>
+      </div>
+      <div class="p-8 dark:border border-base-300 bg-gray-900 rounded-b-box  rounded shadow">
+        <div class="flex">
+
+          <div class="block w-full">
+            <%= yield %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</main>

@@ -1,6 +1,6 @@
 <%# Place any links for the LEFT side of the nav bar here. Be sure to add class: "nav-link" to each item for proper spacing. %>
-<% if user_signed_in? %>
-<%= link_to "Projects", projects_path, class: "nav-link", starts_with: projects_path %>
-<%= link_to "Clusters", clusters_path, class: "nav-link", starts_with: clusters_path %>
-<%= link_to "Add Ons", add_ons_path, class: "nav-link", starts_with: add_ons_path %>
-<% end %>
+<div class="navbar-start gap-3">
+  <%= link_to "Projects", projects_path, class: "nav-link", starts_with: projects_path %>
+  <%= link_to "Clusters", clusters_path, class: "nav-link", starts_with: clusters_path %>
+  <%= link_to "Add Ons", add_ons_path, class: "nav-link", starts_with: add_ons_path %>
+</div>
