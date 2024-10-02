@@ -1,6 +1,7 @@
 ## Setup
 
 - node 18
+- brew install helm
 - bundle install
 - cloudflared tunnel for development testing with github
 - set up .env file
