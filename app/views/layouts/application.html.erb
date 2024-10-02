@@ -4,15 +4,29 @@
     <%= render 'shared/head' %>
   </head>
 
-   <body class="h-full font-sans antialiased font-normal leading-normal" data-controller="theme" data-theme-preference-value="dark">
-    <main class="flex-shrink-0"> 
-      <%= render 'shared/navbar' %>
-      <%= render 'shared/notices' %>
+   <body data-controller="theme" data-theme-preference-value="dark">
+    <div class="size-full">
+      <div class="flex overflow-hidden">
+        <div class="leftmenu-wrapper">
+          <div class="flex items-center flex-shrink-0 mr-6">
+            <%= link_to root_path, class: "flex items-center text-gray-700 hover:text-gray-800 dark:text-gray-100 dark:hover:text-gray-300" do %>
+              <img src="/images/logo-compact.png" class="w-[40px] h-[40px]" />
+              <span class="sr-only"><%= Rails.configuration.application_name %></span>
+            <% end %>
+          </div>
+        </div>
+        <div class="leftbar-backdrop"></div>
 
-     <main class="px-3 lg:px-0 h-full main-wrapper overflow-auto">
-        <%= yield %>
+        <main class="main-wrapper overflow-auto"> 
+          <div class="flex h-full flex-col">
+            <%= render 'shared/navbar' %>
+            <%= render 'shared/notices' %>
+
+            <%= yield %>
+          </div>
+        </main>
       </div>
-    </main>
+    </div>
 
     <%= render 'shared/footer' %>
   </body>
