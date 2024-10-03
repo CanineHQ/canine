@@ -2,7 +2,8 @@
   <div
     class="flex-1 p-4"
     data-controller="environment-variables"
-    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { name: e.name, value: e.value } }.to_json %>"
+    data-environment-variables-project-id-value="<%= @project.id %>"
+    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: e.value } }.to_json %>"
   >
     <%= form_with(url: project_environment_variables_path(@project), method: :post, class: "space-y-4") do |form| %>
       <div data-environment-variables-target="container"></div>

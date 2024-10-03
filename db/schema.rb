@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_03_163826) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_03_191037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,21 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_03_163826) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_clusters_on_user_id"
+  end
+
+  create_table "connected_providers", force: :cascade do |t|
+    t.string "owner_type"
+    t.bigint "owner_id"
+    t.string "access_token"
+    t.string "access_token_secret"
+    t.text "auth"
+    t.string "provider"
+    t.string "refresh_token"
+    t.string "uid"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_connected_providers_on_owner"
   end
 
   create_table "cron_schedules", force: :cascade do |t|
@@ -214,6 +229,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_03_163826) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "container_port", default: 3000
     t.index ["project_id"], name: "index_services_on_project_id"
   end
 

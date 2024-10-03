@@ -19,6 +19,12 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
     end
   end
 
+  def destroy
+    @environment_variable = @project.environment_variables.find(params[:id])
+    @environment_variable.destroy
+    render turbo_stream: turbo_stream.remove("environment_variable_#{@environment_variable.id}")
+  end
+
   private
 
   def environment_variable_params

@@ -2,13 +2,14 @@
 #
 # Table name: services
 #
-#  id           :bigint           not null, primary key
-#  command      :string           not null
-#  name         :string           not null
-#  service_type :integer          not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  project_id   :bigint           not null
+#  id             :bigint           not null, primary key
+#  command        :string           not null
+#  container_port :integer          default(3000)
+#  name           :string           not null
+#  service_type   :integer          not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  project_id     :bigint           not null
 #
 # Indexes
 #

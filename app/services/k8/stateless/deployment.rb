@@ -5,7 +5,7 @@ class K8::Stateless::Deployment < K8::Base
     @service = service
     @project = service.project
     @name = @project.name
-    @port = 3000
+    @port = @service.container_port
     @environment_variables = @project.environment_variables
   end
 end
