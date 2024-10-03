@@ -4,8 +4,10 @@
     <h6>Storage</h6>
     <% @service.storage_metrics.each do |metric| %>
       <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
-      <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
-      <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
+      <% if metric[:usage] %>
+        <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
+        <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
+      <% end %>
     <% end %>
   </div>
   <div>
