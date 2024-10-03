@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
 
   authenticated :user do
-    root to: "clusters#index", as: :user_root
+    root to: "projects#index", as: :user_root
     # Alternate route to use if logged in users should still see public root
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
@@ -19,7 +19,10 @@ Rails.application.routes.draw do
       get :logs, to: "add_ons#logs"
     end
   end
-  resources :projects do
+  resources :projects, except: [ :show ] do
+    collection do
+      get "/:project_id", to: "projects/deployments#index", as: :root
+    end
     resources :services, only: %i[index new create destroy update], module: :projects
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects

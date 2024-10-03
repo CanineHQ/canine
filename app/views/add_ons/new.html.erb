@@ -32,15 +32,15 @@
         </div>
         <div class="grid grid-cols-8 gap-4 my-4">
           <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-            <div class="card bg-base-100 shadow-xl cursor-pointer group overflow-hidden"
+            <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden hover:border hover:border-base-30 "
                 data-new-add-ons-target="card"
                 data-action="click->new-add-ons#selectChart"
                 data-chart-name="<%= chart['name'] %>">
-              <figure class="px-12 pt-12 overflow-visible">
+              <figure class="px-4 pt-4 overflow-visible">
                 <div class="w-full flex items-center justify-center">
                   <img
                     src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
-                    class="h-[50px] object-contain transition-transform duration-300 group-hover:scale-110"
+                    class="h-[50px] object-contain transition-transform duration-300"
                   />
                 </div>
               </figure>

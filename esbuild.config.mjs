@@ -37,7 +37,7 @@ const config = {
 
 async function buildAndReload() {
   // Foreman & Overmind assign a separate PORT for each process
-  const port = parseInt(process.env.PORT)
+  const port = parseInt(process.env.PORT || 6543)
   const context = await esbuild.context({
     ...config,
     banner: {

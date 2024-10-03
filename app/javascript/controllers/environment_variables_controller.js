@@ -3,18 +3,19 @@
 // https://github.com/excid3/ninja-keys
 
 import { Controller } from "@hotwired/stimulus"
+import { destroy } from '@rails/request.js'
 
 export default class extends Controller {
   static targets = ["container"]
   static values = {
-    vars: String
+    vars: String,
+    projectId: String,
   }
 
   connect() {
     const vars = JSON.parse(this.varsValue)
     vars.forEach(v => {
-      console.log(v)
-      this._add(v.name, v.value)
+      this._add(v.name, v.value, v.id)
     })
   }
 
@@ -23,12 +24,12 @@ export default class extends Controller {
     this._add("", "")
   }
 
-  _add(name, value) {
+  _add(name, value, id=null) {
     const container = this.containerTarget;
     const div = document.createElement("div");
     // Make the value 3x the width of the name
     div.innerHTML = `
-      <div class="flex items-center my-4 space-x-2">
+      <div class="flex items-center my-4 space-x-2" id="${id ? id : ''}">
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" class="form-control w-1/3" value="${name}">
         <input aria-label="Env value" placeholder="VALUE" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][value]" class="form-control w-1/3" value="${value}">
         <button type="button" class="btn btn-danger" data-action="environment-variables#remove">Delete</button>
@@ -37,9 +38,15 @@ export default class extends Controller {
     container.appendChild(div);
   }
 
-  remove(e) {
-    e.preventDefault();
-    const div = e.target.closest("div");
-    div.remove();
+  async remove(event) {
+    event.preventDefault();
+    const div = event.target.closest("div");
+    if (div.id) {
+      const response = await destroy(`/projects/${this.projectIdValue}/environment_variables/${div.id}`, {
+        responseKind: "turbo-stream"
+      });
+    } else {
+      div.remove();
+    }
   }
 }

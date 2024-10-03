@@ -5,3 +5,6 @@
 .form-group {
   @apply mb-4;
 }
+.form-group label {
+  @apply block;
+}

@@ -13,7 +13,25 @@
       <div class="form-group">
         <%= render "projects/services/domains/index", service:, form: %>
       </div>
-    <% end %>
-    <%= form.button "Submit", class: "btn btn-primary" %>
+      <div class="form-group">
+        <%= form.label :command %>
+        <%= form.text_field :command, class: "input input-bordered", required: false %>
+      </div>
+      <%= form.button "Submit", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+  <% if service.web_service? %>
+    <div class="my-8">
+      <h2 class="text-lg my-2">Networking</h2>
+      <%= form_with(model: [service.project, service], url: project_services_path) do |form| %>
+        <div class="form-group">
+          <%= render "projects/services/domains/index", project: service.project %>
+        </div>
+        <div class="form-group">
+          <%= form.label :container_port %>
+          <%= form.text_field :container_port, class: "input input-bordered", required: false %>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 </div>
