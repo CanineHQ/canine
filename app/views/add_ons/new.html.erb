@@ -30,9 +30,9 @@
         <div class="text-sm text-gray-500">
           More charts coming soon.
         </div>
-        <div class="grid grid-cols-8 gap-4 my-4">
+        <div class="grid grid-cols-5 gap-4 my-4">
           <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-            <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden hover:border hover:border-base-30 "
+            <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
                 data-new-add-ons-target="card"
                 data-action="click->new-add-ons#selectChart"
                 data-chart-name="<%= chart['name'] %>">
@@ -40,7 +40,7 @@
                 <div class="w-full flex items-center justify-center">
                   <img
                     src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
-                    class="h-[50px] object-contain transition-transform duration-300"
+                    class="h-[50px] object-contain"
                   />
                 </div>
               </figure>
