@@ -19,7 +19,10 @@ Rails.application.routes.draw do
       get :logs, to: "add_ons#logs"
     end
   end
-  resources :projects do
+  resources :projects, except: [:show] do
+    collection do
+      get "/:project_id", to: "projects/deployments#index", as: :root
+    end
     resources :services, only: %i[index new create destroy], module: :projects
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects
