@@ -5,7 +5,7 @@ class Projects::DomainsController < Projects::BaseController
 
   def create
     # TODO(chris): This is a bit of a hack, we should probably refactor this
-    @domain = @project.project_services.web_service.first.domains.new(domain_params)
+    @domain = @project.services.web_service.first.domains.new(domain_params)
     respond_to do |format|
       if @domain.save
         Projects::AddDomainJob.perform_later(@domain)
