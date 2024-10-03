@@ -1,5 +1,5 @@
 <div>
-  <%= form_with(model: [service.project, service], url: project_services_path) do |form| %>
+  <%= form_with(model: [service.project, service]) do |form| %>
     <div class="form-group">
       <%= form.label :name %>
       <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "ex: web" %>
@@ -11,7 +11,7 @@
     <h2>Networking</h2>
     <% if service.web_service? %>
       <div class="form-group">
-        <%= render "projects/services/domains/index", project: service.project %>
+        <%= render "projects/services/domains/index", service:, form: %>
       </div>
     <% end %>
     <%= form.button "Submit", class: "btn btn-primary" %>

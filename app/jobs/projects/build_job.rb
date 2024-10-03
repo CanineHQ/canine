@@ -49,7 +49,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Failed to clone repository: #{stderr}" unless status.success?
 
-    build.info "Repository cloned successfully to #{repository_path}"
+    build.info "Repository cloned successfully."
   end
 
   def build_docker_build_command(project, repository_path)

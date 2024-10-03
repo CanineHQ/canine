@@ -2,7 +2,7 @@
   <%= render partial: "projects/domains/list", locals: { project: @project } %>
 <% end %>
 <%= turbo_stream.update "#{dom_id(@project)}_domain_form" do %>
-  <%= form_with url: project_domains_path(@project), method: :post, data: { turbo_frame: "domains" } do |form| %>
+  <%= form_with url: project_services_domains_path(@project, @service), method: :post, data: { turbo_frame: "domains" } do |form| %>
     <%= form.text_field :domain_name, class: "form-control" %>
     <%= form.submit "Add Domain", class: "btn btn-primary" %>
   <% end %>

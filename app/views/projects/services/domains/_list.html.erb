@@ -12,7 +12,22 @@
         <td><%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %></td>
         <td><pre class="code">128.93.3.1</pre></td>
         <td>
-          <%= button_to "Remove", project_domain_path(project, domain), method: :delete, class: "btn btn-sm btn-ghost", data: { turbo_frame: "domains" } %>
+          <%= link_to "Remove",
+              project_service_path(
+                project,
+                domain.service,
+                {
+                  service: {domains_attributes: {
+                    '0': {
+                    id: domain.id,
+                    _destroy: true
+                  }
+                }}
+                }
+              ),
+              method: :patch,
+              class: "btn btn-sm btn-ghost"
+            %>
         </td>
       </tr>
     <% end %>

@@ -1,15 +1,13 @@
-<%= turbo_frame_tag "domains" do %>
   <h4>Custom Domains</h4>
 
-  <%= form_with(model: [project, Domain.new], data: { turbo_frame: "domains" }) do |form| %>
+  <%= form.fields_for :domains, service.domains.new do |domain_form|  %>
     <div class="flex gap-2">
-      <%= form.text_field :domain_name, class: "input input-bordered" %>
-      <%= form.submit "Add Domain", class: "btn btn-primary" %>
+      <%= domain_form.text_field :domain_name, class: "input input-bordered" %>
     </div>
   <% end %>
+  <%= form.submit "Add Domain", class: "btn btn-primary" %>
 
   <h5 class="my-4">Make sure to configure domains with the following DNS records</h5>
   <div id="domain-list">
-    <%= render partial: "projects/services/domains/list", locals: { project: project } %>
+    <%= render partial: "projects/services/domains/list", locals: { project: service.project } %>
   </div>
-<% end %>

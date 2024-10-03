@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Services::DomainsController < Services::BaseController
-  before_action :set_service
-
   def create
     @domain = @service.domains.new(domain_params)
     respond_to do |format|
