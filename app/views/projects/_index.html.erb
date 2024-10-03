@@ -20,7 +20,7 @@
       <% projects.each do |project| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
-            <div class="font-medium"><%= link_to project.name, project, class: "text-inherit hover:underline" %></div>
+            <div class="font-medium"><%= link_to project.name, project_deployments_path(project), class: "text-inherit hover:underline" %></div>
           </td>
           <td>
             <div class="font-medium"><%= project.status %></div>
@@ -33,7 +33,7 @@
           </td>
           <td>
             <div class="inline-flex w-fit">
-              <%= link_to project do %>
+              <%= link_to project_deployments_path(project) do %>
                 <button aria-label="Edit project" class="btn btn-square btn-ghost btn-sm">
                   <iconify-icon icon="lucide:pencil" height="15" class="text-base-content/70"></iconify-icon>
                 </button>
