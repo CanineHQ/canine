@@ -22,6 +22,9 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
   def destroy
     @environment_variable = @project.environment_variables.find(params[:id])
     @environment_variable.destroy
+    if @project.current_deployment.present?
+      Projects::DeploymentJob.perform_later(@project.current_deployment)
+    end
     render turbo_stream: turbo_stream.remove("environment_variable_#{@environment_variable.id}")
   end
 

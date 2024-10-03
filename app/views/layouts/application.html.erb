@@ -6,7 +6,7 @@
 
    <body data-controller="theme" data-theme-preference-value="dark">
     <div class="size-full">
-      <div class="flex overflow-hidden">
+      <div class="flex">
         <% unless current_page?(root_path) %>
           <div class="leftmenu-wrapper">
             <%= link_to root_path, class: "flex h-16 items-center justify-center" do %>
@@ -54,7 +54,7 @@
           </div>
           <div class="leftbar-backdrop"></div>
         <% end %>
-        <main class="main-wrapper overflow-auto"> 
+        <main class="main-wrapper"> 
           <div class="flex h-full flex-col">
             <%= render 'shared/navbar' %>
             <%= render 'shared/notices' %>
@@ -67,6 +67,5 @@
       </div>
     </div>
 
-    <%= render 'shared/footer' %>
   </body>
 </html>

@@ -6,4 +6,5 @@
 @import "components/nav";
 @import "./forms.css";
 @import "./weird_fixes.css";
+@import "./tables.css";
 @import "pacman.css";
