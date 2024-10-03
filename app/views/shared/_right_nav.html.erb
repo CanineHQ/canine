@@ -1,4 +1,5 @@
 <div class="ml-auto">
+<<<<<<< Updated upstream
   <% if current_user.present? %>
     <div class="dropdown ml-auto dropdown-end dropdown-bottom">
       <label tabindex="0" class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20">
@@ -11,6 +12,14 @@
           <div class="flex flex-col items-start">
             <%# TODO: user name %>
             <p class="text-sm/none"><%= current_user.first_name %></p>
+=======
+  <div class="dropdown ml-auto dropdown-end dropdown-bottom">
+    <label tabindex="0" class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20">
+      <div class="flex items-center gap-2">
+        <div aria-label="Avatar photo" class="avatar">
+          <div class="mask mask-squircle" style="width: 30px; height: 30px">
+            <%= image_tag avatar_path(current_user, size: 40) %>
+>>>>>>> Stashed changes
           </div>
         </div>
       </label>
