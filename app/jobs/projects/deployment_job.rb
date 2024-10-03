@@ -27,7 +27,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def deploy_services(project, kubectl)
-    project.project_services.each do |service|
+    project.services.each do |service|
       deploy_service(service, kubectl)
     end
   end

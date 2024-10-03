@@ -8,7 +8,7 @@
         <%= form.label :service_type %>
         <%= form.select(
           :service_type,
-          ProjectService.service_types.keys.map { |type| [type.titleize, type] },
+          Service.service_types.keys.map { |type| [type.titleize, type] },
           {},
           class: "select select-bordered",
           data: {

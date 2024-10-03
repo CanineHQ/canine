@@ -11,7 +11,7 @@
 #  updated_at        :datetime         not null
 #
 class Announcement < ApplicationRecord
-  TYPES = %w{ new fix update }
+  TYPES = %w[ new fix update ]
 
   after_initialize :set_defaults
 

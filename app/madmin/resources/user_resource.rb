@@ -39,7 +39,7 @@ class UserResource < Madmin::Resource
   # Associations
   attribute :notifications
   attribute :notification_mentions
-  attribute :services
+  attribute :providers
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

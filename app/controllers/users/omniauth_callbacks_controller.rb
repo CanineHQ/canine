@@ -1,9 +1,9 @@
 module Users
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
-    before_action :set_service, except: [ :failure ]
+    before_action :set_provider, except: [ :failure ]
     before_action :set_user, except: [ :failure ]
 
-    attr_reader :service, :user
+    attr_reader :provider, :user
 
     def failure
       redirect_to root_path, alert: "Something went wrong"
@@ -24,10 +24,10 @@ module Users
     private
 
     def handle_auth(kind)
-      if service.present?
-        service.update(service_attrs)
+      if provider.present?
+        provider.update(provider_attrs)
       else
-        user.services.create(service_attrs)
+        user.providers.create(provider_attrs)
       end
 
       if user_signed_in?
@@ -43,15 +43,15 @@ module Users
       request.env["omniauth.auth"]
     end
 
-    def set_service
-      @service = Service.where(provider: auth.provider, uid: auth.uid).first
+    def set_provider
+      @provider = Provider.where(provider: auth.provider, uid: auth.uid).first
     end
 
     def set_user
       if user_signed_in?
         @user = current_user
-      elsif service.present?
-        @user = service.user
+      elsif provider.present?
+        @user = provider.user
       elsif User.where(email: auth.info.email).any?
         # 5. User is logged out and they login to a new account which doesn't match their old one
         flash[:alert] = "An account with this email already exists. Please sign in with that account before connecting your #{auth.provider.titleize} account."
@@ -61,7 +61,7 @@ module Users
       end
     end
 
-    def service_attrs
+    def provider_attrs
       auth_hash = auth.to_hash
       auth_hash.delete("credentials")
       auth_hash["extra"]&.delete("access_token")

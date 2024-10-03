@@ -12,8 +12,8 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (service_id => services.id)
+#  fk_rails_...  (service_id => providers.id)
 #
 class CronSchedule < ApplicationRecord
-  belongs_to :project_service
+  belongs_to :service
 end
