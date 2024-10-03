@@ -23,7 +23,7 @@
     <div class="mt-2">
       <label for="redis-password" class="form-label">Connection URL</label>
       <div class="flex flex-row" data-controller="toggle-password">
-        <input type="password" id="redis-password" name="redis-password" class="form-control" value="<%= @service.internal_url %>" data-toggle-password-target="input">
+        <input type="password" id="redis-password" name="redis-password" class="input input-bordered w-full focus:outline-offset-0"  value="<%= @service.internal_url %>" data-toggle-password-target="input">
         <button class="btn btn-outline-secondary" type="button" data-action="click->toggle-password#toggle">
           <iconify-icon icon="lucide:eye"></iconify-icon>
         </button>
