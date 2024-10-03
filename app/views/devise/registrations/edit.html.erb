@@ -17,8 +17,7 @@
         <div>Avatar</div>
         <%= f.file_field :avatar, accept:'image/*', class: "file-input max-w-64 bg-base-200 sm:max-w-xs" %>
       </div>
-
-      <%= image_tag avatar_path(f.object), class: "rounded border shadow-sm d-block my-3" %>
+      <%= image_tag avatar_path(f.object), class: "rounded shadow-sm d-block my-3" %>
 
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <div class="alert alert-warning">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>

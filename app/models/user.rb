@@ -37,7 +37,6 @@ class User < ApplicationRecord
   has_many :services, through: :projects
   has_one :docker_hub_credential, dependent: :destroy
   has_many :add_ons, through: :clusters
-  has_many :connected_providers, as: :owner, dependent: :destroy
 
 
   def github_username
