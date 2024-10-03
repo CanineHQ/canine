@@ -15,13 +15,8 @@
         <p class="text-gray-500">No services yet</p>
       </div>
     <% else %>
-<<<<<<< Updated upstream
-      <div class="mt-1 space-y-1">
-        <% @project.services.each do |service| %>
-=======
       <div class="mt-1 space-y-4">
-        <% @project.project_services.each do |service| %>
->>>>>>> Stashed changes
+        <% @project.services.each do |service| %>
         <div class="collapse collapse-plus bg-base-200 hover:bg-base-200/40">
           <input aria-label="Accordion radio" class="w-full" type="radio" name="accordion" />
           <div class="collapse-title text-xl font-medium">
