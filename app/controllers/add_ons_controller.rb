@@ -37,7 +37,7 @@ class AddOnsController < ApplicationController
 
     respond_to do |format|
       if @add_on.save
-        # AddOns::InstallJob.perform_later(@add_on)
+        AddOns::InstallJob.perform_later(@add_on)
         format.html { redirect_to @add_on, notice: "Add on was successfully created." }
         format.json { render :show, status: :created, location: @add_on }
       else
