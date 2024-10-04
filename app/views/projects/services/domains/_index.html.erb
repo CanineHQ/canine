@@ -3,9 +3,9 @@
   <%= form.fields_for :domains, service.domains.new do |domain_form|  %>
     <div class="flex gap-2">
       <%= domain_form.text_field :domain_name, class: "input input-bordered" %>
+      <%= form.submit "Add Domain", class: "btn btn-primary" %>
     </div>
   <% end %>
-  <%= form.submit "Add Domain", class: "btn btn-primary" %>
 
   <h5 class="my-4">Make sure to configure domains with the following DNS records</h5>
   <div id="domain-list">
