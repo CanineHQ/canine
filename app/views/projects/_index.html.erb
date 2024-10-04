@@ -23,7 +23,19 @@
             <div class="font-medium"><%= link_to project.name, project_deployments_path(project), class: "text-inherit hover:underline" %></div>
           </td>
           <td>
-            <div class="font-medium"><%= project.status %></div>
+            <div class="flex items-center gap-2">
+              <%
+                badge_color = case project.status
+                when "creating"
+                  "warning"
+                when "deployed"
+                  "success"
+                end
+              %>
+              <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+                <%= project.status %>
+              </div>
+            </div>
           </td>
           <td>
             <div><%= project.cluster&.name %></div>

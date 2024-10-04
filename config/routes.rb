@@ -20,9 +20,7 @@ Rails.application.routes.draw do
     end
   end
   resources :projects, except: [ :show ] do
-    member do
-      get "/:project_id", to: "projects/deployments#index", as: :root
-    end
+    get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     resources :services, only: %i[index new create destroy update], module: :projects
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects
