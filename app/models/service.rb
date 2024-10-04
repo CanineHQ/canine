@@ -20,6 +20,11 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 class Service < ApplicationRecord
+  DISPLAY_NAME = {
+    'redis': "Redis",
+    'postgresql': "PostgreSQL"
+  }.freeze
+
   belongs_to :project
   enum :service_type, {
     web_service: 0,
