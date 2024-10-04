@@ -1,7 +1,17 @@
-<nav class="w-64 p-4">
-  <ul class="space-y-2 list-none">
-    <li><%= link_to "Info", add_on_url(add_on), class: "block py-2 px-4 hover:bg-neutral rounded" %></li>
-    <li><%= link_to "Logs", logs_add_on_url(add_on), class: "block py-2 px-4 hover:bg-neutral rounded" %></li>
-    <li><%= link_to "Settings", edit_add_on_url(add_on), class: "block py-2 px-4 hover:bg-neutral rounded" %></li>
-  </ul>
-</nav>
+<div class="tabs tabs-bordered mb-3" role="tablist">
+  <%= link_to  add_on_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?( add_on_url(add_on))}" do %>
+    <div class="flex items-center gap-2">
+      Info
+    </div>
+  <% end %>
+  <%= link_to logs_add_on_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(logs_add_on_url(add_on))}" do %>
+    <div class="flex items-center gap-2">
+      Logs
+    </div>
+  <% end %>
+  <%= link_to edit_add_on_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_add_on_url(add_on))}" do %>
+    <div class="flex items-center gap-2">
+      Settings
+    </div>
+  <% end %>
+</div>
