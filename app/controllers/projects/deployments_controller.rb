@@ -12,9 +12,9 @@ class Projects::DeploymentsController < Projects::BaseController
     new_build = @build.dup
     if new_build.save
       Projects::BuildJob.perform_later(new_build)
-      redirect_to project_deployment_path(@project, new_build), notice: "Redeploying..."
+      redirect_to project_root_path(@project, new_build), notice: "Redeploying..."
     else
-      redirect_to project_deployments_url(@project), alert: "Failed to redeploy"
+      redirect_to project_root_url(@project), alert: "Failed to redeploy"
     end
   end
 
