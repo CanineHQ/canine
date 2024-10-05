@@ -38,22 +38,10 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def service_params
-    @service_params = begin
-      if params[:service][:domains_attributes].present?
-        params.require(:service).permit(
-          domains_attributes: %i[
-            domain_name
-            id
-            _destroy
-          ]
-        )
-      else
-        params.require(:service).permit(
-          :service_type,
-          :command,
-          :name
-        )
-      end
-    end
+    params.require(:service).permit(
+      :service_type,
+      :command,
+      :name
+    )
   end
 end

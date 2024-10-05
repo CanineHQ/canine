@@ -21,7 +21,9 @@ const entryPoints = [
   "application.js"
 ]
 const watchDirectories = [
+  "./app/javascript/*.js",
   "./app/javascript/**/*.js",
+  "./app/javascript/**/**/*.js",
   "./app/views/**/*.erb",
   "./app/assets/builds/**/*.css", // Wait for cssbundling changes
 ]

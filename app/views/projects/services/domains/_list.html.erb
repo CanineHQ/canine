@@ -13,19 +13,12 @@
         <td><pre class="code">128.93.3.1</pre></td>
         <td>
           <%= link_to "Remove",
-              project_service_path(
+              project_service_domain_path(
                 project,
                 domain.service,
-                {
-                  service: {domains_attributes: {
-                    '0': {
-                    id: domain.id,
-                    _destroy: true
-                  }
-                }}
-                }
+                domain
               ),
-              method: :patch,
+              method: :destroy,
               class: "btn btn-sm btn-ghost"
             %>
         </td>

@@ -1,13 +1,15 @@
+<div>
   <h4>Custom Domains</h4>
 
-  <%= form.fields_for :domains, service.domains.new do |domain_form|  %>
-    <div class="flex gap-2">
-      <%= domain_form.text_field :domain_name, class: "input input-bordered" %>
+  <div class="flex gap-2">
+    <%= form_with(model: [service.project, service, Domain.new], url: project_service_domains_path(service.project, service)) do |form| %>
+      <%= form.text_field :domain_name, class: "input input-bordered", placeholder: "Domain Name" %>
       <%= form.submit "Add Domain", class: "btn btn-primary" %>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 
   <h5 class="my-4">Make sure to configure domains with the following DNS records</h5>
   <div id="domain-list">
     <%= render partial: "projects/services/domains/list", locals: { project: service.project } %>
   </div>
+</div>
