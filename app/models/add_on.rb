@@ -21,6 +21,10 @@
 #  fk_rails_...  (cluster_id => clusters.id)
 #
 class AddOn < ApplicationRecord
+  DISPLAY_NAME = {
+    'redis': "Redis",
+    'postgresql': "PostgreSQL"
+  }.freeze
   include Loggable
   belongs_to :cluster
   enum status: {

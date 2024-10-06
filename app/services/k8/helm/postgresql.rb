@@ -1,4 +1,8 @@
 class K8::Helm::Postgresql < K8::Helm::Service
+  def name
+    add_on.name
+  end
+
   def service_name
     "#{add_on.name}-postgresql"
   end
