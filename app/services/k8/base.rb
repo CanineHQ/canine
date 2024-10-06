@@ -16,4 +16,8 @@ class K8::Base
     erb_template = ERB.new(template_content)
     erb_template.result(binding)
   end
+
+  def client
+    @client ||= K8::Client.new(cluster.kubeconfig)
+  end
 end
