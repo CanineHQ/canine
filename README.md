@@ -5,6 +5,7 @@
 - bundle install
 - cloudflared tunnel for development testing with github
 - set up .env file
+- run docker locally
 - TODO: beef up readme
 
 ```bash

@@ -9,12 +9,14 @@ class Projects::DeploymentsController < Projects::BaseController
   def show; end
 
   def redeploy
-    new_build = @build.dup
+    new_build = @build.dup.tap do |build|
+      build.status = :in_progress
+    end
     if new_build.save
       Projects::BuildJob.perform_later(new_build)
-      redirect_to project_root_path(@project, new_build), notice: "Redeploying..."
+      redirect_to root_projects_path(@project, new_build), notice: "Redeploying..."
     else
-      redirect_to project_root_url(@project), alert: "Failed to redeploy"
+      redirect_to root_projects_path(@project), alert: "Failed to redeploy"
     end
   end
 
