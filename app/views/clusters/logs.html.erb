@@ -1,0 +1,11 @@
+<%= content_for :title, "Clusters ##{@cluster.id}" %>
+<%= turbo_stream_from @cluster %>
+
+
+<%= cluster_layout(@cluster) do %>
+<div id="<%= dom_id @cluster %>">
+  <div class="mb-4">
+    <%= render "log_outputs/logs", loggable: @cluster %>
+  </div>
+</div>
+<% end %>

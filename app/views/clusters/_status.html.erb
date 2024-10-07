@@ -1,11 +1,15 @@
 <%
-  badge_color = case project.status
-  when "creating"
+  badge_color = case cluster.status
+  when "initializing"
     "warning"
-  when "deployed"
+  when "installing"
+    "warning"
+  when "running"
     "success"
+  when "failed"
+    "error"
   end
 %>
 <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-  <%= project.status %>
+  <%= cluster.status %>
 </div>

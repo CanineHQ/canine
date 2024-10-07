@@ -10,22 +10,15 @@
     <% project.domains.each do |domain| %>
       <tr id="<%= dom_id(domain) %>">
         <td><%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %></td>
-        <td><pre class="code">128.93.3.1</pre></td>
+        <td><pre class="code"><%= K8::Stateless::Ingress.new(domain.service).ip_address %></pre></td>
         <td>
           <%= link_to "Remove",
-              project_service_path(
+              project_service_domain_path(
                 project,
                 domain.service,
-                {
-                  service: {domains_attributes: {
-                    '0': {
-                    id: domain.id,
-                    _destroy: true
-                  }
-                }}
-                }
+                domain
               ),
-              method: :patch,
+              method: :destroy,
               class: "btn btn-sm btn-ghost"
             %>
         </td>

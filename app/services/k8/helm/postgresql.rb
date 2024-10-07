@@ -1,4 +1,8 @@
 class K8::Helm::Postgresql < K8::Helm::Service
+  def name
+    add_on.name
+  end
+
   def service_name
     "#{add_on.name}-postgresql"
   end
@@ -7,7 +11,11 @@ class K8::Helm::Postgresql < K8::Helm::Service
     service = client.get_services(namespace: 'default').find do |service|
       service.metadata.name == service_name
     end
-    "postgresql://#{username}:#{password}@#{service.metadata.name}.#{service.metadata.namespace}.svc.cluster.local:#{service.spec.ports[0].port}/#{database}"
+    if service.nil?
+      nil
+    else
+      "postgresql://#{username}:#{password}@#{service.metadata.name}.#{service.metadata.namespace}.svc.cluster.local:#{service.spec.ports[0].port}/#{database}"
+    end
   end
 
   def has_external_url?

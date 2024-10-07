@@ -1,6 +1,9 @@
 <div>
   <div class="flex items-center justify-between mb-4">
     <div>
+      <div>
+        <%= render "projects/status", project: project %>
+      </div>
       <h3 class="text-lg font-medium"><%= project.name %></h3>
       <% if project.domains.any? %>
         <div class="my-3">
@@ -22,13 +25,22 @@
     </div>
     <div class="flex">
       <%= button_to "Restart", restart_cluster_url(project.cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
-      <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+      <% if project.deployable? %>
+        <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+      <% else %>
+        <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
+          <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>
+        </div>
+      <% end %>
     </div>
   </div>
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
 
       <%= render "projects/sidebar", project: project %>
-      <%= yield %>
+
+      <div class="pt-4 pb-4">
+        <%= yield %>
+      </div>
     </div>
   </div>

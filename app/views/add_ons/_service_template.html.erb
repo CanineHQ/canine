@@ -1,4 +1,4 @@
-<h1 class="text-2xl font-bold mb-6"><%= Service::DISPLAY_NAME[@service.name] %></h1>
+<h1 class="text-2xl font-bold mb-6"><%= AddOn::DISPLAY_NAME[@service.name] %></h1>
 <h6 class="text-xl font-bold">Storage</h6>
 <div class="mb-4">
   <% @service.storage_metrics.each do |metric| %>
@@ -13,7 +13,7 @@
 <div class="mb-4">
   <%= @add_on.created_at.to_formatted_s(:long_ordinal) %>
 </div>
-<h6 class="text-xl font-bold"><%= Service::DISPLAY_NAME[@service.name] %> Version</h6>
+<h6 class="text-xl font-bold"><%= AddOn::DISPLAY_NAME[@service.name] %> Version</h6>
 <div class="mb-4">
   <%= @service.version %>
 </div>

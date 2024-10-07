@@ -4,8 +4,11 @@ class K8::Kubectl
   include K8::Kubeconfig
   attr_reader :kubeconfig, :runner
 
-  def initialize(kubeconfig, runner)
+  def initialize(kubeconfig, runner = Cli::RunAndReturnOutput.new)
     @kubeconfig = kubeconfig
+    if @kubeconfig.nil?
+      raise 'Kubeconfig is required'
+    end
     @runner = runner
   end
 

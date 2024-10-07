@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Services::DomainsController < Services::BaseController
+class Projects::Services::DomainsController < Projects::Services::BaseController
   def create
     @domain = @service.domains.new(domain_params)
     respond_to do |format|
@@ -8,11 +8,11 @@ class Services::DomainsController < Services::BaseController
         Services::AddDomainJob.perform_later(@domain)
         format.html { redirect_to project_path(@project), notice: "Domain was successfully added." }
         format.json { render :show, status: :created, domain: @domain }
+        format.turbo_stream { render :create }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @domain.errors, status: :unprocessable_entity }
       end
-      format.turbo_stream
     end
   end
 

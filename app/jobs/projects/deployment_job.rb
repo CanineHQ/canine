@@ -2,9 +2,12 @@ require "base64"
 require "json"
 
 class Projects::DeploymentJob < ApplicationJob
+  class DeploymentFailure < StandardError; end
+
   def perform(deployment)
     project = deployment.project
     kubeconfig = project.cluster.kubeconfig
+    predeploy(project, deployment)
     kubectl = create_kubectl(deployment, kubeconfig)
 
     # Upload container registry secrets
@@ -20,6 +23,18 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   private
+
+  def predeploy(project, deployment)
+    return unless project.predeploy_command.present?
+
+    deployment.info "Running predeploy command: #{project.predeploy_command}"
+    success = system(project.predeploy_command)
+
+    return if success
+
+    raise DeploymentFailure, "Predeploy command failed for project #{project.name}"
+  end
+
 
   def create_kubectl(deployment, kubeconfig)
     runner = Cli::RunAndLog.new(deployment)

@@ -1,5 +1,5 @@
 class ClustersController < ApplicationController
-  before_action :set_cluster, only: [ :show, :edit, :update, :destroy, :test_connection, :download_kubeconfig ]
+  before_action :set_cluster, only: [ :show, :edit, :update, :destroy, :test_connection, :download_kubeconfig, :logs ]
 
   # GET /clusters
   def index
@@ -24,6 +24,9 @@ class ClustersController < ApplicationController
 
   # GET /clusters/1/edit
   def edit
+  end
+
+  def logs
   end
 
   def restart

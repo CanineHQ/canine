@@ -2,11 +2,7 @@
   <div class="flex items-center justify-between mb-4">
     <div>
       <h3 class="text-lg font-medium"><%= cluster.name %></h3>
-      <%= link_to download_kubeconfig_cluster_path(cluster), class: "text-sm" do %>
-        <div class="flex items-center gap-2">
-          Download Kubeconfig File
-        </div>
-      <% end %>
+      <%= render "clusters/status", cluster: cluster %>
     </div>
     <div class="flex">
       <%= turbo_frame_tag "test_connection_frame" do %>
@@ -20,7 +16,9 @@
 
       <div class="block w-full">
         <%= render "clusters/sidebar", cluster: cluster %>
-        <%= yield %>
+        <div class="pt-4 pb-4">
+          <%= yield %>
+        </div>
       </div>
     </div>
   </div>

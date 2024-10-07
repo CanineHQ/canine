@@ -20,7 +20,7 @@
             <div class="font-medium"><%= link_to cluster.name, cluster, class: "text-inherit hover:underline" %></div>
           </td>
           <td>
-            <div class="font-medium"><%= cluster.status %></div>
+            <%= render "clusters/status", cluster: cluster %>
           </td>
           <td>
             <div><%= time_ago_in_words(cluster.created_at) %> ago</div>

@@ -7,8 +7,6 @@ class Projects::BuildJob < ApplicationJob
   def perform(build)
     project = build.project
 
-    predeploy(project, build)
-
     clone_repository_and_build_docker(project, build)
 
     login_to_docker(project, build)
@@ -23,17 +21,6 @@ class Projects::BuildJob < ApplicationJob
   end
 
   private
-
-  def predeploy(project, build)
-    return unless project.predeploy_command.present?
-
-    build.info "Running predeploy command: #{project.predeploy_command}"
-    success = system(project.predeploy_command)
-
-    return if success
-
-    raise BuildFailure, "Predeploy command failed for project #{project.name}"
-  end
 
   def project_git(project)
     "https://#{project.user.github_username}:#{project.user.github_access_token}@github.com/#{project.repository_url}.git"

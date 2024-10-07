@@ -3,7 +3,7 @@
 # Table name: services
 #
 #  id             :bigint           not null, primary key
-#  command        :string           not null
+#  command        :string
 #  container_port :integer          default(3000)
 #  name           :string           not null
 #  service_type   :integer          not null
@@ -20,11 +20,6 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 class Service < ApplicationRecord
-  DISPLAY_NAME = {
-    'redis': "Redis",
-    'postgresql': "PostgreSQL"
-  }.freeze
-
   belongs_to :project
   enum :service_type, {
     web_service: 0,

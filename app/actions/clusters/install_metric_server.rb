@@ -14,7 +14,7 @@ class Clusters::InstallMetricServer
       cluster.info("Nginx ingress controller is already installed")
     rescue Cli::CommandFailedError => e
       cluster.info("Metric server not detected, installing...")
-      kubectl.apply_yaml(Rails.root.join("resources", "k8", "shared", "metrics_server.yaml"))
+      kubectl.apply_yaml(Rails.root.join("resources", "k8", "shared", "metrics_server.yaml").read)
     end
   end
 end
