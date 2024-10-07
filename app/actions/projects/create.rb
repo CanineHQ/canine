@@ -6,7 +6,6 @@ module Projects
 
     def self.call(project, params)
       with(project:, params:).reduce(
-        Projects::CreateAssociations,
         Projects::ValidateGithubRepository,
         Projects::Save,
         Projects::RegisterGithubWebhook,

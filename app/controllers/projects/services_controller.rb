@@ -11,8 +11,8 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def create
-    service = @project.services.build(service_params)
-    redirect(success: service.save, type: "created")
+    result = Services::Create.call(@project.services.build(service_params), params)
+    redirect(success: result.success?, type: "created")
   end
 
   def update
@@ -41,7 +41,8 @@ class Projects::ServicesController < Projects::BaseController
     params.require(:service).permit(
       :service_type,
       :command,
-      :name
+      :name,
+      :container_port,
     )
   end
 end
