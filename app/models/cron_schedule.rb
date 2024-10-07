@@ -12,7 +12,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (service_id => providers.id)
+#  fk_rails_...  (service_id => services.id)
 #
 class CronSchedule < ApplicationRecord
   belongs_to :service

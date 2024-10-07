@@ -1,6 +1,6 @@
-class CreateServices < ActiveRecord::Migration[7.2]
+class CreateProviders < ActiveRecord::Migration[7.2]
   def change
-    create_table :services do |t|
+    create_table :providers do |t|
       t.references :user, null: false, foreign_key: true
       t.string :provider
       t.string :uid

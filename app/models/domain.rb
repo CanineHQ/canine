@@ -12,10 +12,6 @@
 #
 #  index_domains_on_service_id  (service_id)
 #
-# Foreign Keys
-#
-#  fk_rails_...  (service_id => services.id)
-#
 class Domain < ApplicationRecord
   belongs_to :service
   has_one :project, through: :service
