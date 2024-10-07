@@ -15,12 +15,12 @@
         </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">
-            Memory Bytes
+            Memory Capacity
           </span>
         </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">
-            Memory %
+            Memory Allocation 
           </span>
         </th>
       </tr>
@@ -71,11 +71,6 @@
         </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">
-            CPU
-          </span>
-        </th>
-        <th>
-          <span class="text-sm font-medium text-base-content/80">
             Memory
           </span>
         </th>
@@ -83,26 +78,24 @@
     </thead>
     <tbody>
       <% @pod_metrics.each do |metric| %>
-      <tr class="cursor-pointer hover:bg-base-200/40">
-        <td>
-          <div class="flex items-center space-x-3 truncate">
-            <div class="font-medium">
+        <tr class="cursor-pointer hover:bg-base-200/40">
+          <td>
+            <div class="flex items-center space-x-3 truncate font-medium">
               <%= metric[:name] %>
             </div>
-          </div>
-        </td>
-        <td>
-          <div class="font-medium">
-            <%= metric[:cpu] %> 
-          </div>
-        </td>
-        <td>
-          <div class="font-medium">
-            <%= metric[:memory] %>
-        </div>
-      </td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+          </td>
+          <td>
+            <div class="font-medium">
+              <%= metric[:cpu] %> 
+            </div>
+          </td>
+          <td>
+            <div class="font-medium">
+              <%= metric[:memory] %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 <% end %>
