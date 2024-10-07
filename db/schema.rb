@@ -207,6 +207,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_212903) do
   add_foreign_key "add_ons", "clusters"
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "users"
+  add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_add_ons", "add_ons"
