@@ -3,7 +3,7 @@
 # Table name: services
 #
 #  id             :bigint           not null, primary key
-#  command        :string           not null
+#  command        :string
 #  container_port :integer          default(3000)
 #  name           :string           not null
 #  service_type   :integer          not null

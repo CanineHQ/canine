@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
   resources :projects, except: [ :show ] do
     collection do
-      get "/:project_id", to: "projects/deployments#index", as: :root
+      get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
     resources :services, only: %i[index new create destroy update], module: :projects do
       resources :domains, only: %i[create destroy], module: :services
@@ -42,6 +42,7 @@ Rails.application.routes.draw do
   resources :clusters do
     member do
       get :download_kubeconfig
+      get :logs
     end
     resource :metrics, only: [ :show ], module: :clusters
     member do

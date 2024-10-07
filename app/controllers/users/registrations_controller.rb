@@ -1,4 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  layout 'homepage', only: [:new, :create]
+
   protected
    def update_resource(resource, params)
     if account_update_params[:password].blank?

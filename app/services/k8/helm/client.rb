@@ -9,8 +9,8 @@ class K8::Helm::Client
 
   def ls
     with_kube_config do |kubeconfig_file|
-      command_output = `helm ls --all-namespaces --kubeconfig=#{kubeconfig_file.path}`
-      parse_helm_ls_output(command_output)
+      command_output = `helm ls --all-namespaces --kubeconfig=#{kubeconfig_file.path} -o yaml`
+      output = YAML.safe_load(command_output)
     end
   end
 
@@ -29,39 +29,5 @@ class K8::Helm::Client
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       return exit_status
     end
-  end
-
-  private
-
-  def parse_helm_ls_output(output)
-    lines = output.split("\n")
-    headers = lines.shift.split(/\s+/)
-    
-    lines.map do |line|
-      values = line.split(/\s+/)
-      HelmRelease.new(
-        name: values[0],
-        namespace: values[1],
-        revision: values[2],
-        updated: values[3..6].join(' '),
-        status: values[7],
-        chart: values[8],
-        app_version: values[9..-1].join(' ').strip
-      )
-    end
-  end
-end
-
-class HelmRelease
-  attr_reader :name, :namespace, :revision, :updated, :status, :chart, :app_version
-
-  def initialize(name:, namespace:, revision:, updated:, status:, chart:, app_version:)
-    @name = name
-    @namespace = namespace
-    @revision = revision
-    @updated = updated
-    @status = status
-    @chart = chart
-    @app_version = app_version
   end
 end

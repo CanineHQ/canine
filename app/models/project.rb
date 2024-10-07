@@ -61,4 +61,8 @@ class Project < ApplicationRecord
   def container_registry_url
     "ghcr.io/#{repository_url}:latest"
   end
+
+  def deployable?
+    services.any?
+  end
 end
