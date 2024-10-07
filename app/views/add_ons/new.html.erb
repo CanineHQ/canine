@@ -9,7 +9,7 @@
     </h1>
   </div>
 
-  <div class="card card-bordered bg-base-100" data-controller="new-add-ons">
+  <div class="card card-bordered bg-base-100">
     <div class="card-body">
       <%= form_with(model: @add_on) do |form| %>
         <div class="form-group">
@@ -22,41 +22,43 @@
           <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
         </div>
 
-        <div class="form-group">
-          <%= form.text_field :chart_type, class: "hidden", data: { 'new-add-ons-target': "input" } %>
-        </div>
+        <div data-controller="new-add-ons">
+          <div class="form-group">
+            <%= form.text_field :chart_type, class: "hidden", data: { 'new-add-ons-target': "input" } %>
+          </div>
 
-        <h4>Select a chart</h4>
-        <div class="text-sm text-gray-500">
-          More charts coming soon.
-        </div>
-        <div class="grid grid-cols-5 gap-4 my-4">
-          <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-            <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
-                data-new-add-ons-target="card"
-                data-action="click->new-add-ons#selectChart"
-                data-chart-name="<%= chart['name'] %>">
-              <figure class="px-4 pt-4 overflow-visible">
-                <div class="w-full flex items-center justify-center">
-                  <img
-                    src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
-                    class="h-[50px] object-contain"
-                  />
+          <h4>Select a chart</h4>
+          <div class="text-sm text-gray-500">
+            More charts coming soon.
+          </div>
+          <div class="grid grid-cols-5 gap-4 my-4">
+            <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
+              <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
+                  data-new-add-ons-target="card"
+                  data-action="click->new-add-ons#selectCard"
+                  data-card-name="<%= chart['name'] %>">
+                <figure class="px-4 pt-4 overflow-visible">
+                  <div class="w-full flex items-center justify-center">
+                    <img
+                      src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
+                      class="h-[50px] object-contain"
+                    />
+                  </div>
+                </figure>
+                <div class="card-body items-center text-center">
+                  <%= chart['name'].titleize %>
                 </div>
-              </figure>
-              <div class="card-body items-center text-center">
-                <%= chart['name'].titleize %>
               </div>
+            <% end %>
+          </div>
+
+          <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
+            <div id="chart-<%= chart['name'] %>" class="chart-form hidden">
+              <h4><%= chart['name'].titleize %></h4>
+              <%= render "add_ons/chart_form", chart: chart, form: form %>
             </div>
           <% end %>
         </div>
-
-        <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-          <div id="chart-<%= chart['name'] %>" class="chart-form hidden">
-            <h4><%= chart['name'].titleize %></h4>
-            <%= render "add_ons/chart_form", chart: chart, form: form %>
-          </div>
-        <% end %>
 
         <div class="form-footer">
           <%= form.button "Create Add On", class: "btn btn-primary" %>
