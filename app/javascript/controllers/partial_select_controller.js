@@ -7,7 +7,7 @@ export default class extends Controller {
   }
 
   connect() {
-    this.toggle()
+    //this.toggle()
   }
 
   toggle() {

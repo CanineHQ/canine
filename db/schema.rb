@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_25_212903) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -85,26 +85,12 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
     t.index ["user_id"], name: "index_clusters_on_user_id"
   end
 
-  create_table "cron_schedules", force: :cascade do |t|
-    t.bigint "service_id", null: false
-    t.string "schedule", null: false
-    t.index ["service_id"], name: "index_cron_schedules_on_service_id"
-  end
-
   create_table "deployments", force: :cascade do |t|
     t.bigint "build_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["build_id"], name: "index_deployments_on_build_id"
-  end
-
-  create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
-    t.string "domain_name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -126,13 +112,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
-  end
-
-  create_table "inbound_webooks", force: :cascade do |t|
-    t.text "body"
-    t.integer "status", default: 0
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "log_outputs", force: :cascade do |t|
@@ -193,7 +172,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
     t.index ["name"], name: "index_projects_on_name", unique: true
   end
 
-  create_table "providers", force: :cascade do |t|
+  create_table "services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider"
     t.string "uid"
@@ -204,18 +183,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
     t.text "auth"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_providers_on_user_id"
-  end
-
-  create_table "services", force: :cascade do |t|
-    t.bigint "project_id", null: false
-    t.integer "service_type", null: false
-    t.string "command"
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "container_port", default: 3000
-    t.index ["project_id"], name: "index_services_on_project_id"
+    t.index ["user_id"], name: "index_services_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -245,6 +213,5 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_042556) do
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "projects", "clusters"
-  add_foreign_key "providers", "users"
-  add_foreign_key "services", "projects"
+  add_foreign_key "services", "users"
 end

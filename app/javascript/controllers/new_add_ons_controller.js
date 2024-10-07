@@ -5,16 +5,15 @@ export default class extends Controller {
   static values = { repository: String }
 
   connect() {
-    console.log("HelmChartSelector controller connected")
   }
 
-  selectChart(event) {
+  selectCard(event) {
     event.preventDefault()
-    this.inputTarget.value = event.currentTarget.dataset.chartName
+    this.inputTarget.value = event.currentTarget.dataset.cardName
     this.cardTargets.forEach(card => card.classList.remove('ring', 'ring-primary'))
     event.currentTarget.classList.add('ring', 'ring-primary')
     // Show Input
-    this.element.querySelectorAll('.chart-form').forEach(form => form.classList.add('hidden'))
-    document.getElementById(`chart-${event.currentTarget.dataset.chartName}`).classList.remove("hidden");
+    this.element.querySelectorAll('.card-form').forEach(form => form.classList.add('hidden'))
+    this.element.querySelector(`#card-${event.currentTarget.dataset.cardName}`)?.classList.remove("hidden");
   }
 }

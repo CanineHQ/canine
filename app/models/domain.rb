@@ -2,15 +2,19 @@
 #
 # Table name: domains
 #
-#  id          :bigint           not null, primary key
-#  domain_name :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  service_id  :bigint           not null
+#  id                 :bigint           not null, primary key
+#  domain_name        :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  project_service_id :bigint           not null
 #
 # Indexes
 #
-#  index_domains_on_service_id  (service_id)
+#  index_domains_on_project_service_id  (project_service_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_service_id => project_services.id)
 #
 class Domain < ApplicationRecord
   belongs_to :service

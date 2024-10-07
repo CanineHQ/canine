@@ -6,51 +6,96 @@
         <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "ex: web" %>
       </div>
 
-      <div data-controller="partial-select">
+      <div data-controller="new-add-ons">
         <div class="form-group">
-          <%= form.label :service_type %>
-          <%= form.select(
-            :service_type,
-            Service.service_types.keys.map { |type| [type.titleize, type] },
-            {},
-            class: "select select-bordered",
-            data: {
-              "partial-select-target": "select",
-              "select-attribute-value": "data-project-type",
-              "action": "change->partial-select#toggle",
-            }
-          ) %>
+          <div class="flex gap-4">
+            <%= form.select(
+              :service_type,
+              Service.service_types.keys.map { |type| [type.titleize, type] },
+              {},
+              class: "select select-bordered hidden",
+              data: { 'new-add-ons-target': "input" }
+            ) %>
+            <div
+              class="cursor-pointer card w-64 bg-base-200"
+              data-card-name="web_service"
+              data-action="click->new-add-ons#selectCard"
+              data-new-add-ons-target="card"
+            >
+              <div class="card-body">
+                <iconify-icon icon="lucide:globe"></iconify-icon>
+                <h2 class="card-title">Web service</h2>
+                <p class="text-sm">
+                  Useful for publicly accessible services like web applications.
+                </p>
+              </div>
+            </div>
+            <div
+              class="cursor-pointer card w-64 bg-base-200"
+              data-card-name="background_service"
+              data-action="click->new-add-ons#selectCard"
+              data-new-add-ons-target="card"
+            >
+              <div class="card-body">
+                <iconify-icon icon="lucide:cpu"></iconify-icon>
+                <h2 class="card-title">Background worker</h2>
+                <p class="text-sm">
+                  Useful for services that should don't need to be connected to like background workers that are continuously running.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="cursor-pointer card w-64 bg-base-300"
+              data-card-name="cron_job"
+              data-action="click->new-add-ons#selectCard"
+              data-new-add-ons-target="card"
+            >
+              <div class="card-body">
+                <iconify-icon icon="lucide:clock"></iconify-icon>
+                <h2 class="card-title">Cron job</h2>
+                <p class="text-sm">
+                  Useful for running tasks at a specific time like backups.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="text-sm mb-4">
-          <p>
-            <b>Web service</b>: Useful for publicly accessible services like web applications.
-          </p>
-          <p>
-            <b>Internal service</b>: Useful for services that should only be connected to within the cluster like microservices.
-          </p>
-          <p>
-            <b>Process</b>: Useful for services that should don't need to be connected to like background workers that are continuously running.
-          </p>
-          <p>
-            <b>Cron job</b>: Useful for running tasks at a specific time like backups.
-          </p>
-          <div class="mt-4 text-warning italic">
-            Do not create any databases here, create an <%= link_to "add on", add_ons_path %> and then connect it to your project.
+
+        <div class="my-4 text-warning italic text-sm">
+          Do not create any databases here, create an <%= link_to "add on", add_ons_path %> and then connect it to your project.
+        </div>
+
+        <div class="form-group">
+          <%= form.label :command %>
+          <%= form.text_field :command, class: "input input-bordered", required: false %>
+          <label class="label">
+            <span class="label-text-alt">Optional: A blank command will run the default command from the Dockerfile</span>
+          </label>
+        </div>
+
+        <div id="card-web_service" class="card-form hidden">
+          <h3 class="text-lg font-bold">Networking</h3>
+          <div class="form-group">
+            <%= form.label :container_port %>
+            <%= form.number_field :container_port, class: "input input-bordered", required: true, placeholder: "3000" %>
+          </div>
+        </div>
+
+        <div id="card-cron_job" class="card-form hidden">
+          <div class="form-group">
+            <h3 class="text-lg font-bold">Cron job</h3>
+            <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
+              <%= cron_schedule_form.label :schedule %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered", required: true, placeholder: "0 0 * * *" %>
+            <% end %>
+            <label class="label">
+              <span class="label-text-alt">Use <a href="https://crontab.guru/" target="_blank">crontab.guru</a> to schedule your cron job</span>
+            </label>
           </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <%= form.label :container_port %>
-        <%= form.number_field :container_port, class: "input input-bordered", required: true, placeholder: "3000" %>
-      </div>
-      <div class="form-group">
-        <%= form.label :command %>
-        <%= form.text_field :command, class: "input input-bordered", required: false %>
-        <label class="label">
-          <span class="label-text-alt">Optional: A blank command will run the default command from the Dockerfile</span>
-        </label>
-      </div>
       <%= form.button "Submit", class: "btn btn-primary" %>
     <% end %>
   </div>

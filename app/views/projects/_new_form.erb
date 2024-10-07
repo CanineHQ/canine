@@ -1,82 +1,88 @@
-<%= form_with(model: project) do |form| %>
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Name</span>
-    </label>
-    <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", value: RandomNameGenerator.generate_name %>
-    <label class="label">
-      <span class="label-text-alt">* Required</span>
-    </label>
-  </div>
+<div data-controller="new-project">
+  <%= form_with(model: project) do |form| %>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Name</span>
+      </label>
+      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", value: RandomNameGenerator.generate_name %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Cluster</span>
-    </label>
-    <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
-    <label class="label">
-      <span class="label-text-alt">* Required</span>
-    </label>
-  </div>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Cluster</span>
+      </label>
+      <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Repository path</span>
-    </label>
-    <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
-    <label class="label">
-      <span class="label-text-alt">* Required</span>
-    </label>
-  </div>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Repository path</span>
+      </label>
+      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Branch</span>
-    </label>
-    <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
-    <label class="label">
-      <span class="label-text-alt">* Required</span>
-    </label>
-  </div>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Branch</span>
+      </label>
+      <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    </div>
 
-  <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
-    <label class="label mt-1">
-      <span class="label-text cursor-pointer">Autodeploy</span>
-      <%= form.check_box :autodeploy, class: "checkbox" %>
-    </label>
-  </div>
+    <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
+      <label class="label mt-1">
+        <span class="label-text cursor-pointer">Autodeploy</span>
+        <%= form.check_box :autodeploy, class: "checkbox" %>
+      </label>
+    </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Dockerfile path</span>
-    </label>
-    <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
-    <label class="label">
-      <span class="label-text-alt">* Required</span>
-    </label>
-  </div>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Dockerfile path</span>
+      </label>
+      <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Docker command</span>
-    </label>
-    <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-  </div>
+    <div class="form-control mt-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Docker command</span>
+      </label>
+      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+    </div>
 
-  <div class="form-control my-1 w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Predeploy command</span>
-    </label>
-    <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-  </div>
+    <div class="form-control my-1 w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Predeploy command</span>
+      </label>
+      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+    </div>
 
-  <div class="form-footer">
-    <%= form.button "Submit", class: "btn btn-primary" %>
+    <div>
+      <button class="btn btn-primary" data-action="click->new-project#addService">Add service</button>
+    </div>
 
-    <% if form.object.new_record? %>
-      <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
-    <% else %>
-      <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
-    <% end %>
-  </div>
-<% end %>
+    <div class="form-footer">
+      <%= form.button "Submit", class: "btn btn-primary" %>
+
+      <% if form.object.new_record? %>
+        <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
+      <% else %>
+        <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
