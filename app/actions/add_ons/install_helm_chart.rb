@@ -11,7 +11,7 @@ class AddOns::InstallHelmChart
 
     client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
     charts = client.ls
-    unless charts.any? { |chart| chart.name == add_on.name }
+    unless charts.any? { |chart| chart['name'] == add_on.name }
       charts = client.install(add_on.name, add_on.helm_chart_url, values: get_values(add_on))
     end
     add_on.installed!

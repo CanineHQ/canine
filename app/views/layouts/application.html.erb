@@ -69,7 +69,7 @@
                           <li class="mb-0.5">
                             <details <%= 'open' if in_namespace?('add_ons') %>>
                               <summary>
-                                <%= link_to add_ons_path, class: "hover:bg-base-content/15 #{'active' if current_page?(add_ons_path)}", starts_with: add_ons_path do %>
+                                <%= link_to add_ons_path do %>
                                   <div class="flex items-center gap-2">
                                     <iconify-icon icon="lucide:package" height="18"></iconify-icon>
                                     Add Ons
