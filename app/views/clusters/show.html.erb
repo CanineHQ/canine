@@ -10,7 +10,8 @@
     </div>
   <% end %>
   <% if @cluster.projects.any? %>
-    <h4>Projects:</h4>
+    <h4 class="mt-4 text-2xl font-bold">Projects</h4>
+    <hr class="mt-2 mb-6 border-base-content/10" />
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <% @cluster.projects.each do |project| %>
         <%= render project %>
@@ -18,7 +19,8 @@
     </div>
   <% end %>
   <% if @cluster.add_ons.any? %>
-    <h4>Add Ons:</h4>
+    <h4 class="mt-4 text-2xl font-bold">Add Ons</h4>
+    <hr class="mt-2 mb-6 border-base-content/10" />
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
     <% @cluster.add_ons.each do |add_on| %>
       <%= render add_on %>

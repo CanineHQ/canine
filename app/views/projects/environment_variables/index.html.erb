@@ -1,11 +1,11 @@
 <%= project_layout(@project) do %>
   <div
-    class="flex-1 p-4"
+    class="flex-1"
     data-controller="environment-variables"
     data-environment-variables-project-id-value="<%= @project.id %>"
     data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: e.value } }.to_json %>"
   >
-    <%= form_with(url: project_environment_variables_path(@project), method: :post, class: "space-y-4") do |form| %>
+    <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
       <div data-environment-variables-target="container"></div>
       <button class="btn btn-neutral btn-outline" type="button" data-action="environment-variables#add">Add New Environment Variable</button>
       <%= form.submit "Save", class: "btn btn-primary" %>

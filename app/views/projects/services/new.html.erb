@@ -96,7 +96,10 @@
         </div>
       </div>
 
-      <%= form.button "Submit", class: "btn btn-primary" %>
+      <div class="form-footer">
+        <%= form.button "Submit", class: "btn btn-primary" %>
+        <%= link_to "Cancel", project_services_path(@project), class: "btn btn-outline" %>
+      </div>
     <% end %>
   </div>
 <% end %>

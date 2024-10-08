@@ -19,10 +19,12 @@
     </label>
   </div>
 
-  <label class="label mt-1">
-    <%= form.check_box :autodeploy, class: "checkbox" %>
-    <span class="label-text cursor-pointer">Autodeploy</span>
-  </label>
+  <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
+    <label class="label mt-1">
+      <span class="label-text cursor-pointer">Autodeploy</span>
+      <%= form.check_box :autodeploy, class: "checkbox" %>
+    </label>
+  </div>
 
   <div class="form-control mt-1 w-full max-w-xs">
     <label class="label">

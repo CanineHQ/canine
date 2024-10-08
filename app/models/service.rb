@@ -30,6 +30,8 @@ class Service < ApplicationRecord
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
+  validates :name, presence: true,
+                   format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
 
   accepts_nested_attributes_for :domains, allow_destroy: true
 end

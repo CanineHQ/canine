@@ -53,15 +53,41 @@
                                   </div>
                                 <% end %>
                               </summary>
+                              <ul>
+                                <% current_user.clusters.each do |cluster| %>
+                                  <li>
+                                    <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if current_page?(cluster_path(cluster))}" do %>
+                                      <div class="flex items-center gap-2">
+                                        <%= cluster.name %>
+                                      </div>
+                                    <% end %>
+                                  </li>
+                                <% end %>
+                              </ul>
                             </details>
                           </li>
                           <li class="mb-0.5">
-                            <%= link_to add_ons_path, class: "hover:bg-base-content/15 #{'active' if current_page?(add_ons_path)}", starts_with: add_ons_path do %>
-                              <div class="flex items-center gap-2">
-                                <iconify-icon icon="lucide:package" height="18"></iconify-icon>
-                                Add Ons
-                              </div>
-                            <% end %>
+                            <details <%= 'open' if in_namespace?('add_ons') %>>
+                              <summary>
+                                <%= link_to add_ons_path, class: "hover:bg-base-content/15 #{'active' if current_page?(add_ons_path)}", starts_with: add_ons_path do %>
+                                  <div class="flex items-center gap-2">
+                                    <iconify-icon icon="lucide:package" height="18"></iconify-icon>
+                                    Add Ons
+                                  </div>
+                                <% end %>
+                              </summary>
+                              <ul>
+                                <% current_user.add_ons.each do |add_on| %>
+                                  <li>
+                                    <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if current_page?(add_on_path(add_on))}" do %>
+                                      <div class="flex items-center gap-2">
+                                        <%= add_on.name %>
+                                      </div>
+                                    <% end %>
+                                  </li>
+                                <% end %>
+                              </ul>
+                            </details>
                           </li>
                         </div>
                       </div>
