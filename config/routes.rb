@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :projects, except: [ :show ] do
+  resources :projects do
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end

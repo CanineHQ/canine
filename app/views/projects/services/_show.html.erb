@@ -8,6 +8,15 @@
       <%= form.label :command %>
       <%= form.text_field :command, class: "input input-bordered", required: false %>
     </div>
+    <% if service.cron_job? %>
+      <div class="form-group">
+        <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
+          <%= cron_schedule_form.label :schedule %>
+          <%= cron_schedule_form.text_field :schedule, class: "input input-bordered", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
+        <% end %>
+      </div>
+    <% end %>
+    <%= form.submit class: "btn btn-primary" %>
   <% end %>
   <% if service.web_service? %>
     <div class="my-8">

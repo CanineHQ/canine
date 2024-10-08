@@ -2,7 +2,11 @@
 <%= turbo_stream_from @project %>
 
 <%= project_layout(@project) do %>
-  <% if @builds.empty? %>
+  <% if !@project.deployable? %>
+    <div>
+      <p class="text-gray-500">Please <%= link_to "add a service", project_services_path(@project), class: "link" %> before deploying.</p>
+    </div>
+  <% elsif @builds.empty? %>
     <div>
       <p class="text-gray-500">No deployments yet</p>
     </div>

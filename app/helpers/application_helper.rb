@@ -24,4 +24,8 @@ module ApplicationHelper
     '<iconify-icon icon="lucide:chevron-right" height="16"></iconify-icon>' +
     "</a>"
   end
+
+  def in_namespace?(namespace)
+    controller.controller_path.start_with?("#{namespace}/")
+  end
 end

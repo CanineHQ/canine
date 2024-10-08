@@ -78,7 +78,7 @@
           <h3 class="text-lg font-bold">Networking</h3>
           <div class="form-group">
             <%= form.label :container_port %>
-            <%= form.number_field :container_port, class: "input input-bordered", required: true, placeholder: "3000" %>
+            <%= form.number_field :container_port, class: "input input-bordered", placeholder: "3000" %>
           </div>
         </div>
 
@@ -87,7 +87,7 @@
             <h3 class="text-lg font-bold">Cron job</h3>
             <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
               <%= cron_schedule_form.label :schedule %>
-              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered", required: true, placeholder: "0 0 * * *" %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered", placeholder: "0 0 * * *" %>
             <% end %>
             <label class="label">
               <span class="label-text-alt">Use <a href="https://crontab.guru/" target="_blank">crontab.guru</a> to schedule your cron job</span>

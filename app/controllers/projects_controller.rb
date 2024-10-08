@@ -12,7 +12,10 @@ class ProjectsController < ApplicationController
   end
 
   # GET /projects/1 or /projects/1.json
-  def show; end
+  def show
+    @pagy, @builds = pagy(@project.builds.order(created_at: :desc))
+    render "projects/deployments/index"
+  end
 
   # GET /projects/new
   def new
