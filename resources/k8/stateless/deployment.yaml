@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <%= name %>-deployment
+  name: <%= service.name %>-deployment
+  namespace: <%= project.name %>
   labels:
-    app: <%= name %>
+    app: <%= service.name %>
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: <%= name %>
+      app: <%= service.name %>
   template:
     metadata:
       labels:
-        app: <%= name %>
+        app: <%= service.name %>
     spec:
       containers:
-      - name: <%= name %>
+      - name: <%= project.name %>
         image: <%= project.container_registry_url %>
         imagePullPolicy: Always
         env:
@@ -24,6 +25,6 @@ spec:
             value: <%= env.value %>
         <% end %>
         ports:
-        - containerPort: <%= port %>
+        - containerPort: <%= service.container_port %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com

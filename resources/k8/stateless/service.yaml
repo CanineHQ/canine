@@ -1,14 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: <%= name %>-service
+  name: <%= service.name %>-service
+  namespace: <%= project.name %>
   labels:
-    app: <%= name %>
+    app: <%= service.name %>
 spec:
   selector:
-    app: <%= name %>
+    app: <%= service.name %>
   ports:
   - protocol: TCP
     port: 80
-    targetPort: <%= target_port %>
+    targetPort: <%= service.container_port %>
   type: ClusterIP

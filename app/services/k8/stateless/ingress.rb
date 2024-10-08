@@ -4,7 +4,6 @@ class K8::Stateless::Ingress < K8::Base
   def initialize(service)
     @service = service
     @project = service.project
-    @domains = service.domains
     @cluster = @project.cluster
   end
 
