@@ -4,7 +4,8 @@ class K8::Helm::Postgresql < K8::Helm::Service
   end
 
   def service_name
-    "#{add_on.name}-postgresql"
+    basename = add_on.name.ends_with?("postgresql") ? add_on.name : "#{add_on.name}-postgresql"
+    basename
   end
 
   def internal_url

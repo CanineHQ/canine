@@ -53,8 +53,9 @@
           </div>
 
           <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-            <div id="chart-<%= chart['name'] %>" class="chart-form hidden">
-              <h4><%= chart['name'].titleize %></h4>
+            <div id="card-<%= chart['name'] %>" class="mt-8 card-form hidden">
+              <h4 class="text-lg font-bold"><%= chart['name'].titleize %> Settings</h4>
+              <hr class="mt-2 mb-6 border-base-content/10" />
               <%= render "add_ons/chart_form", chart: chart, form: form %>
             </div>
           <% end %>
