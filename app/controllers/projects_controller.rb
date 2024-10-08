@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
-  before_action :set_project, only: %i[show edit update destroy]
+  before_action :set_project, only: %i[show edit update destroy restart]
 
   # GET /projects
   def index
@@ -9,6 +9,15 @@ class ProjectsController < ApplicationController
 
     # Uncomment to authorize with Pundit
     # authorize @projects
+  end
+
+  def restart
+    result = Projects::Restart.execute(project: @project)
+    if result.success?
+      redirect_to project_url(@project), notice: "All services have been restarted"
+    else
+      redirect_to project_url(@project), alert: "Failed to restart all services"
+    end
   end
 
   # GET /projects/1 or /projects/1.json

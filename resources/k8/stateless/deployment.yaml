@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <%= service.name %>-deployment
+  name: <%= service.name %>
   namespace: <%= project.name %>
   labels:
     app: <%= service.name %>

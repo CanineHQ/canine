@@ -21,6 +21,9 @@ Rails.application.routes.draw do
   end
 
   resources :projects do
+    member do
+      post :restart
+    end
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
@@ -47,7 +50,6 @@ Rails.application.routes.draw do
     resource :metrics, only: [ :show ], module: :clusters
     member do
       post :test_connection
-      post :restart
     end
   end
 authenticate :user, lambda { |u| u.admin? } do
