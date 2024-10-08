@@ -1,6 +1,16 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 
 <%= project_layout(@project) do %>
+  <div>
+    <!-- instructions for connecting to cluster -->
+    <h2>Connecting to your cluster</h2>
+    <p>
+      To create a new pod in your cluster, you can use the following command:
+    </p>
+    <pre>
+      kubectl run <%= @project.name %> --namespace=<%= @project.name %> --image=
+    </pre>
+  </div>
   <% if @pod_metrics.empty? %>
     <div>
       <p class="text-gray-500">No metrics available</p>

@@ -3,9 +3,12 @@ class K8::Helm::Redis < K8::Helm::Service
     "redis"
   end
 
+  def service_basename
+    add_on.name.ends_with?("redis") ? add_on.name : "#{add_on.name}-redis"
+  end
+
   def service_name
-    basename = add_on.name.ends_with?("redis") ? add_on.name : "#{add_on.name}-redis"
-    "#{basename}-master"
+    "#{service_basename}-master"
   end
 
   def internal_url
@@ -19,10 +22,8 @@ class K8::Helm::Redis < K8::Helm::Service
     false
   end
 
-  private
-
   def password
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace default #{add_on.name}-redis -o jsonpath='{.data.redis-password}' | base64 -d")
+    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace default #{service_basename} -o jsonpath='{.data.redis-password}' | base64 -d")
     output.strip
   end
 end
