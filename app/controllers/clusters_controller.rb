@@ -29,11 +29,6 @@ class ClustersController < ApplicationController
   def logs
   end
 
-  def restart
-    K8::Kubectl.new(@cluster.kubeconfig).run("rollout restart deployment")
-    redirect_to @cluster, notice: "Cluster was successfully restarted."
-  end
-
   def test_connection
     client = K8::Client.new(@cluster.kubeconfig)
     if client.can_connect?

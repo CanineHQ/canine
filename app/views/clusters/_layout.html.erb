@@ -8,7 +8,6 @@
       <%= turbo_frame_tag "test_connection_frame" do %>
         <%= button_to "Test Connection", test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" %>
       <% end %>
-      <%= button_to "Restart", restart_cluster_url(cluster), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
     </div>
   </div>
   <div class="card card-bordered bg-base-100">

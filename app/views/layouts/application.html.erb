@@ -23,7 +23,7 @@
                           <li class="mb-0.5">
                             <details <%= 'open' if in_namespace?('projects') %>>
                               <summary>
-                                <%= link_to projects_path, class: "hover:bg-base-content/15 #{'active' if current_page?(projects_path)}" do %>
+                                <%= link_to projects_path do %>
                                   <div class="flex items-center gap-2">
                                     <iconify-icon icon="lucide:sparkles" height="18"></iconify-icon>
                                     Projects
@@ -33,7 +33,7 @@
                               <ul>
                                 <% current_user.projects.each do |project| %>
                                   <li>
-                                    <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if current_page?(root_projects_path(project))}" do %>
+                                    <%= link_to root_projects_path(project) do %>
                                       <div class="flex items-center gap-2">
                                         <%= project.name %>
                                       </div>
@@ -46,7 +46,7 @@
                           <li class="mb-0.5">
                             <details <%= 'open' if in_namespace?('clusters') %>>
                               <summary>
-                                <%= link_to clusters_path, class: "hover:bg-base-content/15 #{'active' if current_page?(clusters_path)}", starts_with: clusters_path do %>
+                                <%= link_to clusters_path do %>
                                   <div class="flex items-center gap-2">
                                     <iconify-icon icon="lucide:boxes" height="18"></iconify-icon>
                                     Clusters

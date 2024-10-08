@@ -37,6 +37,8 @@ class Project < ApplicationRecord
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
 
+  validates_uniqueness_of :name, scope: :cluster_id
+
   enum :status, {
     creating: 0,
     deployed: 1
