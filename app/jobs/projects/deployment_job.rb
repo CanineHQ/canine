@@ -20,6 +20,7 @@ class Projects::DeploymentJob < ApplicationJob
     deploy_services(project, kubectl)
 
     deployment.completed!
+    project.deployed!
   rescue StandardError => e
     deployment.info "Deployment failed: #{e.message}"
     deployment.failed!
