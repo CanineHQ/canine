@@ -25,6 +25,7 @@ class Cluster < ApplicationRecord
   has_many :projects, dependent: :destroy
   has_many :add_ons, dependent: :destroy
   has_many :domains, through: :projects
+  has_many :metrics, dependent: :destroy
   validates_presence_of :name
   enum :status, {
     initializing: 0,

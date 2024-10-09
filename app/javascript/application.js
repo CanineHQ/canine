@@ -12,3 +12,4 @@ require("@rails/ujs").start()
 
 import './channels/**/*_channel.js'
 import "./controllers"
+import "./apex"
