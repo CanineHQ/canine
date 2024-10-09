@@ -1,15 +1,18 @@
-class Noticed::NotificationResource < Madmin::Resource
+class BuildResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :type
-  attribute :read_at
-  attribute :seen_at
+  attribute :repository_url
+  attribute :git_sha
+  attribute :commit_message
+  attribute :status
+  attribute :commit_sha
   attribute :created_at, form: false
   attribute :updated_at, form: false
 
   # Associations
-  attribute :event
-  attribute :recipient
+  attribute :log_output
+  attribute :project
+  attribute :deployment
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

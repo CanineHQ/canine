@@ -1,14 +1,26 @@
-class ActionText::EncryptedRichTextResource < Madmin::Resource
+class ProjectResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
   attribute :name
-  attribute :body
+  attribute :repository_url
+  attribute :branch
+  attribute :autodeploy
+  attribute :dockerfile_path
+  attribute :docker_build_context_directory
+  attribute :docker_command
+  attribute :predeploy_command
+  attribute :status
   attribute :created_at, form: false
   attribute :updated_at, form: false
-  attribute :embeds, index: false
 
   # Associations
-  attribute :record
+  attribute :cluster
+  attribute :user
+  attribute :services
+  attribute :environment_variables
+  attribute :builds
+  attribute :deployments
+  attribute :domains
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

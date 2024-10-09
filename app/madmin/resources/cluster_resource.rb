@@ -1,15 +1,19 @@
-class Noticed::NotificationResource < Madmin::Resource
+class ClusterResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :type
-  attribute :read_at
-  attribute :seen_at
+  attribute :name
+  attribute :kubeconfig
+  attribute :status
   attribute :created_at, form: false
   attribute :updated_at, form: false
 
   # Associations
-  attribute :event
-  attribute :recipient
+  attribute :log_output
+  attribute :user
+  attribute :projects
+  attribute :add_ons
+  attribute :domains
+  attribute :metrics
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

@@ -1,15 +1,17 @@
 class ServiceResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :project_id
   attribute :service_type
   attribute :command
   attribute :name
   attribute :created_at, form: false
   attribute :updated_at, form: false
+  attribute :container_port
 
   # Associations
-  attribute :user
+  attribute :project
+  attribute :cron_schedule
+  attribute :domains
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

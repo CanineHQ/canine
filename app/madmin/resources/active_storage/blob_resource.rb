@@ -4,10 +4,10 @@ class ActiveStorage::BlobResource < Madmin::Resource
   attribute :key
   attribute :filename
   attribute :content_type
+  attribute :service_name
   attribute :byte_size
   attribute :checksum
   attribute :created_at, form: false
-  attribute :service_name
   attribute :analyzed
   attribute :identified
   attribute :composed

@@ -1,7 +1,6 @@
 class Noticed::EventResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :account_id
   attribute :type
   attribute :params
   attribute :created_at, form: false

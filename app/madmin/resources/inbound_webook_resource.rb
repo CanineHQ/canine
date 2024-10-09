@@ -1,15 +1,12 @@
-class Noticed::NotificationResource < Madmin::Resource
+class InboundWebookResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :type
-  attribute :read_at
-  attribute :seen_at
+  attribute :body
+  attribute :status
   attribute :created_at, form: false
   attribute :updated_at, form: false
 
   # Associations
-  attribute :event
-  attribute :recipient
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)
