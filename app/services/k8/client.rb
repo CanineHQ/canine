@@ -22,7 +22,7 @@ module K8
     end
 
     def pods_for_service(service_name)
-      @client.get_pods(namespace: 'default').select do |pod|
+      @client.get_pods(namespace: "default").select do |pod|
         pod.metadata.name.start_with?(service_name)
       end
     end
@@ -36,16 +36,16 @@ module K8
     end
 
     def build_client
-      kubecontext = @kubeconfig['current-context']
-      cluster_name = @kubeconfig['contexts'].find { |ctx| ctx['name'] == kubecontext }['context']['cluster']
-      user_name = @kubeconfig['contexts'].find { |ctx| ctx['name'] == kubecontext }['context']['user']
+      kubecontext = @kubeconfig["current-context"]
+      cluster_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["cluster"]
+      user_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["user"]
 
-      cluster_info = @kubeconfig['clusters'].find { |cl| cl['name'] == cluster_name }['cluster']
-      user_info = @kubeconfig['users'].find { |usr| usr['name'] == user_name }['user']
+      cluster_info = @kubeconfig["clusters"].find { |cl| cl["name"] == cluster_name }["cluster"]
+      user_info = @kubeconfig["users"].find { |usr| usr["name"] == user_name }["user"]
 
       Kubeclient::Client.new(
-        cluster_info['server'],
-        'v1',
+        cluster_info["server"],
+        "v1",
         ssl_options: ssl_options(cluster_info),
         auth_options: auth_options(user_info)
       )
@@ -60,12 +60,12 @@ module K8
 
     def auth_options(user_info)
       auth_options = {}
-      if user_info['client-certificate-data'] && user_info['client-key-data']
+      if user_info["client-certificate-data"] && user_info["client-key-data"]
         auth_options[:client_cert] =
-          OpenSSL::X509::Certificate.new(Base64.decode64(user_info['client-certificate-data']))
-        auth_options[:client_key] = OpenSSL::PKey::RSA.new(Base64.decode64(user_info['client-key-data']))
-      elsif user_info['token']
-        auth_options[:bearer_token] = user_info['token']
+          OpenSSL::X509::Certificate.new(Base64.decode64(user_info["client-certificate-data"]))
+        auth_options[:client_key] = OpenSSL::PKey::RSA.new(Base64.decode64(user_info["client-key-data"]))
+      elsif user_info["token"]
+        auth_options[:bearer_token] = user_info["token"]
       end
       auth_options
     end

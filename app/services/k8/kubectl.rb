@@ -7,7 +7,7 @@ class K8::Kubectl
   def initialize(kubeconfig, runner = Cli::RunAndReturnOutput.new)
     @kubeconfig = kubeconfig
     if @kubeconfig.nil?
-      raise 'Kubeconfig is required'
+      raise "Kubeconfig is required"
     end
     @runner = runner
   end
@@ -19,7 +19,7 @@ class K8::Kubectl
   def apply_yaml(yaml_content)
     with_kube_config do |kubeconfig_file|
       # Create a temporary file for the YAML content
-      Tempfile.open(['k8s', '.yaml']) do |yaml_file|
+      Tempfile.open([ "k8s", ".yaml" ]) do |yaml_file|
         yaml_file.write(yaml_content)
         yaml_file.flush
 

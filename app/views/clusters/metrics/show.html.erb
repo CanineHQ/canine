@@ -1,3 +1,4 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.53.0/apexcharts.min.js"></script>
 <%= cluster_layout(@cluster) do %>
   <table class="table mt-2 rounded-box" id="order_table" data-component="table">
     <thead>
@@ -98,4 +99,111 @@
       <% end %>
     </tbody>
   </table>
+
+  <div id="chart_order_syncing_line">
+</div>
+<div id="chart_order_revenue_syncing_line">
+</div>
+
+<script>
+const getTheme = () => 'dark' 
+
+let chartOrderSyncingLine = null
+let chartOrderRevenueSyncingLine = null
+
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const apexChartOptions = (id, series) => ({
+    chart: {
+      events: {
+        mounted: (c) => c.windowResizeHandler(),
+      },
+      type: "line",
+      height: 120,
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          zoom: false,
+          zoomin: false,
+          zoomout: false,
+          pan: false,
+          reset: false,
+        },
+      },
+      background: "transparent",
+      id,
+      group: "metrics",
+    },
+    theme: {
+      mode: getTheme(),
+    },
+    stroke: {
+      width: 2,
+    },
+    series,
+});
+const initChartSyncingLine = () => {
+  if (!window.ApexCharts) return
+
+  const syncingLineTotalOrders = <%= raw @metrics.cpu.map { |x| x.metadata['cpu'] } %>
+
+  const syncingLineAverageOrderValue = <%= raw @metrics.memory.map { |x| x.metadata['memory'] } %>
+
+  const syncingLineOrdersSeries = [
+      {
+        color: "#3e5eff",
+        name: "Orders",
+        data: syncingLineTotalOrders,
+      },
+    ];
+  const orderOptions = apexChartOptions('order-total', syncingLineOrdersSeries);
+
+  chartOrderSyncingLine = new ApexCharts(
+    document.querySelector("#chart_order_syncing_line"),
+    orderOptions
+  )
+
+  chartOrderSyncingLine.render()
+  const revenueSeries = [
+      {
+        color: "#FFC700",
+        name: "Revenue",
+        data: syncingLineTotalOrders.map((cur, index) =>
+          Number((cur * syncingLineAverageOrderValue[index]).toFixed(2))
+        ),
+      },
+    ]
+  const orderRevenueOptions = apexChartOptions('order-revenue', revenueSeries);
+
+  chartOrderRevenueSyncingLine = new ApexCharts(
+    document.querySelector("#chart_order_revenue_syncing_line"),
+    orderRevenueOptions
+  )
+
+  chartOrderRevenueSyncingLine.render()
+}
+const initCharts = () => {
+  initChartSyncingLine()
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  initCharts()
+})
+
+
+</script>
 <% end %>

@@ -1,7 +1,7 @@
 class K8::Metrics::Pods
   def self.call(cluster, selector: nil)
     K8::Kubectl.new(cluster.kubeconfig, nil).with_kube_config do |kubeconfig_file|
-      command = "kubectl get pods --kubeconfig #{kubeconfig_file.path} -o json #{selector.present? ? "-l #{selector}" : ""}"
+      command = "kubectl top pods --kubeconfig #{kubeconfig_file.path} #{selector.present? ? "-l #{selector}" : ""}"
       output = `#{command}`
       parse_output(output)
     end
@@ -10,12 +10,15 @@ class K8::Metrics::Pods
   private
 
   def self.parse_output(output)
-    data = JSON.parse(output)
-    pods_info = data["items"].map do |pod|
+    lines = output.split("\n")
+    headers = lines.shift.split(/\s+/)
+
+    lines.map do |line|
+      values = line.split(/\s+/, 3)
       {
-        name: pod["metadata"]["name"],
-        cpu: pod["spec"]["containers"][0]["resources"]["requests"]["cpu"],
-        memory: pod["spec"]["containers"][0]["resources"]["requests"]["memory"]
+        name: values[0],
+        cpu: values[1],
+        memory: values[2]
       }
     end
   end
