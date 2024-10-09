@@ -11,7 +11,9 @@ class Apex {
     this.seriesData = seriesData;
   }
 
-  options(id, series) {
+  options(id, series, formatters = {}) {
+    const yAxesFormatter = formatters.yAxis ? formatters.yAxis : (value) => value;
+    const toolTipFormatter = formatters.tooltip ? formatters.tooltip : (value) => value
     return {
       chart: {
         events: {
@@ -40,6 +42,16 @@ class Apex {
       stroke: {
         width: 2,
       },
+      yaxis: {
+        labels: {
+          formatter: yAxesFormatter
+        },
+      },
+      tooltip: {
+        y: {
+          formatter: toolTipFormatter
+        },
+      },
       series
     }
   };
@@ -66,7 +78,8 @@ class Apex {
     this.apexMetricContainer(this.seriesData.length);
     this.seriesData.map((series, index) => {
       var id = "chart-" + index;
-      const chartOptions = this.options(id, this.createSeriesData(series, index));
+      const labelFormatter = series.formatters ? series.formatters : {};
+      const chartOptions = this.options(id, this.createSeriesData(series, index), labelFormatter);
       const chart = new window.ApexCharts(document.querySelector("#" + id), chartOptions);
       chart.render();
       charts.push(chart)

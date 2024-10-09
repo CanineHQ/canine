@@ -106,7 +106,11 @@
   const series = [
     {
       name: 'Memory',
-      data: memoryMetrics
+      data: memoryMetrics,
+      formatters: {
+        yAxis: (val) => (val / Math.pow(1024, 3)).toFixed(0) + "G",
+        tooltip: (val) => (val / Math.pow(1024, 2)).toFixed(0) + "M"
+      },
     },
     {
       name: 'CPU',
