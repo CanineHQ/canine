@@ -2,7 +2,7 @@ module K8
   class Client
     attr_reader :client
 
-    delegate :get_persistent_volume_claims, :get_services, :get_pods, to: :client
+    delegate :get_persistent_volume_claims, :get_services, :get_pods, :get_pod_log, to: :client
 
     def self.from_project(project)
       new(project.cluster.kubeconfig)
@@ -21,8 +21,8 @@ module K8
       false
     end
 
-    def pods_for_service(service_name)
-      @client.get_pods(namespace: "default").select do |pod|
+    def pods_for_service(service_name, namespace)
+      @client.get_pods(namespace: namespace).select do |pod|
         pod.metadata.name.start_with?(service_name)
       end
     end

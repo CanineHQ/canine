@@ -14,7 +14,7 @@
       Environment
     </div>
   <% end %>
-  <%= link_to '#', class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?('#')}" do %>
+  <%= link_to project_logs_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?('#')}" do %>
     <div class="flex items-center gap-2">
       Logs
     </div>

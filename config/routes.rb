@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
+    resources :logs, only: %i[index show], module: :projects
     resources :services, only: %i[index new create destroy update], module: :projects do
       resources :domains, only: %i[create destroy], module: :services
     end
