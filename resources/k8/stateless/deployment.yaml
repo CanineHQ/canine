@@ -19,11 +19,9 @@ spec:
       - name: <%= project.name %>
         image: <%= project.container_registry_url %>
         imagePullPolicy: Always
-        env:
-        <% environment_variables.each do |env| %>
-          - name: <%= env.name %>
-            value: <%= env.value %>
-        <% end %>
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
         ports:
         - containerPort: <%= service.container_port %>
       imagePullSecrets:

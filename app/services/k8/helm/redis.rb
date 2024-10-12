@@ -12,7 +12,7 @@ class K8::Helm::Redis < K8::Helm::Service
   end
 
   def internal_url
-    service = client.get_services(namespace: 'default').find do |service|
+    service = client.get_services(namespace: add_on.name).find do |service|
       service.metadata.name == service_name
     end
     "redis://:#{password}@#{service.metadata.name}.#{service.metadata.namespace}.svc.cluster.local:#{service.spec.ports[0].port}"
@@ -23,7 +23,7 @@ class K8::Helm::Redis < K8::Helm::Service
   end
 
   def password
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace default #{service_basename} -o jsonpath='{.data.redis-password}' | base64 -d")
+    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace #{add_on.name} #{service_basename} -o jsonpath='{.data.redis-password}' | base64 -d")
     output.strip
   end
 end

@@ -5,6 +5,7 @@ class Projects::DeploymentJob < ApplicationJob
   class DeploymentFailure < StandardError; end
 
   def perform(deployment)
+    @logger = deployment
     project = deployment.project
     kubeconfig = project.cluster.kubeconfig
     kubectl = create_kubectl(deployment, kubeconfig)
@@ -12,7 +13,8 @@ class Projects::DeploymentJob < ApplicationJob
     # Upload container registry secrets
     upload_registry_secrets(kubectl, deployment)
     # Create namespace
-    create_namespace(project, kubectl)
+    apply_namespace(project, kubectl)
+    apply_config_map(project, kubectl)
 
     predeploy(project, deployment)
     # For each of the projects services
@@ -21,21 +23,17 @@ class Projects::DeploymentJob < ApplicationJob
     deployment.completed!
     project.deployed!
   rescue StandardError => e
-    deployment.info "Deployment failed: #{e.message}"
+    @logger.info "Deployment failed: #{e.message}"
+    puts e.full_message
     deployment.failed!
   end
 
   private
 
-  def create_namespace(project, kubectl)
-    namespace_yaml = K8::Namespace.new(project).to_yaml
-    kubectl.apply_yaml(namespace_yaml)
-  end
-
   def predeploy(project, deployment)
     return unless project.predeploy_command.present?
 
-    deployment.info "Running predeploy command: #{project.predeploy_command}"
+    @logger.info "Running predeploy command: #{project.predeploy_command}"
     success = system(project.predeploy_command)
 
     return if success
@@ -67,8 +65,14 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  %w[Deployment CronJob Service Ingress].each do |resource_type|
+  def apply_namespace(project, kubectl)
+    namespace_yaml = K8::Namespace.new(project).to_yaml
+    kubectl.apply_yaml(namespace_yaml)
+  end
+
+  %w[ConfigMap Deployment CronJob Service Ingress].each do |resource_type|
     define_method(:"apply_#{resource_type.underscore}") do |service, kubectl|
+      @logger.info "Creating #{resource_type}: #{service.name}"
       resource_yaml = K8::Stateless.const_get(resource_type).new(service).to_yaml
       kubectl.apply_yaml(resource_yaml)
     end

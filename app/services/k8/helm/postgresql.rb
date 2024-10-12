@@ -9,7 +9,7 @@ class K8::Helm::Postgresql < K8::Helm::Service
   end
 
   def internal_url
-    service = client.get_services(namespace: 'default').find do |service|
+    service = client.get_services(namespace: add_on.name).find do |service|
       service.metadata.name == service_name
     end
     if service.nil?

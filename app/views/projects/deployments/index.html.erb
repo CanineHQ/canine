@@ -57,21 +57,7 @@
           </td>
           <td>
             <div class="flex items-center gap-2">
-              <%
-                status = (build.deployment&.status || build.status)
-                status = status == "in_progress" ? "pending" : status.humanize
-                badge_color = case status
-                when "pending"
-                  "warning"
-                when "Failed"
-                  "error"
-                when "Completed"
-                  "success"
-                end
-              %>
-              <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-                <%= status %>
-              </div>
+              <%= render "projects/deployments/status", build: build %>
             </div>
           </td>
           <td>

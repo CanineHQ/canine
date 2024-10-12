@@ -1,7 +1,7 @@
 class K8::Namespace < K8::Base
-  attr_accessor :project
+  attr_accessor :nameable
 
-  def initialize(project)
-    @project = project
+  def initialize(nameable)
+    @nameable = nameable
   end
 end

@@ -4,6 +4,7 @@ class AddOns::InstallHelmChart
 
   executed do |context|
     add_on = context.add_on
+    create_namespace(add_on)
     add_on.installing!
     charts = YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
@@ -12,9 +13,15 @@ class AddOns::InstallHelmChart
     client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
     charts = client.ls
     unless charts.any? { |chart| chart['name'] == add_on.name }
-      charts = client.install(add_on.name, add_on.helm_chart_url, values: get_values(add_on))
+      charts = client.install(add_on.name, add_on.helm_chart_url, values: get_values(add_on), namespace: add_on.name)
     end
     add_on.installed!
+  end
+
+  def self.create_namespace(add_on)
+    kubectl = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
+    namespace_yaml = K8::Namespace.new(add_on).to_yaml
+    kubectl.apply_yaml(namespace_yaml)
   end
 
   def self.get_values(add_on)

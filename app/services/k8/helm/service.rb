@@ -7,7 +7,7 @@ class K8::Helm::Service
   end
 
   def storage_metrics
-    pods = client.pods_for_service(service_name)
+    pods = client.pods_for_service(service_name, add_on.name)
     volumes = pods.flat_map do |pod|
       pod.spec.volumes.select { |volume| volume.respond_to?(:persistentVolumeClaim) && volume.persistentVolumeClaim.claimName }
     end
