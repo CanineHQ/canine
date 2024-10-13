@@ -1,0 +1,11 @@
+<%= turbo_frame_tag "pod_logs" do %>
+  <%= link_to back_path, class: "btn btn-ghost btn-sm" do %>
+    <iconify-icon icon="lucide:chevron-left"></iconify-icon> Back
+  <% end %>
+  <h4 class="text-md font-medium mb-2"><%= params[:id] %></h4>
+  <div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg" data-controller="logs">
+    <div class="overflow-auto h-96 bg-gray-800 p-2 rounded" data-logs-target="container">
+      <pre class="text-sm font-mono whitespace-pre-wrap"><%= ansi_to_tailwind(logs).html_safe || "No logs yet..." %></pre>
+    </div>
+  </div>
+<% end %>

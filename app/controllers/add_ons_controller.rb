@@ -1,6 +1,6 @@
 class AddOnsController < ApplicationController
   include StorageHelper
-  before_action :set_add_on, only: [ :show, :edit, :update, :destroy, :logs ]
+  before_action :set_add_on, only: [:show, :edit, :update, :destroy]
 
   # GET /add_ons
   def index
@@ -20,9 +20,6 @@ class AddOnsController < ApplicationController
 
     # Uncomment to authorize with Pundit
     # authorize @add_on
-  end
-
-  def logs
   end
 
   # GET /add_ons/1/edit

@@ -15,9 +15,7 @@ Rails.application.routes.draw do
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
   resources :add_ons do
-    member do
-      get :logs, to: "add_ons#logs"
-    end
+    resources :logs, only: %i[index show], module: :add_ons
   end
 
   resources :projects do
