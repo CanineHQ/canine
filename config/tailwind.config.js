@@ -108,6 +108,9 @@ module.exports = {
     ],
   },
   safelist: [
-    'bg-success/10', 'text-success'
+    'bg-success/10', 'text-success',
+    {
+      pattern: /text-(gray|red|green|yellow|blue|purple|cyan)-(1|3|4|5)00/ // LogColorsHelper uses custom tailwind colors
+    }
   ]
 }
