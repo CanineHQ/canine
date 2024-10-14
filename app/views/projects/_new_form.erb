@@ -14,7 +14,7 @@
       <label class="label">
         <span class="label-text">Cluster</span>
       </label>
-      <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+      <%= form.collection_select :cluster_id, current_user.clusters.running, :id, :name, {}, { class: "select select-bordered" } %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>
