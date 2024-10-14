@@ -39,7 +39,7 @@ class ClustersController < ApplicationController
   end
 
   def download_kubeconfig
-    send_data @cluster.kubeconfig, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
+    send_data @cluster.kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
   end
 
   # POST /clusters or /clusters.json
@@ -101,7 +101,7 @@ class ClustersController < ApplicationController
     if params[:cluster][:kubeconfig].present?
       kubeconfig_file = params[:cluster][:kubeconfig]
       yaml_content = kubeconfig_file.read
-      
+
       params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
     end
 

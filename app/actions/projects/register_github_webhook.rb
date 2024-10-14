@@ -20,6 +20,9 @@ class Projects::RegisterGithubWebhook
         active: true
       }
     )
+  rescue Octokit::UnprocessableEntity => e
+    next context if e.message.include?("Hook already exists")
+    context.fail_and_return!("Failed to create webhook")
   end
 
   def self.webhook_secret
