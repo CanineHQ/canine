@@ -1,3 +1,8 @@
+## TODO
+* Onboarding flow
+* we should have a feature to continuously poll stuff and figure out if they are still alive
+* Healthchecks and whatnot
+
 ## Setup
 
 - node 18
