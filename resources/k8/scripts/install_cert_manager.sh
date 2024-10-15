@@ -1,5 +1,5 @@
 set -e
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --force-updat
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --force-update
 helm repo add jetstack https://charts.jetstack.io --force-update
 
 helm install ingress-nginx ingress-nginx/ingress-nginx
