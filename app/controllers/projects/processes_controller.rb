@@ -9,7 +9,7 @@ class Projects::ProcessesController < Projects::BaseController
     kubectl = K8::Kubectl.from_project(@project)
     pod = K8::Stateless::Pod.new(@project)
     kubectl.apply_yaml(pod.to_yaml)
-    redirect_to project_processes_path(@project)
+    redirect_to project_processes_path(@project), notice: "One off pod #{pod.name} created"
   end
 
   def show
@@ -20,7 +20,7 @@ class Projects::ProcessesController < Projects::BaseController
   def destroy
     client = K8::Client.from_project(@project)
     client.delete_pod(params[:id], @project.name)
-    redirect_to project_processes_path(@project), notice: "Pod #{params[:id]} deleted"
+    redirect_to project_processes_path(@project), notice: "Pod #{params[:id]} terminating..."
   end
 
   private
