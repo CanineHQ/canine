@@ -58,12 +58,12 @@
               <td>
                 <div class="flex items-center space-x-2">
                   <div class="font-medium">
-                    <%= link_to "Show Logs", project_process_path(@project, pod.metadata.name), class: "btn btn-sm btn-primary btn-outline" %>
+                    <%= link_to "Show Logs", project_process_path(@project, pod.metadata.name), class: "btn btn-sm btn-outline" %>
                   </div>
 
                   <div class="font-medium">
                     <button
-                      class="btn btn-sm btn-info btn-outline"
+                      class="btn btn-sm btn-outline"
                       data-action="click->processes#showConnectionInstructions"
                       data-pod-name="<%= pod.metadata.name %>"
                     >Connect</button>
