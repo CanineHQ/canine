@@ -1,4 +1,6 @@
 class AddOns::LogsController < AddOns::BaseController
+  include LogColorsHelper
+
   def index
     @pods = get_pods_for_add_on(@add_on)
   end

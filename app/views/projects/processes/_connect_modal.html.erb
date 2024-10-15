@@ -1,0 +1,24 @@
+<dialog aria-label="Modal" class="modal" id="click_outside_modal">
+  <div class="modal-box w-11/12 max-w-5xl bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-8 w-full text-xl font-bold">Run this command to connect to your pod</div>
+    <div class="my-4">
+      <h4 class="text-lg font-bold">Step 1: Download Kubeconfig</h4>
+      <%= link_to "Download Kubeconfig", download_kubeconfig_cluster_path(@project.cluster), class: "btn btn-sm btn-primary btn-outline", target: "_blank" %>
+    </div>
+
+    <div class="my-4">
+      <h4 class="text-lg font-bold">Step 2: Run the command</h4>
+      <div role="tooltip" data-tip="Click to copy" class="tooltip tooltip-secondary">
+        <code class="hover:cursor-pointer"><pre>KUBECONFIG=/path/to/kubeconfig kubectl exec -it {pod_name} -- /bin/bash</pre></code>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

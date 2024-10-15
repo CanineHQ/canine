@@ -3,6 +3,9 @@
 - [ ] Onboarding flow
 - [ ] we should have a feature to continuously poll stuff and figure out if they are still alive
 - [ ] Healthchecks and whatnot
+- [ ] Command to actually open a console with all the environment variables set up
+- [ ] Finish the landing page
+- [ ] Write the manifesto
 
 ## Setup
 

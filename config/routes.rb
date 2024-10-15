@@ -8,7 +8,6 @@ Rails.application.routes.draw do
   get "/privacy", to: "static#privacy"
   get "/terms", to: "static#terms"
 
-
   authenticated :user do
     root to: "projects#index", as: :user_root
     # Alternate route to use if logged in users should still see public root
@@ -25,7 +24,7 @@ Rails.application.routes.draw do
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
-    resources :logs, only: %i[index show], module: :projects
+    resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update], module: :projects do
       resources :domains, only: %i[create destroy], module: :services
     end

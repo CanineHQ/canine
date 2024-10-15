@@ -1,0 +1,3 @@
+.help-text {
+  @apply text-sm text-base-content/80 italic;
+}

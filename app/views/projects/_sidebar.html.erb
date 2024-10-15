@@ -14,9 +14,9 @@
       Environment
     </div>
   <% end %>
-  <%= link_to project_logs_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_logs_path(project))}" do %>
+  <%= link_to project_processes_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_processes_path(project))}" do %>
     <div class="flex items-center gap-2">
-      Logs
+      Processes
     </div>
   <% end %>
   <%= link_to project_metrics_url(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_metrics_url(project))}" do %>
