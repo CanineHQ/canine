@@ -1,6 +1,4 @@
 import { Controller } from "@hotwired/stimulus"
-import tippy from "tippy.js";
-
 
 export default class extends Controller {
   static targets = ["command"]
@@ -10,17 +8,9 @@ export default class extends Controller {
 
   copyToClick(event) {
     navigator.clipboard.writeText(this.commandTarget.textContent)
-    this.tooltip(event.target)
-  }
-
-  tooltip(target) {
-    tippy(target, {
-      content: "Copied!",
-      showOnCreate: true,
-      onHidden: (instance) => {
-        instance.destroy()
-      }
-    })
+    const element = event.currentTarget
+    element.classList.add('animate-click')
+    setTimeout(() => element.classList.remove('animate-click'), 300)
   }
 
   showConnectionInstructions(event) {

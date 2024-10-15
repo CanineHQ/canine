@@ -1,3 +1,19 @@
 .help-text {
   @apply text-sm text-base-content/80 italic;
 }
+
+@keyframes click-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-click {
+  animation: click-animation 300ms ease-in-out;
+}
