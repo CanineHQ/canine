@@ -62,11 +62,21 @@
                   </div>
 
                   <div class="font-medium">
-                    <button
-                      class="btn btn-sm btn-outline"
-                      data-action="click->processes#showConnectionInstructions"
-                      data-pod-name="<%= pod.metadata.name %>"
-                    >Connect</button>
+                    <% if pod.status.phase == "Running" %>
+                      <button
+                        class="btn btn-sm btn-outline"
+                        data-action="click->processes#showConnectionInstructions"
+                        data-pod-name="<%= pod.metadata.name %>"
+                        data-namespace="<%= pod.metadata.namespace %>"
+                      >Connect</button>
+                    <% else %>
+                      <div role="tooltip" data-tip="Pod is not running" class="tooltip tooltip-secondary">
+                        <button
+                          disabled
+                          class="btn btn-sm btn-outline btn-disabled"
+                        >Connect</button>
+                      </div>
+                    <% end %>
                   </div>
 
                   <div class="font-medium">
