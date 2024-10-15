@@ -43,6 +43,8 @@ class Projects::ServicesController < Projects::BaseController
       :command,
       :name,
       :container_port,
+      :healthcheck_url,
+      :allow_public_networking,
     )
   end
 end

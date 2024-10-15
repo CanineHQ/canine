@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_09_172011) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_15_204010) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -225,6 +225,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_09_172011) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "container_port", default: 3000
+    t.string "healthcheck_url"
+    t.boolean "allow_public_networking", default: false
+    t.integer "status"
+    t.datetime "last_health_checked_at"
     t.index ["project_id"], name: "index_services_on_project_id"
   end
 

@@ -2,14 +2,18 @@
 #
 # Table name: services
 #
-#  id             :bigint           not null, primary key
-#  command        :string
-#  container_port :integer          default(3000)
-#  name           :string           not null
-#  service_type   :integer          not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  project_id     :bigint           not null
+#  id                      :bigint           not null, primary key
+#  allow_public_networking :boolean          default(FALSE)
+#  command                 :string
+#  container_port          :integer          default(3000)
+#  healthcheck_url         :string
+#  last_health_checked_at  :datetime
+#  name                    :string           not null
+#  service_type            :integer          not null
+#  status                  :integer
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  project_id              :bigint           not null
 #
 # Indexes
 #
@@ -26,6 +30,12 @@ class Service < ApplicationRecord
     background_service: 1,
     cron_job: 2
   }
+
+  enum :status, {
+    healthy: 0,
+    unhealthy: 1
+  }
+
   has_one :cron_schedule
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
