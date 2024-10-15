@@ -16,12 +16,12 @@
         <div class="text-sm">
           <%= render "add_ons/status", add_on: @add_on %>
         </div>
-        <h1 class="h3">
+        <h1 class="text-lg font-medium">
           <%= @add_on.name %>
         </h1>
-        <div class="flex flex-row">
-          <%= link_to @add_on.cluster.name, cluster_path(@add_on.cluster), class: "mr-2" %>
+        <div class="text-sm">
           <%= @add_on.chart_type %>
+          <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to add_on.cluster.name, add_on.cluster, target: "_blank", class: "underline" %></span>
         </div>
       </div>
     </div>

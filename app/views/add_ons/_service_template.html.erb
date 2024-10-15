@@ -27,3 +27,11 @@
     </button>
   </div>
 </div>
+<h6 class="text-xl font-bold">Install Logs</h6>
+<div class="collapse">
+  <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+  <div class="collapse-title p-0 underline m-0">Show install logs</div>
+  <div class="collapse-content p-0 mt-2">
+    <%= render "log_outputs/logs", loggable: @add_on %>
+  </div>
+</div>
