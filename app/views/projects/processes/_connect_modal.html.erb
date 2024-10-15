@@ -7,15 +7,19 @@
     </form>
     <div class="mb-8 w-full text-xl font-bold">Run this command to connect to your pod</div>
     <div class="my-4">
-      <h4 class="text-lg font-bold">Step 1: Download Kubeconfig</h4>
+      <h4 class="font-bold mb-2">Step 1: Download your Kubeconfig file</h4>
       <%= link_to "Download Kubeconfig", download_kubeconfig_cluster_path(@project.cluster), class: "btn btn-sm btn-primary btn-outline", target: "_blank" %>
     </div>
 
     <div class="my-4">
-      <h4 class="text-lg font-bold">Step 2: Run the command</h4>
-      <div role="tooltip" data-tip="Click to copy" class="tooltip tooltip-secondary">
-        <code class="hover:cursor-pointer"><pre>KUBECONFIG=/path/to/kubeconfig kubectl exec -it {pod_name} -- /bin/bash</pre></code>
-      </div>
+      <h4 class="font-bold mb-2">Step 2: Run the command</h4>
+      <code
+        class="hover:cursor-pointer tooltip tooltip-secondary"
+        data-tip="Click to copy"
+        data-action="click->processes#copyToClick"
+        >
+        <pre data-processes-target="command"></pre>
+      </code>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
