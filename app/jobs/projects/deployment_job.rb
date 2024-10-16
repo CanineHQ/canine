@@ -61,7 +61,9 @@ class Projects::DeploymentJob < ApplicationJob
     elsif service.web_service?
       apply_deployment(service, kubectl)
       apply_service(service, kubectl)
-      apply_ingress(service, kubectl)
+      if service.domains.any?
+        apply_ingress(service, kubectl)
+      end
     end
   end
 
