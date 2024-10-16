@@ -56,6 +56,7 @@ class Projects::DeploymentJob < ApplicationJob
   def deploy_service(service, kubectl)
     if service.background_service?
       apply_deployment(service, kubectl)
+      restart_deployment(service, kubectl)
     elsif service.cron_job?
       apply_cron_job(service, kubectl)
     elsif service.web_service?
