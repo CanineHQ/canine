@@ -36,7 +36,7 @@ class Service < ApplicationRecord
     unhealthy: 1
   }
 
-  has_one :cron_schedule
+  has_one :cron_schedule, dependent: :destroy
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
