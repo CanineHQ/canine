@@ -32,7 +32,6 @@ class K8::Helm::Service
 
   def version
     services = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).ls
-    puts services
     chart = services.find { |service| service['name'] == add_on.name }['chart']
     chart.match(/\d+\.\d+\.\d+/)&.to_s
   end

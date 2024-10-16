@@ -4,7 +4,7 @@ class K8::Helm::Redis < K8::Helm::Service
   end
 
   def service_basename
-    add_on.name.ends_with?("redis") ? add_on.name : "#{add_on.name}-redis"
+    add_on.name.include?("redis") ? add_on.name : "#{add_on.name}-redis"
   end
 
   def service_name

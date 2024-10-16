@@ -56,12 +56,16 @@ class Projects::DeploymentJob < ApplicationJob
   def deploy_service(service, kubectl)
     if service.background_service?
       apply_deployment(service, kubectl)
+      restart_deployment(service, kubectl)
     elsif service.cron_job?
       apply_cron_job(service, kubectl)
     elsif service.web_service?
       apply_deployment(service, kubectl)
       apply_service(service, kubectl)
-      apply_ingress(service, kubectl)
+      if service.domains.any?
+        apply_ingress(service, kubectl)
+      end
+      restart_deployment(service, kubectl)
     end
   end
 
@@ -76,6 +80,11 @@ class Projects::DeploymentJob < ApplicationJob
       resource_yaml = K8::Stateless.const_get(resource_type).new(service).to_yaml
       kubectl.apply_yaml(resource_yaml)
     end
+  end
+
+  def restart_deployment(service, kubectl)
+    @logger.info "Restarting deployment: #{service.name}"
+    kubectl.call("-n #{service.project.name} rollout restart deployment/#{service.name}")
   end
 
   def upload_registry_secrets(kubectl, deployment)

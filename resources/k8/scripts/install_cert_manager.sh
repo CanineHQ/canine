@@ -1,5 +1,7 @@
 set -e
-helm install ingress-nginx ingress-nginx/ingress-nginx
+
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm repo update
 helm install \
   cert-manager jetstack/cert-manager \
   --namespace cert-manager \

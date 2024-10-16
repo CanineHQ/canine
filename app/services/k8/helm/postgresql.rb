@@ -34,7 +34,7 @@ class K8::Helm::Postgresql < K8::Helm::Service
   end
 
   def password
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace default #{service_name} -o jsonpath='{.data.postgres-password}' | base64 -d")
+    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get secret --namespace #{add_on.name} #{service_name} -o jsonpath='{.data.postgres-password}' | base64 -d")
     output
   end
 end
