@@ -9,7 +9,7 @@ spec:
   selector:
     app: <%= service.name %>
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: <%= service.container_port %>
-  type: ClusterIP
+    - protocol: TCP
+      port: 80
+      targetPort: <%= service.container_port %>
+  type: LoadBalancer
