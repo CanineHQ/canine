@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_15_204010) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_17_220734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,7 +128,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_15_204010) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
-  create_table "inbound_webooks", force: :cascade do |t|
+  create_table "inbound_webhooks", force: :cascade do |t|
     t.text "body"
     t.integer "status", default: 0
     t.datetime "created_at", null: false
@@ -229,6 +229,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_15_204010) do
     t.boolean "allow_public_networking", default: false
     t.integer "status"
     t.datetime "last_health_checked_at"
+    t.integer "replicas", default: 1
     t.index ["project_id"], name: "index_services_on_project_id"
   end
 

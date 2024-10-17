@@ -9,6 +9,7 @@
 #  healthcheck_url         :string
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
+#  replicas                :integer          default(1)
 #  service_type            :integer          not null
 #  status                  :integer
 #  created_at              :datetime         not null

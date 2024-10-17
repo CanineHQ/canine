@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: inbound_webooks
+# Table name: inbound_webhooks
 #
 #  id         :bigint           not null, primary key
 #  body       :text
@@ -8,7 +8,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-class InboundWebook < ApplicationRecord
+class InboundWebhook < ApplicationRecord
   cattr_accessor :incinerate_after, default: 7.days
   enum status: %i[pending processing processed failed]
 
