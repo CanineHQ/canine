@@ -1,4 +1,4 @@
-class InboundWebookResource < Madmin::Resource
+class InboundWebhookResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
   attribute :body
