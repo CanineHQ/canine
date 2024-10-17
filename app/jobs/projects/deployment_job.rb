@@ -10,10 +10,11 @@ class Projects::DeploymentJob < ApplicationJob
     kubeconfig = project.cluster.kubeconfig
     kubectl = create_kubectl(deployment, kubeconfig)
 
-    # Upload container registry secrets
-    upload_registry_secrets(kubectl, deployment)
     # Create namespace
     apply_namespace(project, kubectl)
+
+    # Upload container registry secrets
+    upload_registry_secrets(kubectl, deployment)
     apply_config_map(project, kubectl)
 
     predeploy(project, deployment)
