@@ -1,4 +1,5 @@
 class Clusters::MetricsController < Clusters::BaseController
+  include MetricsHelper
   before_action :set_cluster
 
   def show
