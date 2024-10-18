@@ -19,7 +19,7 @@ class Apex {
           mounted: (c) => c.windowResizeHandler(),
         },
         type: "line",
-        height: 120,
+        height: 400,
         background: "transparent",
         toolbar: {
           show: true,
@@ -42,14 +42,6 @@ class Apex {
       },
       xaxis: {
         categories: this.xAxis,
-        labels: {
-          datetimeFormatter: {
-            year: 'yyyy',
-            month: 'MMM \'yy',
-            day: 'dd MMM',
-            hour: 'HH:mm'
-          }
-        }
       },
       series: this.datasets.map((dataset) => {
         let data = dataset.metrics
