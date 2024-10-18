@@ -1,4 +1,4 @@
-<div class="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
+<div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-24 lg:px-8">
   <div class="mx-auto max-w-2xl text-center">
     <h2 class="text-base font-semibold leading-7 text-indigo-400">Deploy faster</h2>
     <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Everything you need to deploy your app</p>
@@ -6,55 +6,42 @@
   </div>
   <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
     <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-      <div class="flex flex-col">
-          <dt class="text-base font-semibold leading-7 text-white">
-            <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
-</svg>
-            </div>
-            Github Integration
-          </dt>
-          <dd class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
-            <p class="flex-auto">Non quo aperiam repellendus quas est est. Eos aut dolore aut ut sit nesciunt. Ex tempora quia. Sit nobis consequatur dolores incidunt.</p>
-            <p class="mt-6">
-              <a href="#" class="text-sm font-semibold leading-6 text-indigo-400">Learn more <span aria-hidden="true">→</span></a>
-            </p>
-          </dd>
-        </div>
-      <div class="flex flex-col">
-          <dt class="text-base font-semibold leading-7 text-white">
-            <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path>
-</svg>
-            </div>
-            Automatic Deployment & Rollbacks
-          </dt>
-          <dd class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
-            <p class="flex-auto">Vero eum voluptatem aliquid nostrum voluptatem. Vitae esse natus. Earum nihil deserunt eos quasi cupiditate. A inventore et molestiae natus.</p>
-            <p class="mt-6">
-              <a href="#" class="text-sm font-semibold leading-6 text-indigo-400">Learn more <span aria-hidden="true">→</span></a>
-            </p>
-          </dd>
-        </div>
-      <div class="flex flex-col">
-          <dt class="text-base font-semibold leading-7 text-white">
-            <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"></path>
-</svg>
-            </div>
-            SSL Certificate Management
-          </dt>
-          <dd class="mt-1 flex flex-auto flex-col text-base leading-7 text-gray-300">
-            <p class="flex-auto">Et quod quaerat dolorem quaerat architecto aliquam accusantium. Ex adipisci et doloremque autem quia quam. Quis eos molestiae at iure impedit.</p>
-            <p class="mt-6">
-              <a href="#" class="text-sm font-semibold leading-6 text-indigo-400">Learn more <span aria-hidden="true">→</span></a>
-            </p>
-          </dd>
-        </div>
-      
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Github Integration',
+        description: 'Canine pulls your code and build your application when you push to Github',
+        icon: 'github'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'One Click Deployment & Rollbacks',
+        description: 'Manage your deployments and rollbacks in one place',
+        icon: 'rocket'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'SSL Certificate Management',
+        description: 'Let\'s Encrypt SSL certificates are automatically provisioned and managed for your applications',
+        icon: 'lock'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Simplifies Kubernetes',
+        description: 'Deploy any application that can run in a container in a single click',
+        icon: 'thumbs-up'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Any Workload',
+        description: 'Deploy web apps, background jobs, and even cron jobs from a single codebase',
+        icon: 'list-check'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Add Ons',
+        description: 'Extend the functionality of your application with popular open source projects, completely free',
+        icon: 'package'
+      ) %>
     </dl>
   </div>
 </div>

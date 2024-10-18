@@ -43,6 +43,8 @@
     <% end %>
     <hr>
 
-    <p class="text-center"><%= link_to "Deactivate my account", registration_path(resource_name), data: { confirm: "Are you sure? You cannot undo this." }, method: :delete %></p>
+    <p class="text-center">
+      <%= link_to "Deactivate my account", registration_path(resource_name), class: "btn btn-error", data: { confirm: "Are you sure? You cannot undo this." }, method: :delete %>
+    </p>
   </div>
 </div>

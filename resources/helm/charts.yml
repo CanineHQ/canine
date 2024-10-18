@@ -27,35 +27,41 @@ helm:
           type: integer
           default: 0
           hidden: true
-    #- name: elasticsearch
-    #  logo: /images/helm/elasticsearch.png
-    #  version: 18.10.0
-    #  repository: https://charts.bitnami.com/bitnami
-    #  template:
-    #    - name: resources.limits.storage
-    #      key: resources.limits.storage
-    #      type: size
-    #      default: 10Gi
-    #- name: sentry
-    #  logo: /images/helm/sentry.png
-    #  version: 2.10.0
-    #  repository: https://sentry-kubernetes.github.io/charts
-    #- name: grafana
-    #  logo: /images/helm/grafana.png
-    #  version: 6.56.0
-    #  repository: https://grafana.github.io/helm-charts
+    - name: elasticsearch
+      logo: /images/helm/elasticsearch.png
+      version: 18.10.0
+      repository: https://charts.bitnami.com/bitnami
+      install_command: helm install ${add_on_name} ${repository}
+      template:
+        - name: resources.limits.storage
+          key: resources.limits.storage
+          type: size
+          default: 10Gi
+      coming_soon: true
+    - name: sentry
+      logo: /images/helm/sentry.png
+      version: 2.10.0
+      repository: https://sentry-kubernetes.github.io/charts
+      coming_soon: true
+    - name: clickhouse
+      logo: /images/helm/clickhouse.png
+      version: 2.1.0
+      repository: https://clickhouse.github.io/clickhouse-helm
+      coming_soon: true
+    - name: superset
+      logo: /images/helm/superset.png
+      version: 0.6.1
+      repository: https://apache.github.io/superset
+      coming_soon: true
+    - name: grafana
+      logo: /images/helm/grafana.png
+      version: 6.56.0
+      repository: https://grafana.github.io/helm-charts
+      coming_soon: true
     #- name: prometheus
     #  logo: /images/helm/prometheus.png
     #  version: 16.1.0
     #  repository: https://prometheus-community.github.io/helm-charts
-    #- name: superset
-    #  logo: /images/helm/superset.png
-    #  version: 0.6.1
-    #  repository: https://apache.github.io/superset
-    #- name: clickhouse
-    #  logo: /images/helm/clickhouse.png
-    #  version: 2.1.0
-    #  repository: https://clickhouse.github.io/clickhouse-helm
     #- name: wordpress
     #  version: 12.1.0
     #  repository: https://charts.bitnami.com/bitnami

@@ -9,7 +9,8 @@
       <div class="flex">
         <div class="leftmenu-wrapper">
           <%= link_to root_path, class: "flex h-16 items-center justify-center" do %>
-            <img src="/images/logo-compact.png" class="w-[40px] h-[40px]" />
+            <img src="/images/logo-compact.png" class="w-[40px] h-[40px] lg:hidden" />
+            <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
             <span class="sr-only"><%= Rails.configuration.application_name %></span>
           <% end %>
           <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
@@ -97,7 +98,7 @@
           </div>
         </div>
         <div class="leftbar-backdrop"></div>
-        <main class="main-wrapper"> 
+        <main class="main-wrapper overflow-auto"> 
           <div class="flex h-full flex-col">
             <%= render 'shared/navbar' %>
             <%= render 'shared/notices' %>
