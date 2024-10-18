@@ -6,7 +6,8 @@ namespace :metrics do
       #url = File.join("http://#{service.name}-service.#{service.project.name}.svc.cluster.local", service.healthcheck_url)
       #K8::Client.from_project(service.project).run_command("curl -s -o /dev/null -w '%{http_code}' #{url}")
       if service.domains.any?
-        url = File.join("http://#{service.domains.first.name}", service.healthcheck_url)
+        url = File.join("https://#{service.domains.first.domain_name}", service.healthcheck_url)
+        Rails.logger.info("Checking health for #{service.name} at #{url}")
         response = HTTParty.get(url)
         if response.success?
           service.status = :healthy
