@@ -5,6 +5,8 @@
 - [ ] Healthchecks and whatnot
 - [ ] Finish the landing page
 - [ ] Write the manifesto
+- [ ] show last healthcheck
+- [ ] allow public network access flag is not currently doing anything
 * Make it show which git SHA is currently deployed on the homepage
     * Or if there is currently a deploy happening
 * I want a way to “stop” the processes, can maybe do this with a replicas=0 setting
