@@ -1,0 +1,16 @@
+<%
+  badge_color = case service.status
+  when "healthy"
+    "success"
+  when "unhealthy"
+    "error"
+  end
+%>
+<div>
+  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+    <%= service.status %>
+  </div>
+  <div class="text-xs text-gray-500">
+    Last checked <%= time_ago_in_words(service.last_health_checked_at) %> ago
+  </div>
+</div>

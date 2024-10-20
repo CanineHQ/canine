@@ -19,8 +19,15 @@
         <% @project.services.each do |service| %>
         <div class="collapse collapse-plus bg-base-200 hover:bg-base-200/40">
           <input aria-label="Accordion radio" class="w-full" type="radio" name="accordion" />
-          <div class="collapse-title text-xl font-medium">
-            <%= service.name %> 
+          <div class="collapse-title">
+            <div class="flex items-center justify-between">
+              <div class="text-xl font-medium"><%= service.name %></div>
+              <% if service.web_service? %>
+                <div class="my-1">
+                  <%= render "projects/services/status", service: service %>
+                </div>
+              <% end %>
+            </div>
           </div>
           <div class="collapse-content">
             <%= render "projects/services/show", service: service %>

@@ -48,8 +48,12 @@ class Project < ApplicationRecord
     deployments.order(created_at: :desc).where(status: :completed).first
   end
 
-  def last_deployed_at
-    deployments.order(created_at: :desc).first&.created_at
+  def last_deployment
+    deployments.order(created_at: :desc).first
+  end
+
+  def last_deployment_at
+    last_deployment&.created_at
   end
 
   def repository_name
