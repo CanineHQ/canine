@@ -3,9 +3,7 @@
 - [ ] Onboarding flow
 - [ ] we should have a feature to continuously poll stuff and figure out if they are still alive
 - [ ] Healthchecks and whatnot
-- [ ] Finish the landing page
 - [ ] Write the manifesto
-- [ ] show last healthcheck
 - [ ] allow public network access flag is not currently doing anything
 * Make it show which git SHA is currently deployed on the homepage
     * Or if there is currently a deploy happening
