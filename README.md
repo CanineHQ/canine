@@ -11,7 +11,7 @@
 * All the times need to show relative times, not absolute. It’s too hard to understand absolute times.
 * Whenever something is pushed, and deployed, we need to kill all one off containers because they are no longer running the correct source code
 * “Pending” should have some kind of active spinner animation just for the feels
-* 
+* Rebulid metrics tabs so it works for both clusters & pods
 
 ## Setup
 
