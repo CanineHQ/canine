@@ -1,6 +1,6 @@
 ## TODO
 
-- [ ] Onboarding flow
+- [ ] Onboarding flow (connect github)
 - [ ] we should have a feature to continuously poll stuff and figure out if they are still alive
 - [ ] Healthchecks and whatnot
 - [ ] Write the manifesto
