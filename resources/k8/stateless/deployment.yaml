@@ -6,7 +6,12 @@ metadata:
   labels:
     app: <%= service.name %>
 spec:
-  replicas: 1
+  replicas: <%= service.replicas %>
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   selector:
     matchLabels:
       app: <%= service.name %>
@@ -24,5 +29,19 @@ spec:
             name: <%= project.name %>
         ports:
         - containerPort: <%= service.container_port %>
+        <% if service.healthcheck_url.present? %>
+        livenessProbe:
+          httpGet:
+            path: <%= service.healthcheck_url %>
+            port: <%= service.container_port %>
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: <%= service.healthcheck_url %>
+            port: <%= service.container_port %>
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        <% end %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com

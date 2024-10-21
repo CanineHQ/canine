@@ -14,6 +14,6 @@ export default class extends Controller {
     event.currentTarget.classList.add('ring', 'ring-primary')
     // Show Input
     this.element.querySelectorAll('.card-form').forEach(form => form.classList.add('hidden'))
-    this.element.querySelector(`#card-${event.currentTarget.dataset.cardName}`)?.classList.remove("hidden");
+    this.element.querySelectorAll(`.card-${event.currentTarget.dataset.cardName}`).forEach(form => form.classList.remove("hidden"));
   }
 }
