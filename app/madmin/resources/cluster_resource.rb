@@ -9,7 +9,7 @@ class ClusterResource < Madmin::Resource
 
   # Associations
   attribute :log_output
-  attribute :user
+  attribute :account
   attribute :projects
   attribute :add_ons
   attribute :domains
