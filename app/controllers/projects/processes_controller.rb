@@ -31,6 +31,6 @@ class Projects::ProcessesController < Projects::BaseController
     end
 
     def set_cluster
-      @cluster = current_user.clusters.find(params[:cluster_id])
+      @cluster = current_account.clusters.find(params[:cluster_id])
     end
 end

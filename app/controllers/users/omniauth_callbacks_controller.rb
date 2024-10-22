@@ -35,6 +35,7 @@ module Users
         redirect_to edit_user_registration_path
       else
         sign_in_and_redirect user, event: :authentication
+        session[:account_id] = user.accounts.first.id
         set_flash_message :notice, :success, kind: kind
       end
     end
@@ -77,11 +78,19 @@ module Users
     end
 
     def create_user
-      User.create(
-        email: auth.info.email,
-        # name: auth.info.name,
-        password: Devise.friendly_token[0, 20]
-      )
+      ActiveRecord::Base.transaction do
+        user = User.create!(
+          email: auth.info.email,
+          # name: auth.info.name,
+          password: Devise.friendly_token[0, 20]
+        )
+        account = Account.create!(
+          owner: user,
+          name: "#{auth.info.name || auth.info.email.split("@").first}'s Account"
+        )
+        AccountUser.create!(account: account, user: user)
+        user
+      end
     end
   end
 end

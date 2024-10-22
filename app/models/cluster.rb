@@ -8,20 +8,21 @@
 #  status     :integer          default("initializing"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
-#  user_id    :bigint           not null
+#  account_id :bigint           not null
 #
 # Indexes
 #
-#  index_clusters_on_user_id  (user_id)
+#  index_clusters_on_account_id  (account_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (user_id => users.id)
+#  fk_rails_...  (account_id => accounts.id)
 #
 class Cluster < ApplicationRecord
   include Loggable
   broadcasts_refreshes
-  belongs_to :user
+  belongs_to :account
+
   has_many :projects, dependent: :destroy
   has_many :add_ons, dependent: :destroy
   has_many :domains, through: :projects

@@ -9,7 +9,7 @@
   <div class="mt-5">
     <div aria-label="Card" class="card card-bordered bg-base-100">
       <div class="card-body">
-        <% if current_user.clusters.empty? %>
+        <% if current_account.clusters.empty? %>
           <div class="text-center">
             <p class="mb-4 h3">Create your first Cluster to get started</p>
             <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-primary" %>

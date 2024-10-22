@@ -11,7 +11,7 @@
 #  name                    :string           not null
 #  replicas                :integer          default(1)
 #  service_type            :integer          not null
-#  status                  :integer
+#  status                  :integer          default("healthy")
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  project_id              :bigint           not null

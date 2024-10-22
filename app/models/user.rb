@@ -28,26 +28,12 @@ class User < ApplicationRecord
   has_one_attached :avatar
   has_person_name
 
+  has_many :account_users, dependent: :destroy
+  has_many :accounts, through: :account_users
+
+  has_many :providers, dependent: :destroy
+
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
-  has_many :providers
 
-  has_many :clusters, dependent: :destroy
-  has_many :projects, through: :clusters
-  has_many :services, through: :projects
-  has_one :docker_hub_credential, dependent: :destroy
-  has_many :add_ons, through: :clusters
-
-
-  def github_username
-    JSON.parse(github_account.auth)["info"]["nickname"]
-  end
-
-  def github_access_token
-    github_account.access_token
-  end
-
-  def github_account
-    @_github_account ||= providers.find_by(provider: "github")
-  end
 end
