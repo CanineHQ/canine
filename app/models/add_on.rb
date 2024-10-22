@@ -27,6 +27,7 @@ class AddOn < ApplicationRecord
   }.freeze
   include Loggable
   belongs_to :cluster
+  has_one :account, through: :cluster
   enum :status, {installing: 0, installed: 1, uninstalling: 2, uninstalled: 3, failed: 4}
   validates :chart_type, presence: true
   validate :chart_type_exists

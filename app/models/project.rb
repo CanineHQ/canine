@@ -28,7 +28,7 @@
 class Project < ApplicationRecord
   broadcasts_refreshes
   belongs_to :cluster
-  has_one :user, through: :cluster
+  has_one :account, through: :cluster
   has_many :services, dependent: :destroy
   has_many :environment_variables, dependent: :destroy
   has_many :builds, dependent: :destroy
