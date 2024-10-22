@@ -2,7 +2,6 @@ class AccountResource < Madmin::Resource
   # Associations
   attribute :owner
   attribute :users
-  attribute :providers
   attribute :clusters
   attribute :projects
   attribute :services
