@@ -90,7 +90,7 @@ class Projects::DeploymentJob < ApplicationJob
 
   def upload_registry_secrets(kubectl, deployment)
     project = deployment.project
-    docker_config_json = create_docker_config_json(project.user.github_username, project.user.github_access_token)
+    docker_config_json = create_docker_config_json(project.account.github_username, project.account.github_access_token)
     secret_yaml = K8::Secrets::RegistrySecret.new(project, docker_config_json).to_yaml
     kubectl.apply_yaml(secret_yaml)
   end

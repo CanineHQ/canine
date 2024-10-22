@@ -4,7 +4,7 @@ class AddOnsController < ApplicationController
 
   # GET /add_ons
   def index
-    @pagy, @add_ons = pagy(AddOn.all)
+    @pagy, @add_ons = pagy(current_account.add_ons)
 
     # Uncomment to authorize with Pundit
     # authorize @add_ons
@@ -71,7 +71,7 @@ class AddOnsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
-    @add_on = current_user.add_ons.find(params[:id])
+    @add_on = current_account.add_ons.find(params[:id])
 
     # Uncomment to authorize with Pundit
     # authorize @add_on

@@ -11,6 +11,10 @@
     <%= service.status %>
   </div>
   <div class="text-xs text-gray-500">
-    Last checked <%= time_ago_in_words(service.last_health_checked_at) %> ago
+    <% if service.last_health_checked_at %>
+      Last checked <%= time_ago(service.last_health_checked_at) %>
+    <% else %>
+      Never checked
+    <% end %>
   </div>
 </div>

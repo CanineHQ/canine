@@ -23,7 +23,7 @@ class Projects::BuildJob < ApplicationJob
   private
 
   def project_git(project)
-    "https://#{project.user.github_username}:#{project.user.github_access_token}@github.com/#{project.repository_url}.git"
+    "https://#{project.account.github_username}:#{project.account.github_access_token}@github.com/#{project.repository_url}.git"
   end
 
   def git_clone(project, build, repository_path)
@@ -72,9 +72,9 @@ class Projects::BuildJob < ApplicationJob
 
   def login_to_docker(project, build)
     docker_login_command = %w[docker login ghcr.io --username] +
-                           [ project.user.github_username, "--password", project.user.github_access_token ]
+                           [ project.account.github_username, "--password", project.account.github_access_token ]
 
-    build.info "Logging into ghcr.io as #{project.user.github_username}"
+    build.info "Logging into ghcr.io as #{project.account.github_username}"
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?

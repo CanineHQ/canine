@@ -31,7 +31,7 @@
           <td>
             <% if project.last_deployment_at %>
               <div>
-                <div class="text-sm"><%= "#{distance_of_time_in_words(project.last_deployment_at, Time.current)} ago" %></div>
+                <div class="text-sm"><%= time_ago(project.last_deployment_at) %></div>
                 <div class="text-xs italic"><%= project.last_deployment.build.commit_message %></div>
               </div>
             <% else %>

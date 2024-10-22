@@ -4,6 +4,20 @@
     <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
+  <% if current_user.accounts.count > 1 %>
+    <div class="flex items-center justify-center">
+      <div class="mx-auto dropdown">
+        <button type="button" class="btn w-full"><%= current_account.name %></button>
+        <ul tabindex="0" class="menu dropdown-content w-52 rounded-box bg-base-100 p-2 shadow" role="menu">
+          <%= current_user.accounts.each do |account| %>
+            <li>
+              <%= link_to account.name, switch_account_path(account) %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
 
   <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
     <div class="simplebar-wrapper">
@@ -23,7 +37,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_user.projects.each do |project| %>
+                      <% current_account.projects.each do |project| %>
                         <li>
                           <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if current_page?(root_projects_path(project))}" do %>
                             <div class="flex items-center gap-2">
@@ -54,7 +68,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_user.clusters.each do |cluster| %>
+                      <% current_account.clusters.each do |cluster| %>
                         <li>
                           <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if current_page?(cluster_path(cluster))}" do %>
                             <div class="flex items-center gap-2">
@@ -85,7 +99,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_user.add_ons.each do |add_on| %>
+                      <% current_account.add_ons.each do |add_on| %>
                         <li>
                           <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if current_page?(add_on_path(add_on))}" do %>
                             <div class="flex items-center gap-2">

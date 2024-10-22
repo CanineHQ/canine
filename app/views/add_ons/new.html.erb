@@ -19,7 +19,7 @@
 
         <div class="form-group">
           <%= form.label :cluster_id %>
-          <%= form.collection_select :cluster_id, current_user.clusters, :id, :name, {}, { class: "select select-bordered" } %>
+          <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, {}, { class: "select select-bordered" } %>
         </div>
 
         <div data-controller="new-add-ons">

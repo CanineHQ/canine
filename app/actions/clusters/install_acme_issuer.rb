@@ -13,13 +13,12 @@ class Clusters::InstallAcmeIssuer
       cluster.info("Acme issuer is already installed")
     rescue Cli::CommandFailedError => e
       cluster.info("Acme issuer not detected, installing...")
-      ingress_yaml = K8::Shared::AcmeIssuer.new(cluster.user.email).to_yaml
+      ingress_yaml = K8::Shared::AcmeIssuer.new(cluster.account.owner.email).to_yaml
       kubectl.apply_yaml(ingress_yaml)
       cluster.info("Acme issuer installed")
     end
   rescue StandardError => e
     cluster.failed!
     cluster.info("Acme issuer failed to install")
-    context.fail!("Script failed with exit code #{exit_status.exitstatus}")
   end
 end
