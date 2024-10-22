@@ -31,32 +31,43 @@
           <div class="text-sm text-gray-500">
             More charts coming soon.
           </div>
-          <div class="grid grid-cols-5 gap-4 my-4">
-            <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
-              <div class="card bg-base-100 shadow-xl cursor-pointer overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
+          <div class="grid grid-cols-5 gap-4 mt-4 mb-12">
+            <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
+            <div class="relative">
+              <% if chart['coming_soon'] %>
+                <div class="absolute badge badge-error top-[-10px] right-[-10px] z-10">
+                  Coming Soon!
+                </div>
+              <% end %>
+              <div class="card bg-base-100 shadow-xl <%= chart['coming_soon'] ? 'cursor-not-allowed' : 'cursor-pointer' %> overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
                   data-new-add-ons-target="card"
-                  data-action="click->new-add-ons#selectCard"
+                  <% unless chart['coming_soon'] %>
+                    data-action="click->new-add-ons#selectCard"
+                  <% end %>
                   data-card-name="<%= chart['name'] %>">
-                <figure class="px-4 pt-4 overflow-visible">
+                <figure class="px-4 pt-8 overflow-visible">
                   <div class="w-full flex items-center justify-center">
                     <img
                       src="<%= chart['logo'] %>" alt="<%= chart['name'] %>"
-                      class="h-[50px] object-contain"
+                      class="h-[50px] object-contain <%= chart['coming_soon'] ? 'opacity-50' : 'opacity-100' %>"
                     />
                   </div>
                 </figure>
                 <div class="card-body items-center text-center">
-                  <%= chart['name'].titleize %>
+                  <%= chart['friendly_name'] || chart['name'].titleize %>
                 </div>
               </div>
+            </div>
             <% end %>
           </div>
 
-          <% YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts'].each do |chart| %>
+          <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
             <div id="card-<%= chart['name'] %>" class="mt-8 card-form hidden">
               <h4 class="text-lg font-bold"><%= chart['name'].titleize %> Settings</h4>
               <hr class="mt-2 mb-6 border-base-content/10" />
-              <%= render "add_ons/chart_form", chart: chart, form: form %>
+              <% unless chart['coming_soon'] %>
+                <%= render "add_ons/chart_form", chart: chart, form: form %>
+              <% end %>
             </div>
           <% end %>
         </div>

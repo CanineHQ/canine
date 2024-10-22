@@ -6,7 +6,7 @@ class AddOns::InstallHelmChart
     add_on = context.add_on
     create_namespace(add_on)
     add_on.installing!
-    charts = YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))['helm']['charts']
+    charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
     # First, check if the chart is already installed & running
 

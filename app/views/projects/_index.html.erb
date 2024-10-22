@@ -12,7 +12,7 @@
           <span class="text-sm font-medium text-base-content/80">Cluster Name</span>
         </th>
         <th>
-          <span class="text-sm font-medium text-base-content/80">Last Deployed At</span>
+          <span class="text-sm font-medium text-base-content/80">Last Deployment</span>
         </th>
       </tr>
     </thead>
@@ -29,7 +29,14 @@
             <div><%= project.cluster&.name %></div>
           </td>
           <td>
-            <div class="text-sm"><%= project.last_deployed_at&.strftime('%Y-%m-%d %H:%M:%S') || "Never" %></div>
+            <% if project.last_deployment_at %>
+              <div>
+                <div class="text-sm"><%= "#{distance_of_time_in_words(project.last_deployment_at, Time.current)} ago" %></div>
+                <div class="text-xs italic"><%= project.last_deployment.build.commit_message %></div>
+              </div>
+            <% else %>
+              <div class="text-sm">Never</div>
+            <% end %>
           </td>
           <td>
             <div class="inline-flex w-fit">

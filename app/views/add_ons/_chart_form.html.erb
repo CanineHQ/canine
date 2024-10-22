@@ -1,4 +1,4 @@
-<% chart['template'].each do |variable| %>
+<% (chart['template'] || []).each do |variable| %>
   <% next if variable['hidden'] %>
   <div class="form-group">
     <%= form.label variable['name'] %>

@@ -40,7 +40,7 @@ class AddOn < ApplicationRecord
   protected
 
   def chart_definition
-    charts = YAML.load_file(Rails.root.join("resources", "helm", "charts.yml"))["helm"]["charts"]
+    charts = K8::Helm::Client::CHARTS["helm"]["charts"]
     charts.find { |chart| chart["name"] == chart_type }
   end
 

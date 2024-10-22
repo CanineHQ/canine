@@ -1,4 +1,3 @@
-
 import ApexCharts from "apexcharts";
 const ORDERED_COLORS = [
   "#a25772",
@@ -7,20 +6,21 @@ const ORDERED_COLORS = [
 
 
 class Apex {
-  constructor(seriesData) {
-    this.seriesData = seriesData;
+  constructor(element, datasets) {
+    this.element = element;
+    this.datasets = datasets;
+    this.xAxis = this.datasets.map(d => d.metrics.map(m => new Date(m.created_at))).flat().sort();
   }
 
-  options(id, series, formatters = {}) {
-    const yAxesFormatter = formatters.yAxis ? formatters.yAxis : (value) => value;
-    const toolTipFormatter = formatters.tooltip ? formatters.tooltip : (value) => value
+  options() {
     return {
       chart: {
         events: {
           mounted: (c) => c.windowResizeHandler(),
         },
         type: "line",
-        height: 120,
+        height: 400,
+        background: "transparent",
         toolbar: {
           show: true,
           tools: {
@@ -32,8 +32,6 @@ class Apex {
             reset: false,
           },
         },
-        background: "transparent",
-        id,
         group: "metrics",
       },
       theme: {
@@ -42,17 +40,21 @@ class Apex {
       stroke: {
         width: 2,
       },
-      yaxis: {
-        labels: {
-          formatter: yAxesFormatter
-        },
+      xaxis: {
+        categories: this.xAxis,
       },
-      tooltip: {
-        y: {
-          formatter: toolTipFormatter
-        },
-      },
-      series
+      series: this.datasets.map((dataset) => {
+        let data = dataset.metrics
+        if (dataset.type === "size") {
+          data = data.map(m => m.value)
+        } else {
+          data = data.map(m => m.value)
+        }
+        return {
+          name: dataset.name,
+          data,
+        }
+      })
     }
   };
 
@@ -64,28 +66,10 @@ class Apex {
     }];
   }
 
-  apexMetricContainer(length) {
-    const container = document.getElementById("apex-metrics");
-    container.innerHTML = "";
-    for (let i = 0; i < length; i++) {
-      const id = "chart-" + i;
-      container.innerHTML += `<div id="${id}"></div>`;
-    }
-  }
-
   render() {
-    var charts = []
-    this.apexMetricContainer(this.seriesData.length);
-    this.seriesData.map((series, index) => {
-      var id = "chart-" + index;
-      const labelFormatter = series.formatters ? series.formatters : {};
-      const chartOptions = this.options(id, this.createSeriesData(series, index), labelFormatter);
-      const chart = new window.ApexCharts(document.querySelector("#" + id), chartOptions);
-      chart.render();
-      charts.push(chart)
-    });
-    return charts
+    var chart = new ApexCharts(this.element, this.options());
+    chart.render()
+    return chart;
   }
 }
-window.Apex = Apex;
 export default Apex;

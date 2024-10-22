@@ -14,7 +14,7 @@ namespace :madmin do
   resources :deployments
   resources :domains
   resources :environment_variables
-  resources :inbound_webooks
+  resources :inbound_webhooks
   resources :log_outputs
   resources :announcements
   resources :metrics

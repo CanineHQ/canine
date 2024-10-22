@@ -1,4 +1,5 @@
 class K8::Helm::Client
+  CHARTS = YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))
   include K8::Kubeconfig
   attr_reader :kubeconfig, :runner
 

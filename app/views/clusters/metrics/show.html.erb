@@ -99,26 +99,8 @@
       <% end %>
     </tbody>
   </table>
-<div id='apex-metrics'></div>
-<script>
-  const cpuMetrics = <%= raw @metrics.cpu.map { |x| x.metadata['cpu'].to_i } %>
-  const memoryMetrics = <%= raw @metrics.memory.map { |x| x.metadata['memory'] } %>
-  const series = [
-    {
-      name: 'Memory',
-      data: memoryMetrics,
-      formatters: {
-        yAxis: (val) => (val / Math.pow(1024, 3)).toFixed(0) + "G",
-        tooltip: (val) => (val / Math.pow(1024, 2)).toFixed(0) + "M"
-      },
-    },
-    {
-      name: 'CPU',
-      data: cpuMetrics
-    }
-  ];
-  document.addEventListener("DOMContentLoaded", function () {
-    new window.Apex(series).render();
-  })
-</script>
+  <div class="grid gap-4 grid-cols-2">
+    <%= render "charts/chart", dataset: [{ metrics: to_data(@metrics.memory, 'memory'), type: "size", name: "Memory" }], title: "Memory" %>
+    <%= render "charts/chart", dataset: [{ metrics: to_data(@metrics.cpu, 'cpu'), type: "percentage", name: "CPU" }], title: "CPU" %>
+  </div>
 <% end %>

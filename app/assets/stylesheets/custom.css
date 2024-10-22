@@ -17,3 +17,7 @@
 .animate-click {
   animation: click-animation 300ms ease-in-out;
 }
+
+.prose-lg th {
+  @apply text-left;
+}

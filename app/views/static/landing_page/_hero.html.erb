@@ -15,28 +15,25 @@
   </div>
   <div class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-40 lg:flex lg:px-8 lg:pt-40">
     <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
-      <img class="h-11" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&amp;shade=500" alt="Your Company">
-      <div class="mt-24 sm:mt-32 lg:mt-16">
-        <a href="#" class="inline-flex space-x-6">
-          <span class="rounded-full bg-indigo-500/10 px-3 py-1 text-sm font-semibold leading-6 text-indigo-400 ring-1 ring-inset ring-indigo-500/20">Latest updates</span>
-          <span class="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-300">
-            <span>Just shipped v1.0</span>
-            <svg class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-<path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"></path>
-</svg>
-          </span>
-        </a>
-      </div>
-      <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">Deploy to the cloud with confidence</h1>
-      <p class="mt-6 text-lg leading-8 text-gray-300">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat aliqua.</p>
+      <img class="h-[70px]" src="/images/logo-full.png" alt="Your Company">
+      <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">Making Kubernetes as easy as Heroku</h1>
+      <p class="mt-6 text-lg leading-8 text-gray-300">Canine is a Kubernetes platform that makes it easy to deploy and manage your applications.</p>
       <div class="mt-10 flex items-center gap-x-6">
         <%= link_to "Get started", new_user_registration_path, class: "rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400" %>
-        <a href="#" class="text-sm font-semibold leading-6 text-white">Live demo <span aria-hidden="true">→</span></a>
+        <%= link_to manifesto_path, class: "text-sm font-semibold leading-6 text-white" do %>
+          Our manifesto <span aria-hidden="true">→</span>
+        <% end %>
       </div>
     </div>
     <div class="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
       <div class="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-        <img src="https://tailwindui.com/img/component-images/dark-project-app-screenshot.png" alt="App screenshot" width="2432" height="1442" class="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10">
+        <img
+          src="/images/deployment.png"
+          alt="App screenshot"
+          width="2432"
+          height="1442"
+          class="w-[76rem] rounded-md bg-white/5 shadow-2xl ring-1 ring-white/10"
+        />
       </div>
     </div>
   </div>

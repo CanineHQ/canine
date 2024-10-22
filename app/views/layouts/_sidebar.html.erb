@@ -1,0 +1,115 @@
+<div class="leftmenu-wrapper">
+  <%= link_to root_path, class: "flex h-16 items-center justify-center" do %>
+    <img src="/images/logo-compact.png" class="w-[40px] h-[40px] lg:hidden" />
+    <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
+    <span class="sr-only"><%= Rails.configuration.application_name %></span>
+  <% end %>
+
+  <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
+    <div class="simplebar-wrapper">
+      <div class="simplebar-mask">
+        <div class="simplebar-offset">
+          <div class="simplebar-content-wrapper">
+            <div class="simplebar-content">
+              <div class="menu mb-6">
+                <li class="mb-0.5">
+                  <details <%= 'open' if in_namespace?('projects') %>>
+                    <summary>
+                      <%= link_to projects_path do %>
+                        <div class="flex items-center gap-2">
+                          <iconify-icon icon="lucide:sparkles" height="18"></iconify-icon>
+                          Projects
+                        </div>
+                      <% end %>
+                    </summary>
+                    <ul>
+                      <% current_user.projects.each do |project| %>
+                        <li>
+                          <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if current_page?(root_projects_path(project))}" do %>
+                            <div class="flex items-center gap-2">
+                              <%= project.name %>
+                            </div>
+                          <% end %>
+                        </li>
+                      <% end %>
+                      <li>
+                        <%= link_to new_project_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_project_path)}" do %>
+                          <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                            New Project
+                          </div>
+                        <% end %>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="mb-0.5">
+                  <details <%= 'open' if in_namespace?('clusters') %>>
+                    <summary>
+                      <%= link_to clusters_path do %>
+                        <div class="flex items-center gap-2">
+                          <iconify-icon icon="lucide:boxes" height="18"></iconify-icon>
+                          Clusters
+                        </div>
+                      <% end %>
+                    </summary>
+                    <ul>
+                      <% current_user.clusters.each do |cluster| %>
+                        <li>
+                          <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if current_page?(cluster_path(cluster))}" do %>
+                            <div class="flex items-center gap-2">
+                              <%= cluster.name %>
+                            </div>
+                          <% end %>
+                        </li>
+                      <% end %>
+                      <li>
+                        <%= link_to new_cluster_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_cluster_path)}" do %>
+                          <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                            New Cluster
+                          </div>
+                        <% end %>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li class="mb-0.5">
+                  <details <%= 'open' if in_namespace?('add_ons') %>>
+                    <summary>
+                      <%= link_to add_ons_path do %>
+                        <div class="flex items-center gap-2">
+                          <iconify-icon icon="lucide:package" height="18"></iconify-icon>
+                          Add Ons
+                        </div>
+                      <% end %>
+                    </summary>
+                    <ul>
+                      <% current_user.add_ons.each do |add_on| %>
+                        <li>
+                          <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if current_page?(add_on_path(add_on))}" do %>
+                            <div class="flex items-center gap-2">
+                              <%= add_on.name %>
+                            </div>
+                          <% end %>
+                        </li>
+                      <% end %>
+                      <li>
+                        <%= link_to new_add_on_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_add_on_path)}" do %>
+                          <div class="flex items-center gap-2">
+                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                            New Add On
+                          </div>
+                        <% end %>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

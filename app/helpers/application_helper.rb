@@ -26,6 +26,6 @@ module ApplicationHelper
   end
 
   def in_namespace?(namespace)
-    controller.controller_path.start_with?("#{namespace}/")
+    controller.controller_path.include?(namespace)
   end
 end
