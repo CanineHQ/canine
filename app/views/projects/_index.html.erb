@@ -31,7 +31,9 @@
           <td>
             <% if project.last_deployment_at %>
               <div>
-                <div class="text-sm"><%= time_ago(project.last_deployment_at) %></div>
+                <div role="tooltip" data-tip="<%= project.last_deployment_at.strftime("%B %d, %Y %I:%M %p") %>" class="tooltip">
+                  <div class="text-sm"><%= time_ago(project.last_deployment_at) %></div>
+                </div>
                 <div class="text-xs italic"><%= project.last_deployment.build.commit_message %></div>
               </div>
             <% else %>

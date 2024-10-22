@@ -61,7 +61,9 @@
             </div>
           </td>
           <td>
-            <div class="text-sm capitalize"><%= build.created_at.strftime("%B %d, %Y %H:%M") %></div>
+            <div role="tooltip" data-tip="<%= build.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
+              <div class="text-sm capitalize"><%= distance_of_time_in_words(build.created_at, Time.current) %> ago</div>
+            </div>
           </td>
           <td>
             <div class="text-sm capitalize">

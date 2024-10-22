@@ -8,9 +8,6 @@
 * Make it show which git SHA is currently deployed on the homepage
     * Or if there is currently a deploy happening
 * I want a way to “stop” the processes, can maybe do this with a replicas=0 setting
-* All the times need to show relative times, not absolute. It’s too hard to understand absolute times.
-* Whenever something is pushed, and deployed, we need to kill all one off containers because they are no longer running the correct source code
-* “Pending” should have some kind of active spinner animation just for the feels
 * Rebulid metrics tabs so it works for both clusters & pods
 https://overcast.blog/zero-downtime-deployments-with-kubernetes-a-full-guide-71019397b924?gi=95ab85c45634
 * Team mates features

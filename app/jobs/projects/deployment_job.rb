@@ -63,11 +63,17 @@ class Projects::DeploymentJob < ApplicationJob
     elsif service.web_service?
       apply_deployment(service, kubectl)
       apply_service(service, kubectl)
-      if service.domains.any?
+      if service.domains.any? && service.allow_public_networking?
         apply_ingress(service, kubectl)
       end
       restart_deployment(service, kubectl)
     end
+    # Kill all one off containers
+    kill_one_off_containers(service, kubectl)
+  end
+
+  def kill_one_off_containers(service, kubectl)
+    kubectl.call("-n #{service.project.name} delete pods -l oneoff=true")
   end
 
   def apply_namespace(project, kubectl)
