@@ -12,4 +12,7 @@
 %>
 <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
   <%= status %>
+  <% if status == "pending" %>
+    <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+  <% end %>
 </div>
