@@ -5,7 +5,7 @@
     </label>
     <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
     <label class="label">
-      <span class="label-text-alt">* Required</span>
+      <span class="label-text-alt">Connected by <%= project.account.owner.email %></span>
     </label>
   </div>
 
