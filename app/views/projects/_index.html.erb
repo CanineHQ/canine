@@ -14,6 +14,9 @@
         <th>
           <span class="text-sm font-medium text-base-content/80">Last Deployment</span>
         </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Commit</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +39,17 @@
               </div>
             <% else %>
               <div class="text-sm">Never</div>
+            <% end %>
+          </td>
+          <td>
+            <% if project.last_build %>
+              <div>
+                <%= link_to (commit_sha = project.last_build.commit_sha)[0..6], 
+                  "https://github.com/#{project.repository_url}/commit/#{commit_sha}",
+                    class: "underline",
+                    target: "_blank",
+                    rel: "noopener noreferrer" %>
+              </div>
             <% end %>
           </td>
           <td>

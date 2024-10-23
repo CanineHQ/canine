@@ -52,6 +52,10 @@ class Project < ApplicationRecord
     deployments.order(created_at: :desc).first
   end
 
+  def last_build
+    builds.order(created_at: :desc).first
+  end
+
   def last_deployment_at
     last_deployment&.created_at
   end
