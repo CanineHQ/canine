@@ -1,19 +1,11 @@
-class ClusterResource < Madmin::Resource
-  # Attributes
-  attribute :id, form: false
-  attribute :name
-  attribute :kubeconfig
-  attribute :status
-  attribute :created_at, form: false
-  attribute :updated_at, form: false
-
+class AccountResource < Madmin::Resource
   # Associations
-  attribute :log_output
-  attribute :account
+  attribute :owner
+  attribute :users
+  attribute :clusters
   attribute :projects
+  attribute :services
   attribute :add_ons
-  attribute :domains
-  attribute :metrics
 
   # Uncomment this to customize the display name of records in the admin area.
   # def self.display_name(record)

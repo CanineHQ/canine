@@ -63,11 +63,17 @@ class Projects::DeploymentJob < ApplicationJob
     elsif service.web_service?
       apply_deployment(service, kubectl)
       apply_service(service, kubectl)
-      if service.domains.any?
+      if service.domains.any? && service.allow_public_networking?
         apply_ingress(service, kubectl)
       end
       restart_deployment(service, kubectl)
     end
+    # Kill all one off containers
+    kill_one_off_containers(service, kubectl)
+  end
+
+  def kill_one_off_containers(service, kubectl)
+    kubectl.call("-n #{service.project.name} delete pods -l oneoff=true")
   end
 
   def apply_namespace(project, kubectl)
@@ -90,7 +96,7 @@ class Projects::DeploymentJob < ApplicationJob
 
   def upload_registry_secrets(kubectl, deployment)
     project = deployment.project
-    docker_config_json = create_docker_config_json(project.user.github_username, project.user.github_access_token)
+    docker_config_json = create_docker_config_json(project.account.github_username, project.account.github_access_token)
     secret_yaml = K8::Secrets::RegistrySecret.new(project, docker_config_json).to_yaml
     kubectl.apply_yaml(secret_yaml)
   end

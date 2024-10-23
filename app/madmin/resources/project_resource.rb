@@ -15,7 +15,7 @@ class ProjectResource < Madmin::Resource
 
   # Associations
   attribute :cluster
-  attribute :user
+  attribute :account
   attribute :services
   attribute :environment_variables
   attribute :builds

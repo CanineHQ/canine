@@ -2,6 +2,11 @@ require "sidekiq/web"
 
 Rails.application.routes.draw do
   draw :madmin
+  resources :accounts, only: [] do
+    member do
+      get :switch
+    end
+  end
   namespace :inbound_webhooks do
     resources :github, controller: :github, only: [ :create ]
   end

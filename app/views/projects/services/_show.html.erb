@@ -30,14 +30,24 @@
         <label class="label mt-1">
           <span class="label-text cursor-pointer">Allow public networking</span>
           <%= form.check_box :allow_public_networking, class: "checkbox" %>
+          <span class="label-text-alt">Checking this allows your service to be accessible from the public internet</span>
         </label>
       </div>
+    <% end %>
+    <% if service.web_service? || service.background_service? %>
+    <div>
+      <h2 class="text-lg my-2 mt-4">Resources</h2>
+      <div class="form-control form-group">
+        <%= form.label :replicas %>
+        <%= form.number_field :replicas, class: "input input-bordered", placeholder: "1" %>
+      </div>
+    </div>
     <% end %>
     <div class="form-footer">
       <%= form.submit class: "btn btn-primary" %>
     </div>
   <% end %>
-  <% if service.web_service? %>
+  <% if service.web_service? && service.allow_public_networking? %>
     <div class="my-8">
       <h2 class="text-lg my-2">Networking</h2>
 

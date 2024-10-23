@@ -74,7 +74,7 @@
           </label>
         </div>
 
-        <div id="card-web_service" class="card-form hidden">
+        <div class="card-form hidden card-web_service">
           <h3 class="text-lg font-bold">Networking</h3>
           <div class="form-group">
             <%= form.label :container_port %>
@@ -84,15 +84,24 @@
             <%= form.label :healthcheck_url %>
             <%= form.text_field :healthcheck_url, class: "input input-bordered", placeholder: "/health" %>
           </div>
-          <div class="form-control">
-            <label class="label">
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-xs">
+            <label class="label mt-1">
               <span class="label-text cursor-pointer">Allow public networking</span>
               <%= form.check_box :allow_public_networking, class: "toggle toggle-primary" %>
+              <span class="label-text-alt">Checking this allows your service to be accessible from the public internet</span>
             </label>
           </div>
         </div>
 
-        <div id="card-cron_job" class="card-form hidden">
+        <div class="card-form hidden card-web_service card-background_service">
+          <h3 class="text-lg font-bold">Resources</h3>
+          <div class="form-group">
+            <%= form.label :replicas %>
+            <%= form.number_field :replicas, class: "input input-bordered", placeholder: "1" %>
+          </div>
+        </div>
+
+        <div class="card-form hidden card-cron_job">
           <div class="form-group">
             <h3 class="text-lg font-bold">Cron job</h3>
             <%= form.fields_for :cron_schedule do |cron_schedule_form| %>

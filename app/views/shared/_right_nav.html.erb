@@ -1,62 +1,51 @@
 <div class="ml-auto">
-  <% if current_user.present? %>
-    <div class="dropdown ml-auto dropdown-end dropdown-bottom">
-      <label tabindex="0" class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20">
-        <div aria-label="Avatar photo" class="avatar">
-          <div class="mask mask-squircle" style="width: 30px; height: 30px">
-            <%= image_tag avatar_path(current_user, size: 40) %>
-          </div>
+  <div class="dropdown ml-auto dropdown-end dropdown-bottom">
+    <label tabindex="0" class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20">
+      <div aria-label="Avatar photo" class="avatar">
+        <div class="mask mask-squircle" style="width: 30px; height: 30px">
+          <%= image_tag avatar_path(current_user, size: 40) %>
         </div>
-      </label>
-      <ul class="menu dropdown-content mt-4 w-52 rounded-box bg-base-100 p-2 shadow">
+      </div>
+    </label>
+    <ul class="menu dropdown-content mt-4 w-52 rounded-box bg-base-100 p-2 shadow">
+      <li>
+        <div>
+          <%# <%= link_to t(".connected_accounts"), user_connected_accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Devise.omniauth_configs.any? %>
+          <%# <%= link_to t(".accounts"), accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' %>
+          <%#= link_to t(".api_tokens"), api_tokens_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Jumpstart.config.payments_enabled? %>
+          <%= link_to edit_user_registration_path do %>
+            <iconify-icon icon="lucide:user" height="16"></iconify-icon>
+            My Profile
+          <% end %>
+        </div>
+      </li>
+      <% if current_user.admin? && respond_to?(:madmin_root_path) %>
         <li>
           <div>
-            <%# <%= link_to t(".connected_accounts"), user_connected_accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Devise.omniauth_configs.any? %>
-            <%# <%= link_to t(".accounts"), accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' %>
-            <%#= link_to t(".api_tokens"), api_tokens_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Jumpstart.config.payments_enabled? %>
-            <%= link_to edit_user_registration_path do %>
+            <%= link_to admin_root_path do %>
               <iconify-icon icon="lucide:user" height="16"></iconify-icon>
-              My Profile
+              Dashboard
             <% end %>
           </div>
-        </li>
-        <% if current_user.admin? && respond_to?(:madmin_root_path) %>
-          <li>
-            <div>
-              <%= link_to admin_root_path do %>
-                <iconify-icon icon="lucide:user" height="16"></iconify-icon>
-                Dashboard
-              <% end %>
-            </div>
-          </li> 
-          <li>
-            <div>
-              <%= link_to admin_sidekiq_web_path do %>
-                <iconify-icon icon="lucide:user" height="16"></iconify-icon>
-                Sidekiq
-              <% end %>
-            </div>
-          </li>
-        <% end %>
-        <hr class="-mx-2 my-1 border-base-content/10">
+        </li> 
         <li>
-          <div class="text-error">
-            <%= link_to destroy_user_session_path, method: :delete do %>
-              <iconify-icon icon="lucide:log-out" height="16"></iconify-icon>
-              Logout
+          <div>
+            <%= link_to admin_sidekiq_web_path do %>
+              <iconify-icon icon="lucide:user" height="16"></iconify-icon>
+              Sidekiq
             <% end %>
           </div>
         </li>
-      </ul>
-    </div>
-  <% else %>
-    <div class="flex items-center gap-2">
-      <%= link_to new_user_session_path, class: "btn btn-primary" do %>
-        Login
       <% end %>
-      <%= link_to new_user_registration_path, class: "btn btn-primary" do %>
-        Sign Up
-      <% end %>
-    </div>
-  <% end %>
+      <hr class="-mx-2 my-1 border-base-content/10">
+      <li>
+        <div class="text-error">
+          <%= link_to destroy_user_session_path, method: :delete do %>
+            <iconify-icon icon="lucide:log-out" height="16"></iconify-icon>
+            Logout
+          <% end %>
+        </div>
+      </li>
+    </ul>
+  </div>
 </div>

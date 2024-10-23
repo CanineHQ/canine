@@ -19,7 +19,6 @@ class UserResource < Madmin::Resource
   attribute :clusters
   attribute :projects
   attribute :services
-  attribute :docker_hub_credential
   attribute :add_ons
 
   # Uncomment this to customize the display name of records in the admin area.

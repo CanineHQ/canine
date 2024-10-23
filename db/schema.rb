@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_17_220734) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_09_172011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "account_users", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_account_users_on_account_id"
+    t.index ["user_id"], name: "index_account_users_on_user_id"
+  end
+
+  create_table "accounts", force: :cascade do |t|
+    t.bigint "owner_id"
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "index_accounts_on_owner_id"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -78,11 +95,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_17_220734) do
   create_table "clusters", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "kubeconfig", default: {}, null: false
-    t.bigint "user_id", null: false
+    t.bigint "account_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_clusters_on_user_id"
+    t.index ["account_id"], name: "index_clusters_on_account_id"
   end
 
   create_table "cron_schedules", force: :cascade do |t|
@@ -222,14 +239,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_17_220734) do
     t.integer "service_type", null: false
     t.string "command"
     t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "container_port", default: 3000
+    t.integer "replicas", default: 1
     t.string "healthcheck_url"
     t.boolean "allow_public_networking", default: false
-    t.integer "status"
+    t.integer "status", default: 0
     t.datetime "last_health_checked_at"
-    t.integer "replicas", default: 1
+    t.integer "container_port", default: 3000
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_services_on_project_id"
   end
 
@@ -249,11 +266,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_17_220734) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "account_users", "accounts"
+  add_foreign_key "account_users", "users"
+  add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
   add_foreign_key "builds", "projects"
-  add_foreign_key "clusters", "users"
+  add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
