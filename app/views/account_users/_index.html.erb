@@ -1,0 +1,27 @@
+<div class="overflow-auto">
+  <table class="table mt-2 rounded-box" id="shop_table" data-component="table">
+    <thead>
+      <tr>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">User</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Role</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% account_users.each do |account_user| %>
+        <tr class="cursor-pointer hover:bg-base-200/40">
+          <td>
+            <div class="font-medium"><%= account_user.user.email %></div>
+          </td>
+          <td>
+            TODO: Add role here
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+                   

@@ -17,6 +17,15 @@
             <iconify-icon icon="lucide:user" height="16"></iconify-icon>
             My Profile
           <% end %>
+
+        </div>
+      </li>
+      <li>
+        <div>
+          <%= link_to accounts_path do %>
+            <iconify-icon icon="lucide:users" height="16"></iconify-icon>
+            Accounts 
+          <% end %>
         </div>
       </li>
       <% if current_user.admin? && respond_to?(:madmin_root_path) %>

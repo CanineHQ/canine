@@ -2,7 +2,7 @@ require "sidekiq/web"
 
 Rails.application.routes.draw do
   draw :madmin
-  resources :accounts, only: [] do
+  resources :accounts, only: [ :index ] do
     member do
       get :switch
     end

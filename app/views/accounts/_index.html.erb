@@ -1,0 +1,7 @@
+<%= tag.div id: ("accounts" if @pagy.page == 1) do %>
+  <% @accounts.each do |account| %>
+    <h3><%= account.name %></h3>
+    <%= render "account_users/index", account_users: account.account_users %> 
+  <% end %>
+<% end %>
+         
