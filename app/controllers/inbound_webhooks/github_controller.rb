@@ -7,7 +7,7 @@ module InboundWebhooks
       record = InboundWebhook.create(body: payload)
 
       # Queue webhook for processing
-      InboundWebhooks::GithubJob.perform_later(record)
+      InboundWebhooks::GithubJob.perform_later(record, current_user:)
 
       # Tell service we received the webhook successfully
       head :ok

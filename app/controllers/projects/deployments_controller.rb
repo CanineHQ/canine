@@ -11,6 +11,7 @@ class Projects::DeploymentsController < Projects::BaseController
   def redeploy
     new_build = @build.dup.tap do |build|
       build.status = :in_progress
+      build.current_user = current_user
     end
     if new_build.save
       Projects::BuildJob.perform_later(new_build)
@@ -21,7 +22,7 @@ class Projects::DeploymentsController < Projects::BaseController
   end
 
   def deploy
-    result = Projects::DeployLatestCommit.execute(project: @project)
+    result = Projects::DeployLatestCommit.execute(project: @project, current_user:)
     if result.success?
       redirect_to @project, notice: "Deploying project..."
     else
