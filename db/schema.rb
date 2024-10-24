@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_09_172011) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -132,6 +132,19 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_09_172011) do
     t.datetime "updated_at", null: false
     t.index ["project_id", "name"], name: "index_environment_variables_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_environment_variables_on_project_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "project_id", null: false
+    t.string "eventable_type", null: false
+    t.bigint "eventable_id", null: false
+    t.integer "event_action", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable"
+    t.index ["project_id"], name: "index_events_on_project_id"
+    t.index ["user_id"], name: "index_events_on_user_id"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|

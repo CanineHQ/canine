@@ -19,6 +19,8 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 class EnvironmentVariable < ApplicationRecord
+  include Eventable
+
   belongs_to :project
 
   validates :name, presence: true, uniqueness: { scope: :project_id }

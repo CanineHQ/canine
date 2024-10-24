@@ -22,8 +22,11 @@
 #
 class Build < ApplicationRecord
   include Loggable
+  include Eventable
+
   belongs_to :project
   has_one :deployment, dependent: :destroy
+
   enum status: {
     in_progress: 0,
     completed: 1,

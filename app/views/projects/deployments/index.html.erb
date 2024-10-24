@@ -29,6 +29,9 @@
             <span class="text-sm font-medium text-base-content/80">Deployed At</span>
           </th>
           <th>
+            <span class="text-sm font-medium text-base-content/80">User</span>
+          </th>
+          <th>
             <span class="text-sm font-medium text-base-content/80"></span>
           </th>
           <th>
@@ -64,6 +67,13 @@
             <div role="tooltip" data-tip="<%= build.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
               <div class="text-sm capitalize"><%= distance_of_time_in_words(build.created_at, Time.current) %> ago</div>
             </div>
+          </td>
+          <td>
+            <% if build.events.present? %>
+              <div class="text-sm capitalize truncate w-[100px]">
+                <%= build.events.last.user.email %>
+              </div>
+            <% end %>
           </td>
           <td>
             <div class="text-sm capitalize">
