@@ -41,12 +41,6 @@ export default class extends Controller {
   async remove(event) {
     event.preventDefault();
     const div = event.target.closest("div");
-    if (div.id) {
-      const response = await destroy(`/projects/${this.projectIdValue}/environment_variables/${div.id}`, {
-        responseKind: "turbo-stream"
-      });
-    } else {
-      div.remove();
-    }
+    div.remove();
   }
 }
