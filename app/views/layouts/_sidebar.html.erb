@@ -4,12 +4,12 @@
     <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
-  <% if current_user.accounts.count > 1 %>
+  <% unless current_user.accounts.one? %>
     <div class="flex items-center justify-center">
       <div class="mx-auto dropdown">
         <button type="button" class="btn w-full"><%= current_account.name %></button>
         <ul tabindex="0" class="menu dropdown-content w-52 rounded-box bg-base-100 p-2 shadow" role="menu">
-          <%= current_user.accounts.each do |account| %>
+          <% current_user.accounts.each do |account| %>
             <li>
               <%= link_to account.name, switch_account_path(account) %>
             </li>
