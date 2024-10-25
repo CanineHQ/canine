@@ -1,0 +1,27 @@
+#!/bin/bash
+
+README_TODO_SECTION="## TODO"
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(rb|js|css|erb|rake|jbuilder)$')
+NEW_TODOS=""
+
+for FILE in $STAGED_FILES; do
+  TODOS=$(grep -E 'TODO:' "$FILE")
+  if [ ! -z "$TODOS" ]; then
+    NEW_TODOS+="$TODOS"$'\n'
+  fi
+done
+
+if [ -z "$NEW_TODOS" ]; then
+  exit 0
+fi
+
+if grep -q "$README_TODO_SECTION" README.md; then
+  sed -i '' "/$README_TODO_SECTION/ r /dev/stdin" README.md <<< "$NEW_TODOS"
+else
+  echo -e "\n$README_TODO_SECTION\n$NEW_TODOS" >> README.md
+fi
+
+git add README.md
+echo "\n✅ Done!"
+
+exit 0

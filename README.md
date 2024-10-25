@@ -37,6 +37,10 @@
   OMNIAUTH_GITHUB_PUBLIC_KEY=1234567890
   OMNIAUTH_GITHUB_PRIVATE_KEY=1234567890
   ```
+- **Enable git hooks**:
+  ```bash
+  git config --local include.path ../.gitconfig
+  ```
 
 ## Running the app
 
