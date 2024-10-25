@@ -19,7 +19,7 @@
 #
 class Event < ApplicationRecord
   belongs_to :eventable, polymorphic: true
-  belongs_to :user
+  belongs_to :user, optional: true
   belongs_to :project
   enum event_action: {
     create: 0,
