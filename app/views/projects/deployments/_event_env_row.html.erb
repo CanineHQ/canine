@@ -1,0 +1,23 @@
+<tr class="cursor-pointer hover:bg-base-200/40">
+  <td>
+    <div class="flex items-center space-x-3 truncate">
+      <div class="font-medium">
+        <%= event.eventable.name %> environment variable updated
+      </div>
+    </div>
+  </td>
+  <td></td>
+  <td></td>
+  <td>
+    <div role="tooltip" data-tip="<%= event.eventable.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
+      <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
+    </div>
+  </td>
+  <td>
+    <div class="text-sm capitalize truncate w-[100px]">
+      <%= event.user&.email || "Automated" %>
+    </div>
+  </td>
+  <td></td>
+  <td></td>
+</tr>

@@ -8,14 +8,15 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
   end
 
   def create
-    EnvironmentVariables::BulkUpdate.execute(project: @project, params:)
+    EnvironmentVariables::BulkUpdate.execute(project: @project, params:, current_user:)
     if @project.current_deployment.present?
       Projects::DeploymentJob.perform_later(@project.current_deployment)
+      @project.events.create(user: current_user, eventable: @project.last_build, event_action: :update)
       redirect_to project_environment_variables_path(@project),
-                  notice: 'Deployment started to apply new environment variables.'
+                  notice: "Deployment started to apply new environment variables."
     else
       redirect_to project_environment_variables_path(@project),
-                  notice: 'Environment variables will be applied on the next deployment.'
+                  notice: "Environment variables will be applied on the next deployment."
     end
   end
 

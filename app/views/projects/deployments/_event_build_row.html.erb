@@ -1,0 +1,48 @@
+
+<tr class="cursor-pointer hover:bg-base-200/40">
+  <td>
+    <div class="flex items-center space-x-3 truncate">
+      <div class="font-medium">
+        <%= event.eventable.commit_message %> 
+      </div>
+    </div>
+  </td>
+  <td>
+    <div class="font-medium">
+      <%= link_to event.eventable.commit_sha[0..6], 
+      "https://github.com/#{project.repository_url}/commit/#{event.eventable.commit_sha}",
+        class: "underline",
+        target: "_blank",
+        rel: "noopener noreferrer" %>
+    </div>
+  </td>
+  <td>
+    <div class="flex items-center gap-2">
+      <%= render "projects/deployments/status", build: event.eventable %>
+    </div>
+  </td>
+  <td>
+    <div role="tooltip" data-tip="<%= event.eventable.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
+      <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
+    </div>
+  </td>
+  <td>
+    <div class="text-sm capitalize truncate w-[100px]">
+      <%= event.user&.email || "Automated" %>
+    </div>
+  </td>
+  <td>
+    <div class="text-sm capitalize">
+      <%= button_to redeploy_project_deployment_path(project, event.eventable), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
+        <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
+      <% end %>
+    </div>
+  </td>
+  <td>
+    <div class="text-sm capitalize">
+      <%= link_to project_deployment_path(project, event.eventable), class: "btn btn-primary btn-sm min-w-max" do %>
+        <iconify-icon icon="lucide:logs"></iconify-icon> Logs
+      <% end %>
+    </div>
+  </td>
+</tr>

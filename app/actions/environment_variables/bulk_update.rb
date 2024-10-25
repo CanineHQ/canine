@@ -25,7 +25,6 @@ class EnvironmentVariables::BulkUpdate
     end
 
     destroy_names = current_variable_names - incoming_variable_names
-
-    project.environment_variables.where(name: destroy_names).destroy_all if destroy_names.any?
+    project.environment_variables.where(name: destroy_names).destroy_all
   end
 end
