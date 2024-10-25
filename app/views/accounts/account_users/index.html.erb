@@ -3,7 +3,7 @@
 
 <div>
   <div class="flex items-center justify-between">
-    <h3 class="text-lg font-medium">Users</h3>
+    <h3 class="text-lg font-medium">Team Members</h3>
   </div>
 
   <div class="mt-5">
@@ -11,9 +11,9 @@
       <div class="card-body">
         <div class="text-right px-5 pt-5">
             <!--  Start: User Action -->
-             <button class="btn btn-primary btn-sm" onclick="click_outside_modal.showModal()">
+             <button class="btn btn-primary btn-sm" onclick="team_member_modal.showModal()">
                 <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-                <span class="hidden sm:inline">New User</span>
+                <span class="hidden sm:inline">New Team Member</span>
               </button>
             <!--  End: User Action -->
             </div>
@@ -36,14 +36,14 @@
 </div>
 
 <!-- Start: Click Outside Modal -->
-<dialog aria-label="Modal" class="modal" id="click_outside_modal">
+<dialog aria-label="Modal" class="modal" id="team_member_modal">
   <div class="modal-box">
     <form method="dialog">
       <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <div class="mb-8 w-full text-xl font-bold">New user</div>
+    <div class="mb-8 w-full text-xl font-bold">New Team Member</div>
     <div>
       <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
         <div class="form-control mt-1 w-full max-w-xs">
@@ -62,5 +62,4 @@
     <button>close</button>
   </form>
 </dialog>
-
 <!-- End: Click Outside Modal -->

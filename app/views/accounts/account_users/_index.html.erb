@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th>
-          <span class="text-sm font-medium text-base-content/80">User</span>
+          <span class="text-sm font-medium text-base-content/80">Member Email</span>
         </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">Role</span>
@@ -17,7 +17,7 @@
             <div class="font-medium"><%= account_user.user.email %></div>
           </td>
           <td>
-            TODO: Add role here
+            <div class="font-medium"><%= account_user.user_id == current_account.owner_id ? "Owner" : "Member" %></div>
           </td>
         </tr>
       <% end %>
