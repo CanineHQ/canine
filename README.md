@@ -25,7 +25,10 @@
   ```bash
   bundle install
   ```
-- **Cloudflare Tunnel**: For development testing with GitHub
+- [**Cloudflare Tunnel**](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/): For development testing with GitHub
+  ```bash
+    cloudflared tunnel run <YOUR TUNNEL NAME>
+  ```
 - **Docker**: Run locally
 - **.env Configuration**: Set environment variable
   ```bash
