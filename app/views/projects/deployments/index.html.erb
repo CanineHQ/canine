@@ -41,65 +41,11 @@
       </thead>
       <tbody>
         <% @events.each do |event| %>
-        <tr class="cursor-pointer hover:bg-base-200/40">
-          <td>
-            <div class="flex items-center space-x-3 truncate">
-              <div class="font-medium">
-                <% if (build_type = event.eventable_type) == "Build" %>
-                  <%= event.eventable.commit_message %> 
-                <% elsif build_type == "EnvironmentVariable" %>
-                  <%= event.eventable.name %> updated
-                <% end %>
-              </div>
-            </div>
-          </td>
-          <td>
-            <% if build_type == "Build" %>
-              <div class="font-medium">
-                <%= link_to event.eventable.commit_sha[0..6], 
-                "https://github.com/#{@project.repository_url}/commit/#{event.eventable.commit_sha}",
-                  class: "underline",
-                  target: "_blank",
-                  rel: "noopener noreferrer" %>
-              </div>
-            <% end %>
-          </td>
-          <td>
-            <div class="flex items-center gap-2">
-            <% if build_type == "Build" %>
-              <%= render "projects/deployments/status", build: event.eventable %>
-            <% end %>
-            </div>
-          </td>
-          <td>
-            <div role="tooltip" data-tip="<%= event.eventable.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
-              <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
-            </div>
-          </td>
-          <td>
-            <div class="text-sm capitalize truncate w-[100px]">
-              <%= event.user.email %>
-            </div>
-          </td>
-          <td>
-            <% if build_type == "Build" %>
-            <div class="text-sm capitalize">
-              <%= button_to redeploy_project_deployment_path(@project, event.eventable), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
-                <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
-              <% end %>
-            </div>
-            <% end %>
-          </td>
-          <td>
-            <% if build_type == "Build" %>
-            <div class="text-sm capitalize">
-              <%= link_to project_deployment_path(@project, event.eventable), class: "btn btn-primary btn-sm min-w-max" do %>
-                <iconify-icon icon="lucide:logs"></iconify-icon> Logs
-              <% end %>
-            </div>
-            <% end %>
-          </td>
-        </tr>
+          <% if (build_type = event.eventable_type) == "Build" %>
+            <%= render 'projects/deployments/event_build_row', project: @project, event: %>
+          <% elsif build_type == "EnvironmentVariable" %>
+            <%= render 'projects/deployments/event_env_row', project: @project, event: %>
+          <% end %> 
         <% end %>
       </tbody>
     </table>
