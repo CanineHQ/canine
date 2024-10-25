@@ -24,6 +24,9 @@ spec:
       - name: <%= project.name %>
         image: <%= project.container_registry_url %>
         imagePullPolicy: Always
+        <% if service.command.present? %>
+        command: <%= service.command.split.to_json %>
+        <% end %>
         envFrom:
         - configMapRef:
             name: <%= project.name %>
