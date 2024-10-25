@@ -135,7 +135,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.bigint "project_id", null: false
     t.string "eventable_type", null: false
     t.bigint "eventable_id", null: false

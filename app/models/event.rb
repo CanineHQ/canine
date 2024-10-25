@@ -9,7 +9,7 @@
 #  updated_at     :datetime         not null
 #  eventable_id   :bigint           not null
 #  project_id     :bigint           not null
-#  user_id        :bigint           not null
+#  user_id        :bigint
 #
 # Indexes
 #

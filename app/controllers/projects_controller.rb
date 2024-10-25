@@ -22,7 +22,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1 or /projects/1.json
   def show
-    @pagy, @builds = pagy(@project.builds.order(created_at: :desc))
+    @pagy, @events = pagy(@project.events.order(created_at: :desc))
     render "projects/deployments/index"
   end
 

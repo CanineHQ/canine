@@ -6,7 +6,7 @@
     <div>
       <p class="text-gray-500">Please <%= link_to "add a service", project_services_path(@project), class: "link" %> before deploying.</p>
     </div>
-  <% elsif @builds.empty? %>
+  <% elsif @events.empty? %>
     <div>
       <p class="text-gray-500">No deployments yet</p>
     </div>
@@ -40,54 +40,64 @@
         </tr>
       </thead>
       <tbody>
-        <% @builds.each do |build| %>
+        <% @events.each do |event| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
             <div class="flex items-center space-x-3 truncate">
               <div class="font-medium">
-                <%= build.commit_message %> 
+                <% if (build_type = event.eventable_type) == "Build" %>
+                  <%= event.eventable.commit_message %> 
+                <% elsif build_type == "EnvironmentVariable" %>
+                  <%= event.eventable.name %> updated
+                <% end %>
               </div>
             </div>
           </td>
           <td>
-            <div class="font-medium">
-              <%= link_to build.commit_sha[0..6], 
-              "https://github.com/#{@project.repository_url}/commit/#{build.commit_sha}",
-                class: "underline",
-                target: "_blank",
-                rel: "noopener noreferrer" %>
-            </div>
-          </td>
-          <td>
-            <div class="flex items-center gap-2">
-              <%= render "projects/deployments/status", build: build %>
-            </div>
-          </td>
-          <td>
-            <div role="tooltip" data-tip="<%= build.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
-              <div class="text-sm capitalize"><%= distance_of_time_in_words(build.created_at, Time.current) %> ago</div>
-            </div>
-          </td>
-          <td>
-            <% if build.events.present? %>
-              <div class="text-sm capitalize truncate w-[100px]">
-                <%= build.events.last.user.email %>
+            <% if build_type == "Build" %>
+              <div class="font-medium">
+                <%= link_to event.eventable.commit_sha[0..6], 
+                "https://github.com/#{@project.repository_url}/commit/#{event.eventable.commit_sha}",
+                  class: "underline",
+                  target: "_blank",
+                  rel: "noopener noreferrer" %>
               </div>
             <% end %>
           </td>
           <td>
-            <div class="text-sm capitalize">
-              <%= button_to redeploy_project_deployment_path(@project, build), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
-                <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
-              <% end %>
+            <div class="flex items-center gap-2">
+            <% if build_type == "Build" %>
+              <%= render "projects/deployments/status", build: event.eventable %>
+            <% end %>
             </div>
           </td>
           <td>
+            <div role="tooltip" data-tip="<%= event.eventable.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
+              <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
+            </div>
+          </td>
+          <td>
+            <div class="text-sm capitalize truncate w-[100px]">
+              <%= event.user.email %>
+            </div>
+          </td>
+          <td>
+            <% if build_type == "Build" %>
             <div class="text-sm capitalize">
-              <%= link_to project_deployment_path(@project, build), class: "btn btn-primary btn-sm min-w-max" do %>
+              <%= button_to redeploy_project_deployment_path(@project, event.eventable), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
+                <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
+              <% end %>
+            </div>
+            <% end %>
+          </td>
+          <td>
+            <% if build_type == "Build" %>
+            <div class="text-sm capitalize">
+              <%= link_to project_deployment_path(@project, event.eventable), class: "btn btn-primary btn-sm min-w-max" do %>
                 <iconify-icon icon="lucide:logs"></iconify-icon> Logs
               <% end %>
             </div>
+            <% end %>
           </td>
         </tr>
         <% end %>

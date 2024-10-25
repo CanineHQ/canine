@@ -12,6 +12,6 @@ module Eventable
       user: current_user,
       event_action: id_changed? ? :create : :update,
       project:
-    ) if current_user
+    )
   end
 end
