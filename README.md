@@ -9,32 +9,35 @@
 * I want a way to “stop” the processes, can maybe do this with a replicas=0 setting
 * Rebulid metrics tabs so it works for both clusters & pods
   https://overcast.blog/zero-downtime-deployments-with-kubernetes-a-full-guide-71019397b924?gi=95ab85c45634
-* Team mates features
 
 ## Potential add ons:
 
 - [ ] Add a TODO board based on code, on each code push
 
-## Setup
+## Prerequisites
 
-- node 18
-- brew install helm
-- bundle install
-- cloudflared tunnel for development testing with github
-- set up .env file
-- run docker locally
-- TODO: beef up readme
+- **Node.js**: v20
+- **Helm**: Install via Homebrew
+  ```bash
+  brew install helm
+  ```
+- **Ruby Gems**: Install dependencies
+  ```bash
+  bundle install
+  ```
+- **Cloudflare Tunnel**: For development testing with GitHub
+- **Docker**: Run locally
+- **.env Configuration**: Set environment variable
+  ```bash
+  APP_HOST=canine.example.com
+  OMNIAUTH_GITHUB_WEBHOOK_SECRET=1234567890
+  OMNIAUTH_GITHUB_PUBLIC_KEY=1234567890
+  OMNIAUTH_GITHUB_PRIVATE_KEY=1234567890
+  ```
 
-```bash
-APP_HOST=canine.example.com
-OMNIAUTH_GITHUB_WEBHOOK_SECRET=1234567890
-OMNIAUTH_GITHUB_PUBLIC_KEY=1234567890
-OMNIAUTH_GITHUB_PRIVATE_KEY=1234567890
-```
+## Running the app
 
-#### Running
-
-To run your application, you'll use the `bin/dev` command:
+Use the following command to start your application:
 
 ```bash
 bin/dev
