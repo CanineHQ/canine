@@ -4,20 +4,24 @@
     <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
-  <% unless current_user.accounts.one? %>
-    <div class="flex items-center justify-center">
-      <div class="mx-auto dropdown">
-        <button type="button" class="btn w-full"><%= current_account.name %></button>
-        <ul tabindex="0" class="menu dropdown-content w-52 rounded-box bg-base-100 p-2 shadow" role="menu">
-          <% current_user.accounts.each do |account| %>
-            <li>
-              <%= link_to account.name, switch_account_path(account) %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+  <div class="flex items-center justify-center">
+    <div class="mx-auto dropdown">
+      <button type="button" class="btn w-full"><%= current_account.name %></button>
+      <ul tabindex="0" class="menu dropdown-content w-52 rounded-box bg-base-100 p-2 shadow" role="menu">
+        <% current_user.accounts.each do |account| %>
+          <li>
+            <%= link_to account.name, switch_account_path(account) %>
+          </li>
+        <% end %>
+          <li>
+            <button class="btn btn-ghost btn-sm" onclick="click_outside_modal.showModal()">
+              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+              <span class="hidden sm:inline">New Account</span>
+            </button>
+          </li>
+      </ul>
     </div>
-  <% end %>
+  </div>
 
   <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
     <div class="simplebar-wrapper">
@@ -127,3 +131,31 @@
     </div>
   </div>
 </div>
+<!-- Start: Click Outside Modal -->
+<dialog aria-label="Modal" class="modal" id="click_outside_modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-8 w-full text-xl font-bold">New Account</div>
+    <div>
+      <%= form_with(model: Account.new, url: accounts_path) do |form| %>
+        <div class="form-control mt-1 w-full max-w-xs">
+          <label class="label">
+            <span class="label-text">Name</span>
+          </label>
+          <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0" %>
+        </div>
+        <div class="form-footer">
+          <%= form.button "Submit", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+<!-- End: Click Outside Modal -->

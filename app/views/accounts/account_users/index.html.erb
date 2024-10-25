@@ -45,20 +45,17 @@
     </form>
     <div class="mb-8 w-full text-xl font-bold">New user</div>
     <div>
-  <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
-    <div class="form-control mt-1 w-full max-w-xs">
-      <label class="label">
-        <span class="label-text">Email</span>
-      </label>
-      <%= form.text_field :email, class: "input input-bordered w-full focus:outline-offset-0" %>
-    </div>
-    <div class="form-footer">
-      <%= form.button "Submit", class: "btn btn-primary" %>
-    </div>
-  <% end %>
-
-
-
+      <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
+        <div class="form-control mt-1 w-full max-w-xs">
+          <label class="label">
+            <span class="label-text">Email</span>
+          </label>
+          <%= form.text_field :email, class: "input input-bordered w-full focus:outline-offset-0" %>
+        </div>
+        <div class="form-footer">
+          <%= form.button "Submit", class: "btn btn-primary" %>
+        </div>
+      <% end %>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
