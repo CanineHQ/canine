@@ -1,9 +1,7 @@
 <tr class="cursor-pointer hover:bg-base-200/40">
-  <td>
-    <div class="flex items-center space-x-3 truncate">
-      <div class="font-medium">
-        <%= event.eventable.name %> environment variable updated
-      </div>
+  <td title="<%= event.eventable.name %> environment variable has updated">
+    <div class="font-medium space-x-3 truncate w-[100px]">
+      <code><%= event.eventable.name %></code> environment variable has updated
     </div>
   </td>
   <td></td>
@@ -13,9 +11,9 @@
       <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
     </div>
   </td>
-  <td>
+  <td title="<%= event.user&.name || event.user&.email || "Automated" %>">
     <div class="text-sm capitalize truncate w-[100px]">
-      <%= event.user&.email || "Automated" %>
+      <%= event.user&.name || event.user&.email || "Automated" %>
     </div>
   </td>
   <td></td>

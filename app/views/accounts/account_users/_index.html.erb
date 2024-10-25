@@ -19,6 +19,15 @@
           <td>
             <div class="font-medium"><%= account_user.user_id == current_account.owner_id ? "Owner" : "Member" %></div>
           </td>
+          <td>
+            <% unless account_user.user_id == current_account.owner_id %>
+              <div class="text-sm capitalize">
+                <%= button_to account_account_user_path(current_account, account_user), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
+                  <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+                <% end %>
+              </div>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>

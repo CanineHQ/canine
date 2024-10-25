@@ -26,9 +26,9 @@
       <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
     </div>
   </td>
-  <td>
+  <td title="<%= event.user&.name || event.user&.email || "Automated" %>">
     <div class="text-sm capitalize truncate w-[100px]">
-      <%= event.user&.email || "Automated" %>
+      <%= event.user&.name || event.user&.email || "Automated" %>
     </div>
   </td>
   <td>
