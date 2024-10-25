@@ -1,0 +1,54 @@
+<%= content_for :title, "Users" %>
+<%= turbo_stream_from :account_users %>
+
+<div>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-medium">Users</h3>
+  </div>
+
+  <div class="mt-5">
+    <div aria-label="Card" class="card card-bordered bg-base-100">
+      <div class="card-body">
+        <div class="text-right px-5 pt-5">
+            <!--  Start: User Action -->
+             <button class="btn btn-primary btn-sm" onclick="click_outside_modal.showModal()">
+                <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+                <span class="hidden sm:inline">New User</span>
+              </button>
+            <!--  End: User Action -->
+            </div>
+
+        <div>
+          <%= tag.div id: ("account_users" if @pagy.page == 1) do %>
+            <%= render "accounts/account_users/index", account_users: @account_users, cached: true %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <% if @pagy.pages > 1 %>
+    <div class="flex items-center justify-end px-5 pb-5 pt-3">
+      <%== custom_pagy_nav(@pagy) %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Start: Click Outside Modal -->
+<dialog aria-label="Modal" class="modal" id="click_outside_modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-8 w-full text-xl font-bold">Hello!</div>
+    <div>Press ESC key or click on X button to close</div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<!-- End: Click Outside Modal -->

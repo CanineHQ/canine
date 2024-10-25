@@ -79,16 +79,20 @@ module Users
 
     def create_user
       ActiveRecord::Base.transaction do
-        user = User.create!(
-          email: auth.info.email,
-          # name: auth.info.name,
-          password: Devise.friendly_token[0, 20]
-        )
-        account = Account.create!(
-          owner: user,
-          name: "#{auth.info.name || auth.info.email.split("@").first}'s Account"
-        )
-        AccountUser.create!(account: account, user: user)
+        user = User.find_or_initialize_by(email: auth.info.email) do |user|
+          user.first_name = auth.info.name
+          user.password = Devise.friendly_token[0, 20]
+          user.save!
+        end
+
+        if user.owned_accounts.zero?
+          account = Account.create!(
+            owner: user,
+            name: "#{auth.info.name || auth.info.email.split("@").first}'s Account"
+          )
+          AccountUser.create!(account: account, user: user)
+        end
+
         user
       end
     end
