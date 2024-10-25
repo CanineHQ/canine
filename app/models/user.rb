@@ -30,6 +30,7 @@ class User < ApplicationRecord
 
   has_many :account_users, dependent: :destroy
   has_many :accounts, through: :account_users
+  has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
@@ -39,5 +40,4 @@ class User < ApplicationRecord
 
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
-
 end
