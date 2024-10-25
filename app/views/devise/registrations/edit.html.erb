@@ -23,20 +23,6 @@
         <div class="alert alert-warning">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
       <% end %>
 
-      <div class="mb-3">
-        <%= f.password_field :password, autocomplete: "off", class: 'input input-bordered w-full focus:outline-offset-0', placeholder: 'Password'  %>
-        <p class="form-text text-muted"><small>Leave password blank if you don't want to change it</small></p>
-      </div>
-
-      <div class="mb-3">
-        <%= f.password_field :password_confirmation, autocomplete: "off", class: 'input input-bordered w-full focus:outline-offset-0', placeholder: 'Confirm Password'  %>
-      </div>
-
-      <div class="mb-3">
-        <%= f.password_field :current_password, autocomplete: "off", class: 'input input-bordered w-full focus:outline-offset-0', placeholder: 'Current Password'  %>
-        <p class="form-text text-muted"><small>We need your current password to confirm your changes</small></p>
-      </div>
-
       <div class="mb-3 d-grid">
         <%= f.submit "Save Changes", class: 'btn btn-lg btn-primary' %>
       </div>
