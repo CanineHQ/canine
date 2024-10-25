@@ -4,8 +4,6 @@
       <%= button_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(:user, provider), class: "btn btn-#{provider} w-full", data: { turbo: false, disable_with: t(".redirecting") } %>
     <% end -%>
   </div>
-
-  <hr class="my-4 border-gray-200">
 <% end -%>
 
 <%- if devise_mapping.recoverable? && controller_name != "passwords" && controller_name != "registrations" %>

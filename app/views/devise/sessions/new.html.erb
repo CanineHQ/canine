@@ -2,32 +2,6 @@
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
       <h1 class="text-2xl font-bold text-center">Log in</h1>
-
-      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
-        <div class="form-control">
-          <%= f.email_field :email, autofocus: true, placeholder: 'Email Address', class: 'input input-bordered w-full' %>
-        </div>
-
-        <div class="form-control">
-          <%= f.password_field :password, autocomplete: "off", placeholder: 'Password', class: 'input input-bordered w-full' %>
-        </div>
-
-        <% if devise_mapping.rememberable? %>
-          <div class="form-control">
-            <label class="label cursor-pointer">
-              <%= f.check_box :remember_me, class: "checkbox checkbox-primary" %>
-              <span class="label-text">Remember me</span>
-            </label>
-          </div>
-        <% end %>
-
-        <div class="form-control mt-6">
-          <%= f.submit "Log in", class: "btn btn-primary w-full" %>
-        </div>
-      <% end %>
-
-      <div class="divider">OR</div>
-
       <div class="text-center mt-4">
         <%= render "devise/shared/links" %>
       </div>
