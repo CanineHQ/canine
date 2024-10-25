@@ -12,26 +12,30 @@ class Projects::ServicesController < Projects::BaseController
 
   def create
     result = Services::Create.call(@project.services.build(service_params), params)
-    redirect(success: result.success?, type: "created")
+    if result.success?
+      redirect_to project_services_path(@project), notice: "Service was successfully created."
+    else
+      redirect_to project_services_path(@project), alert: "Service could not be created."
+    end
   end
 
   def update
-    redirect(success: @service.update(service_params), type: "updated")
+    if @service.update(service_params)
+      redirect_to project_services_path(@project), notice: "Service was successfully updated."
+    else
+      redirect_to project_services_path(@project), alert: "Service could not be updated."
+    end
   end
 
   def destroy
-    redirect(success: @service.destroy, type: "destroyed")
+    if @service.destroy
+      redirect_to project_services_path(@project), notice: "Service was successfully destroyed."
+    else
+      redirect_to project_services_path(@project), alert: "Service could not be destroyed."
+    end
   end
 
   private
-
-  def redirect(success:, type:)
-   if success
-      redirect_to project_services_path(@project), notice: "Service was successfully #{type}."
-   else
-      redirect_to project_services_path(@project), alert: "Service could not be #{type}."
-   end
-  end
 
   def set_service
     @service = @project.services.find(params[:id])
