@@ -46,12 +46,12 @@ It's one thing if the reason for the increase is because our product started nee
 ### Year 2, 3
 Costs only grew from here. Peaking at a ~$1M in annual spend within 4 years.
 
-A large chunk of the tools we were using have open source versions, or open source alternatives, but we could never justify using them since we really had no idea what to expect. Most open source installations were simple enough but still expected a server that we can run them on. But what about health checks? What about monitoring? What about alerting? What about logging?
+A large chunk of the tools we were using have open source versions, or open source alternatives, but we could never justify hosting them ourselves since we really had no idea what to expect. Most open source installations were simple enough, normally just expecting a server that we can run them on. But what about health checks? What about monitoring? What about alerting? What about logging?
 
 # So, why Canine?
-Kubernetes is a powerful tool that can be used to do many things far beyond simple [web application development](https://medium.com/chick-fil-atech/observability-at-the-edge-b2385065ab6e). We learned to love Kubernetes, while also learning the hard way it can be excuriatingly easy to accidentally delete essential services like core DNS, and permanently bork your cluster. But for almost all web applications, you only need a tiny slice of what it has to offer: Ingress, Services, Deployments, Pods and CronJobs.
+Kubernetes is a powerful tool that can be used to do many things far beyond simple [web application development](https://medium.com/chick-fil-atech/observability-at-the-edge-b2385065ab6e). We learned to love Kubernetes, while also learning the hard way it can be excruciatingly easy to accidentally delete essential services like CoreDNS, and permanently bork your cluster. But for almost all web applications, you only need a tiny slice of what it has to offer: Ingress, Services, Deployments, Pods and CronJobs.
 
-It sits entirely on top of your own Kubernetes cluster, and all of the yaml scripts are downloadable, in case you want to find a different deployment tool.
+It sits entirely on top of your own Kubernetes cluster, and all of the YAML configurations are downloadable, in case you want to migrate away from Canine.
 
 It also makes up for some of the defects that are missing from out-of-the-box Kubernetes that are absolutely essential for a software development team such as
 * Accounts
