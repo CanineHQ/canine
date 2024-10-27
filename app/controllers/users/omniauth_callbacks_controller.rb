@@ -85,7 +85,7 @@ module Users
           user.save!
         end
 
-        if user.owned_accounts.zero?
+        if user.owned_accounts.size.zero?
           account = Account.create!(
             owner: user,
             name: "#{auth.info.name || auth.info.email.split("@").first}'s Account"
