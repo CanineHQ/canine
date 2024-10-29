@@ -12,7 +12,10 @@ class ApplicationController < ActionController::Base
 
   layout :determine_layout
 
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+
   protected
+    
 
     def current_account
       return nil unless user_signed_in?
@@ -36,5 +39,10 @@ class ApplicationController < ActionController::Base
   private
     def determine_layout
       current_user ? "application" : "homepage"
+    end
+
+    def record_not_found
+      flash[:alert] = "The requested resource could not be found."
+      redirect_to root_path
     end
 end
