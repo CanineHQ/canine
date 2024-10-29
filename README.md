@@ -1,3 +1,5 @@
+![alt text](https://github.com/czhu12/canine/blob/main/public/images/logo-full.png?raw=true)
+
 ## Prerequisites
 
 - **Node.js**: v20
@@ -37,10 +39,10 @@ bin/dev
 ## TODOs
 
 - [ ] Onboarding flow (connect github)
-- [ ] we should have a feature to continuously poll stuff and figure out if they are still alive
-- [ ] Healthchecks and whatnot
-- [ ] Write the manifesto
 - [ ] allow public network access flag is not currently doing anything
+- [ ] Docker compose should work
+- [ ] Allow connecting to github separately from the app, not just on sign up
+- [ ] Make a single user mode
 
 * I want a way to “stop” the processes, can maybe do this with a replicas=0 setting
 * Rebulid metrics tabs so it works for both clusters & pods
