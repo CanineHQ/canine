@@ -1,7 +1,3 @@
-## Potential add ons:
-
-- [ ] Add a TODO board based on code, on each code push
-
 ## Prerequisites
 
 - **Node.js**: v20
@@ -27,7 +23,7 @@
   ```
 - **Enable git hooks**:
   ```bash
-  git config --local include.path ../.gitconfig
+  git config --local include.path .gitconfig
   ```
 
 ## Running the app
@@ -38,7 +34,7 @@ Use the following command to start your application:
 bin/dev
 ```
 
-## TODO
+## TODOs
 
 - [ ] Onboarding flow (connect github)
 - [ ] we should have a feature to continuously poll stuff and figure out if they are still alive

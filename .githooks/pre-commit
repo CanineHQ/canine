@@ -31,18 +31,7 @@ if [ -z "$NEW_TODOS" ]; then
 fi
 
 # Append NEW_TODOS to README.md under a TODO section
-README_TODO_SECTION="## TODOs"
-
-# Check if the README already has a TODO section
-if grep -q "$README_TODO_SECTION" README.md; then
-    # Append the new TODOs to the existing TODO section
-    sed -i "/$README_TODO_SECTION/a\\
-$NEW_TODOS
-" README.md
-else
-    # Create a new TODO section at the end of the README
-    echo -e "\n$README_TODO_SECTION\n$NEW_TODOS" >> README.md
-fi
+echo -e "\n$NEW_TODOS" >> README.md
 
 # Add README.md to the commit
 git add README.md

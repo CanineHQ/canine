@@ -272,7 +272,6 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # TODO (chris): add digital ocean?
-  # TODO (celina): add google?
   config.omniauth :github, ENV["OMNIAUTH_GITHUB_PUBLIC_KEY"], ENV["OMNIAUTH_GITHUB_PRIVATE_KEY"], scope: "user,repo,write:packages"
   config.omniauth :developer if Rails.env.test?
   # ==> Warden configuration
