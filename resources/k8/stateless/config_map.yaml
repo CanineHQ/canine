@@ -5,5 +5,5 @@ metadata:
   name: <%= @project.name %>
 data:
   <% @project.environment_variables.each do |environment_variable| %>
-  <%= environment_variable.name %>: <%= environment_variable.value %>
+  <%= environment_variable.name %>: "<%= environment_variable.value.gsub('"', '\\"') %>"
   <% end %>
