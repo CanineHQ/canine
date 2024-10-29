@@ -14,7 +14,7 @@
           </li>
         <% end %>
           <li>
-            <button class="btn btn-ghost btn-sm" onclick="click_outside_modal_2.showModal()">
+            <button class="btn btn-ghost btn-sm justify-start" onclick="click_outside_modal_2.showModal()">
               <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
               <span class="hidden sm:inline">New Account</span>
             </button>
@@ -148,12 +148,12 @@
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <div class="mb-8 w-full text-xl font-bold">New Account</div>
+    <div class="mb-4 w-full text-xl font-bold">New Account</div>
     <div>
       <%= form_with(model: Account.new, url: accounts_path) do |form| %>
-        <div class="form-control mt-1 w-full max-w-xs">
+        <div class="form-control mt-1 w-full">
           <label class="label">
-            <span class="label-text">Name</span>
+            <span class="label-text">Account Name</span>
           </label>
           <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0" %>
         </div>

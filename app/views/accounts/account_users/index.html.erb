@@ -43,14 +43,17 @@
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <div class="mb-8 w-full text-xl font-bold">New Team Member</div>
+    <div class="mb-4 w-full text-xl font-bold">New Team Member</div>
     <div>
       <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
-        <div class="form-control mt-1 w-full max-w-xs">
+        <div class="form-control mt-1 w-full">
           <label class="label">
             <span class="label-text">Email</span>
           </label>
           <%= form.text_field :email, class: "input input-bordered w-full focus:outline-offset-0" %>
+          <label class="label">
+            <span class="label-text-alt">Use the email associated with their Github account</span>
+          </label>
         </div>
         <div class="form-footer">
           <%= form.button "Submit", class: "btn btn-primary" %>

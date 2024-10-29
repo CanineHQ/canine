@@ -1,5 +1,6 @@
 class ClustersController < ApplicationController
   before_action :set_cluster, only: [ :show, :edit, :update, :destroy, :test_connection, :download_kubeconfig, :logs ]
+  skip_before_action :authenticate_user!, only: [:new]
 
   # GET /clusters
   def index
