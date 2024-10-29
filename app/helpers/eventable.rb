@@ -4,7 +4,7 @@ module Eventable
   included do
     attr_accessor :current_user
     has_many :events, as: :eventable, dependent: :destroy
-    after_save :create_event
+    after_create :create_event
   end
 
   def create_event
