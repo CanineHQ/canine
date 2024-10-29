@@ -18,5 +18,8 @@ class K8::Stateless::Ingress < K8::Base
       service = client.get_services.find { |s| s['metadata']['name'] == 'ingress-nginx-controller' }
       service.status.loadBalancer.ingress[0].ip
     end
+  rescue StandardError => e
+    Rails.logger.error("Error getting ingress ip address: #{e.message}")
+    nil
   end
 end
