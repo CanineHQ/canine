@@ -48,6 +48,7 @@ class Projects::ServicesController < Projects::BaseController
       :name,
       :container_port,
       :healthcheck_url,
+      :replicas,
       :allow_public_networking,
     )
   end

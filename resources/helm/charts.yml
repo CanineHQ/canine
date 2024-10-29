@@ -37,26 +37,35 @@ helm:
           key: resources.limits.storage
           type: size
           default: 10Gi
+    - name: supabase
+      logo: /images/helm/supabase.png
+      version: 0.1.0
+      repository: https://github.com/supabase-community/supabase-kubernetes
+      coming_soon: true
       
     - name: sentry
       logo: /images/helm/sentry.png
       version: 2.10.0
       repository: https://sentry-kubernetes.github.io/charts
+      coming_soon: true
       
     - name: clickhouse
       logo: /images/helm/clickhouse.png
       version: 2.1.0
       repository: https://clickhouse.github.io/clickhouse-helm
+      coming_soon: true
       
     - name: superset
       logo: /images/helm/superset.png
       version: 0.6.1
       repository: https://apache.github.io/superset
+      coming_soon: true
       
     - name: grafana
       logo: /images/helm/grafana.png
       version: 6.56.0
       repository: https://grafana.github.io/helm-charts
+      coming_soon: true
       
     - name: helm_chart_url
       friendly_name: "Helm Chart URL"
