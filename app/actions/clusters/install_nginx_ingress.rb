@@ -14,7 +14,7 @@ class Clusters::InstallNginxIngress
       cluster.info("Nginx ingress controller is already installed")
     rescue Cli::CommandFailedError => e
       cluster.info("Nginx ingress controller not detected, installing...")
-      command = "bash #{Rails.root.join("resources", "k8", "scripts", "install_cert_manager.sh")}"
+      command = "bash #{Rails.root.join("resources", "k8", "scripts", "install_nginx_ingress.sh")}"
       kubectl.with_kube_config do |kubeconfig_file|
         begin
           runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
