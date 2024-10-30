@@ -26,5 +26,22 @@ class EnvironmentVariables::BulkUpdate
 
     destroy_names = current_variable_names - incoming_variable_names
     project.environment_variables.where(name: destroy_names).destroy_all
+
+    updated_variables = project.environment_variables.where(name: incoming_variable_names)
+
+    updated_variables.each do |ev|
+      env_variable = env_variable_data.find { |evd| evd[:name] == ev.name }
+      unless env_variable[:value] == ev.value
+        ev.update!(
+          value: env_variable[:value].strip,
+          current_user: context.current_user
+        )
+        ev.events.create!(
+          user: context.current_user,
+          event_action: :update,
+          project: project
+        )
+      end
+    end
   end
 end

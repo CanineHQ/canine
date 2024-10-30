@@ -12,7 +12,9 @@ IFS=$'\n'
 for FILE in $STAGED_FILES; do
     if [ -f "$FILE" ]; then
         # Get the staged diff for the file and search for lines containing 'TODO'
-        NEW_TODO=$(git diff --cached -- "$FILE" --no-ext-diff --unified=0 -a --no-prefix | grep -E "^\+.*TODO")
+        NEW_TODO=$(git diff --cached -- "$FILE" --no-ext-diff --unified=0 -a --no-prefix | \
+        grep -E "^\+.*TODO" | sed -E "s/^.*TODO:\s*(.*)/- [ ] \1 - ${FILE}/")
+
         if [ -n "$NEW_TODO" ]; then
             # Append the new TODOs to the NEW_TODOS variable
             NEW_TODOS="${NEW_TODOS}${NEW_TODO}\n"
