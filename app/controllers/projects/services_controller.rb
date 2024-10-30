@@ -28,11 +28,8 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def destroy
-    if @service.destroy
-      redirect_to project_services_path(@project), notice: "Service was successfully destroyed."
-    else
-      redirect_to project_services_path(@project), alert: "Service could not be destroyed."
-    end
+    Projects::Services::DestroyJob.perform_later(@project, @service)
+    redirect_to project_services_path(@project), notice: "Service is being destroyed."
   end
 
   private

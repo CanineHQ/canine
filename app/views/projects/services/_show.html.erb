@@ -47,6 +47,11 @@
       <%= form.submit class: "btn btn-primary" %>
     </div>
   <% end %>
+
+  <%= button_to [service.project, service], method: :delete, class: "btn btn-error btn-outline mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
+    <iconify-icon icon="lucide:trash" height="20" class="text-error-content"></iconify-icon>
+    Delete service 
+  <% end %>
   <% if service.web_service? && service.allow_public_networking? %>
     <div class="my-8">
       <h2 class="text-lg my-2">Networking</h2>
