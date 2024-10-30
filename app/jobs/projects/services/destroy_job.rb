@@ -4,7 +4,7 @@ class Projects::Services::DestroyJob < ApplicationJob
     kubeconfig = project.cluster.kubeconfig
     kubectl = K8::Kubectl.new(kubeconfig)
 
-    kubectl.call("delete service #{service.name} -n #{project.name}")
+    kubectl.call("delete service #{service.name}-service -n #{project.name}")
 
     service.destroy!
   end
