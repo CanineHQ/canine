@@ -13,8 +13,8 @@ for FILE in $STAGED_FILES; do
     if [ -f "$FILE" ]; then
         # Get the staged diff for the file and search for lines containing 'TODO'
         NEW_TODO=$(git diff --cached -- "$FILE" --no-ext-diff --unified=0 -a --no-prefix | \
-        grep -E "^\+.*TODO" | sed -E "s/^.*TODO:\s*(.*)/- [ ] \1 - ${FILE}/")
-
+        grep -E "^\+.*TODO" | sed -E "s/^\+.*TODO:\s*(.*)/- [ ] \1 - ${FILE//\//\\/}/")
+        
         if [ -n "$NEW_TODO" ]; then
             # Append the new TODOs to the NEW_TODOS variable
             NEW_TODOS="${NEW_TODOS}${NEW_TODO}\n"
@@ -33,7 +33,7 @@ if [ -z "$NEW_TODOS" ]; then
 fi
 
 # Append NEW_TODOS to README.md under a TODO section
-echo -e "\n$NEW_TODOS" >> README.md
+echo -e "\n## TODOs\n$NEW_TODOS" >> README.md
 
 # Add README.md to the commit
 git add README.md
