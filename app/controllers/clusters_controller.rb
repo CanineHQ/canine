@@ -1,5 +1,8 @@
 class ClustersController < ApplicationController
-  before_action :set_cluster, only: [ :show, :edit, :update, :destroy, :test_connection, :download_kubeconfig, :logs ]
+  before_action :set_cluster, only: [
+    :show, :edit, :update, :destroy,
+    :test_connection, :download_kubeconfig, :logs, :download_yaml,
+  ]
   skip_before_action :authenticate_user!, only: [:new]
 
   # GET /clusters
@@ -37,6 +40,38 @@ class ClustersController < ApplicationController
     else
       render turbo_stream: turbo_stream.replace("test_connection_frame", partial: "clusters/connection_failed")
     end
+  end
+
+  def export(cluster, namespace, yaml_content, zip)
+    parsed = YAML.safe_load(yaml_content)
+
+    parsed['items'].each do |item|
+      name = item['metadata']['name']
+      zip.put_next_entry("#{cluster}/#{namespace}/#{name}.yaml")
+      zip.write(item.to_yaml)
+    end
+  end
+
+  def download_yaml
+    require 'zip'
+
+    stringio = Zip::OutputStream.write_buffer do |zio|
+      @cluster.projects.each do |project|
+        # Create a directory for each project
+        # Export services, deployments, ingress and cron jobs from a kubernetes namespace
+        %w[services deployments ingress cronjobs].each do |resource|
+          yaml_content = K8::Kubectl.new(@cluster.kubeconfig).call("get #{resource} -n #{project.name} -o yaml")
+          export(@cluster.name, project.name, yaml_content, zio)
+        end
+      end
+    end
+    stringio.rewind
+
+    # Send the zip file to the user
+    send_data(stringio.read, 
+      filename: "#{@cluster.name}.zip",
+      type: "application/zip"
+    )
   end
 
   def download_kubeconfig

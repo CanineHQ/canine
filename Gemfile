@@ -93,3 +93,5 @@ gem "tailwindcss-rails", "~> 2.7"
 gem "httparty", "~> 0.22.0"
 
 gem "redcarpet", "~> 3.6"
+
+gem "rubyzip", "~> 2.3"

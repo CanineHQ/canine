@@ -50,6 +50,7 @@ Rails.application.routes.draw do
   resources :clusters do
     member do
       get :download_kubeconfig
+      get :download_yaml
       get :logs
     end
     resource :metrics, only: [ :show ], module: :clusters

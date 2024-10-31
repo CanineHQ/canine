@@ -553,6 +553,7 @@ DEPENDENCIES
   responders!
   rqrcode (~> 2.2)
   rubocop-rails-omakase
+  rubyzip (~> 2.3)
   selenium-webdriver
   sidekiq (~> 6.2)
   sitemap_generator (~> 6.1)
