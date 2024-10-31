@@ -21,3 +21,6 @@
 .prose-lg th {
   @apply text-left;
 }
+.has-styled-links a {
+  @apply link;
+}

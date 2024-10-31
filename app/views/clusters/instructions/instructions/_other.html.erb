@@ -1,0 +1,12 @@
+<div class="card-form hidden card-other">
+  <div class="mb-2">
+    Download your kubeconfig.yml and upload it below
+  </div>
+
+  <div class="text-sm italic text-gray-500">
+  (They normally look like this)
+  </div>
+  <pre class="text-xs select-none">
+<code><%= File.read(Rails.root.join("public", "images", "instructions", "example_kubeconfig.yml")).strip %></code>
+  </pre>
+</div>

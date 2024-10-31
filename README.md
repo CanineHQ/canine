@@ -47,5 +47,4 @@ bin/dev
 - [ ] Rebulid metrics tabs so it works for both clusters & pods
       https://overcast.blog/zero-downtime-deployments-with-kubernetes-a-full-guide-71019397b924?gi=95ab85c45634
 - [ ] Make the landing page better
-- [ ] Downloadable YAML
 - [ ] Stop using default namespace -- use canine-system.

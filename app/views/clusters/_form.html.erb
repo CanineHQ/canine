@@ -5,6 +5,30 @@
     <%= form.text_field :name, class: "input input-bordered", value: RandomNameGenerator.generate_name %>
   </div>
 
+  <% if defined?(show_instructions) %>
+  <div data-controller="new-add-ons">
+    <label>Which managed Kubernetes provider are you using?</label>
+    <div class="form-group">
+      <div class="flex gap-4">
+        <select class="hidden" data-new-add-ons-target="input">
+          <option value="digitalocean">Digital Ocean</option>
+          <option value="linode">Linode</option>
+          <option value="linode">Other</option>
+        </select>
+        <%= render "clusters/instructions/cards/digitalocean" %>
+        <%= render "clusters/instructions/cards/linode" %>
+        <%= render "clusters/instructions/cards/other" %>
+      </div>
+    </div>
+
+    <div class="my-10 has-styled-links">
+      <%= render "clusters/instructions/instructions/digitalocean" %>
+      <%= render "clusters/instructions/instructions/linode" %>
+      <%= render "clusters/instructions/instructions/other" %>
+    </div>
+  </div>
+  <% end %>
+
   <div class="form-group">
     <%= form.label :kubeconfig %>
     <%= form.file_field :kubeconfig, class: "file-input w-full" %>
