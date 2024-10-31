@@ -10,9 +10,9 @@
           Download Kubeconfig File
         </div>
       <% end %>
-      <%= link_to download_yaml_cluster_path(@cluster), class: "btn btn-sm btn-outline" do %>
+      <%= link_to download_yaml_cluster_path(@cluster), class: "btn btn-sm btn-outline", target: "_blank" do %>
         <div class="flex items-center gap-2">
-          Download YAML File
+          Download All YAML Files
         </div>
       <% end %>
     </div>
