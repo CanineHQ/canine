@@ -1,37 +1,25 @@
 ![alt text](https://github.com/czhu12/canine/blob/main/public/images/logo-full.png?raw=true)
 
-## Prerequisites
+## About the project
+Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 
-- **Node.js**: v20
-- **Helm**: Install via Homebrew
-  ```bash
-  brew install helm
-  ```
-- **Ruby Gems**: Install dependencies
-  ```bash
-  bundle install
-  ```
-- [**Cloudflare Tunnel**](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/): For development testing with GitHub
-  ```bash
-    cloudflared tunnel run <YOUR TUNNEL NAME>
-  ```
-- **Docker**: Run locally
-- **.env Configuration**: Set environment variable
-  ```bash
-  APP_HOST=canine.example.com
-  OMNIAUTH_GITHUB_WEBHOOK_SECRET=1234567890
-  OMNIAUTH_GITHUB_PUBLIC_KEY=1234567890
-  OMNIAUTH_GITHUB_PRIVATE_KEY=1234567890
-  ```
-- **Enable git hooks**:
-  ```bash
-  git config --local include.path .gitconfig
-  ```
+## Requirements
 
-## Running the app
+* Docker v24.0.0 or higher
+* Docker Compose v2.0.0 or higher
 
-Use the following command to start your application:
+## Installation
 
-```bash
-bin/dev
+```git clone git@github.com:czhu12/canine.git
+cd canine
+docker compose up
 ```
+
+## Cloud
+
+For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
+
+
+## License
+
+[MIT License](https://github.com/czhu12/canine/blob/main/LICENSE)
