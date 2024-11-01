@@ -4,6 +4,7 @@ metadata:
   name: <%= name %>
   namespace: <%= project.name %>
   labels:
+    caninemanaged: 'true'
     oneoff: 'true'
 spec:
   restartPolicy: Never

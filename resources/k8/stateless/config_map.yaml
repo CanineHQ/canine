@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   namespace: <%= @project.name %>
   name: <%= @project.name %>
+  labels:
+    caninemanaged: 'true'
 data:
   <% @project.environment_variables.each do |environment_variable| %>
   <%= environment_variable.name %>: "<%= environment_variable.value.gsub('"', '\\"') %>"

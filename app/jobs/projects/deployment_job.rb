@@ -2,10 +2,12 @@ require "base64"
 require "json"
 
 class Projects::DeploymentJob < ApplicationJob
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Deployment CronJob Service Ingress]
   class DeploymentFailure < StandardError; end
 
   def perform(deployment)
     @logger = deployment
+    @marked_resources = []
     project = deployment.project
     kubeconfig = project.cluster.kubeconfig
     kubectl = create_kubectl(deployment, kubeconfig)
@@ -20,6 +22,8 @@ class Projects::DeploymentJob < ApplicationJob
     predeploy(project, deployment)
     # For each of the projects services
     deploy_services(project, kubectl)
+
+    sweep_unused_resources(project)
 
     deployment.completed!
     project.deployed!
@@ -81,11 +85,28 @@ class Projects::DeploymentJob < ApplicationJob
     kubectl.apply_yaml(namespace_yaml)
   end
 
-  %w[ConfigMap Deployment CronJob Service Ingress].each do |resource_type|
+  def sweep_unused_resources(project)
+    # Check deployments that need to be deleted
+    kubectl = K8::Kubectl.from_project(project)
+    DEPLOYABLE_RESOURCES.each do |resource_type|
+      results = YAML.safe_load(kubectl.call("get #{resource_type.downcase.pluralize} -o yaml -n #{project.name}"))
+      results['items'].each do |resource|
+        puts "Checking #{resource_type}: #{resource['metadata']['name']}"
+        if @marked_resources.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
+          @logger.info "Deleting #{resource_type}: #{resource['metadata']['name']}"
+          kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
+        end
+      end
+    end
+  end
+
+  DEPLOYABLE_RESOURCES.each do |resource_type|
     define_method(:"apply_#{resource_type.underscore}") do |service, kubectl|
       @logger.info "Creating #{resource_type}: #{service.name}"
-      resource_yaml = K8::Stateless.const_get(resource_type).new(service).to_yaml
+      resource = K8::Stateless.const_get(resource_type).new(service)
+      resource_yaml = resource.to_yaml
       kubectl.apply_yaml(resource_yaml)
+      @marked_resources << resource
     end
   end
 

@@ -3,8 +3,11 @@ kind: CronJob
 metadata:
   name: <%= service.name %>
   namespace: <%= project.name %>
+  labels:
+    caninemanaged: 'true'
+    app: <%= service.name %>
 spec:
-  schedule: <%= service.cron_schedule.schedule %>
+  schedule: "<%= service.cron_schedule.schedule %>"
   jobTemplate:
     spec:
       template:

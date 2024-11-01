@@ -1,9 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: <%= service.name %>-ingress
+  name: <%= name %>
   namespace: <%= project.name %>
   annotations:
+    caninemanaged: 'true'
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
   ingressClassName: "nginx"

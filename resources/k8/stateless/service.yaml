@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: <%= service.name %>-service
+  name: <%= name %>
   namespace: <%= project.name %>
   labels:
+    caninemanaged: 'true'
     app: <%= service.name %>
 spec:
   selector:

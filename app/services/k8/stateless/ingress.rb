@@ -1,5 +1,6 @@
 class K8::Stateless::Ingress < K8::Base
   attr_accessor :service, :project, :domains, :cluster
+  delegate :name, to: :service
 
   def initialize(service)
     @service = service

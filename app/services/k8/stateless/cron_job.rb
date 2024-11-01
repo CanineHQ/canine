@@ -1,5 +1,6 @@
 class K8::Stateless::CronJob < K8::Base
   attr_accessor :service, :project
+  delegate :name, to: :service
   def initialize(service)
     @service = service
     @project = service.project

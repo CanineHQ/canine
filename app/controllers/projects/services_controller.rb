@@ -28,7 +28,6 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def destroy
-    Projects::Services::DestroyJob.perform_later(@project, @service)
     redirect_to project_services_path(@project), notice: "Service is being destroyed."
   end
 

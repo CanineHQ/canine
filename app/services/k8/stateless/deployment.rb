@@ -1,5 +1,6 @@
 class K8::Stateless::Deployment < K8::Base
   attr_accessor :service, :project, :environment_variables
+  delegate :name, to: :service
 
   def initialize(service)
     @service = service
