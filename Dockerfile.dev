@@ -1,0 +1,58 @@
+# FROM ruby:3.3
+FROM debian:bullseye-slim as base
+
+# Install dependencies for building Ruby
+RUN apt-get update && apt-get install -y build-essential curl wget autoconf git
+
+# Install ruby-install for installing Ruby
+RUN wget https://github.com/postmodern/ruby-install/releases/download/v0.9.3/ruby-install-0.9.3.tar.gz \
+  && tar -xzvf ruby-install-0.9.3.tar.gz \
+  && cd ruby-install-0.9.3/ \
+  && make install
+
+# Install Ruby 3.3.0 with the https://github.com/ruby/ruby/pull/9371 patch
+RUN ruby-install -p https://github.com/ruby/ruby/pull/9371.diff ruby 3.3.0
+
+# Make the Ruby binary available on the PATH
+ENV PATH="/opt/rubies/ruby-3.3.0/bin:/usr/local/bundle/bin:${PATH}"
+
+ARG NODE_VERSION=20.11.0
+ARG YARN_VERSION=1.22.21
+ENV BINDING="0.0.0.0" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="omit" \
+    GEM_HOME="/usr/local/bundle"
+
+RUN gem update --system && gem cleanup
+
+# Install JavaScript dependencies
+ENV PATH=/usr/local/node/bin:$PATH
+RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
+    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
+    npm install -g yarn@$YARN_VERSION && \
+    rm -rf /tmp/node-build-master
+
+# App dependencies
+RUN apt-get update -qq && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends imagemagick libvips libvips-dev libvips-tools poppler-utils libpq-dev postgresql-client && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt
+
+# App
+WORKDIR /rails
+
+COPY ./Gemfile* ./.ruby-version /rails/
+RUN bundle install --jobs $(nproc) --retry 5
+
+COPY package.json yarn.lock /rails/
+RUN yarn install
+
+COPY . .
+
+RUN gem install foreman
+
+# Entrypoint prepares the database.
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Start the server by default, this can be overwritten at runtime
+EXPOSE 3000
+CMD ["./bin/dev"]

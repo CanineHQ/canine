@@ -1,0 +1,43 @@
+version: '3.2'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    # Overrides default command so things don't shut down after the process ends.
+    # command: sleep infinity
+    depends_on:
+      - postgres
+      - redis
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
+      - "3200:3200"
+    environment:
+      - PGHOST=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=password
+      - REDIS_URL=redis://redis:6379
+      - PORT=3000
+    volumes:
+      - .:/rails
+      - node_modules:/rails/node_modules
+
+volumes:
+  postgres:
+  node_modules:
