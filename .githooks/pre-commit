@@ -33,10 +33,10 @@ if [ -z "$NEW_TODOS" ]; then
 fi
 
 # Append NEW_TODOS to README.md under a TODO section
-echo -e "\n$NEW_TODOS" >> README.md
+echo -e "\n$NEW_TODOS" >> TODO.md
 
 # Add README.md to the commit
-git add README.md
-echo -e "\n✅ README.md updated with new TODOs"
+git add TODO.md
+echo -e "\n✅ TODO.md updated with new TODOs"
 
 exit 0
