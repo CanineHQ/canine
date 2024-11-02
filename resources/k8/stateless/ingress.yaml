@@ -3,8 +3,9 @@ kind: Ingress
 metadata:
   name: <%= name %>
   namespace: <%= project.name %>
-  annotations:
+  labels:
     caninemanaged: 'true'
+  annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
   ingressClassName: "nginx"
