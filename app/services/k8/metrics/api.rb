@@ -39,6 +39,9 @@ module K8::Metrics::Api
 
       # Split the data into lines and remove the header line
       lines = output.split("\n")
+      if lines.length <= 1
+        return []
+      end
       lines.shift # Remove the header line
 
       # Parse each line and create a hash for each node
@@ -101,6 +104,9 @@ module K8::Metrics::Api
 
     def self.parse_output(output)
       lines = output.split("\n")
+      if lines.length <= 1
+        return []
+      end
       headers = lines.shift.split(/\s+/)
 
       lines.map do |line|
