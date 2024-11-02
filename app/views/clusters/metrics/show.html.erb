@@ -27,33 +27,33 @@
       </tr>
     </thead>
     <tbody>
-      <% @node_metrics.each do |metric| %>
+      <% @nodes.each do |node| %>
       <tr class="cursor-pointer hover:bg-base-200/40">
         <td>
           <div class="flex items-center space-x-3 truncate">
             <div class="font-medium">
-              <%= metric[:name] %>
+              <%= node.name %>
             </div>
           </div>
         </td>
         <td>
           <div class="font-medium">
-            <%= metric[:cpu_cores] %> 
+            <%= integer_to_size(node.total_cpu) %> 
           </div>
         </td>
         <td>
           <div class="font-medium">
-            <%= metric[:cpu_percent] %>
+            <%= node.cpu_percent %>%
           </div>
         </td>
         <td>
           <div class="font-medium">
-            <%= metric[:memory_bytes] %>
+            <%= integer_to_size(node.total_memory) %>
           </div>
         </td>
         <td>
           <div class="font-medium">
-            <%= metric[:memory_percent] %>
+            <%= node.memory_percent %>%
           </div>
         </td>
       </tr>
@@ -64,6 +64,9 @@
   <table class="table mt-2 rounded-box" data-component="table">
     <thead>
       <tr>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Namespace</span>
+        </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">Pod Name</span>
         </th>
@@ -78,29 +81,34 @@
       </tr>
     </thead>
     <tbody>
-      <% @pod_metrics.each do |metric| %>
-        <tr class="cursor-pointer hover:bg-base-200/40">
-          <td>
-            <div class="flex items-center space-x-3 truncate font-medium">
-              <%= metric[:name] %>
-            </div>
-          </td>
-          <td>
-            <div class="font-medium">
-              <%= metric[:cpu] %> 
-            </div>
-          </td>
-          <td>
-            <div class="font-medium">
-              <%= metric[:memory] %>
-            </div>
-          </td>
-        </tr>
+      <% @nodes.each do |node| %>
+        <% node.namespaces.each do |namespace, pods| %>
+          <% pods.each do |pod| %>
+            <tr class="cursor-pointer hover:bg-base-200/40">
+              <td>
+                <div class="flex items-center space-x-3 truncate font-medium">
+                  <%= namespace %>
+                </div>
+              </td>
+              <td>
+                <div class="flex items-center space-x-3 truncate font-medium">
+                  <%= pod.name %>
+                </div>
+              </td>
+              <td>
+                <div class="font-medium">
+                  <%= pod.cpu %> 
+                </div>
+              </td>
+              <td>
+                <div class="font-medium">
+                  <%= integer_to_size(pod.memory) %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
       <% end %>
     </tbody>
   </table>
-  <div class="grid gap-4 grid-cols-2">
-    <%= render "charts/chart", dataset: [{ metrics: to_data(@metrics.memory, 'memory'), type: "size", name: "Memory" }], title: "Memory" %>
-    <%= render "charts/chart", dataset: [{ metrics: to_data(@metrics.cpu, 'cpu'), type: "percentage", name: "CPU" }], title: "CPU" %>
-  </div>
 <% end %>

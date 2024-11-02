@@ -16,9 +16,12 @@
 #
 class Metric < ApplicationRecord
   belongs_to :cluster
-  enum metric_type: {
+  enum :metric_type, {
     cpu: 0,
     memory: 1,
-    storage: 2
+    storage: 2,
+    total_cpu: 3,
+    total_memory: 4,
+    total_storage: 5,
   }
 end

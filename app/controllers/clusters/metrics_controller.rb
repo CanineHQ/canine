@@ -1,10 +1,9 @@
 class Clusters::MetricsController < Clusters::BaseController
   include MetricsHelper
+  include StorageHelper
   before_action :set_cluster
 
   def show
-    @pod_metrics = K8::Metrics::Pods.call(@cluster)
-    @node_metrics = K8::Metrics::Nodes.call(@cluster)
-    @metrics = @cluster.metrics
+    @nodes = K8::Metrics::Api::Node.ls(@cluster)
   end
 end

@@ -24,26 +24,6 @@ namespace :metrics do
   task nodes: :environment do
     Cluster.running.each do |cluster|
       nodes = K8::Metrics::Metrics.call(cluster)
-      attributes = nodes.flat_map do |node|
-        [
-          {
-            metric_type: :cpu,
-            tags: [ node[:name] ],
-            metadata: {
-              cpu: node[:cpu]
-            }
-          },
-          {
-            metric_type: :memory,
-            tags: [ node[:name] ],
-            metadata: {
-              memory: node[:memory]
-            }
-          }
-        ]
-      end
-
-      cluster.metrics.create(attributes)
     end
   end
 

@@ -1,7 +1,7 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 
 <%= project_layout(@project) do %>
-  <% if @pod_metrics.empty? %>
+  <% if @pods.empty? %>
     <div>
       <p class="text-gray-500">No metrics available</p>
     </div>
@@ -23,23 +23,23 @@
         </tr>
       </thead>
       <tbody>
-        <% @pod_metrics.each do |metric| %>
+        <% @pods.each do |pod| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
             <div class="flex items-center space-x-3 truncate">
               <div class="font-medium">
-                <%= metric[:name] %>
+                <%= pod.name %>
               </div>
             </div>
           </td>
           <td>
             <div class="font-medium">
-              <%= metric[:cpu] %> 
+              <%= integer_to_size(pod.cpu) %> 
             </div>
           </td>
           <td>
             <div class="font-medium">
-              <%= metric[:memory] %>
+              <%= integer_to_size(pod.memory) %>
             </div>
           </td>
         </tr>

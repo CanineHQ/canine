@@ -7,6 +7,7 @@ module StorageHelper
   }
 
   def size_to_integer(size)
+    size = size.strip
     match = size.match(/^(\d+(?:\.\d+)?)\s*([KMGTkmgt]i?)?$/)
     return nil unless match
 

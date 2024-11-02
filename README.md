@@ -21,7 +21,7 @@ Canine Cloud offers additional features for small teams:
 - GitHub integration for seamless deployment workflows
 - Team collaboration with role-based access control
 - Real-time metric tracking and monitoring
-- Way less maintenance
+- Way less maintenance for you
 
 For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
 

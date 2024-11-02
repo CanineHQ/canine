@@ -1,6 +1,5 @@
 # Todos
 - [ ] Onboarding flow (connect github)
-- [ ] allow public network access flag is not currently doing anything
 - [ ] Allow connecting to github separately from the app, not just on sign up
 - [ ] Make a single user mode
 - [ ] I want a way to “stop” the processes, can maybe do this with a replicas=0 setting
