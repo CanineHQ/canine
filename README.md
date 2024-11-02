@@ -12,13 +12,18 @@ Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 
 ```git clone git@github.com:czhu12/canine.git
 cd canine
-docker compose up
+docker-compose up
 ```
 
 ## Cloud
 
-For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
+Canine Cloud offers additional features for small teams:
+- GitHub integration for seamless deployment workflows
+- Team collaboration with role-based access control
+- Real-time metric tracking and monitoring
+- Way less maintenance
 
+For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
 
 ## License
 
