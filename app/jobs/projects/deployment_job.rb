@@ -25,6 +25,9 @@ class Projects::DeploymentJob < ApplicationJob
 
     sweep_unused_resources(project)
 
+    # Kill all one off containers
+    kill_one_off_containers(project, kubectl)
+
     deployment.completed!
     project.deployed!
   rescue StandardError => e
@@ -72,11 +75,9 @@ class Projects::DeploymentJob < ApplicationJob
       end
       restart_deployment(service, kubectl)
     end
-    # Kill all one off containers
-    kill_one_off_containers(service, kubectl)
   end
 
-  def kill_one_off_containers(service, kubectl)
+  def kill_one_off_containers(project, kubectl)
     kubectl.call("-n #{service.project.name} delete pods -l oneoff=true")
   end
 
@@ -92,7 +93,7 @@ class Projects::DeploymentJob < ApplicationJob
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase.pluralize} -o yaml -n #{project.name}"))
       results['items'].each do |resource|
         puts "Checking #{resource_type}: #{resource['metadata']['name']}"
-        if @marked_resources.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
+        if @marked_resources.select { |r| r.is_a?(K8::Stateless.const_get(resource_type)) }.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
           @logger.info "Deleting #{resource_type}: #{resource['metadata']['name']}"
           kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
         end
