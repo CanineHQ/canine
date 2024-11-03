@@ -62,7 +62,7 @@
           </div>
 
           <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
-            <div id="card-<%= chart['name'] %>" class="mt-8 card-form hidden">
+            <div class="mt-8 card-form hidden card-<%= chart['name'] %>">
               <h4 class="text-lg font-bold"><%= chart['name'].titleize %> Settings</h4>
               <hr class="mt-2 mb-6 border-base-content/10" />
               <% unless chart['coming_soon'] %>

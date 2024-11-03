@@ -8,3 +8,4 @@
 - [ ] Make the landing page better
 - [ ] Write a better README.md
   - [ ] How do you run the app locally?
+- [ ] Add a tutorial section
