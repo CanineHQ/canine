@@ -32,6 +32,7 @@ helm:
       version: 18.10.0
       repository: https://charts.bitnami.com/bitnami
       install_command: helm install ${add_on_name} ${repository}
+      coming_soon: true
       template:
         - name: resources.limits.storage
           key: resources.limits.storage
@@ -71,6 +72,7 @@ helm:
       friendly_name: "Helm Chart"
       logo: /images/helm/helm_chart.png
       repository: https://grafana.github.io/helm-charts
+      coming_soon: true
       template:
         - name: Name
           controller: "helm-search"
