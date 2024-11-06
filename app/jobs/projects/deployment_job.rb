@@ -78,7 +78,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def kill_one_off_containers(project, kubectl)
-    kubectl.call("-n #{service.project.name} delete pods -l oneoff=true")
+    kubectl.call("-n #{project.name} delete pods -l oneoff=true")
   end
 
   def apply_namespace(project, kubectl)
