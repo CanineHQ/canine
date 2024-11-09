@@ -2,7 +2,7 @@
   <h4 class="text-lg font-bold">Please go to Github.com and enter your personal access token below.</h4>
 
   <div class="ml-6 space-y-2">
-    <div>Make sure to check <code>repo</code>, <code>write:packages</code> and <code>delete:packages</code> as shown below.</div>
+    <div>Make sure to include the following scopes: <code>repo</code>, <code>write:packages</code></div>
     <div>
       <a href="https://github.com/settings/tokens" target="_blank">
         <img src="/images/instructions/github-create-token.png" class="rounded-3xl w-[500px]" />
@@ -13,9 +13,12 @@
     <% end %>
   </div>
   <%= form_with url: github_token_path, method: :put do |form| %>
-    <div class="form-group">
+    <div class="form-group" data-controller="toggle-password">
       <%= form.label :github_token, "Personal access token" %>
-      <%= form.text_field :github_token, class: "input input-bordered w-full max-w-xs" %>
+      <%= form.text_field :github_token, type: "password", class: "input input-bordered w-full max-w-xs", value: current_account.github_access_token, data: { toggle_password_target: "input" } %>
+      <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+        <iconify-icon icon="mdi:eye"></iconify-icon>
+      </button>
     </div>
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary" %>

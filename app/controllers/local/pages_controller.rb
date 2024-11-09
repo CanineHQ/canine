@@ -1,5 +1,5 @@
 class Local::PagesController < ApplicationController
-  EXPECTED_SCOPES = ["delete:packages", "repo", "write:packages"]
+  EXPECTED_SCOPES = ["repo", "write:packages"]
   skip_before_action :set_github_token_if_not_exists
 
   def github_token
