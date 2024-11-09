@@ -20,8 +20,9 @@ class Metric < ApplicationRecord
     cpu: 0,
     memory: 1,
     storage: 2,
-    total_cpu: 3,
-    total_memory: 4,
-    total_storage: 5,
+  }
+
+  scope :node_only_tags, -> { 
+    where("array_length(tags, 1) = 1")
   }
 end

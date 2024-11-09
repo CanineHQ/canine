@@ -10,22 +10,12 @@ class K8::Metrics::Metrics
       metrics << {
         metric_type: :cpu,
         tags:,
-        metadata: { cpu: node.cpu_cores }
+        metadata: { cpu: node.cpu_cores, total_cpu: node.total_cpu }
       }
       metrics << {
         metric_type: :memory,
         tags:,
-        metadata: { memory: node.used_memory }
-      }
-      metrics << {
-        metric_type: :total_cpu,
-        tags:,
-        metadata: { total_cpu: node.total_cpu }
-      }
-      metrics << {
-        metric_type: :total_memory,
-        tags:,
-        metadata: { total_memory: node.total_memory }
+        metadata: { memory: node.used_memory, total_memory: node.total_memory }
       }
 
       node.namespaces.each do |namespace, pods|
