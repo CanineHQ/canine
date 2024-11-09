@@ -4,6 +4,8 @@
     <img src="/images/logo-full.png" class="h-[40px] hidden lg:block" />
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
+
+  <% unless Rails.application.config.local_mode %>
   <div class="flex items-center justify-center">
     <div class="mx-auto dropdown">
       <button type="button" class="btn w-full"><%= current_account.name %></button>
@@ -22,6 +24,8 @@
       </ul>
     </div>
   </div>
+
+  <% end %>
 
   <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
     <div class="simplebar-wrapper">
