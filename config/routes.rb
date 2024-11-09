@@ -53,7 +53,7 @@ Rails.application.routes.draw do
       get :download_yaml
       get :logs
     end
-    resource :metrics, only: [ :show ], module: :clustero
+    resource :metrics, only: [ :show ], module: :clusters
     member do
       post :test_connection
       post :retry_install
