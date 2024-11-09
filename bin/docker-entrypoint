@@ -1,12 +1,16 @@
 #!/bin/bash -e
 
 # Enable jemalloc for reduced memory usage and latency.
+echo "Executing pre-entrypoint script..."
 if [ -z "${LD_PRELOAD+x}" ] && [ -f /usr/lib/*/libjemalloc.so.2 ]; then
   export LD_PRELOAD="$(echo /usr/lib/*/libjemalloc.so.2)"
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+# If running the rails server or bin/dev then create or migrate existing database
+echo "Checking if database needs to be prepared..."
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ] || [ "${1}" == "./bin/dev" ]; then
+  echo "Preparing database..."
+  ./bin/rails db:create
   ./bin/rails db:prepare
 fi
 

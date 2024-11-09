@@ -19,9 +19,21 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+docker: &docker
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  username: postgres
+  password: password
+  host: postgres
+
 
 development:
+  <% if ENV["DOCKER_ENV"] %>
+  <<: *docker
+  <% else %>
   <<: *default
+  <% end %>
   database: canine_development
 
   # The specified database role being used to connect to PostgreSQL.

@@ -3,7 +3,9 @@ services:
   postgres:
     image: postgres:16
     environment:
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+      - POSTGRES_MULTIPLE_DATABASES=canine_production,canine_development
     ports:
       - "5432:5432"
     volumes:
@@ -29,14 +31,14 @@ services:
       - "3000:3000"
       - "3200:3200"
     environment:
-      - PGHOST=postgres
-      - PGUSER=postgres
-      - PGPASSWORD=password
+      - DATABASE_URL=postgres://postgres:password@postgres:5432
       - REDIS_URL=redis://redis:6379
       - PORT=3000
+      - LOCAL_MODE=true
     volumes:
       - .:/rails
       - node_modules:/rails/node_modules
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   postgres:

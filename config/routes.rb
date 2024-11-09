@@ -53,9 +53,10 @@ Rails.application.routes.draw do
       get :download_yaml
       get :logs
     end
-    resource :metrics, only: [ :show ], module: :clusters
+    resource :metrics, only: [ :show ], module: :clustero
     member do
       post :test_connection
+      post :retry_install
     end
   end
 authenticate :user, lambda { |u| u.admin? } do
@@ -83,5 +84,11 @@ end
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   # Public marketing homepage
-  root to: "static#index"
+  if Rails.application.config.local_mode
+    get "/github_token", to: "local/pages#github_token"
+    put "/github_token", to: "local/pages#update_github_token"
+    root to: "projects#index"
+  else
+    root to: "static#index"
+  end
 end

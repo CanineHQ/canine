@@ -8,20 +8,23 @@ class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token
 
   before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :authenticate_user!
+  if Rails.application.config.local_mode
+    include Local::Authentication
+  else
+    before_action :authenticate_user!
+  end
 
   layout :determine_layout
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   protected
-    
-
     def current_account
       return nil unless user_signed_in?
       @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.accounts.first
     end
     helper_method :current_account
+
     def time_ago(t)
       if t.present?
         "#{time_ago_in_words(t)} ago"

@@ -10,6 +10,13 @@
     "error"
   end
 %>
-<div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-  <%= cluster.status %>
+<div class="flex items-center justify-between">
+  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+    <%= cluster.status %>
+  </div>
+  <% if cluster.status == "failed" %>
+    <div>
+      <%= button_to "Retry installation", retry_install_cluster_path(cluster), class: "btn btn-primary btn-outline btn-xs" %>
+    </div>
+  <% end %>
 </div>

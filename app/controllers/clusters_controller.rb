@@ -2,8 +2,8 @@ class ClustersController < ApplicationController
   before_action :set_cluster, only: [
     :show, :edit, :update, :destroy,
     :test_connection, :download_kubeconfig, :logs, :download_yaml,
+    :retry_install
   ]
-  skip_before_action :authenticate_user!, only: [:new]
 
   # GET /clusters
   def index
@@ -31,6 +31,11 @@ class ClustersController < ApplicationController
   end
 
   def logs
+  end
+
+  def retry_install
+    InstallClusterJob.perform_later(@cluster)
+    redirect_to @cluster, notice: "Retrying installation for cluster..."
   end
 
   def test_connection

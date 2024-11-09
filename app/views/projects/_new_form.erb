@@ -22,9 +22,13 @@
 
     <div class="form-control mt-1 w-full max-w-xs">
       <label class="label">
-        <span class="label-text">Repository path</span>
+        <span class="label-text">Github Repository</span>
       </label>
-      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+      <%= form.text_field(
+        :repository_url,
+        class: "input input-bordered w-full focus:outline-offset-0",
+        placeholder: "accountname/repo",
+      ) %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>
@@ -40,12 +44,14 @@
       </label>
     </div>
 
-    <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
-      <label class="label mt-1">
-        <span class="label-text cursor-pointer">Autodeploy</span>
-        <%= form.check_box :autodeploy, class: "checkbox" %>
-      </label>
-    </div>
+    <% unless Rails.application.config.local_mode %>
+      <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
+        <label class="label mt-1">
+          <span class="label-text cursor-pointer">Autodeploy</span>
+          <%= form.check_box :autodeploy, class: "checkbox" %>
+        </label>
+      </div>
+    <% end %>
 
     <div class="form-control mt-1 w-full max-w-xs">
       <label class="label">
