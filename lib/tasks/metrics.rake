@@ -29,6 +29,6 @@ namespace :metrics do
 
   desc "flush metrics"
   task flush: :environment do |_, args|
-    Metric.where("created_at < ?", 1.days.ago).destroy_all
+    Metric.where("created_at < ?", 1.week.ago).destroy_all
   end
 end
