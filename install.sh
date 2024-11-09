@@ -33,7 +33,7 @@ fi
 echo " [OK]"
 
 # Get the port that the user wants to use, or just default to 3456 if they press enter
-read -p "What port do you want Canine running on? (default: 3456):" port
+read -p "What port do you want Canine running on? (default: 3456) " port
 if [ -z "$port" ]; then
   port=3456
 fi

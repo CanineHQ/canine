@@ -9,10 +9,8 @@ Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 * Docker Compose v2.0.0 or higher
 
 ## Installation
-
-```git clone git@github.com:czhu12/canine.git
-cd canine
-docker-compose up
+```bash
+curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install.sh | bash
 ```
 
 ## Cloud
