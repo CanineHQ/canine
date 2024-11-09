@@ -42,7 +42,6 @@ fi
 # Run docker compose with PORT environment variable
 echo "Starting Canine on port $port..."
 # Print working directory
-echo "Current directory: $(pwd)"
 PORT=$port docker-compose up -d
 echo " [OK]"
 
