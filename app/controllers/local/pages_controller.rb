@@ -1,4 +1,5 @@
 class Local::PagesController < ApplicationController
+  EXPECTED_SCOPES = ["delete:packages", "repo", "write:packages"]
   skip_before_action :set_github_token_if_not_exists
 
   def github_token
@@ -14,9 +15,15 @@ class Local::PagesController < ApplicationController
         nickname: username
       }
     }.to_json
+    # Check per
     provider.save!
-    flash[:notice] = "Your Github account (#{username}) has been connected"
-    redirect_to root_path
+    if (client.scopes & EXPECTED_SCOPES).sort != EXPECTED_SCOPES.sort
+      flash[:error] = "Invalid scopes. Please check that your personal access token has the following scopes: #{EXPECTED_SCOPES.join(", ")}"
+      redirect_to github_token_path
+    else
+      flash[:notice] = "Your Github account (#{username}) has been connected"
+      redirect_to root_path
+    end
   rescue Octokit::Unauthorized
     flash[:error] = "Invalid personal access token"
     redirect_to github_token_path

@@ -28,12 +28,14 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
       - "3200:3200"
     environment:
       - DATABASE_URL=postgres://postgres:password@postgres:5432
       - REDIS_URL=redis://redis:6379
-      - PORT=3000
+      - PORT=${PORT:-3000}
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
       - LOCAL_MODE=true
     volumes:
       - .:/rails

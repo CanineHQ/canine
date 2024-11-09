@@ -1,16 +1,25 @@
 <div class="space-y-4">
-<h4 class="text-lg font-bold">Please go to Github.com and enter your personal access token below.</h4>
-<%= link_to "https://github.com/settings/tokens", target: "_blank", class: "btn btn-primary btn-outline" do %>
-  <iconify-icon icon="mdi:github"></iconify-icon> Go to Github
-<% end %>
-<%= form_with url: github_token_path, method: :put do |form| %>
-  <div class="form-group">
-    <%= form.label :github_token, "Personal access token" %>
-    <%= form.text_field :github_token, class: "input input-bordered w-full max-w-xs" %>
+  <h4 class="text-lg font-bold">Please go to Github.com and enter your personal access token below.</h4>
+
+  <div class="ml-6 space-y-2">
+    <div>Make sure to check <code>repo</code>, <code>write:packages</code> and <code>delete:packages</code> as shown below.</div>
+    <div>
+      <a href="https://github.com/settings/tokens" target="_blank">
+        <img src="/images/instructions/github-create-token.png" class="rounded-3xl w-[500px]" />
+      </a>
+    </div>
+    <%= link_to "https://github.com/settings/tokens", target: "_blank", class: "btn btn-primary btn-outline" do %>
+      <iconify-icon icon="mdi:github"></iconify-icon> Go to Github
+    <% end %>
   </div>
-  <div class="form-footer">
-    <%= form.submit "Save", class: "btn btn-primary" %>
-  </div>
-<% end %>
+  <%= form_with url: github_token_path, method: :put do |form| %>
+    <div class="form-group">
+      <%= form.label :github_token, "Personal access token" %>
+      <%= form.text_field :github_token, class: "input input-bordered w-full max-w-xs" %>
+    </div>
+    <div class="form-footer">
+      <%= form.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
 </div>
 

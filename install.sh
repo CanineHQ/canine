@@ -1,34 +1,48 @@
 #!/bin/bash
 set -e
 
-mkdir -p ~/.canine/src
-git clone https://github.com/czhu12/canine.git ~/.canine/src
+echo -n "Cloning Canine..."
+mkdir -p ~/.canine
+# Remove existing src directory if it exists
+#rm -rf ~/.canine/src
+# Only clone if the directory is empty
+if [ -z "$(ls -A ~/.canine/src)" ]; then
+  git clone https://github.com/czhu12/canine.git ~/.canine/src
+fi
 
 cd ~/.canine/src
+echo " [OK]"
 
+echo -n "Checking Docker..."
 # Check if /var/run/docker.sock exists
-if [ ! -S /var/run/docker.sock ]; then
-  echo "Docker socket not found. Please check your Docker installation."
+if [ ! -S "/var/run/docker.sock" ]; then
+  echo " [FAIL]"
+  echo "Docker socket not found at /var/run/docker.sock. Please check your Docker installation and ensure docker is running."
   exit 1
 fi
-# Get the port that the user wants to use, or just default to 3000 if they press enter
-read -p "Enter the port number to use (default: 3000):" port
+echo " [OK]"
+
+echo -n "Checking docker-compose..."
+# Check if docker-compose is installed
+if ! docker compose version > /dev/null 2>&1; then
+  echo " [FAIL]"
+  echo "docker-compose not found. Please check your Docker installation."
+  exit 1
+fi
+echo " [OK]"
+
+# Get the port that the user wants to use, or just default to 3456 if they press enter
+read -p "What port do you want Canine running on? (default: 3456):" port
 if [ -z "$port" ]; then
-  port=3000
-fi
-# Get the username that the user wants to use, or just default to none
-read -p "Enter the username to use (default: none):" username
-if [ -z "$username" ]; then
-  username=none
-fi
-# Get the password that the user wants to use, or just default to none
-read -p "Enter the password to use (default: none):" password
-if [ -z "$password" ]; then
-  password=none
+  port=3456
 fi
 
 # Run docker compose with PORT environment variable
-docker-compose up -d PORT=$port USERNAME=$username PASSWORD=$password
+echo "Starting Canine on port $port..."
+# Print working directory
+echo "Current directory: $(pwd)"
+docker-compose up -d PORT=$port
+echo " [OK]"
 
 # Open browser to http://localhost:$port
 open http://localhost:$port
