@@ -5,7 +5,7 @@
     <%= render "projects/metrics/live_metrics" %>
   <% end %>
 
-  <div class="flex flex-row gap-4">
+  <div class="flex flex-row gap-4 mt-8">
     <%= line_chart parse_cpu_metrics(@metrics), suffix: "%", xtitle: "CPU Usage", ytitle: "Percentage" %>
     <%= line_chart parse_memory_metrics(@metrics), suffix: "%", xtitle: "Memory Usage", ytitle: "Percentage" %>
   </div>
