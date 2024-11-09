@@ -24,12 +24,12 @@ class K8::Metrics::Metrics
           metrics << {
             metric_type: :cpu,
             tags:,
-            metadata: { cpu: pod.cpu }
+            metadata: { cpu: pod.cpu, total_cpu: node.total_cpu }
           }
           metrics << {
             metric_type: :memory,
             tags:,
-            metadata: { memory: pod.memory }
+            metadata: { memory: pod.memory, total_memory: node.total_memory }
           }
         end
       end

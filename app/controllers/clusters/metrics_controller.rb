@@ -8,6 +8,7 @@ class Clusters::MetricsController < Clusters::BaseController
     @metrics = @cluster.metrics.node_only_tags.order(created_at: :desc).limit(1000)
   end
 
+  protected
   def parse_cpu_metrics(metrics)
     metrics.select { |m| m.cpu? }.each_with_object({}) do |metric, h|
       h[metric.created_at] = 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")

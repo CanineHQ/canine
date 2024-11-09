@@ -25,4 +25,12 @@ class Metric < ApplicationRecord
   scope :node_only_tags, -> { 
     where("array_length(tags, 1) = 1")
   }
+
+  scope :for_project, ->(project) {
+    where("tags @> ARRAY[?]::jsonb[]", %Q["namespace:#{project.name}"])
+  }
+
+  def tag_value(tag)
+    tags.find { |t| t.start_with?(tag) }&.split(":")&.last
+  end
 end
