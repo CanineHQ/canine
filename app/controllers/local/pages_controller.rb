@@ -1,6 +1,8 @@
 class Local::PagesController < ApplicationController
   EXPECTED_SCOPES = ["repo", "write:packages"]
-  skip_before_action :set_github_token_if_not_exists
+  if Rails.application.config.local_mode
+    skip_before_action :set_github_token_if_not_exists
+  end
 
   def github_token
   end
