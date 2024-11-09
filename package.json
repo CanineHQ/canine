@@ -23,6 +23,8 @@
     "@tailwindcss/typography": "^0.5.15",
     "apexcharts": "^3.54.0",
     "autoprefixer": "^10.4.20",
+    "chart.js": "^4.4.6",
+    "chartkick": "^5.0.1",
     "chokidar": "^4.0.1",
     "daisyui": "^4.12.10",
     "esbuild-rails": "^1.0.7",

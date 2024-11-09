@@ -21,7 +21,7 @@ namespace :metrics do
   end
 
   desc "Poll Kubernetes cluster metrics"
-  task nodes: :environment do
+  task fetch: :environment do
     Cluster.running.each do |cluster|
       nodes = K8::Metrics::Metrics.call(cluster)
     end

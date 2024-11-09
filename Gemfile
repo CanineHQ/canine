@@ -95,3 +95,7 @@ gem "httparty", "~> 0.22.0"
 gem "redcarpet", "~> 3.6"
 
 gem "rubyzip", "~> 2.3"
+
+gem "chartkick", "~> 5.1"
+
+gem "groupdate", "~> 6.5"

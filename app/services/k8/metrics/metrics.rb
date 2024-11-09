@@ -6,42 +6,46 @@ class K8::Metrics::Metrics
     nodes = K8::Metrics::Api::Node.ls(cluster)
     metrics = []
     nodes.each do |node|
+      tags = [ "node:#{node.name}" ]
       metrics << {
         metric_type: :cpu,
-        tags: [ node.name ],
+        tags:,
         metadata: { cpu: node.cpu_cores }
       }
       metrics << {
         metric_type: :memory,
-        tags: [ node.name ],
+        tags:,
         metadata: { memory: node.used_memory }
       }
       metrics << {
         metric_type: :total_cpu,
-        tags: [ node.name ],
+        tags:,
         metadata: { total_cpu: node.total_cpu }
       }
       metrics << {
         metric_type: :total_memory,
-        tags: [ node.name ],
+        tags:,
         metadata: { total_memory: node.total_memory }
       }
 
       node.namespaces.each do |namespace, pods|
         pods.each do |pod|
+          tags = [ "node:#{node.name}", "namespace:#{namespace}", "pod:#{pod.name}" ]
           metrics << {
             metric_type: :cpu,
-            tags: [ node.name, namespace, pod.name ],
+            tags:,
             metadata: { cpu: pod.cpu }
           }
           metrics << {
             metric_type: :memory,
-            tags: [ node.name, namespace, pod.name ],
+            tags:,
             metadata: { memory: pod.memory }
           }
         end
       end
     end
-    cluster.metrics.create(attributes)
+    metrics.each do |metric|
+      cluster.metrics.create(**metric)
+    end
   end
 end
