@@ -7,7 +7,8 @@ mkdir -p ~/.canine
 #rm -rf ~/.canine/src
 # Only clone if the directory is empty
 if [ -z "$(ls -A ~/.canine/src)" ]; then
-  git clone https://github.com/czhu12/canine.git ~/.canine/src
+  # Shallow clone the repo
+  git clone --depth 1 https://github.com/czhu12/canine.git ~/.canine/src
 fi
 
 cd ~/.canine/src
@@ -41,7 +42,7 @@ fi
 echo "Starting Canine on port $port..."
 # Print working directory
 echo "Current directory: $(pwd)"
-docker-compose up -d PORT=$port
+PORT=$port docker-compose up -d
 echo " [OK]"
 
 # Open browser to http://localhost:$port
