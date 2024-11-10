@@ -33,8 +33,9 @@ class Service < ApplicationRecord
   }
 
   enum :status, {
-    healthy: 0,
-    unhealthy: 1
+    pending: 0,
+    healthy: 1,
+    unhealthy: 2
   }
 
   has_one :cron_schedule, dependent: :destroy
@@ -45,4 +46,12 @@ class Service < ApplicationRecord
                    format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
 
   accepts_nested_attributes_for :domains, allow_destroy: true
+
+  def friendly_status
+    if !web_service? && healthy?
+      "deployed"
+    else
+      status.humanize
+    end
+  end
 end

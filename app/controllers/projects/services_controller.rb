@@ -13,7 +13,7 @@ class Projects::ServicesController < Projects::BaseController
   def create
     result = Services::Create.call(@project.services.build(service_params), params)
     if result.success?
-      redirect_to project_services_path(@project), notice: "Service was successfully created."
+      redirect_to project_services_path(@project), notice: "Service will be created on the next deploy."
     else
       redirect_to project_services_path(@project), alert: "Service could not be created."
     end
@@ -21,14 +21,15 @@ class Projects::ServicesController < Projects::BaseController
 
   def update
     if @service.update(service_params)
-      redirect_to project_services_path(@project), notice: "Service was successfully updated."
+      redirect_to project_services_path(@project), notice: "Service will be updated on the next deploy."
     else
       redirect_to project_services_path(@project), alert: "Service could not be updated."
     end
   end
 
   def destroy
-    redirect_to project_services_path(@project), notice: "Service is being destroyed."
+    @service.destroy
+    redirect_to project_services_path(@project), notice: "Service will be removed on the next deploy."
   end
 
   private

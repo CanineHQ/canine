@@ -75,6 +75,7 @@ class Projects::DeploymentJob < ApplicationJob
       end
       restart_deployment(service, kubectl)
     end
+    service.healthy!
   end
 
   def kill_one_off_containers(project, kubectl)

@@ -1,5 +1,7 @@
 <%
   badge_color = case service.status
+  when "pending"
+    "warning"
   when "healthy"
     "success"
   when "unhealthy"
@@ -8,13 +10,15 @@
 %>
 <div class="text-right">
   <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-    <%= service.status %>
+    <%= service.friendly_status %>
   </div>
-  <div class="text-xs text-gray-500">
-    <% if service.last_health_checked_at %>
-      Last checked <%= time_ago(service.last_health_checked_at) %>
-    <% else %>
-      Never checked
-    <% end %>
-  </div>
+  <% if service.web_service? %>
+    <div class="text-xs text-gray-500">
+      <% if service.last_health_checked_at %>
+        Last checked <%= time_ago(service.last_health_checked_at) %>
+      <% else %>
+        Never checked
+      <% end %>
+    </div>
+  <% end %>
 </div>

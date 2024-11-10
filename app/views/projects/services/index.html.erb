@@ -22,11 +22,9 @@
           <div class="collapse-title">
             <div class="flex items-center justify-between">
               <div class="text-xl font-medium"><%= service.name %></div>
-              <% if service.web_service? %>
-                <div class="my-1">
-                  <%= render "projects/services/status", service: service %>
-                </div>
-              <% end %>
+              <div class="my-1">
+                <%= render "projects/services/status", service: service %>
+              </div>
             </div>
           </div>
           <div class="collapse-content">

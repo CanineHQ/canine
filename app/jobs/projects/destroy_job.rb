@@ -2,6 +2,7 @@
 class Projects::DestroyJob < ApplicationJob
 
   def perform(project)
+    project.destroying!
     kubeconfig = project.cluster.kubeconfig
     kubectl = K8::Kubectl.new(kubeconfig)
 

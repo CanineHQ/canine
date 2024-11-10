@@ -43,7 +43,8 @@ class Project < ApplicationRecord
 
   enum :status, {
     creating: 0,
-    deployed: 1
+    deployed: 1,
+    destroying: 2
   }
 
   def current_deployment
