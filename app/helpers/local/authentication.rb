@@ -25,8 +25,7 @@ module Local::Authentication
     if User.count.zero?
       Local::CreateDefaultUser.execute
     end
-    if ENV["USERNAME"] && ENV["PASSWORD"]
-
+    if ENV["CANINE_USERNAME"] && ENV["CANINE_PASSWORD"]
       authenticate_or_request_with_http_basic do |username, password|
         @current_user = User.find_by!(email: "#{username}@example.com")
         @current_account = @current_user.accounts.first

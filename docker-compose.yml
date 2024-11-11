@@ -34,8 +34,8 @@ services:
       - DATABASE_URL=postgres://postgres:password@postgres:5432
       - REDIS_URL=redis://redis:6379
       - PORT=${PORT:-3000}
-      - USERNAME=${USERNAME}
-      - PASSWORD=${PASSWORD}
+      - CANINE_USERNAME=${CANINE_USERNAME}
+      - CANINE_PASSWORD=${CANINE_PASSWORD}
       - LOCAL_MODE=true
     volumes:
       - .:/rails
