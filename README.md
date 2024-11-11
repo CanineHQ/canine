@@ -10,7 +10,7 @@ Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 
 ## Installation
 ```bash
-curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install/install.sh | bash
 ```
 
 ## Cloud
