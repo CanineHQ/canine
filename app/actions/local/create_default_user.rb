@@ -6,12 +6,12 @@ class Local::CreateDefaultUser
   executed do |context|
     ActiveRecord::Base.transaction do
       context.user = User.first || User.new
-      context.user.email = "#{ENV.fetch("USERNAME", SecureRandom.uuid)}@example.com"
-      context.user.password = ENV.fetch("PASSWORD", "password")
-      context.user.password_confirmation = ENV.fetch("PASSWORD", "password")
+      context.user.email = "#{ENV["USERNAME"].presence || SecureRandom.uuid}@example.com"
+      context.user.password = ENV["PASSWORD"].presence || "password"
+      context.user.password_confirmation = ENV["PASSWORD"].presence || "password"
       context.user.save!
-      context.account = context.user.accounts.first || context.user.accounts.create!(name: "Default")
-      AccountUser.find_or_create_by!(account: context.account, user: context.user)
+      context.account = context.user.accounts.first || Account.create!(name: "Default", owner: context.user)
+      context.account.account_users.find_or_create_by!(user: context.user)
     end
   end
 end
