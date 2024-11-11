@@ -28,6 +28,7 @@ class Account < ApplicationRecord
 
   def github_username
     return unless github_account
+
     JSON.parse(github_account.auth)["info"]["nickname"]
   end
 
