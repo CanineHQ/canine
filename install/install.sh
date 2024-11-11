@@ -30,26 +30,19 @@ fi
 echo " [OK]"
 
 # Try /usr/local/bin first
-echo $(pwd)
-cp install/canine /usr/local/bin/canine
-# Next try /usr/bin
-if [ $? -ne 0 ]; then
-  cp install/canine /usr/bin/canine
+
+# Get the port that the user wants to use, or just default to 3456
+port=3456  # Set default first
+if [ -t 0 ]; then  # Only prompt if running in interactive terminal
+    read -p "What port do you want Canine running on? (default: 3456) " port
+    port=${port:-3456}
 fi
 
-## Get the port that the user wants to use, or just default to 3456
-#port=3456  # Set default first
-#if [ -t 0 ]; then  # Only prompt if running in interactive terminal
-#    read -p "What port do you want Canine running on? (default: 3456) " port
-#    port=${port:-3456}
-#fi
+# Run docker compose with PORT environment variable
+echo "Starting Canine on port $port..."
+# Print working directory
+PORT=$port docker-compose up
+echo " [OK]"
 
-## Run docker compose with PORT environment variable
-#echo "Starting Canine on port $port..."
-## Print working directory
-#PORT=$port docker-compose up
-#echo " [OK]"
-#
-## Open browser to http://localhost:$port
-#open http://localhost:$port
-#
+# Open browser to http://localhost:$port
+open http://localhost:$port
