@@ -1,4 +1,4 @@
-version: '3.2'
+version: "3.2"
 services:
   postgres:
     image: postgres:16
@@ -37,6 +37,7 @@ services:
       - CANINE_USERNAME=${CANINE_USERNAME}
       - CANINE_PASSWORD=${CANINE_PASSWORD}
       - LOCAL_MODE=true
+      - APP_HOST=http://localhost:${PORT:-3000}
     volumes:
       - .:/rails
       - node_modules:/rails/node_modules
