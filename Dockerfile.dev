@@ -68,8 +68,6 @@ COPY . .
 
 RUN gem install foreman
 
-RUN rm -f /rails/tmp/pids/server.pid
-
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
