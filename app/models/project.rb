@@ -38,7 +38,7 @@ class Project < ApplicationRecord
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
   validates :repository_url, presence: true,
-                            format: { 
+                            format: {
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
                               message: "must be in the format 'owner/repository'"
                             }
