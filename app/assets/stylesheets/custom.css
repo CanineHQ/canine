@@ -24,3 +24,7 @@
 .has-styled-links a {
   @apply link;
 }
+
+.prose-lg a {
+  @apply link underline-offset-4;
+}

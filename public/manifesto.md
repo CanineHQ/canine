@@ -48,11 +48,16 @@ Costs only grew from here. Peaking at a ~$1M in annual spend within 4 years.
 
 A large chunk of the tools we were using have open source versions, or open source alternatives, but we could never justify hosting them ourselves since we really had no idea what to expect. Most open source installations were simple enough, normally just expecting a server that we can run them on. But what about health checks? What about monitoring? What about alerting? What about logging? There must be something better.
 
+### Year 4:
+We started our migration to move off some of our more expensive infrastructure providers, and quick discovered that it's not that easy. I won't go into the full details, but just to give you an idea, one task that took a few weeks to resolve was chasing down and upgrading all the integrations that pinned our production IP's for security reasons, that we aren't able to take with us to the new infrastructure. The net result was that we cut costs by over 70% but it was a major, major project.
+
 # So, why Canine?
 
-### Reason #1: Kubernetes scales, but is hard to manage
+## Reason #1: Kubernetes scales, but is hard to manage
 
-Kubernetes is a powerful tool that can be used to do many things far beyond simple [web application development](https://medium.com/chick-fil-atech/observability-at-the-edge-b2385065ab6e). We learned to love Kubernetes, while also learning the hard way it can be excruciatingly easy to accidentally delete essential services like CoreDNS, and permanently bork your cluster. But for almost all web applications, you only need a tiny slice of what it has to offer: Ingress, Services, Deployments, Pods and CronJobs.
+Kubernetes is amazing. The same platform can be run on single node, and then scaled to [tens of thousands](https://thenewstack.io/scaling-to-10000-kubernetes-clusters-without-missing-a-beat/). It can run a single [Raspberry Pi](https://faun.pub/single-node-kubernetes-on-a-raspberry-pi-cb93a4300305) to a [massively distributed edge clusters](https://medium.com/chick-fil-atech/observability-at-the-edge-b2385065ab6e). It's supported by [basically](https://www.digitalocean.com/products/kubernetes) [every](https://www.linode.com/lp/kubernetes/) [single](https://www.vultr.com/kubernetes/) [cloud](https://aws.amazon.com/eks/) [provider](https://cloud.google.com/kubernetes-engine) in a (mostly) standardized way. I learned to love Kubernetes, while also learning the hard way it can be excruciatingly easy to accidentally delete essential services like CoreDNS, and totally bork your cluster. Kubernetes is notorious for being difficult and over complex for startups and small teams, who are normally steered to more out of the box solutions. I also learned the hard way that eventually, many of these solutions don't scale, **especially when it comes to cost**, and moving off the infrstructure is a nightmare.
+
+Canine is an attempt to allow one-man teams to adopt Kubernetes. But for almost all web applications, you only need a tiny slice of what it has to offer: Ingress, Services, Deployments, Pods and CronJobs. Canine tries to expose just this slice.
 
 It sits entirely on top of your own Kubernetes cluster, and all of the YAML configurations are downloadable, in case you want to migrate away from Canine.
 
@@ -62,10 +67,12 @@ It also makes up for some of the defects that are missing from out-of-the-box Ku
 * Simple one-off scripts
 * Metrics dashboard
 
-### Reason #2: The rich ecosystem of third party applications
+## Reason #2: The rich ecosystem of third party applications
 
 Helm is a package manager for Kubernetes that makes it trivial to host third party applications. Thanks to Helm, basically every single open source software application can be easily hosted through Canine. This makes it trivially easy to, for instance, deploy a hosted version of Sentry!
 
-Give Canine a whirl, on your (own system)[https://github.com/czhu12/canine], or a (hosted version)[https://canine.sh], completely free.
+Give Canine a whirl, on your [own system](https://github.com/czhu12/canine), or a [hosted version](https://canine.sh), completely free.
 
+<sub>
 \* No VC money was raised in the building of this product
+</sub>
