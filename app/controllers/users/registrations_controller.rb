@@ -1,5 +1,5 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  layout 'homepage', only: [:new, :create]
+  layout 'homepage', only: [ :new, :create ]
 
   protected
    def update_resource(resource, params)

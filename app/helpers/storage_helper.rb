@@ -13,7 +13,7 @@ module StorageHelper
 
     value = match[1].to_f
     unit = match[2]&.upcase&.chr || ''
-    
+
     (value * (SIZE_UNITS[unit] || 1)).to_i
   end
 

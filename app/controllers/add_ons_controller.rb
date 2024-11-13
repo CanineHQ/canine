@@ -1,6 +1,6 @@
 class AddOnsController < ApplicationController
   include StorageHelper
-  before_action :set_add_on, only: [:show, :edit, :update, :destroy]
+  before_action :set_add_on, only: [ :show, :edit, :update, :destroy ]
 
   # GET /add_ons
   def index

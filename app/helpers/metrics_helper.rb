@@ -3,7 +3,7 @@ module MetricsHelper
     metrics.map do |m|
       {
         created_at: m.created_at,
-        value: m.metadata[key].to_f,
+        value: m.metadata[key].to_f
       }
     end
   end

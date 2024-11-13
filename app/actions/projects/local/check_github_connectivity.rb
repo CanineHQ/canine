@@ -6,7 +6,7 @@ class Projects::Local::CheckGithubConnectivity
 
   executed do |context|
     path = context.project.repository_url
-    
+
     # Check if directory exists
     context.checklist << "Checking project directory exists..."
     unless Dir.exist?(path)

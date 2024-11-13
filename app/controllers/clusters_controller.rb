@@ -73,7 +73,7 @@ class ClustersController < ApplicationController
     stringio.rewind
 
     # Send the zip file to the user
-    send_data(stringio.read, 
+    send_data(stringio.read,
       filename: "#{@cluster.name}.zip",
       type: "application/zip"
     )

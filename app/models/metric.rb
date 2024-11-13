@@ -19,15 +19,15 @@ class Metric < ApplicationRecord
   enum :metric_type, {
     cpu: 0,
     memory: 1,
-    storage: 2,
+    storage: 2
   }
 
-  scope :node_only_tags, -> { 
+  scope :node_only_tags, -> {
     where("array_length(tags, 1) = 1")
   }
 
   scope :for_project, ->(project) {
-    where("tags @> ARRAY[?]::jsonb[]", %Q["namespace:#{project.name}"])
+    where("tags @> ARRAY[?]::jsonb[]", %Q("namespace:#{project.name}"))
   }
 
   def tag_value(tag)

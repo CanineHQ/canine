@@ -1,6 +1,6 @@
 Chartkick.options = {
   height: "400px",
-  colors: ["#4f46e5", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"],
+  colors: [ "#4f46e5", "#06b6d4", "#10b981", "#f59e0b", "#ef4444" ],
   library: {
     font: {
       family: "'DM Sans', sans-serif"
