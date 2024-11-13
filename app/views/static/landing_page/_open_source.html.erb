@@ -1,0 +1,23 @@
+<div class="mt-32 sm:mt-56">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl sm:text-center">
+      <h2 class="text-base font-semibold leading-7 text-indigo-400">Open Source</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Canine is open source, and free to use</p>
+      <p class="mt-6 text-lg leading-8 text-gray-300">Bring your own Kubernetes cluster, or use our hosted version.</p>
+    </div>
+  </div>
+  <div class="relative overflow-hidden pt-16">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mockup-code cursor-pointer group" data-controller="clipboard" data-clipboard-text="<%= StaticController::INSTALL_SCRIPT %>">
+        <pre data-prefix="$" class="text-white"><code class="group-hover:text-blue-300 transition-all"><%= StaticController::INSTALL_SCRIPT %></code></pre>
+        <pre data-prefix=">" class="text-warning"><code>Checking docker is installed...</code></pre>
+        <pre data-prefix=">" class="text-warning"><code>Checking docker-compose is installed...</code></pre>
+        <pre data-prefix=">" class="text-warning"><code>Enter the port you want to host Canine on (default: 3456):</code></pre>
+        <pre data-prefix=">" class="text-success"><code>Running on <span class="underline underline-offset-2">https://localhost:3456</span></code></pre>
+      </div>
+      <div class="mt-2 text-sm text-gray-200">
+        (Run this on your laptop, not your cluster)
+      </div>
+    </div>
+  </div>
+</div>

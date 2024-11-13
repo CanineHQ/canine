@@ -50,6 +50,8 @@ A large chunk of the tools we were using have open source versions, or open sour
 
 # So, why Canine?
 
+### Reason #1: Kubernetes scales, but is hard to manage
+
 Kubernetes is a powerful tool that can be used to do many things far beyond simple [web application development](https://medium.com/chick-fil-atech/observability-at-the-edge-b2385065ab6e). We learned to love Kubernetes, while also learning the hard way it can be excruciatingly easy to accidentally delete essential services like CoreDNS, and permanently bork your cluster. But for almost all web applications, you only need a tiny slice of what it has to offer: Ingress, Services, Deployments, Pods and CronJobs.
 
 It sits entirely on top of your own Kubernetes cluster, and all of the YAML configurations are downloadable, in case you want to migrate away from Canine.
@@ -60,9 +62,9 @@ It also makes up for some of the defects that are missing from out-of-the-box Ku
 * Simple one-off scripts
 * Metrics dashboard
 
-### Third party applications
+### Reason #2: The rich ecosystem of third party applications
 
-But the best part is, on top of Kubernetes, Canine can run a lot more than just _your_ application. Thanks to Helm, basically every single open source software application can be easily hosted through Canine. This makes it trivially easy to, for instance, deploy a hosted version of Sentry!
+Helm is a package manager for Kubernetes that makes it trivial to host third party applications. Thanks to Helm, basically every single open source software application can be easily hosted through Canine. This makes it trivially easy to, for instance, deploy a hosted version of Sentry!
 
 Give Canine a whirl, on your (own system)[https://github.com/czhu12/canine], or a (hosted version)[https://canine.sh], completely free.
 
