@@ -1,11 +1,9 @@
 <tr class="cursor-pointer hover:bg-base-200/40">
   <td title="<%= event.eventable.name %> environment variable has updated">
-    <div class="font-medium space-x-3 truncate w-[100px]">
+    <div class="font-medium space-x-3" colspan="3">
       <code><%= event.eventable.name %></code> environment variable has updated
     </div>
   </td>
-  <td></td>
-  <td></td>
   <td>
     <div role="tooltip" data-tip="<%= event.eventable.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
       <div class="text-sm capitalize"><%= distance_of_time_in_words(event.eventable.created_at, Time.current) %> ago</div>
