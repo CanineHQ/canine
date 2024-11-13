@@ -1,0 +1,132 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "303bfe2dd422ad971239e3593428e801d48cfbe7839ea4cd574cfb5243cee582",
+      "check_name": "Execute",
+      "message": "Possible command injection",
+      "file": "app/services/k8/helm/client.rb",
+      "line": 13,
+      "link": "https://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "`helm ls --all-namespaces --kubeconfig=#{kubeconfig_file.path} -o yaml`",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "K8::Helm::Client",
+        "method": "ls"
+      },
+      "user_input": "kubeconfig_file.path",
+      "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Dynamic Render Path",
+      "warning_code": 15,
+      "fingerprint": "98b15a0f09039cead17ab2c03de7d924f289655908f4fbda57b09b7c45998325",
+      "check_name": "Render",
+      "message": "Render path contains parameter value",
+      "file": "app/views/projects/show.html.erb",
+      "line": 5,
+      "link": "https://brakemanscanner.org/docs/warning_types/dynamic_render_path/",
+      "code": "render(action => Projects::Create.call(Project.new(project_params), params).project, {})",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "ProjectsController",
+          "method": "create",
+          "line": 48,
+          "file": "app/controllers/projects_controller.rb",
+          "rendered": {
+            "name": "projects/show",
+            "file": "app/views/projects/show.html.erb"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "projects/show"
+      },
+      "user_input": "params",
+      "confidence": "Weak",
+      "cwe_id": [
+        22
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "9f494e756aeac628d1eb0a200b644120e81fc1402520c4953776296f72c526c4",
+      "check_name": "Execute",
+      "message": "Possible command injection",
+      "file": "app/jobs/projects/build_job.rb",
+      "line": 91,
+      "link": "https://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "Open3.capture3(\"docker\", \"push\", \"ghcr.io/#{project.repository_url}:latest\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Projects::BuildJob",
+        "method": "push_to_dockerhub"
+      },
+      "user_input": "project.repository_url",
+      "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "df9d9b9035a37fefc1b0ceac62b4c92413b8827f69cf8d4d096e9d1b0ee9228e",
+      "check_name": "Execute",
+      "message": "Possible command injection",
+      "file": "app/services/cli.rb",
+      "line": 6,
+      "link": "https://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "`#{(envs.map do\n \"#{k}=#{v}\"\n end.join(\" \") + \" #{command}\").strip}`",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Cli::RunAndReturnOutput",
+        "method": "call"
+      },
+      "user_input": "(envs.map do\n \"#{k}=#{v}\"\n end.join(\" \") + \" #{command}\").strip",
+      "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
+      "note": ""
+    },
+    {
+      "warning_type": "Command Injection",
+      "warning_code": 14,
+      "fingerprint": "fed7559ef153ef4a0fbd6183e8fe83a3bb34a025f221c2dcd4548f8437dbd134",
+      "check_name": "Execute",
+      "message": "Possible command injection",
+      "file": "app/services/cli.rb",
+      "line": 19,
+      "link": "https://brakemanscanner.org/docs/warning_types/command_injection/",
+      "code": "Open3.popen3((envs.map do\n \"#{k}=#{v}\"\n end.join(\" \") + \" #{command}\").strip)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Cli::RunAndLog",
+        "method": "call"
+      },
+      "user_input": "k",
+      "confidence": "Medium",
+      "cwe_id": [
+        77
+      ],
+      "note": ""
+    }
+  ],
+  "updated": "2024-11-13 13:14:31 -0800",
+  "brakeman_version": "6.2.2"
+}

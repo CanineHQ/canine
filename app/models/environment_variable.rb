@@ -23,8 +23,17 @@ class EnvironmentVariable < ApplicationRecord
 
   belongs_to :project
 
-  validates :name, presence: true, uniqueness: { scope: :project_id }
-  validates :value, presence: true
+  validates :name, presence: true, 
+                  uniqueness: { scope: :project_id },
+                  format: { 
+                    with: /\A[A-Z0-9_]+\z/,
+                    message: "can only contain uppercase letters, numbers, and underscores" 
+                  }
+  validates :value, presence: true,
+                   format: { 
+                    without: /[`$\\";|><&!]/, 
+                    message: "cannot contain special characters that might enable command injection" 
+                   }
 
   before_save :strip_whitespace
 
