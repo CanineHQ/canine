@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# Add ASCII art at the beginning
+cat << "EOF"
+   _____            _            
+  / ____|          (_)           
+ | |     __ _ _ __  _ _ __   ___ 
+ | |    / _` | '_ \| | '_ \ / _ \
+ | |___| (_| | | | | | | | |  __/
+  \_____\__,_|_| |_|_|_| |_|\___|
+EOF
+echo
+
 echo -n "Cloning Canine..."
 mkdir -p ~/.canine
 # Remove existing src directory if it exists
@@ -8,7 +19,7 @@ rm -rf ~/.canine/src
 # Shallow clone the repo
 git clone --depth 1 https://github.com/czhu12/canine.git ~/.canine/src
 
-cd ~/.canine/src
+cd ~/.canine/src/install
 echo " [OK]"
 
 echo -n "Checking Docker..."
@@ -38,10 +49,12 @@ if [ -t 0 ]; then  # Only prompt if running in interactive terminal
     port=${port:-3456}
 fi
 
+echo "Building Docker images..."
+echo " [OK]"
+
 # Run docker compose with PORT environment variable
 echo "Starting Canine on port $port..."
 # Print working directory
-docker-compose build
 PORT=$port docker-compose up
 echo " [OK]"
 
