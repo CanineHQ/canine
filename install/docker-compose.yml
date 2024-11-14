@@ -35,7 +35,6 @@ services:
       - LOCAL_MODE=true
       - APP_HOST=http://localhost:${PORT:-3000}
     volumes:
-      - node_modules:/rails/node_modules
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
