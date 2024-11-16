@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <%= name %>
+  namespace: <%= project.name %>
+  labels:
+    caninemanaged: 'true'
+spec:
+  capacity:
+    storage: <%= volume.size %>
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /data/volumes/<%= volume.id %>

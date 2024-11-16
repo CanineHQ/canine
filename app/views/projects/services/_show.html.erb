@@ -54,7 +54,8 @@
   <% end %>
   <% if service.web_service? && service.allow_public_networking? %>
     <div class="my-8">
-      <h2 class="text-lg my-2">Networking</h2>
+      <h2 class="text-2xl font-bold">Networking</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>

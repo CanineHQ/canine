@@ -1,0 +1,16 @@
+<tr id="<%= dom_id(volume) %>">
+  <td><%= volume.name %></td>
+  <td><%= render "projects/volumes/status", volume: volume %></td>
+  <td><%= volume.size %></td>
+  <td><%= volume.access_mode %></td>
+  <td><%= volume.mount_path %></td>
+  <td>
+    <%= button_to(
+      "Delete",
+      project_volume_path(volume.project, volume),
+      method: :delete,
+      data: { turbo_confirm: "Are you sure?" },
+      class: "text-error"
+    ) %>
+  </td>
+</tr>

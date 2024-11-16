@@ -19,6 +19,22 @@ spec:
             command: <% service.command.split(' ').each do |c| %>
               - <%= c %>
             <% end %>
+            <% if @project.volumes.present? %>
+            volumeMounts:
+            <% project.volumes.each do |volume| %>
+            - name: <%= volume.name %>
+              mountPath: <%= volume.mount_path %>
+            <% end %>
+            <% end %>
           restartPolicy: OnFailure
           imagePullSecrets:
           - name: dockerconfigjson-github-com
+          <% if @project.volumes.present? %>
+          volumes:
+          <% project.volumes.each do |volume| %>
+          - name: <%= volume.name %>
+            persistentVolumeClaim:
+              claimName: <%= volume.name %>
+            # Add your volume specifications here (e.g., persistentVolumeClaim, configMap, etc.)
+          <% end %>
+          <% end %>

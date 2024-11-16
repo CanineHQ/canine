@@ -2,7 +2,7 @@ require "base64"
 require "json"
 
 class Projects::DeploymentJob < ApplicationJob
-  DEPLOYABLE_RESOURCES = %w[ConfigMap Deployment CronJob Service Ingress]
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Deployment CronJob Service Ingress Pv Pvc]
   class DeploymentFailure < StandardError; end
 
   def perform(deployment)
@@ -19,6 +19,7 @@ class Projects::DeploymentJob < ApplicationJob
     upload_registry_secrets(kubectl, deployment)
     apply_config_map(project, kubectl)
 
+    deploy_volumes(project, kubectl)
     predeploy(project, deployment)
     # For each of the projects services
     deploy_services(project, kubectl)
@@ -37,6 +38,20 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   private
+
+  def deploy_volumes(project, kubectl)
+    project.volumes.each do |volume|
+      begin
+        apply_pv(volume, kubectl)
+        apply_pvc(volume, kubectl)
+        volume.deployed!
+      rescue StandardError => e
+        @logger.info "Volume deployment failed: #{e.message}"
+        volume.failed!
+        raise e
+      end
+    end
+  end
 
   def predeploy(project, deployment)
     return unless project.predeploy_command.present?
@@ -91,7 +106,7 @@ class Projects::DeploymentJob < ApplicationJob
     # Check deployments that need to be deleted
     kubectl = K8::Kubectl.from_project(project)
     DEPLOYABLE_RESOURCES.each do |resource_type|
-      results = YAML.safe_load(kubectl.call("get #{resource_type.downcase.pluralize} -o yaml -n #{project.name}"))
+      results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
       results['items'].each do |resource|
         puts "Checking #{resource_type}: #{resource['metadata']['name']}"
         if @marked_resources.select { |r| r.is_a?(K8::Stateless.const_get(resource_type)) }.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'

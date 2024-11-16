@@ -47,5 +47,20 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
         <% end %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com
+      <% if @project.volumes.present? %>
+      volumes:
+      <% project.volumes.each do |volume| %>
+      - name: <%= volume.name %>
+        persistentVolumeClaim:
+          claimName: <%= volume.name %>
+      <% end %>
+      <% end %>

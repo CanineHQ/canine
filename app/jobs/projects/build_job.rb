@@ -59,15 +59,14 @@ class Projects::BuildJob < ApplicationJob
 
   def execute_docker_build(project, build, repository_path)
     docker_build_command = build_docker_build_command(project, repository_path)
-    IO.popen(docker_build_command, "r") do |io|
-      # Continuously print each line of output
-      io.each { |line| build.info line }
-      io.close
-      exit_status = $CHILD_STATUS.exitstatus
-      raise BuildFailure, "Command failed with exit status #{exit_status}" unless exit_status.zero?
 
-      build.info "Command completed successfully."
-    end
+    # Create a new instance of RunAndLog with the build object as the loggable
+    runner = Cli::RunAndLog.new(build)
+
+    # Call the runner with the command (joined as a string since RunAndLog expects a string)
+    exit_status = runner.call(docker_build_command.join(" "))
+  rescue Cli::CommandFailedError => e
+    raise BuildFailure, e.message
   end
 
   def login_to_docker(project, build)

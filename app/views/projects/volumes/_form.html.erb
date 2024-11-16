@@ -1,0 +1,50 @@
+<%= form_with model: volume, url: project_volumes_path(volume.project), method: :post, data: { turbo_frame: "new_volume" } do |f| %>
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Name</span>
+    </label>
+    <%= f.text_field :name, class: "input input-bordered w-full", autofocus: true %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  </div>
+
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Size</span>
+    </label>
+    <%= f.text_field :size, class: "input input-bordered w-full" %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  </div>
+
+  <div class="form-control mt-1 w-full max-w-xs hidden">
+    <label class="label">
+      <span class="label-text">Access Mode</span>
+    </label>
+    <%= f.select(
+      :access_mode,
+      Volume.access_modes.keys.map { |type| [type.titleize, type] },
+      {},
+      class: "select select-bordered w-full"
+    ) %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  </div>
+
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Mount Path</span>
+    </label>
+    <%= f.text_field :mount_path, class: "input input-bordered w-full" %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  </div>
+
+  <div class="form-footer">
+    <%= f.button "Submit", class: "btn btn-primary", data: { turbo: false } %>
+  </div>
+<% end %>

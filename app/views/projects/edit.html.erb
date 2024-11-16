@@ -1,11 +1,29 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 <%= project_layout(@project) do %>
-  <%= render "edit_form", project: @project %>
-  <div class="mt-6">
-    <h3 class="text-lg font-medium">Danger zone</h3>
-    <%= button_to @project, method: :delete, class: "btn btn-error btn-outline mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
-      <iconify-icon icon="lucide:trash" height="20" class="text-error-content"></iconify-icon>
-      Delete Project
-    <% end %>
+  <div class="space-y-10">
+    <div>
+      <h2 class="text-2xl font-bold">General</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <%= render "edit_form", project: @project %>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold">Volumes</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <%= render "projects/volumes/index", project: @project %>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-bold">Danger zone</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <div class="mt-6">
+        <%= button_to @project, method: :delete, class: "btn btn-error btn-outline mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
+          <iconify-icon icon="lucide:trash" height="20" class="text-error-content"></iconify-icon>
+          Delete Project
+        <% end %>
+      </div>
+    </div>
   </div>
 <% end %>

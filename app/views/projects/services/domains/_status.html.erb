@@ -1,0 +1,19 @@
+<%
+  badge_color = case domain.status
+  when "checking_dns"
+    "warning"
+  when "dns_verified"
+    "success"
+  when "dns_incorrect"
+    "error"
+  end
+%>
+<div
+  aria-label="Badge"
+  class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>"
+>
+  <%= domain.status.to_s.titleize %>
+</div>
+<% if domain.status_reason.present? && domain.dns_incorrect? %>
+  <div class="text-xs mt-2"><%= domain.status_reason %></div>
+<% end %>

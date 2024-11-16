@@ -16,6 +16,11 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
     end
   end
 
+  def check_dns
+    Networks::CheckDns.execute(ingress: K8::Stateless::Ingress.new(@service))
+    render partial: "projects/services/domains/index", locals: { service: @service, refreshed: true }
+  end
+
   def destroy
     @domain = @project.domains.find(params[:id])
     @domain.destroy

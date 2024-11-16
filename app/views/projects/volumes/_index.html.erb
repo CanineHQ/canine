@@ -1,0 +1,32 @@
+<div class="space-y-4">
+  <div class="text-base-content/50">
+    Volumes are a way to persist data across container restarts. In general, you should use a database for this.
+    A volume will not work if you have more than one node in your cluster.
+  </div>
+
+  <div>
+    <%= turbo_frame_tag "new_volume" do %>
+      <%= link_to "Create Volume", new_project_volume_path(project), class: "btn btn-primary btn-outline" %>
+    <% end %>
+  </div>
+
+  <% if @project.volumes.any? %>
+    <div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Size</th>
+            <th>Access Mode</th>
+            <th>Mount Path</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "projects/volumes/volume", collection: @project.volumes, as: :volume %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

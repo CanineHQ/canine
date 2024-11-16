@@ -2,11 +2,13 @@
 #
 # Table name: domains
 #
-#  id          :bigint           not null, primary key
-#  domain_name :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  service_id  :bigint           not null
+#  id            :bigint           not null, primary key
+#  domain_name   :string           not null
+#  status        :integer          default("checking_dns")
+#  status_reason :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  service_id    :bigint           not null
 #
 # Indexes
 #
@@ -20,6 +22,11 @@ class Domain < ApplicationRecord
   validate :domain_name_has_tld
   before_save :downcase_domain_name
   before_save :strip_protocol
+  enum :status, {
+    checking_dns: 0,
+    dns_verified: 1,
+    dns_incorrect: 2
+  }
 
   private
 

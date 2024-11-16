@@ -37,17 +37,24 @@
           </thead>
           <tbody>
             <% @pods.each do |pod| %>
+            <% view_model = PodStatusViewModel.new(pod) %>
             <tr class="hover:bg-base-200/40">
               <td>
                 <div class="flex items-center space-x-3 truncate">
                   <div class="font-medium">
-                    <%= pod.metadata.name %>
+                    <%= view_model.pod.metadata.name %>
                   </div>
                 </div>
               </td>
               <td>
                 <div class="font-medium">
-                  <%= pod.status.phase %>
+                  <% if view_model.status == :waiting %>
+                    <div class="text-error"><%= view_model.reason %></div>
+                  <% elsif view_model.status == :terminated %>
+                    <div class="text-success"><%= view_model.status.to_s.titleize %></div>
+                  <% else %>
+                    <%= view_model.status.to_s.titleize %>
+                  <% end %>
                 </div>
               </td>
               <td>

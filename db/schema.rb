@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_16_095631) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -121,6 +121,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0
+    t.string "status_reason"
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -279,6 +281,20 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "volumes", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "name", null: false
+    t.string "size", default: "10Gi", null: false
+    t.integer "access_mode", default: 0
+    t.string "mount_path", default: "/volumes/data", null: false
+    t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "mount_path"], name: "index_volumes_on_project_id_and_mount_path", unique: true
+    t.index ["project_id", "name"], name: "index_volumes_on_project_id_and_name", unique: true
+    t.index ["project_id"], name: "index_volumes_on_project_id"
+  end
+
   add_foreign_key "account_users", "accounts"
   add_foreign_key "account_users", "users"
   add_foreign_key "accounts", "users", column: "owner_id"
@@ -295,4 +311,5 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_225911) do
   add_foreign_key "projects", "clusters"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
+  add_foreign_key "volumes", "projects"
 end

@@ -8,7 +8,12 @@
     <div class="mb-8 w-full text-xl font-bold">Run this command to connect to your pod</div>
     <div class="my-4">
       <h4 class="font-bold mb-2">Step 1: Download your Kubeconfig file</h4>
-      <%= link_to "Download Kubeconfig", download_kubeconfig_cluster_path(@project.cluster), class: "btn btn-sm btn-primary btn-outline", target: "_blank" %>
+      <%= link_to(
+        "Download Kubeconfig",
+        download_kubeconfig_cluster_path(@project.cluster),
+        class: "btn btn-sm btn-outline",
+        target: "_blank"
+      ) %>
     </div>
 
     <div class="my-4">

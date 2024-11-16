@@ -11,7 +11,7 @@
 #  name                    :string           not null
 #  replicas                :integer          default(1)
 #  service_type            :integer          not null
-#  status                  :integer          default("healthy")
+#  status                  :integer          default("pending")
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  project_id              :bigint           not null
@@ -43,7 +43,8 @@ class Service < ApplicationRecord
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
   validates :name, presence: true,
-                   format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
+                   format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" },
+                   uniqueness: { scope: :project_id }
 
   accepts_nested_attributes_for :domains, allow_destroy: true
 

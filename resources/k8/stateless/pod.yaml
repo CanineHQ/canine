@@ -14,8 +14,21 @@ spec:
     command:
       - sleep
       - "3600"
+    <% if @project.volumes.present? %>
+    volumeMounts:
+    <% project.volumes.deployed.each do |volume| %>
+    - name: <%= volume.name %>
+      mountPath: <%= volume.mount_path %>
+    <% end %>
+    <% end %>
     envFrom:
     - configMapRef:
         name: <%= project.name %>
   imagePullSecrets:
   - name: dockerconfigjson-github-com
+  volumes:
+  <% project.volumes.deployed.each do |volume| %>
+  - name: <%= volume.name %>
+    persistentVolumeClaim:
+      claimName: <%= volume.name %>
+  <% end %>
