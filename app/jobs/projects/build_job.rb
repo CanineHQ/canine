@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'shellwords'
+
 class Projects::BuildJob < ApplicationJob
   queue_as :default
   class BuildFailure < StandardError; end
@@ -41,7 +43,7 @@ class Projects::BuildJob < ApplicationJob
 
   def build_docker_build_command(project, repository_path)
     docker_build_command = [
-      "docker", "buildx", "build",
+      "docker", "build",
       "--platform", "linux/amd64",
       "-t", project.container_registry_url,
       "-f", File.join(repository_path, project.dockerfile_path)
@@ -49,7 +51,7 @@ class Projects::BuildJob < ApplicationJob
 
     # Add environment variables to the build command
     project.environment_variables.each do |envar|
-      docker_build_command.push("--build-arg", "#{envar.name}=#{envar.value}")
+      docker_build_command.push("--build-arg", "#{envar.name}=#{Shellwords.escape(envar.value)}")
     end
 
     # Add the build context directory at the end
