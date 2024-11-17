@@ -10,7 +10,7 @@ class CreateVolumes < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    add_index :volumes, [:project_id, :name], unique: true
-    add_index :volumes, [:project_id, :mount_path], unique: true
+    add_index :volumes, [ :project_id, :name ], unique: true
+    add_index :volumes, [ :project_id, :mount_path ], unique: true
   end
 end

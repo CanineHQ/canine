@@ -38,7 +38,7 @@ class Volume < ApplicationRecord
   }
 
   enum :access_mode, {
-    read_write_once: 0,
+    read_write_once: 0
   }
 
   private

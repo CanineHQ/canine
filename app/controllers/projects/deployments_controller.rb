@@ -3,7 +3,7 @@ class Projects::DeploymentsController < Projects::BaseController
   before_action :set_build, only: %i[show redeploy]
 
   def index
-    @pagy, @events = pagy(@project.events.includes(eventable: [:user, :deployment]).order(created_at: :desc))
+    @pagy, @events = pagy(@project.events.includes(eventable: [ :user, :deployment ]).order(created_at: :desc))
   end
 
   def show; end
