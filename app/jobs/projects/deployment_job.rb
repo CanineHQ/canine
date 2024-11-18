@@ -105,7 +105,10 @@ class Projects::DeploymentJob < ApplicationJob
   def sweep_unused_resources(project)
     # Check deployments that need to be deleted
     kubectl = K8::Kubectl.from_project(project)
-    DEPLOYABLE_RESOURCES.each do |resource_type|
+    # Exclude Persistent Volumes
+    resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| ['Pv'].include?(r) }
+
+    resources_to_sweep.each do |resource_type|
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
       results['items'].each do |resource|
         puts "Checking #{resource_type}: #{resource['metadata']['name']}"
