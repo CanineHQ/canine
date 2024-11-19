@@ -30,6 +30,11 @@
               </th>
               <th>
                 <span class="text-sm font-medium text-base-content/80">
+                  Message
+                </span>
+              </th>
+              <th>
+                <span class="text-sm font-medium text-base-content/80">
                   Created At
                 </span>
               </th>
@@ -57,6 +62,11 @@
                   <% else %>
                     <%= view_model.status.to_s.titleize %>
                   <% end %>
+                </div>
+              </td>
+              <td>
+                <div class="font-medium">
+                  <%= view_model.message %>
                 </div>
               </td>
               <td>
