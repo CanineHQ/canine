@@ -20,6 +20,9 @@ spec:
             command: <% service.command.split(' ').each do |c| %>
               - <%= c %>
             <% end %>
+            envFrom:
+            - configMapRef:
+                name: <%= project.name %>
             <% if @project.volumes.present? %>
             volumeMounts:
             <% project.volumes.each do |volume| %>
