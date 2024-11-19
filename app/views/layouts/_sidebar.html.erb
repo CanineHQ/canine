@@ -128,14 +128,16 @@
                   </details>
                 </li>
 
-                <li class="mb-0.5">
-                  <%= link_to account_account_users_path(current_account) do %>
-                    <div class="flex items-center gap-2">
-                      <iconify-icon icon="lucide:users" height="18"></iconify-icon>
-                      Team Members 
-                    </div>
-                  <% end %>
-                </li>
+                <% unless Rails.application.config.local_mode %>
+                  <li class="mb-0.5">
+                    <%= link_to account_account_users_path(current_account) do %>
+                      <div class="flex items-center gap-2">
+                        <iconify-icon icon="lucide:users" height="18"></iconify-icon>
+                        Team Members 
+                      </div>
+                    <% end %>
+                  </li>
+                <% end %>
               </div>
             </div>
           </div>
