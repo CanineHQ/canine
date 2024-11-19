@@ -19,14 +19,10 @@ class PodStatusViewModel
   end
 
   def message
-    pod.status.message || pod.status.conditions?.first?.message
+    pod.status.message || pod.status.conditions&.first&.message || pod.status.containerStatuses&.first&.state&.waiting&.message
   end
 
   def reason
     pod.status.containerStatuses.first.state.waiting.reason
-  end
-
-  def message
-    pod.status.containerStatuses.first.state.waiting.message
   end
 end
