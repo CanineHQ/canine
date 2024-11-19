@@ -21,6 +21,7 @@ class Projects::ServicesController < Projects::BaseController
 
   def update
     if @service.update(service_params)
+      @service.updated!
       redirect_to project_services_path(@project), notice: "Service will be updated on the next deploy."
     else
       redirect_to project_services_path(@project), alert: "Service could not be updated."

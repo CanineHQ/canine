@@ -35,7 +35,8 @@ class Service < ApplicationRecord
   enum :status, {
     pending: 0,
     healthy: 1,
-    unhealthy: 2
+    unhealthy: 2,
+    updated: 3,
   }
 
   has_one :cron_schedule, dependent: :destroy
