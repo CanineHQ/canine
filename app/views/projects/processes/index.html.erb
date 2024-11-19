@@ -52,6 +52,8 @@
                     <div class="text-error"><%= view_model.reason %></div>
                   <% elsif view_model.status == :terminated %>
                     <div class="text-success"><%= view_model.status.to_s.titleize %></div>
+                  <% elsif view_model.status == :failed %>
+                    <div class="text-error"><%= view_model.status.to_s.titleize %></div>
                   <% else %>
                     <%= view_model.status.to_s.titleize %>
                   <% end %>
