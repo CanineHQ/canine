@@ -9,7 +9,7 @@ module K8::Metrics::Api
       #  get --raw /apis/metrics.k8s.io/v1beta1/nodes/#{node}
       # Infer total memory
       parsed_data.map do |data|
-        capacities = YAML.safe_load(kubectl.call("get node/#{data[:name]} -o yaml -o wide"))
+        capacities = YAML.safe_load(kubectl.call("get node/#{data[:name]} -o wide -o yaml"))
 
         total_memory = size_to_integer(capacities["status"]["allocatable"]["memory"])
         total_cpu = compute_to_integer(capacities["status"]["allocatable"]["cpu"])
@@ -36,7 +36,7 @@ module K8::Metrics::Api
       end
     end
 
-    def self.parse_output(output)
+    def parse_output(output)
       # Define a regex pattern to capture the required fields
       pattern = /(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
 
