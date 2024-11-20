@@ -36,7 +36,7 @@ module K8::Metrics::Api
       end
     end
 
-    def parse_output(output)
+    def self.parse_output(output)
       # Define a regex pattern to capture the required fields
       pattern = /(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/
 
