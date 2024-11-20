@@ -106,7 +106,7 @@ class Projects::DeploymentJob < ApplicationJob
     # Check deployments that need to be deleted
     kubectl = K8::Kubectl.from_project(project)
     # Exclude Persistent Volumes
-    resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| ['Pv'].include?(r) }
+    resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ 'Pv' ].include?(r) }
 
     resources_to_sweep.each do |resource_type|
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
