@@ -9,10 +9,13 @@ module K8::Metrics::Api
       #  get --raw /apis/metrics.k8s.io/v1beta1/nodes/#{node}
       # Infer total memory
       parsed_data.map do |data|
+        capacities = YAML.safe_load(kubectl.call("get node/#{data[:name]} -o yaml -o wide"))
+
+        total_memory = size_to_integer(capacities["status"]["allocatable"]["memory"])
+        total_cpu = compute_to_integer(capacities["status"]["allocatable"]["cpu"])
+
         used_memory = size_to_integer(data[:memory_bytes])
-        total_memory = (used_memory / (data[:memory_percent].to_f / 100)).to_i
-        cpu_cores = size_to_integer(data[:cpu_cores])
-        total_cpu = (cpu_cores / (data[:cpu_percent].to_f / 100)).to_i
+        cpu_cores = compute_to_integer(data[:cpu_cores])
 
         node = Node.new(
           name: data[:name],

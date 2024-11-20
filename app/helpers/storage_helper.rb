@@ -6,6 +6,12 @@ module StorageHelper
     'T' => 1024**4
   }
 
+  def compute_to_integer(compute)
+    # Remove the m suffix
+    compute = compute.strip.gsub(/m$/, '')
+    compute.to_i
+  end
+
   def size_to_integer(size)
     size = size.strip
     match = size.match(/^(\d+(?:\.\d+)?)\s*([KMGTkmgt]i?)?$/)
