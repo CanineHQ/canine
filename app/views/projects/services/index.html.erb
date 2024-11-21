@@ -21,7 +21,16 @@
           <input aria-label="Accordion radio" class="w-full" type="radio" name="accordion" />
           <div class="collapse-title">
             <div class="flex items-center justify-between">
-              <div class="text-xl font-medium"><%= service.name %></div>
+              <div class="flex items-center gap-2 text-xl font-medium">
+                <% if service.web_service? %>
+                  <iconify-icon icon="ph:globe-duotone" height="16"></iconify-icon>
+                <% elsif service.background_service? %>
+                  <iconify-icon icon="ph:server" height="16"></iconify-icon>
+                <% elsif service.cron_job? %>
+                  <iconify-icon icon="ph:clock" height="16"></iconify-icon>
+                <% end %>
+                <%= service.name %>
+              </div>
               <div class="my-1">
                 <%= render "projects/services/status", service: service %>
               </div>
