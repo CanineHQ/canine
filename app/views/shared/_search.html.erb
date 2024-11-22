@@ -1,0 +1,49 @@
+<button aria-label="Search button" data-action="theme#searchModalToggle" class="btn btn-outline btn-sm hidden h-9 w-48 items-center justify-start gap-3 border-base-content/20 hover:border-transparent hover:bg-base-content/20 sm:flex">
+  <iconify-icon icon="lucide:search" height="16" class="text-base-content/60"></iconify-icon>
+
+  <span class="text-base-content/60">Search (Cmd+K)</span>
+</button>
+
+<dialog aria-label="Modal" class="modal" id="search_modal">
+  <div class="modal-box p-0">
+    <div class="form-control flex-row items-center rounded-box p-2 px-5">
+      <iconify-icon icon="lucide:search" height="18" class="text-base-content/70"></iconify-icon>
+
+      <input
+        data-theme-target="searchInput"
+        data-action="theme#searchInput"
+        placeholder="Search"
+        class="input input-sm w-full text-base focus:border-transparent focus:outline-0 focus:outline-offset-0"
+      >
+      <form method="dialog">
+        <button aria-label="Close search modal" class="btn btn-circle btn-ghost btn-sm gap-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+    </div>
+    <div class="border-t border-base-content/10">
+      <ul class="menu">
+        <li class="menu-title">Projects</li>
+        <% current_account.projects.each do |project| %>
+          <li class="">
+            <details open data-theme-target="menuItem" data-project-name="<%= project.name %>">
+              <summary><%= project.name %></summary>
+              <ul>
+                <% %w(deployments services environment_variables processes metrics).each do |name| %>
+                  <li>
+                    <a href="<%= send("project_#{name}_path", project) %>">
+                      <%= name.titleize %>
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </details>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

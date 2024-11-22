@@ -37,7 +37,7 @@ class Project < ApplicationRecord
   has_many :events
   has_many :volumes, dependent: :destroy
   validates :name, presence: true,
-                   format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :repository_url, presence: true,
                             format: {
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,

@@ -31,7 +31,7 @@ class AddOn < ApplicationRecord
   enum :status, { installing: 0, installed: 1, uninstalling: 2, uninstalled: 3, failed: 4 }
   validates :chart_type, presence: true
   validate :chart_type_exists
-  validates :name, presence: true, format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" }
+  validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates_uniqueness_of :name, scope: :cluster_id
 
   def helm_chart_url

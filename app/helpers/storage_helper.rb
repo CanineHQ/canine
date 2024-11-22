@@ -6,6 +6,10 @@ module StorageHelper
     'T' => 1024**4
   }
 
+  def integer_to_compute(integer)
+    integer.to_s + 'm'
+  end
+
   def compute_to_integer(compute)
     # Remove the m suffix
     compute = compute.strip.gsub(/m$/, '')

@@ -28,7 +28,8 @@ class Cluster < ApplicationRecord
   has_many :domains, through: :projects
   has_many :metrics, dependent: :destroy
 
-  validates_presence_of :name
+  validates :name, presence: true,
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   enum :status, {
     initializing: 0,
     installing: 1,

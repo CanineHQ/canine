@@ -2,7 +2,7 @@
   <%= form_with(model: [service.project, service]) do |form| %>
     <div class="form-control form-group">
       <%= form.label :name %>
-      <%= form.text_field :name, class: "input input-bordered w-full max-w-xs", required: true, placeholder: "ex: web" %>
+      <%= form.text_field :name, class: "input input-bordered w-full max-w-xs", required: true, disabled: true %>
     </div>
     <div class="form-control form-group">
       <%= form.label :command %>

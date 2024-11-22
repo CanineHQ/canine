@@ -44,7 +44,7 @@ class Service < ApplicationRecord
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
   validates :name, presence: true,
-                   format: { with: /\A[a-z0-9_-]+\z/, message: "must be lowercase, numbers, hyphens, and underscores only" },
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :project_id }
 
   accepts_nested_attributes_for :domains, allow_destroy: true
