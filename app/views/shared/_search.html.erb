@@ -27,11 +27,11 @@
         <% current_account.projects.each do |project| %>
           <li class="">
             <details open data-theme-target="menuItem" data-project-name="<%= project.name %>">
-              <summary><%= project.name %></summary>
+              <summary><div class="project-name"><%= project.name %></div></summary>
               <ul>
                 <% %w(deployments services environment_variables processes metrics).each do |name| %>
                   <li>
-                    <a href="<%= send("project_#{name}_path", project) %>">
+                    <a href="<%= send("project_#{name}_path", project) %>" data-theme-target="linkItem">
                       <%= name.titleize %>
                     </a>
                   </li>
