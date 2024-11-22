@@ -4,7 +4,7 @@ RSpec.configure do |config|
     Capybara.app_host = 'http://localhost:3000'
     Capybara.run_server = false
     Capybara.default_host = 'localhost:3000'
-    
+
     # Override default_url_options if they're set elsewhere
     Rails.application.routes.default_url_options[:host] = 'localhost:3000'
     default_url_options[:host] = 'localhost:3000'

@@ -34,8 +34,9 @@ class AddOns::InstallHelmChart
   end
 
   def self.get_values(add_on)
-    values = add_on.metadata['template'].keys.each_with_object({}) do |key, values|
-      template = add_on.metadata['template'][key]
+    variables = add_on.metadata['template'] || {}
+    values = variables.keys.each_with_object({}) do |key, values|
+      template = variables[key]
       if template.is_a?(Hash) && template['type'] == 'size'
         values[key] = "#{template['value']}#{template['unit']}"
       else
