@@ -21,8 +21,12 @@ module K8
       false
     end
 
+    def pods_for_namespace(namespace)
+      @client.get_pods(namespace: namespace)
+    end
+
     def pods_for_service(service_name, namespace)
-      @client.get_pods(namespace: namespace).select do |pod|
+      pods_for_namespace(namespace).select do |pod|
         pod.metadata.name.start_with?(service_name)
       end
     end

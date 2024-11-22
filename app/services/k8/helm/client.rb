@@ -15,6 +15,21 @@ class K8::Helm::Client
     end
   end
 
+  def repo_update!
+    with_kube_config do |kubeconfig_file|
+      command = "helm repo update"
+      exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+      return exit_status
+    end
+  end
+
+  def add_repo(command)
+    with_kube_config do |kubeconfig_file|
+      exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+      return exit_status
+    end
+  end
+
   def install(name, chart_url, values: {}, namespace: 'default')
     with_kube_config do |kubeconfig_file|
       values_string = values.map { |key, value| "#{key}=#{value}" }.join(',')
@@ -26,7 +41,7 @@ class K8::Helm::Client
 
   def uninstall(name, namespace: 'default')
     with_kube_config do |kubeconfig_file|
-      command = "helm delete #{name} --namespace #{namespace}"
+      command = "helm uninstall #{name} --namespace #{namespace}"
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       return exit_status
     end

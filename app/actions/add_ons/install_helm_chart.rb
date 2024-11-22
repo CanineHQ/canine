@@ -13,7 +13,16 @@ class AddOns::InstallHelmChart
     client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
     charts = client.ls
     unless charts.any? { |chart| chart['name'] == add_on.name }
-      charts = client.install(add_on.name, add_on.helm_chart_url, values: get_values(add_on), namespace: add_on.name)
+      if chart['add_repo_command']
+        client.add_repo(chart['add_repo_command'])
+        client.repo_update!
+      end
+      client.install(
+        add_on.name,
+        add_on.helm_chart_url,
+        values: get_values(add_on),
+        namespace: add_on.name
+      )
     end
     add_on.installed!
   end
@@ -30,7 +39,7 @@ class AddOns::InstallHelmChart
       if template.is_a?(Hash) && template['type'] == 'size'
         values[key] = "#{template['value']}#{template['unit']}"
       else
-        values[key] = template['value']
+        values[key] = template
       end
     end
     values

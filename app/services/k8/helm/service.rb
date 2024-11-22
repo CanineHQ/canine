@@ -6,8 +6,12 @@ class K8::Helm::Service
     @client = K8::Client.new(add_on.cluster.kubeconfig)
   end
 
+  def friendly_name
+    add_on.chart_definition['friendly_name'] || add_on.chart_definition['name'].titleize
+  end
+
   def storage_metrics
-    pods = client.pods_for_service(service_name, add_on.name)
+    pods = client.pods_for_namespace(add_on.name)
     volumes = pods.flat_map do |pod|
       pod.spec.volumes.select { |volume| volume.respond_to?(:persistentVolumeClaim) && volume.persistentVolumeClaim.claimName }
     end

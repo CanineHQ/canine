@@ -21,10 +21,6 @@
 #  fk_rails_...  (cluster_id => clusters.id)
 #
 class AddOn < ApplicationRecord
-  DISPLAY_NAME = {
-    'redis': "Redis",
-    'postgresql': "PostgreSQL"
-  }.freeze
   include Loggable
   belongs_to :cluster
   has_one :account, through: :cluster
@@ -38,12 +34,12 @@ class AddOn < ApplicationRecord
     chart_definition["repository"]
   end
 
-  protected
-
   def chart_definition
     charts = K8::Helm::Client::CHARTS["helm"]["charts"]
     charts.find { |chart| chart["name"] == chart_type }
   end
+
+  protected
 
   def chart_type_exists
     if chart_definition.nil?

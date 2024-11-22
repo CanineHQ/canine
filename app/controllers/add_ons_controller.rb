@@ -62,7 +62,7 @@ class AddOnsController < ApplicationController
     @add_on.uninstalling!
     respond_to do |format|
       AddOns::UninstallJob.perform_later(@add_on)
-      format.html { redirect_to add_ons_url, status: :see_other, notice: "Uninstalling add on #{@add_on.name}" }
+      format.html { redirect_to add_ons_url, notice: "Uninstalling add on #{@add_on.name}" }
       format.json { head :no_content }
     end
   end
@@ -79,6 +79,8 @@ class AddOnsController < ApplicationController
       @service = K8::Helm::Redis.new(@add_on)
     elsif @add_on.chart_type == "postgresql"
       @service = K8::Helm::Postgresql.new(@add_on)
+    else
+      @service = K8::Helm::Service.new(@add_on)
     end
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path

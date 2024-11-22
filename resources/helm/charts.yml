@@ -1,6 +1,7 @@
 helm:
   charts:
     - name: postgresql
+      friendly_name: PostgreSQL
       logo: /images/helm/postgresql.png
       version: 12.11.0
       repository: oci://registry-1.docker.io/bitnamicharts/postgresql
@@ -12,10 +13,11 @@ helm:
           default: 10Gi
           required: true
     - name: redis
+      friendly_name: Redis
       logo: /images/helm/redis.png
       version: 18.10.0
       repository: oci://registry-1.docker.io/bitnamicharts/redis
-      install_command: helm install ${add_on_name} redis ${repository}
+      install_command: helm install ${add_on_name} ${repository}
       template:
         - name: Storage
           key: master.persistence.size
@@ -27,6 +29,25 @@ helm:
           type: integer
           default: 0
           hidden: true
+    - name: metabase
+      friendly_name: Metabase
+      logo: /images/helm/metabase.png
+      version: 17.2.0
+      add_repo_command: helm repo add pmint93 https://pmint93.github.io/helm-charts
+      repository: pmint93/metabase
+      install_command: helm install ${add_on_name} ${repository}
+      template:
+        - name: Connection URI
+          key: database.connectionURI
+          type: string
+          required: true
+        - name: Database Type
+          key: database.type
+          type: enum
+          options:
+            - postgres
+            - mysql
+          required: true
     - name: elasticsearch
       logo: /images/helm/elasticsearch.png
       version: 18.10.0
