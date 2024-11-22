@@ -2,28 +2,28 @@
   <%= form_with(model: [service.project, service]) do |form| %>
     <div class="form-control form-group">
       <%= form.label :name %>
-      <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "ex: web" %>
+      <%= form.text_field :name, class: "input input-bordered w-full max-w-xs", required: true, placeholder: "ex: web" %>
     </div>
     <div class="form-control form-group">
       <%= form.label :command %>
-      <%= form.text_field :command, class: "input input-bordered", required: false %>
+      <%= form.text_field :command, class: "input input-bordered w-full max-w-xs", required: false %>
     </div>
     <% if service.cron_job? %>
       <div class="form-control form-group">
         <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
           <%= cron_schedule_form.label :schedule %>
-          <%= cron_schedule_form.text_field :schedule, class: "input input-bordered", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
+          <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-xs", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
         <% end %>
       </div>
     <% end %>
     <% if service.web_service? %>
       <div class="form-control form-group">
         <%= form.label :container_port %>
-        <%= form.text_field :container_port, class: "input input-bordered", required: false %>
+        <%= form.text_field :container_port, class: "input input-bordered w-full max-w-xs", required: false %>
       </div>
       <div class="form-control form-group">
         <%= form.label :healthcheck_url %>
-        <%= form.text_field :healthcheck_url, class: "input input-bordered", placeholder: "/health" %>
+        <%= form.text_field :healthcheck_url, class: "input input-bordered w-full max-w-xs", placeholder: "/health" %>
         <span class="label-text-alt">Optional: The endpoint just needs to return a 200 status code to be considered healthy</span>
       </div>
       <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-xs">
@@ -39,7 +39,7 @@
       <h2 class="text-lg my-2 mt-4">Resources</h2>
       <div class="form-control form-group">
         <%= form.label :replicas %>
-        <%= form.number_field :replicas, class: "input input-bordered", placeholder: "1" %>
+        <%= form.number_field :replicas, class: "input input-bordered w-full max-w-xs", placeholder: "1" %>
       </div>
     </div>
     <% end %>
