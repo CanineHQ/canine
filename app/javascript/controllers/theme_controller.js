@@ -1,9 +1,23 @@
 import { Controller } from "@hotwired/stimulus"
 
+const NARROW_WIDTH = 768;
 export default class extends Controller {
   static targets = ["searchInput", "menuItem", "linkItem"]
 
   connect() {
+    // If the window is narrow, hide the left bar
+    if (window.innerWidth < NARROW_WIDTH) {
+      document.querySelector("html").setAttribute("data-leftbar-hide", "true");
+    }
+    // Also, if the window is resized, check again
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < NARROW_WIDTH) {
+        document.querySelector("html").setAttribute("data-leftbar-hide", "true");
+      } else {
+        document.querySelector("html").removeAttribute("data-leftbar-hide");
+      }
+    });
+
     document.addEventListener('keydown', (e) => {
       // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
