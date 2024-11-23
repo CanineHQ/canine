@@ -56,10 +56,18 @@ export default class extends Controller {
   }
 
   searchModalToggle() {
+    const searchModal = document.getElementById("search_modal");
+    
+    // If modal is already open, close it and return
+    if (searchModal.open) {
+      searchModal.close();
+      return;
+    }
+
+    // Otherwise, proceed with opening the modal
     const searchInput = this.searchInputTarget;
     searchInput.focus();
     searchInput.value = "";
-    const searchModal = document.getElementById("search_modal");
     searchModal.showModal();
     this._searchInput("");
   }
