@@ -10,6 +10,11 @@ class K8::Helm::Service
     add_on.chart_definition['friendly_name'] || add_on.chart_definition['name'].titleize
   end
 
+  def restart
+    kubectl = K8::Kubectl.from_add_on(add_on)
+    kubectl.call("rollout restart deployment -n #{add_on.name}")
+  end
+
   def storage_metrics
     pods = client.pods_for_namespace(add_on.name)
     volumes = pods.flat_map do |pod|

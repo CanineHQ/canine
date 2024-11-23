@@ -1,0 +1,18 @@
+<%= add_on_layout(@add_on) do %>
+  <div data-controller="processes">
+    <%= render "projects/processes/connect_modal", cluster: @add_on.cluster %>
+    <div class="mb-4">
+      <h3 class="text-lg font-medium">Processes</h3>
+    </div>
+
+    <%= turbo_frame_tag "pod_logs" do %>
+      <% if @pods.empty? %>
+        <div>
+          <p class="text-gray-500">Nothing running in this namespace</p>
+        </div>
+      <% else %>
+        <%= render "processes/pods", pods: @pods, parent: @add_on %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

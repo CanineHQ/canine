@@ -1,12 +1,16 @@
 <h1 class="text-2xl font-bold mb-6"><%= @service.friendly_name %></h1>
 <h6 class="text-xl font-bold">Storage</h6>
 <div class="mb-4">
-  <% @service.storage_metrics.each do |metric| %>
-    <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
-    <% if metric[:usage] %>
-      <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
-      <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
+  <% if @service.storage_metrics.any? %>
+    <% @service.storage_metrics.each do |metric| %>
+      <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
+      <% if metric[:usage] %>
+        <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
+        <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
+      <% end %>
     <% end %>
+  <% else %>
+    <div class="text-gray-500">No storage volumes found</div>
   <% end %>
 </div>
 <h6 class="text-xl font-bold">Created</h6>

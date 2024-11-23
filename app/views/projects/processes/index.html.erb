@@ -1,6 +1,6 @@
 <%= project_layout(@project) do %>
   <div data-controller="processes">
-    <%= render "projects/processes/connect_modal" %>
+    <%= render "projects/processes/connect_modal", cluster: @project.cluster %>
     <div class="mb-4">
       <h3 class="text-lg font-medium">Processes</h3>
       <%= button_to project_processes_path(@project), method: :post, class: "btn btn-sm btn-primary" do %>
@@ -17,102 +17,11 @@
           <p class="text-gray-500">Nothing running for this project</p>
         </div>
       <% else %>
-        <table class="table mt-2 rounded-box" data-component="table">
-          <thead>
-            <tr>
-              <th>
-                <span class="text-sm font-medium text-base-content/80">Pod Name</span>
-              </th>
-              <th>
-                <span class="text-sm font-medium text-base-content/80">
-                  Status
-                </span>
-              </th>
-              <th>
-                <span class="text-sm font-medium text-base-content/80">
-                  Message
-                </span>
-              </th>
-              <th>
-                <span class="text-sm font-medium text-base-content/80">
-                  Created At
-                </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @pods.each do |pod| %>
-            <% view_model = PodStatusViewModel.new(pod) %>
-            <tr class="hover:bg-base-200/40">
-              <td>
-                <div class="flex items-center space-x-3 truncate">
-                  <div class="font-medium">
-                    <%= view_model.pod.metadata.name %>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="font-medium">
-                  <% if view_model.status == :waiting %>
-                    <div class="text-error"><%= view_model.reason %></div>
-                  <% elsif view_model.status == :terminated %>
-                    <div class="text-success"><%= view_model.status.to_s.titleize %></div>
-                  <% elsif view_model.status == :failed %>
-                    <div class="text-error"><%= view_model.status.to_s.titleize %></div>
-                  <% else %>
-                    <%= view_model.status.to_s.titleize %>
-                  <% end %>
-                </div>
-              </td>
-              <td>
-                <div class="font-medium">
-                  <%= view_model.message %>
-                </div>
-              </td>
-              <td>
-                <div class="font-medium">
-                  <%= Time.parse(pod.metadata.creationTimestamp).to_formatted_s(:short) %>
-                </div>
-              </td>
-              <td>
-                <div class="flex items-center space-x-2">
-                  <div class="font-medium">
-                    <%= link_to "Show Logs", project_process_path(@project, pod.metadata.name), class: "btn btn-sm btn-outline" %>
-                  </div>
-
-                  <div class="font-medium">
-                    <% if pod.status.phase == "Running" %>
-                      <button
-                        class="btn btn-sm btn-outline"
-                        data-action="click->processes#showConnectionInstructions"
-                        data-pod-name="<%= pod.metadata.name %>"
-                        data-namespace="<%= pod.metadata.namespace %>"
-                      >Connect</button>
-                    <% else %>
-                      <div role="tooltip" data-tip="Pod is not running" class="tooltip tooltip-secondary">
-                        <button
-                          disabled
-                          class="btn btn-sm btn-outline btn-disabled"
-                        >Connect</button>
-                      </div>
-                    <% end %>
-                  </div>
-
-                  <div class="font-medium">
-                    <% if pod.status.phase != "Running" || pod.metadata.labels.oneoff %>
-                      <%= link_to "Delete", project_process_path(@project, pod.metadata.name), method: :delete, class: "btn btn-sm btn-error btn-outline" %>
-                    <% else %>
-                      <div role="tooltip" data-tip="Be careful when deleting running pods, it can cause downtime for your project" class="tooltip tooltip-secondary">
-                        <%= link_to "Delete", project_process_path(@project, pod.metadata.name), method: :delete, class: "btn btn-sm btn-error btn-outline" %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <% end %>
-          </tbody>
-        </table>
+        <%= render(
+          "processes/pods",
+          pods: @pods,
+          parent: @project
+        ) %>
       <% end %>
     <% end %>
   </div>

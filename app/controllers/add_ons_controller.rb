@@ -1,6 +1,6 @@
 class AddOnsController < ApplicationController
   include StorageHelper
-  before_action :set_add_on, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_add_on, only: [ :show, :edit, :update, :destroy, :restart ]
 
   # GET /add_ons
   def index
@@ -55,6 +55,11 @@ class AddOnsController < ApplicationController
         format.json { render json: @add_on.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def restart
+    @service.restart
+    redirect_to add_on_url(@add_on), notice: "Add on <b>#{@add_on.name}</b> restarted"
   end
 
   # DELETE /add_ons/1 or /add_ons/1.json

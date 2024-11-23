@@ -33,6 +33,9 @@
           <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to add_on.cluster.name, add_on.cluster, target: "_blank", class: "underline" %></span>
         </div>
       </div>
+      <div>
+        <%= button_to "Restart", restart_add_on_path(@add_on), method: :post, class: "btn btn-primary" %>
+      </div>
     </div>
 
     <div class="card card-bordered bg-base-100">

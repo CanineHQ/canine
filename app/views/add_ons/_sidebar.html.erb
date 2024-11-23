@@ -4,9 +4,9 @@
       Info
     </div>
   <% end %>
-  <%= link_to add_on_logs_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(add_on_logs_url(add_on))}" do %>
+  <%= link_to add_on_processes_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(add_on_processes_url(add_on))}" do %>
     <div class="flex items-center gap-2">
-      Logs
+      Processes
     </div>
   <% end %>
   <%= link_to edit_add_on_url(add_on), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_add_on_url(add_on))}" do %>

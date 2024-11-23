@@ -1,4 +1,4 @@
-class AddOns::LogsController < AddOns::BaseController
+class AddOns::ProcessesController < AddOns::BaseController
   include LogColorsHelper
 
   def index

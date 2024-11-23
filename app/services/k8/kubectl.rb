@@ -16,6 +16,10 @@ class K8::Kubectl
     new(project.cluster.kubeconfig)
   end
 
+  def self.from_add_on(add_on)
+    new(add_on.cluster.kubeconfig)
+  end
+
   def apply_yaml(yaml_content)
     with_kube_config do |kubeconfig_file|
       # Create a temporary file for the YAML content
