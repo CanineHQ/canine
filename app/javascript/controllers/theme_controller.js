@@ -57,7 +57,7 @@ export default class extends Controller {
 
   searchModalToggle() {
     const searchModal = document.getElementById("search_modal");
-    
+
     // If modal is already open, close it and return
     if (searchModal.open) {
       searchModal.close();
@@ -124,5 +124,7 @@ export default class extends Controller {
     }
     
     visibleLinks[newIndex].classList.add('active');
+    // Scroll to the active link
+    visibleLinks[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
   }
 }
