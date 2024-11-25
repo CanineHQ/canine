@@ -22,7 +22,7 @@ class AddOns::EndpointsController < AddOns::BaseController
       K8::AddOns::Ingress.new(
         @add_on,
         @endpoint,
-        "80".to_i,
+        params[:port].to_i,
         domains
       ).to_yaml
     )
