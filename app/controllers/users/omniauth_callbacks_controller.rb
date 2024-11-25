@@ -75,7 +75,7 @@ module Users
 
     def create_user
       ActiveRecord::Base.transaction do
-        user = User.find_or_initialize_by(email: auth.info.email) do |user|
+        user = User.find_or_initialize_by(email: auth.info.email.downcase) do |user|
           user.first_name = auth.info.name
           user.password = Devise.friendly_token[0, 20]
           user.save!

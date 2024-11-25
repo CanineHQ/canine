@@ -28,6 +28,8 @@ class User < ApplicationRecord
   has_one_attached :avatar
   has_person_name
 
+  before_save :downcase_email
+
   has_many :account_users, dependent: :destroy
   has_many :accounts, through: :account_users
   has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
@@ -38,6 +40,13 @@ class User < ApplicationRecord
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts
 
+
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
+
+  private
+
+  def downcase_email
+    self.email = email.downcase
+  end
 end
