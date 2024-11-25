@@ -76,7 +76,7 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
         run: |
           bin/rails db:test:prepare
-          bin/bundle exec rspec
+          bin/bundle exec rspec --exclude-pattern spec/system/local/**/*_spec.rb
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
