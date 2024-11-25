@@ -3,7 +3,7 @@
   <div class="space-y-4">
     <div>
       <h2 class="text-lg font-bold">Endpoints</h2>
-      <%= render "add_ons/endpoints/index", add_on: @add_on, endpoints: @endpoints %>
+      <%= render "add_ons/endpoints/index", add_on: @add_on, endpoints: @endpoints, ingresses: @ingresses %>
       <% if @endpoints.empty? %>
         <p class="text-gray-500">No endpoints found</p>
       <% end %>

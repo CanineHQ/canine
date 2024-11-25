@@ -28,6 +28,9 @@
       <%= f.text_field :domains, class: "input input-bordered" %>
       <p class="text-sm text-gray-500">Comma separated list of domains to use for this endpoint</p>
     </div>
+    <div class="my-4 alert alert-warning inline-block">
+      Make sure to create an A Record to <pre class="inline font-semibold cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= @ip_address %>"><%= @ip_address %></pre> for any domain you add here.
+    </div>
 
     <div class="form-footer">
       <%= link_to "Cancel", edit_add_on_path(@add_on), class: "btn btn-secondary" %>

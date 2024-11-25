@@ -2,6 +2,7 @@ class AddOns::EndpointsController < AddOns::BaseController
   before_action :set_add_on
 
   def edit
+    @ip_address = K8::Stateless::Ingress.ip_address(K8::Client.new(@add_on.cluster.kubeconfig))
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
   end
@@ -27,7 +28,8 @@ class AddOns::EndpointsController < AddOns::BaseController
       ).to_yaml
     )
     if @errors.empty?
-      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint }
+      @ingresses = @service.get_ingresses
+      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
     else
       render "add_ons/endpoints/edit"
     end

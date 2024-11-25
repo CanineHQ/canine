@@ -12,7 +12,19 @@
       <% end %>
     </p>
   </div>
+  <div>
+    <h4 class="text-sm font-bold text-gray-500 uppercase">External URLs</h4>
+    <p>
+      <% urls = ingresses.select { |ingress| ingress.spec.rules.any? { |rule| rule.http.paths.any? { |path| path.backend.service.name == endpoint.metadata.name } } }.map { |ingress| ingress.spec.rules.map { |rule| rule.host } }.flatten %>
+      <% urls.each do |url| %>
+        <div>
+          <a href="https://<%= url %>" target="_blank"><%= url %></a>
+          <iconify-icon icon="lucide:external-link"></iconify-icon>
+        </div>
+      <% end %>
+    </p>
+  </div>
   <div class="card-actions justify-end">
-    <%= link_to "Edit Domains", edit_add_on_endpoint_path(add_on, endpoint.metadata.name), class: "btn btn-primary" %>
+    <%= link_to "Edit Domains", edit_add_on_endpoint_path(add_on, endpoint.metadata.name), class: "btn btn-primary btn-xs" %>
   </div>
 <% end %>
