@@ -15,11 +15,19 @@ class K8::Helm::Service
     kubectl.call("rollout restart deployment -n #{add_on.name}")
   end
 
+  def get_ingresses
+    @client.get_ingresses(namespace: add_on.name)
+  end
+
+  def get_endpoints
+    @client.get_services(namespace: add_on.name)
+  end
+
   def storage_metrics
     pods = client.pods_for_namespace(add_on.name)
     volumes = pods.flat_map do |pod|
-      pod.spec.volumes.select { |volume| volume.respond_to?(:persistentVolumeClaim) && volume.persistentVolumeClaim.claimName }
-    end
+      pod.spec.volumes&.select { |volume| volume.respond_to?(:persistentVolumeClaim) && volume.persistentVolumeClaim.claimName }
+    end.compact
 
     pvc_names = volumes.map { |volume| volume.persistentVolumeClaim.claimName }
     pvcs = client.get_persistent_volume_claims(

@@ -1,0 +1,9 @@
+<div class="grid md:grid-cols-2 gap-4">
+  <% endpoints.each do |endpoint| %>
+    <div class="card card-bordered shadow-lg">
+      <div class="card-body">
+        <%= render "add_ons/endpoints/endpoint", add_on: add_on, endpoint: endpoint %>
+      </div>
+    </div>
+  <% end %>
+</div>

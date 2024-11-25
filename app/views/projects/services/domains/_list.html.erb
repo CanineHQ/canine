@@ -11,7 +11,7 @@
     <% service.domains.each do |domain| %>
       <tr id="<%= dom_id(domain) %>">
         <td><%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %></td>
-        <td><pre class="code"><%= K8::Stateless::Ingress.new(domain.service).ip_address %></pre></td>
+        <td><pre class="code"><%= K8::Stateless::Ingress.new(service).ip_address %></pre></td>
         <td>
           <%= render "projects/services/domains/status", domain: %>
         </td>

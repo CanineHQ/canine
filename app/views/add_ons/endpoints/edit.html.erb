@@ -1,0 +1,37 @@
+<%= turbo_frame_tag @endpoint.metadata.name do %>
+  <h2 class="text-lg font-bold mb-4">Edit domains for <u><%= @endpoint.metadata.name %></u></h2>
+
+  <% if @errors.present? %>
+    <div class="alert alert-error mb-4">
+      <%= @errors.join(", ") %>
+    </div>
+  <% end %>
+
+  <%= form_with(url: add_on_endpoint_path(@add_on, @endpoint.metadata.name), method: :patch) do |f| %>
+    <% url = "#{@endpoint.metadata.name}.#{@add_on.name}.svc.cluster.local" %>
+    <div class="form-control">
+      <%= f.label :port, "Endpoint Port", class: "label" %>
+      <div class="join w-full">
+        <div class="w-full">
+          <input class="input input-bordered w-full join-item" value="<%= url %>" disabled />
+        </div>
+
+        <%= f.select :port,
+                    @endpoint.spec.ports.map { |p| [p.port, p.port] },
+                    { selected: @endpoint.spec.ports.first.port },
+                    class: "select select-bordered w-32" %>
+      </div>
+    </div>
+
+    <div class="form-control">
+      <%= f.label :domains, "Domains", class: "label" %>
+      <%= f.text_field :domains, class: "input input-bordered" %>
+      <p class="text-sm text-gray-500">Comma separated list of domains to use for this endpoint</p>
+    </div>
+
+    <div class="form-footer">
+      <%= link_to "Cancel", edit_add_on_path(@add_on), class: "btn btn-secondary" %>
+      <%= f.submit "Update", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% end %>

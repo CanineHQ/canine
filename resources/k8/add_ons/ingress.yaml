@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: <%= endpoint.metadata.name %>
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'true'
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  ingressClassName: "nginx"
+  tls:
+  - hosts:
+    <% domains.each do |domain| %>
+    - <%= domain %>
+    <% end %>
+    secretName: <%= endpoint.metadata.name %>-tls
+  rules:
+  <% domains.each do |domain| %>
+  - host: <%= domain %>
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: <%= endpoint.metadata.name %>
+            port:
+              number: <%= port %>
+  <% end %>

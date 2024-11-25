@@ -1,0 +1,18 @@
+<%= turbo_frame_tag endpoint.metadata.name do %>
+  <h2 class="text-lg font-bold mb-4"><%= endpoint.metadata.name %></h2>
+  <div>
+    <h4 class="text-sm font-bold text-gray-500 uppercase">Internal URLs</h4>
+    <p>
+      <% endpoint.spec.ports.each do |port| %>
+        <% url = "#{endpoint.metadata.name}.#{add_on.name}.svc.cluster.local:#{port.port}" %>
+        <div class="cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= url %>">
+          <%= url %>
+        </div>
+        <%= "#{port.protocol}" %>
+      <% end %>
+    </p>
+  </div>
+  <div class="card-actions justify-end">
+    <%= link_to "Edit Domains", edit_add_on_endpoint_path(add_on, endpoint.metadata.name), class: "btn btn-primary" %>
+  </div>
+<% end %>

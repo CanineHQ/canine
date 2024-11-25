@@ -1,7 +1,16 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Add On") %>
 <%= add_on_layout(@add_on) do %>
-  <div>
-    Delete Add-on
+  <div class="space-y-4">
+    <div>
+      <h2 class="text-lg font-bold">Endpoints</h2>
+      <%= render "add_ons/endpoints/index", add_on: @add_on, endpoints: @endpoints %>
+      <% if @endpoints.empty? %>
+        <p class="text-gray-500">No endpoints found</p>
+      <% end %>
+    </div>
+    <div>
+      <h2 class="text-lg font-bold">Delete Add-on</h2>
+      <%= button_to "Uninstall", add_on_path(@add_on), method: :delete, class: "btn btn-danger" %>
+    </div>
   </div>
-  <%= button_to "Uninstall", add_on_path(@add_on), method: :delete, class: "btn btn-danger" %>
 <% end %>
