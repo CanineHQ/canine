@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update], module: :projects do
+      resources :jobs, only: %i[create], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
           post :check_dns

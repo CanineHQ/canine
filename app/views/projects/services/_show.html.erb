@@ -1,4 +1,9 @@
 <div>
+  <% if service.cron_job? %>
+    <div class="text-right">
+      <%= button_to "Run Job", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm btn-outline #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
+    </div>
+  <% end %>
   <%= form_with(model: [service.project, service]) do |form| %>
     <div class="form-control form-group">
       <%= form.label :name %>

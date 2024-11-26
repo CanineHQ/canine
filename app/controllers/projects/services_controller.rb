@@ -3,7 +3,7 @@ class Projects::ServicesController < Projects::BaseController
   before_action :set_service, only: %i[update destroy]
 
   def index
-    @services = @project.services
+    @services = @project.services.order(:name)
   end
 
   def new
