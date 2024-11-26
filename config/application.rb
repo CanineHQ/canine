@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module Canine
   class Application < Rails::Application
+    config.assets.css_compressor = nil
     config.local_mode = ENV["LOCAL_MODE"] == "true"
     config.active_job.queue_adapter = :sidekiq
     config.application_name = Rails.application.class.module_parent_name
