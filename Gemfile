@@ -99,3 +99,7 @@ gem "rubyzip", "~> 2.3"
 gem "chartkick", "~> 5.1"
 
 gem "groupdate", "~> 6.5"
+
+gem "activeadmin", "~> 3.2"
+
+gem "sassc-rails", "~> 2.1"

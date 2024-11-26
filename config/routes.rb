@@ -1,6 +1,7 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
+  ActiveAdmin.routes(self)
   resources :accounts, only: [ :create ] do
     resources :account_users, only: %i[create index destroy], module: :accounts
     member do
