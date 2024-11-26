@@ -27,6 +27,7 @@ class Cluster < ApplicationRecord
   has_many :add_ons, dependent: :destroy
   has_many :domains, through: :projects
   has_many :metrics, dependent: :destroy
+  has_many :users, through: :account
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }

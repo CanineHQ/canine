@@ -13,6 +13,14 @@
 <% if current_user.admin? %>
   <li>
     <div>
+      <%= link_to admin_root_path do %>
+        <iconify-icon icon="lucide:lock-keyhole" height="16"></iconify-icon>
+        Admin
+      <% end %>
+    </div>
+  </li>
+  <li>
+    <div>
       <%= link_to admin_sidekiq_web_path do %>
         <iconify-icon icon="lucide:server" height="16"></iconify-icon>
         Sidekiq

@@ -3,7 +3,10 @@ ActiveAdmin.register Cluster do
   index do
     selectable_column
     column :name
+    column :users do |cluster|
+      cluster.users.pluck(:email).join(", ")
+    end
   end
-  
+
   actions :all, except: []
 end
