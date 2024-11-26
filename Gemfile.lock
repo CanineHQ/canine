@@ -245,9 +245,6 @@ GEM
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    madmin (1.2.11)
-      pagy (>= 3.5)
-      rails (>= 6.0.3)
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -554,7 +551,6 @@ DEPENDENCIES
   k8s-ruby (~> 0.16.0)
   kubeclient (~> 4.12)
   light-service (~> 0.19.0)
-  madmin
   name_of_person!
   noticed (~> 2.0)
   octokit (~> 9.2)
