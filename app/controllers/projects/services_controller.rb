@@ -20,8 +20,8 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def update
-    if @service.update(service_params)
-      @service.updated!
+    result = Services::Update.execute(service: @service, params: params)
+    if result.success?
       redirect_to project_services_path(@project), notice: "Service will be updated on the next deploy."
     else
       redirect_to project_services_path(@project), alert: "Service could not be updated."
@@ -40,14 +40,6 @@ class Projects::ServicesController < Projects::BaseController
   end
 
   def service_params
-    params.require(:service).permit(
-      :service_type,
-      :command,
-      :name,
-      :container_port,
-      :healthcheck_url,
-      :replicas,
-      :allow_public_networking,
-    )
+    Service.permitted_params(params)
   end
 end

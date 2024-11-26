@@ -56,4 +56,16 @@ class Service < ApplicationRecord
       status.humanize
     end
   end
+
+  def self.permitted_params(params)
+    params.require(:service).permit(
+      :service_type,
+      :command,
+      :name,
+      :container_port,
+      :healthcheck_url,
+      :replicas,
+      :allow_public_networking,
+    )
+  end
 end
