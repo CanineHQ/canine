@@ -1,7 +1,6 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  draw :madmin
   resources :accounts, only: [ :create ] do
     resources :account_users, only: %i[create index destroy], module: :accounts
     member do
@@ -69,16 +68,12 @@ Rails.application.routes.draw do
       post :retry_install
     end
   end
-authenticate :user, lambda { |u| u.admin? } do
-  mount Sidekiq::Web => "/sidekiq"
 
-  namespace :madmin do
-    resources :impersonates do
-      post :impersonate, on: :member
-      post :stop_impersonating, on: :collection
+  authenticate :user, lambda { |u| u.admin? } do
+    namespace :admin do
+      mount Sidekiq::Web => "/sidekiq"
     end
   end
-end
 
   resources :notifications, only: [ :index ]
   resources :announcements, only: [ :index ]
