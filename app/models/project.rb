@@ -35,7 +35,7 @@ class Project < ApplicationRecord
   has_many :builds, dependent: :destroy
   has_many :deployments, through: :builds
   has_many :domains, through: :services
-  has_many :events
+  has_many :events, dependent: :destroy
   has_many :volumes, dependent: :destroy
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
