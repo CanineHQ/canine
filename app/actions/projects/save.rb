@@ -5,7 +5,9 @@ class Projects::Save
   promises :project
 
   executed do |context|
-    context.project.save!
-    ProjectCredentialProvider.new(project: context.project, provider: context.account.github_account)
+    ActiveRecord::Base.transaction do
+      context.project.save!
+      ProjectCredentialProvider.create!(project: context.project, provider: context.account.github_provider)
+    end
   end
 end
