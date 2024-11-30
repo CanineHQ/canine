@@ -37,6 +37,8 @@ class Project < ApplicationRecord
   has_many :domains, through: :services
   has_many :events
   has_many :volumes, dependent: :destroy
+
+  has_one :project_credential_provider, dependent: :destroy
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :repository_url, presence: true,
@@ -44,7 +46,6 @@ class Project < ApplicationRecord
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
                               message: "must be in the format 'owner/repository'"
                             }
-
 
   validates_uniqueness_of :name, scope: :cluster_id
 
@@ -80,6 +81,14 @@ class Project < ApplicationRecord
 
   def full_repository_url
     "https://github.com/#{repository_url}"
+  end
+
+  def github_username
+    project_credential_provider&.github_access_token || account.github_access_token
+  end
+
+  def github_access_token
+    project_credential_provider&.github_access_token || account.github_access_token
   end
 
   def container_registry_url

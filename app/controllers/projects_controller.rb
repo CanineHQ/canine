@@ -39,7 +39,7 @@ class ProjectsController < ApplicationController
 
   # POST /projects or /projects.json
   def create
-    result = Projects::Create.call(Project.new(project_params), params)
+    result = Projects::Create.call(Project.new(project_params), params, current_account)
 
     @project = result.project
     respond_to do |format|

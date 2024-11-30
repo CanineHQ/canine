@@ -4,7 +4,7 @@ module Projects
   class Create
     extend LightService::Organizer
 
-    def self.call(project, params)
+    def self.call(project, params, account)
       steps = [
         Projects::ValidateGithubRepository,
         Projects::Save
@@ -17,7 +17,7 @@ module Projects
 
       steps << Projects::DeployLatestCommit
 
-      with(project:, params:).reduce(*steps)
+      with(project:, params:, account:).reduce(*steps)
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_26_223100) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_30_025337) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -232,6 +232,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_26_223100) do
     t.index ["project_id"], name: "index_project_add_ons_on_project_id"
   end
 
+  create_table "project_credential_providers", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "provider_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "provider_id"], name: "idx_on_project_id_provider_id_92125f73e5", unique: true
+    t.index ["project_id"], name: "index_project_credential_providers_on_project_id"
+    t.index ["provider_id"], name: "index_project_credential_providers_on_provider_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "name", null: false
     t.string "repository_url", null: false
@@ -322,6 +332,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_26_223100) do
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
+  add_foreign_key "project_credential_providers", "projects"
+  add_foreign_key "project_credential_providers", "providers"
   add_foreign_key "projects", "clusters"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
