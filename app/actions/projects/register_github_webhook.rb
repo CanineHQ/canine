@@ -6,7 +6,7 @@ class Projects::RegisterGithubWebhook
   promises :project
 
   executed do |context|
-    client = Octokit::Client.new(access_token: context.project.account.github_access_token)
+    client = Octokit::Client.new(access_token: context.project.github_access_token)
     client.create_hook(
       context.project.repository_url,
       "web",

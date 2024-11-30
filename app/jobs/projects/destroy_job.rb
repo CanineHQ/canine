@@ -7,8 +7,9 @@ class Projects::DestroyJob < ApplicationJob
     kubectl.call("delete namespace #{project.name}")
     # Delete the github webhook for the project IF there are no more projects that refer to that repository
 
+
     unless Project.where(repository_url: project.repository_url).where.not(id: project.id).exists?
-      client = Octokit::Client.new(access_token: project.account.github_access_token)
+      client = Octokit::Client.new(access_token: project.github_access_token)
 
       # Get all webhooks for the repository
       hooks = client.hooks(project.repository_url)

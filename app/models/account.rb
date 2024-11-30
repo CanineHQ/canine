@@ -27,16 +27,16 @@ class Account < ApplicationRecord
   has_many :services, through: :projects
 
   def github_username
-    return unless github_account
+    return unless github_provider
 
     JSON.parse(github_account.auth)["info"]["nickname"]
   end
 
   def github_access_token
-    github_account&.access_token
+    github_provider&.access_token
   end
 
-  def github_account
+  def github_provider
     @_github_account ||= owner.providers.find_by(provider: "github")
   end
 end
