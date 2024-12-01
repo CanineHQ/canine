@@ -7,6 +7,6 @@ ActiveAdmin.register User do
       user.projects.count
     end
   end
-  
+
   actions :all, except: []
 end

@@ -6,7 +6,7 @@ class CreateProjectCredentialProviders < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    add_index :project_credential_providers, [:project_id, :provider_id], unique: true
+    add_index :project_credential_providers, [ :project_id, :provider_id ], unique: true
     Project.all.each do |project|
       ProjectCredentialProvider.create!(project:, provider: project.account.github_provider)
     end

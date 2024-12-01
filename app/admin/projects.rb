@@ -7,6 +7,6 @@ ActiveAdmin.register Project do
       project.users.pluck(:email).join(", ")
     end
   end
-  
+
   actions :all, except: []
 end
