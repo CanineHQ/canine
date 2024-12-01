@@ -4,3 +4,4 @@
 - [ ] Add a tutorial section
 - [ ] Record videos of the app in action for a rails deployment
 - [ ] Need an onboarding flow
+- [ ] Add support for k3s

@@ -33,3 +33,11 @@
   text-decoration: underline;
   display: inline;
 }
+
+.simplebar-wrapper {
+  overflow: auto;
+  width: inherit;
+  height: inherit;
+  max-width: inherit;
+  max-height: inherit;
+}
