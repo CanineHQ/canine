@@ -55,7 +55,7 @@ echo " [OK]"
 # Run docker compose with PORT environment variable
 echo "Starting Canine on port $port..."
 # Print working directory
-PORT=$port docker-compose up
+PORT=$port docker compose up
 echo " [OK]"
 
 # Open browser to http://localhost:$port
