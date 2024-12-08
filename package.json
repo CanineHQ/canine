@@ -32,6 +32,7 @@
     "flatpickr": "^4.6.10",
     "js-cookie": "^3.0.1",
     "local-time": "^3.0.2",
+    "markdown-it": "^14.1.0",
     "nodemon": "^3.1.7",
     "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",

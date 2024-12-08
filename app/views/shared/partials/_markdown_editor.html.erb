@@ -1,0 +1,25 @@
+<div data-controller="markdown-editor">
+  <div class="prose bg-base-200 p-4 rounded-sm" data-markdown-editor-target="previewContainer">
+  </div>
+  <%= form.text_area(
+    :description,
+    class: "textarea textarea-bordered w-full hidden",
+    required: false,
+    placeholder: "Enter your description here...",
+    data: {
+      'markdown-editor-target': "markdownTextarea",
+      action: "input->markdown-editor#preview"
+    }
+  ) %>
+
+  <div class="flex justify-end">
+    <button
+      type="button"
+      class="btn btn-primary btn-outline btn-sm mt-2"
+      data-action="click->markdown-editor#toggle"
+      data-markdown-editor-target="toggleButton"
+    >
+      Edit
+    </button>
+  </div>
+</div>

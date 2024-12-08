@@ -103,3 +103,5 @@ gem "groupdate", "~> 6.5"
 gem "activeadmin", "~> 3.2"
 
 gem "sassc-rails", "~> 2.1"
+
+gem "cron2english", "~> 0.1.7"

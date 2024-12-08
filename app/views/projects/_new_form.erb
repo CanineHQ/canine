@@ -1,5 +1,7 @@
 <div data-controller="new-project">
   <%= form_with(model: project) do |form| %>
+    <%= render "shared/error_messages", resource: form.object %>
+
     <div class="form-control mt-1 w-full max-w-xs">
       <label class="label">
         <span class="label-text">Name</span>

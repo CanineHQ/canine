@@ -1,53 +1,61 @@
 <div>
   <% if service.cron_job? %>
-    <div class="text-right">
+    <div class="text-right mb-4" data-tip="Run Job" class="tooltip">
       <%= button_to "Run Job", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm btn-outline #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
     </div>
   <% end %>
   <%= form_with(model: [service.project, service]) do |form| %>
-    <div class="form-control form-group">
-      <%= form.label :name %>
-      <%= form.text_field :name, class: "input input-bordered w-full max-w-xs", required: true, disabled: true %>
-    </div>
-    <div class="form-control form-group">
-      <%= form.label :command %>
-      <%= form.text_field :command, class: "input input-bordered w-full max-w-xs", required: false %>
-    </div>
-    <% if service.cron_job? %>
-      <div class="form-control form-group">
-        <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
-          <%= cron_schedule_form.label :schedule %>
-          <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-xs", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
+    <div class="grid gap-4 grid-cols-1 lg:grid-cols-2">
+      <div>
+        <div class="form-control form-group">
+          <%= form.label :name %>
+          <%= form.text_field :name, class: "input input-bordered w-full", required: true, disabled: true %>
+        </div>
+        <div class="form-control form-group">
+          <%= form.label :command %>
+          <%= form.text_field :command, class: "input input-bordered w-full", required: false %>
+        </div>
+        <% if service.cron_job? %>
+          <div class="form-control form-group">
+            <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
+              <%= cron_schedule_form.label :schedule %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
+            <% end %>
+          </div>
+        <% end %>
+        <% if service.web_service? %>
+          <div class="form-control form-group">
+            <%= form.label :container_port %>
+            <%= form.text_field :container_port, class: "input input-bordered w-full", required: false %>
+          </div>
+          <div class="form-control form-group">
+            <%= form.label :healthcheck_url %>
+            <%= form.text_field :healthcheck_url, class: "input input-bordered w-full", placeholder: "/health" %>
+            <span class="label-text-alt">Optional: The endpoint just needs to return a 200 status code to be considered healthy</span>
+          </div>
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4">
+            <label class="label mt-1">
+              <span class="label-text cursor-pointer">Allow public networking</span>
+              <%= form.check_box :allow_public_networking, class: "checkbox" %>
+            </label>
+          </div>
+          <span class="label-text-alt">Checking this allows your service to be accessible from the public internet</span>
+        <% end %>
+        <% if service.web_service? || service.background_service? %>
+        <div>
+          <h2 class="text-lg my-2 mt-4">Resources</h2>
+          <div class="form-control form-group">
+            <%= form.label :replicas %>
+            <%= form.number_field :replicas, class: "input input-bordered w-full max-w-xs", placeholder: "1" %>
+          </div>
+        </div>
         <% end %>
       </div>
-    <% end %>
-    <% if service.web_service? %>
-      <div class="form-control form-group">
-        <%= form.label :container_port %>
-        <%= form.text_field :container_port, class: "input input-bordered w-full max-w-xs", required: false %>
-      </div>
-      <div class="form-control form-group">
-        <%= form.label :healthcheck_url %>
-        <%= form.text_field :healthcheck_url, class: "input input-bordered w-full max-w-xs", placeholder: "/health" %>
-        <span class="label-text-alt">Optional: The endpoint just needs to return a 200 status code to be considered healthy</span>
-      </div>
-      <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-xs">
-        <label class="label mt-1">
-          <span class="label-text cursor-pointer">Allow public networking</span>
-          <%= form.check_box :allow_public_networking, class: "checkbox" %>
-        </label>
-      </div>
-      <span class="label-text-alt">Checking this allows your service to be accessible from the public internet</span>
-    <% end %>
-    <% if service.web_service? || service.background_service? %>
-    <div>
-      <h2 class="text-lg my-2 mt-4">Resources</h2>
-      <div class="form-control form-group">
-        <%= form.label :replicas %>
-        <%= form.number_field :replicas, class: "input input-bordered w-full max-w-xs", placeholder: "1" %>
+      <div>
+        <%= form.label :description %>
+        <%= render "shared/partials/markdown_editor", form: form %>
       </div>
     </div>
-    <% end %>
     <div class="form-footer">
       <%= form.submit class: "btn btn-primary" %>
     </div>

@@ -11,7 +11,7 @@ class Projects::ValidateGithubRepository
       context.fail_and_return!('Repository does not exist')
     end
   rescue Octokit::Forbidden => e
-    context.project.errors.add(:repository_url, 'cannot be accessed')
-    context.fail_and_return!('Repository cannot be accessed, try logging out and in again')
+    context.project.errors.add(:repository_url, 'cannot be accessed, try logging out and in again')
+    context.fail_and_return!('Repository cannot be accessed')
   end
 end

@@ -1,5 +1,6 @@
 <%= form_with(model: project) do |form| %>
-  <div class="form-control mt-1 w-full max-w-xs">
+  <%= render "shared/error_messages", resource: form.object %>
+  <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Repository path</span>
     </label>
@@ -9,7 +10,7 @@
     </label>
   </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
+  <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Branch</span>
     </label>
@@ -19,14 +20,14 @@
     </label>
   </div>
 
-  <div class="form-control w-full max-w-xs rounded-lg bg-base-200 p-2 px-4">
+  <div class="form-control w-full max-w-sm rounded-lg bg-base-200 p-2 px-4">
     <label class="label mt-1">
       <span class="label-text cursor-pointer">Autodeploy</span>
       <%= form.check_box :autodeploy, class: "checkbox" %>
     </label>
   </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
+  <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Dockerfile path</span>
     </label>
@@ -36,14 +37,14 @@
     </label>
   </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
+  <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Docker command</span>
     </label>
     <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
   </div>
 
-  <div class="form-control my-1 w-full max-w-xs">
+  <div class="form-control my-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Predeploy command</span>
     </label>

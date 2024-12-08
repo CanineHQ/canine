@@ -15,12 +15,14 @@
     <%= service.friendly_status %>
   </div>
   <% if service.web_service? %>
-    <div class="text-xs text-gray-500">
+    <div class="text-sm text-gray-500">
       <% if service.last_health_checked_at %>
         Last checked <%= time_ago(service.last_health_checked_at) %>
       <% else %>
         Never checked
       <% end %>
     </div>
+  <% elsif service.cron_job? %>
+    <div class="text-sm text-gray-500">Runs <%= Cron2English.parse(service.cron_schedule.schedule).join(" ") %></div>
   <% end %>
 </div>

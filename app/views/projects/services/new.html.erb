@@ -3,7 +3,12 @@
     <%= form_with(model: [@project, @service], url: project_services_path) do |form| %>
       <div class="form-group">
         <%= form.label :name %>
-        <%= form.text_field :name, class: "input input-bordered w-full max-w-xs", required: true, placeholder: "ex: web" %>
+        <%= form.text_field :name, class: "input input-bordered w-full max-w-sm", required: true, placeholder: "ex: web" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :description %>
+        <%= form.text_area :description, class: "textarea textarea-bordered w-full max-w-sm", required: false, placeholder: "Enter your description here... (supports markdown)" %>
       </div>
 
       <div data-controller="new-add-ons">
@@ -68,7 +73,7 @@
 
         <div class="form-group">
           <%= form.label :command %>
-          <%= form.text_field :command, class: "input input-bordered w-full max-w-xs", required: false %>
+          <%= form.text_field :command, class: "input input-bordered w-full max-w-sm", required: false %>
           <label class="label">
             <span class="label-text-alt">Optional: A blank command will run the default command from the Dockerfile</span>
           </label>
@@ -78,13 +83,13 @@
           <h3 class="text-lg font-bold">Networking</h3>
           <div class="form-group">
             <%= form.label :container_port %>
-            <%= form.number_field :container_port, class: "input input-bordered w-full max-w-xs", placeholder: "3000" %>
+            <%= form.number_field :container_port, class: "input input-bordered w-full max-w-sm", placeholder: "3000" %>
           </div>
           <div class="form-group">
             <%= form.label :healthcheck_url %>
-            <%= form.text_field :healthcheck_url, class: "input input-bordered w-full max-w-xs", placeholder: "/health" %>
+            <%= form.text_field :healthcheck_url, class: "input input-bordered w-full max-w-sm", placeholder: "/health" %>
           </div>
-          <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-xs">
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
             <label class="label mt-1">
               <span class="label-text cursor-pointer">Allow public networking</span>
               <%= form.check_box :allow_public_networking, class: "checkbox" %>
@@ -97,7 +102,7 @@
           <h3 class="text-lg font-bold">Resources</h3>
           <div class="form-group">
             <%= form.label :replicas %>
-            <%= form.number_field :replicas, class: "input input-bordered w-full max-w-xs", placeholder: "1" %>
+            <%= form.number_field :replicas, class: "input input-bordered w-full max-w-sm", placeholder: "1" %>
           </div>
         </div>
 
@@ -106,7 +111,7 @@
             <h3 class="text-lg font-bold">Cron job</h3>
             <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
               <%= cron_schedule_form.label :schedule %>
-              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-xs", placeholder: "0 0 * * *" %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-sm", placeholder: "0 0 * * *" %>
             <% end %>
             <label class="label">
               <span class="label-text-alt">Use <a href="https://crontab.guru/" target="_blank">crontab.guru</a> to schedule your cron job</span>

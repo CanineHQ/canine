@@ -65,6 +65,7 @@ class Service < ApplicationRecord
       :container_port,
       :healthcheck_url,
       :replicas,
+      :description,
       :allow_public_networking,
     )
   end
