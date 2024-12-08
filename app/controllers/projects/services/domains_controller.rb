@@ -3,6 +3,7 @@
 class Projects::Services::DomainsController < Projects::Services::BaseController
   def create
     @domain = @service.domains.new(domain_params)
+    @service.updated!
     respond_to do |format|
       if @domain.save
         Services::AddDomainJob.perform_later(@domain)
