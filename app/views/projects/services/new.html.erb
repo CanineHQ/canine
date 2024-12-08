@@ -9,6 +9,9 @@
       <div class="form-group">
         <%= form.label :description %>
         <%= form.text_area :description, class: "textarea textarea-bordered w-full max-w-sm", required: false, placeholder: "Enter your description here... (supports markdown)" %>
+        <label class="label">
+          <span class="label-text-alt">Optional</span>
+        </label>
       </div>
 
       <div data-controller="new-add-ons">
