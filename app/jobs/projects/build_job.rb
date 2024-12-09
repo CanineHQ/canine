@@ -18,7 +18,7 @@ class Projects::BuildJob < ApplicationJob
     complete_build!(build)
     # TODO: Step 7: Optionally, add post-deploy tasks or slack notifications
   rescue BuildFailure => e
-    build.info e.message
+    build.error(e.message)
     build.failed!
   end
 
@@ -38,7 +38,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Failed to clone repository: #{stderr}" unless status.success?
 
-    build.info "Repository cloned successfully."
+    build.info("Repository cloned successfully.", color: :green)
   end
 
   def build_docker_build_command(project, repository_path)
@@ -75,25 +75,25 @@ class Projects::BuildJob < ApplicationJob
     docker_login_command = %w[docker login ghcr.io --username] +
                            [ project.github_username, "--password", project.github_access_token ]
 
-    build.info "Logging into ghcr.io as #{project.github_username}"
+    build.info("Logging into ghcr.io as #{project.github_username}", color: :yellow)
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
-      build.info "Logged in to Docker Hub successfully."
+      build.info("Logged in to Docker Hub successfully.", color: :green)
     else
-      build.error "Docker Hub login failed with error:\n#{stderr}"
+      build.error("Docker Hub login failed with error:\n#{stderr}")
     end
   end
 
   def push_to_dockerhub(project, build)
     docker_push_command = [ "docker", "push", "ghcr.io/#{project.repository_url}:latest" ]
 
-    build.info "Pushing Docker image to #{docker_push_command.last}"
+    build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
     stdout, stderr, status = Open3.capture3(*docker_push_command)
 
     raise BuildFailure, "Docker push failed for project #{project.name} with error:\n#{stderr}" unless status.success?
 
-    build.info "Docker image pushed successfully for project #{project.name}:\n#{stdout}"
+    build.info("Docker image pushed successfully for project #{project.name}:\n#{stdout}", color: :green)
   end
 
   def complete_build!(build)
@@ -104,7 +104,7 @@ class Projects::BuildJob < ApplicationJob
 
   def clone_repository_and_build_docker(project, build)
     Dir.mktmpdir do |repository_path|
-      build.info "Cloning repository: #{project.repository_url} to #{repository_path}"
+      build.info("Cloning repository: #{project.repository_url} to #{repository_path}", color: :yellow)
 
       # Ensure the temporary directory doesn't exist
       FileUtils.rm_rf(repository_path) if Dir.exist?(repository_path)
