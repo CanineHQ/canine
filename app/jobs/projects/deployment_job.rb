@@ -32,7 +32,7 @@ class Projects::DeploymentJob < ApplicationJob
     deployment.completed!
     project.deployed!
   rescue StandardError => e
-    @logger.info "Deployment failed: #{e.message}"
+    @logger.error("Deployment failed: #{e.message}")
     puts e.full_message
     deployment.failed!
   end
@@ -46,7 +46,7 @@ class Projects::DeploymentJob < ApplicationJob
         apply_pvc(volume, kubectl)
         volume.deployed!
       rescue StandardError => e
-        @logger.info "Volume deployment failed: #{e.message}"
+        @logger.error("Volume deployment failed: #{e.message}")
         volume.failed!
         raise e
       end
@@ -56,7 +56,7 @@ class Projects::DeploymentJob < ApplicationJob
   def predeploy(project, deployment)
     return unless project.predeploy_command.present?
 
-    @logger.info "Running predeploy command: #{project.predeploy_command}"
+    @logger.info("Running predeploy command: #{project.predeploy_command}", color: :yellow)
     success = system(project.predeploy_command)
 
     return if success
@@ -113,7 +113,7 @@ class Projects::DeploymentJob < ApplicationJob
       results['items'].each do |resource|
         puts "Checking #{resource_type}: #{resource['metadata']['name']}"
         if @marked_resources.select { |r| r.is_a?(K8::Stateless.const_get(resource_type)) }.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
-          @logger.info "Deleting #{resource_type}: #{resource['metadata']['name']}"
+          @logger.info("Deleting #{resource_type}: #{resource['metadata']['name']}", color: :yellow)
           kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
         end
       end
@@ -122,7 +122,7 @@ class Projects::DeploymentJob < ApplicationJob
 
   DEPLOYABLE_RESOURCES.each do |resource_type|
     define_method(:"apply_#{resource_type.underscore}") do |service, kubectl|
-      @logger.info "Creating #{resource_type}: #{service.name}"
+      @logger.info("Creating #{resource_type}: #{service.name}", color: :green)
       resource = K8::Stateless.const_get(resource_type).new(service)
       resource_yaml = resource.to_yaml
       kubectl.apply_yaml(resource_yaml)
@@ -131,7 +131,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def restart_deployment(service, kubectl)
-    @logger.info "Restarting deployment: #{service.name}"
+    @logger.info("Restarting deployment: #{service.name}", color: :yellow)
     kubectl.call("-n #{service.project.name} rollout restart deployment/#{service.name}")
   end
 

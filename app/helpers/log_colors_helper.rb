@@ -14,6 +14,21 @@ module LogColorsHelper
     # Add more mappings as needed...
   }
 
+  FRIENDLY_COLORS = {
+    bold: "1",
+    dim: "2",
+    red: "31",
+    green: "32",
+    yellow: "33",
+    blue: "34",
+    magenta: "35",
+    cyan: "36",
+    gray: "90",
+    white: "97"
+  }.tap do |colors|
+    colors.default = "0"
+  end
+
   def ansi_to_tailwind(log)
     # Match ANSI escape codes and replace them with Tailwind classes
     log.gsub(/\e\[(\d+)(;\d+)*m/) do
