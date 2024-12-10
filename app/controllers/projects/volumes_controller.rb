@@ -5,6 +5,7 @@ class Projects::VolumesController < Projects::BaseController
 
   def create
     @volume = @project.volumes.build(volume_params)
+    @project.updated!
     if @volume.save
       redirect_to edit_project_path(@project), notice: "Volume saved and will be created on the next deployment"
     else

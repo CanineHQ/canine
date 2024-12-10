@@ -98,4 +98,12 @@ class Project < ApplicationRecord
   def deployable?
     services.any?
   end
+
+  def has_updates?
+    services.any?(&:updated?) || services.any?(&:pending?)
+  end
+
+  def updated!
+    services.each(&:updated!)
+  end
 end

@@ -23,13 +23,20 @@
         <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
       </div>
     </div>
-    <div class="flex">
-      <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
-      <% if project.deployable? %>
-        <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
-      <% else %>
-        <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
-          <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>
+    <div class="flex flex-col">
+      <div class="flex justify-end">
+        <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
+        <% if project.deployable? %>
+          <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+        <% else %>
+          <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
+            <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>
+          </div>
+        <% end %>
+      </div>
+      <% if project.has_updates? %>
+        <div class="flex justify-end items-center text-gray-500 text-sm italic">
+          <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-warning"></iconify-icon> Project has updates that require a deploy to take effect.
         </div>
       <% end %>
     </div>

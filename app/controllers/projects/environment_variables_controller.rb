@@ -9,6 +9,8 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
 
   def create
     EnvironmentVariables::BulkUpdate.execute(project: @project, params:, current_user:)
+    @project.updated!
+
     if @project.current_deployment.present?
       Projects::DeploymentJob.perform_later(@project.current_deployment)
       @project.events.create(user: current_user, eventable: @project.last_build, event_action: :update)
