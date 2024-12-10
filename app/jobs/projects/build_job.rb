@@ -38,7 +38,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Failed to clone repository: #{stderr}" unless status.success?
 
-    build.info("Repository cloned successfully.", color: :green)
+    build.success("Repository cloned successfully.")
   end
 
   def build_docker_build_command(project, repository_path)
@@ -79,7 +79,7 @@ class Projects::BuildJob < ApplicationJob
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
-      build.info("Logged in to Docker Hub successfully.", color: :green)
+      build.success("Logged in to Docker Hub successfully.")
     else
       build.error("Docker Hub login failed with error:\n#{stderr}")
     end
@@ -93,7 +93,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Docker push failed for project #{project.name} with error:\n#{stderr}" unless status.success?
 
-    build.info("Docker image pushed successfully for project #{project.name}:\n#{stdout}", color: :green)
+    build.success("Docker image pushed successfully for project #{project.name}:\n#{stdout}")
   end
 
   def complete_build!(build)

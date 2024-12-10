@@ -17,6 +17,10 @@ module Loggable
     info(line, color: :red)
   end
 
+  def success(line)
+    info(line, color: :green)
+  end
+
   private
 
   def ensure_log_output

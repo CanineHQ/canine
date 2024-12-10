@@ -122,7 +122,7 @@ class Projects::DeploymentJob < ApplicationJob
 
   DEPLOYABLE_RESOURCES.each do |resource_type|
     define_method(:"apply_#{resource_type.underscore}") do |service, kubectl|
-      @logger.info("Creating #{resource_type}: #{service.name}", color: :green)
+      @logger.info("Creating #{resource_type}: #{service.name}", color: :yellow)
       resource = K8::Stateless.const_get(resource_type).new(service)
       resource_yaml = resource.to_yaml
       kubectl.apply_yaml(resource_yaml)
