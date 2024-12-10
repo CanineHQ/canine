@@ -23,7 +23,7 @@ module Cli
 
         exit_status = wait_thr.value
         if exit_status.success?
-          @loggable.info("Command succeeded")
+          @loggable.success("Command succeeded")
         else
           raise CommandFailedError, "Command failed with exit code #{exit_status.exitstatus}"
         end

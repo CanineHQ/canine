@@ -8,9 +8,9 @@ class Clusters::IsReady
     client = K8::Client.new(cluster.kubeconfig)
     if client.can_connect?
       cluster.installing!
-      cluster.info("Cluster is ready")
+      cluster.success("Cluster is ready")
     else
-      cluster.info("Cluster is not ready, retrying in 60 seconds...")
+      cluster.error("Cluster is not ready, retrying in 60 seconds...")
       context.fail!("Cluster is not ready")
     end
   end
