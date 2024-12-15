@@ -40,6 +40,6 @@ class Cluster < ApplicationRecord
   }
   enum :cluster_type, {
     k8s: 0,
-    k3s: 1,
+    k3s: 1
   }
 end
