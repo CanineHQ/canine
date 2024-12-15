@@ -5,33 +5,26 @@
     <%= form.text_field :name, class: "input input-bordered", value: RandomNameGenerator.generate_name %>
   </div>
 
-  <% if defined?(show_instructions) %>
   <div data-controller="new-add-ons">
     <label class="mb-2">Which managed Kubernetes provider are you using?</label>
     <div class="form-group">
       <div class="flex gap-4">
-        <select class="hidden" data-new-add-ons-target="input">
-          <option value="digitalocean">Digital Ocean</option>
-          <option value="linode">Linode</option>
-          <option value="linode">Other</option>
-        </select>
-        <%= render "clusters/instructions/cards/digitalocean" %>
-        <%= render "clusters/instructions/cards/linode" %>
-        <%= render "clusters/instructions/cards/other" %>
+        <%= form.collection_select :cluster_type, 
+          Cluster.cluster_types.keys, 
+          :to_s,
+          :titleize,
+          { },
+          { class: "select select-bordered hidden", data: { new_add_ons_target: "input" } } 
+        %>
+        <%= render "clusters/cluster_types/cards/k8s" %>
+        <%= render "clusters/cluster_types/cards/k3s" %>
       </div>
     </div>
 
     <div class="my-10 has-styled-links">
-      <%= render "clusters/instructions/instructions/digitalocean" %>
-      <%= render "clusters/instructions/instructions/linode" %>
-      <%= render "clusters/instructions/instructions/other" %>
+      <%= render "clusters/cluster_types/instructions/k8s", form: form %>
+      <%= render "clusters/cluster_types/instructions/k3s", form: form %>
     </div>
-  </div>
-  <% end %>
-
-  <div class="form-group">
-    <%= form.label :kubeconfig %>
-    <%= form.file_field :kubeconfig, class: "file-input w-full" %>
   </div>
 
   <div class="form-footer">

@@ -64,25 +64,33 @@ module K8
       Kubeclient::Client.new(
         cluster_info["server"],
         "v1",
-        ssl_options: ssl_options(cluster_info),
+        ssl_options: ssl_options(user_info, cluster_info),
         auth_options: auth_options(user_info)
       )
     end
 
-    def ssl_options(_cluster_info)
-      { verify_ssl: OpenSSL::SSL::VERIFY_NONE }
+    def ssl_options(user_info, cluster_info)
+      _ssl_options = {}
+      if user_info["client-certificate-data"] && user_info["client-key-data"]
+
+        begin
+          _ssl_options[:client_key] = OpenSSL::PKey::RSA.new(Base64.decode64(user_info["client-key-data"]))
+        rescue OpenSSL::PKey::RSAError
+          _ssl_options[:client_key] = OpenSSL::PKey::EC.new(Base64.decode64(user_info["client-key-data"]))
+        end
+        _ssl_options[:client_cert] =
+          OpenSSL::X509::Certificate.new(Base64.decode64(user_info["client-certificate-data"]))
+        _ssl_options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
+      end
       # if cluster_info['certificate-authority-data']
       #  ssl_options[:ca_file] = write_temp_file(Base64.decode64(cluster_info['certificate-authority-data']))
       # end
+      _ssl_options
     end
 
     def auth_options(user_info)
       auth_options = {}
-      if user_info["client-certificate-data"] && user_info["client-key-data"]
-        auth_options[:client_cert] =
-          OpenSSL::X509::Certificate.new(Base64.decode64(user_info["client-certificate-data"]))
-        auth_options[:client_key] = OpenSSL::PKey::RSA.new(Base64.decode64(user_info["client-key-data"]))
-      elsif user_info["token"]
+      if user_info["token"]
         auth_options[:bearer_token] = user_info["token"]
       end
       auth_options

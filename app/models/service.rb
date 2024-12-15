@@ -6,6 +6,7 @@
 #  allow_public_networking :boolean          default(FALSE)
 #  command                 :string
 #  container_port          :integer          default(3000)
+#  description             :text
 #  healthcheck_url         :string
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
