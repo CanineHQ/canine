@@ -1,53 +1,52 @@
-<div>
-  <div class="flex items-center justify-between mb-4">
+<div class="flex items-center justify-between mb-4">
+  <div>
     <div>
-      <div>
-        <%= render "projects/status", project: project %>
-      </div>
-      <h3 class="text-lg font-medium"><%= project.name %></h3>
-      <% if project.domains.any? %>
-        <div class="my-3">
-          <% project.domains.each do |domain| %>
-            <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-            <iconify-icon icon="lucide:external-link"></iconify-icon>
-          <% end %>
-        </div>
-      <% end %>
-      <div class="text-sm">
-        <%= link_to project.full_repository_url, target: "_blank" do %>
-          <iconify-icon icon="lucide:github"></iconify-icon>
-          <span class="underline mr-2"><%= project.repository_url %></span>
-          <iconify-icon icon="lucide:git-branch"></iconify-icon>
-          <span class="underline"><%= project.branch %></span>
-        <% end %>
-        <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
-      </div>
+      <%= render "projects/status", project: project %>
     </div>
-    <div class="flex flex-col">
-      <div class="flex justify-end">
-        <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
-        <% if project.deployable? %>
-          <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
-        <% else %>
-          <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
-            <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>
-          </div>
+    <h3 class="text-lg font-medium"><%= project.name %></h3>
+    <% if project.domains.any? %>
+      <div class="my-3">
+        <% project.domains.each do |domain| %>
+          <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
+          <iconify-icon icon="lucide:external-link"></iconify-icon>
         <% end %>
       </div>
-      <% if project.has_updates? %>
-        <div class="flex justify-end items-center text-gray-500 text-sm italic">
-          <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-warning"></iconify-icon> Project has updates that require a deploy to take effect.
+    <% end %>
+    <div class="text-sm">
+      <%= link_to project.full_repository_url, target: "_blank" do %>
+        <iconify-icon icon="lucide:github"></iconify-icon>
+        <span class="underline mr-2"><%= project.repository_url %></span>
+        <iconify-icon icon="lucide:git-branch"></iconify-icon>
+        <span class="underline"><%= project.branch %></span>
+      <% end %>
+      <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
+    </div>
+  </div>
+  <div class="flex flex-col">
+    <div class="flex justify-end">
+      <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
+      <% if project.deployable? %>
+        <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+      <% else %>
+        <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
+          <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>
         </div>
       <% end %>
     </div>
-  </div>
-
-  <div class="md:card md:card-bordered md:bg-base-100">
-    <div class="md:card-body">
-      <%= render "projects/sidebar", project: project %>
-
-      <div class="pt-4 pb-4">
-        <%= yield %>
+    <% if project.has_updates? %>
+      <div class="flex justify-end items-center text-gray-500 text-sm italic">
+        <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-warning"></iconify-icon> Project has updates that require a deploy to take effect.
       </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="md:card md:card-bordered md:bg-base-100">
+  <div class="md:card-body">
+    <%= render "projects/sidebar", project: project %>
+
+    <div class="pt-4 pb-4">
+      <%= yield %>
     </div>
   </div>
+</div>
