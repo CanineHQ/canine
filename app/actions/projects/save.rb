@@ -10,5 +10,7 @@ class Projects::Save
       context.project.save!
       ProjectCredentialProvider.create!(project: context.project, provider: context.user.github_provider)
     end
+  rescue => e
+    context.fail_and_return!(e.message)
   end
 end
