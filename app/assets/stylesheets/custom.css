@@ -41,3 +41,10 @@
   max-width: inherit;
   max-height: inherit;
 }
+
+.input.error {
+  @apply input-error;
+}
+.form-hint.error {
+  @apply text-sm text-error;
+}
