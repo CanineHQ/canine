@@ -45,6 +45,19 @@
 .input.error {
   @apply input-error;
 }
+
+.input.success {
+  @apply input-success;
+}
+
+.form-hint {
+  @apply text-sm;
+}
+
 .form-hint.error {
-  @apply text-sm text-error;
+  @apply text-error;
+}
+
+.form-hint.success {
+  @apply text-success;
 }

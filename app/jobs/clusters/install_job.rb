@@ -1,4 +1,4 @@
-class InstallClusterJob < ApplicationJob
+class Clusters::InstallJob < ApplicationJob
   queue_as :default
 
   def perform(cluster)

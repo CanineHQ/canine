@@ -2,13 +2,14 @@
 #
 # Table name: clusters
 #
-#  id         :bigint           not null, primary key
-#  kubeconfig :jsonb            not null
-#  name       :string           not null
-#  status     :integer          default("initializing"), not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  account_id :bigint           not null
+#  id           :bigint           not null, primary key
+#  cluster_type :integer          default("k8s")
+#  kubeconfig   :jsonb            not null
+#  name         :string           not null
+#  status       :integer          default("initializing"), not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  account_id   :bigint           not null
 #
 # Indexes
 #
@@ -36,5 +37,9 @@ class Cluster < ApplicationRecord
     installing: 1,
     running: 2,
     failed: 3
+  }
+  enum :cluster_type, {
+    k8s: 0,
+    k3s: 1
   }
 end

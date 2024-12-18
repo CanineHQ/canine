@@ -68,6 +68,9 @@ Rails.application.routes.draw do
       post :test_connection
       post :retry_install
     end
+    collection do
+      post :check_k3s_ip_address
+    end
   end
 
   authenticate :user, lambda { |u| u.admin? } do

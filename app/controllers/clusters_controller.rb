@@ -33,8 +33,30 @@ class ClustersController < ApplicationController
   def logs
   end
 
+  def check_k3s_ip_address
+    # Check if the IP address is reachable at port 6443
+    ip_address = params[:ip_address]
+    port = 6443
+    timeout = 5  # seconds
+
+    begin
+      Timeout.timeout(timeout) do
+        TCPSocket.new(ip_address, port).close
+      end
+      render json: { success: true }
+    rescue Errno::ECONNREFUSED
+      render json: { success: false, error: "Connection refused" }, status: :unprocessable_entity
+    rescue Errno::EHOSTUNREACH
+      render json: { success: false, error: "Host unreachable" }, status: :unprocessable_entity
+    rescue Timeout::Error
+      render json: { success: false, error: "Connection timed out" }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { success: false, error: e.message }, status: :unprocessable_entity
+    end
+  end
+
   def retry_install
-    InstallClusterJob.perform_later(@cluster)
+    Clusters::InstallJob.perform_later(@cluster)
     redirect_to @cluster, notice: "Retrying installation for cluster..."
   end
 
@@ -93,7 +115,7 @@ class ClustersController < ApplicationController
     respond_to do |format|
       if @cluster.save
         # Kick off cluster job
-        InstallClusterJob.perform_later(@cluster)
+        Clusters::InstallJob.perform_later(@cluster)
         format.html { redirect_to @cluster, notice: "Cluster was successfully created." }
         format.json { render :show, status: :created, location: @cluster }
       else
@@ -139,13 +161,30 @@ class ClustersController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def cluster_params
-    if params[:cluster][:kubeconfig].present?
-      kubeconfig_file = params[:cluster][:kubeconfig]
+    if params[:cluster][:cluster_type] == "k3s"
+      ip_address = params[:cluster][:ip_address]
+      kubeconfig_output = params[:cluster][:kubeconfig_output]
+      if ip_address.blank? || kubeconfig_output.blank?
+        message = "IP address and kubeconfig output are required for K3s clusters"
+        flash[:error] = message
+        raise message
+      end
+
+      begin
+        data = YAML.safe_load(kubeconfig_output)
+        data["clusters"][0]["cluster"]["server"] = "https://#{ip_address}:6443"
+      rescue StandardError => e
+        message = "Invalid kubeconfig output"
+        flash[:error] = message
+        raise message
+      end
+      params[:cluster][:kubeconfig] = data
+    elsif (kubeconfig_file = params[:cluster][:kubeconfig_file]).present?
       yaml_content = kubeconfig_file.read
 
       params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
     end
 
-    params.require(:cluster).permit(:name, kubeconfig: {})
+    params.require(:cluster).permit(:name, :cluster_type, kubeconfig: {})
   end
 end

@@ -1,0 +1,32 @@
+<div class="card-form hidden card-k3s space-y-4" data-controller="k3s-instructions">
+  <p data-k3s-instructions-target="instructions" class="hidden">
+    <div data-k3s-instructions-target="step" data-validation="ip-address">
+      1. SSH into the server and run:
+      <pre class="block">curl -sfL https://get.k3s.io | sh -</pre>
+
+      <div class="form-group mt-4">
+        <%= form.label :ip_address, "Enter the IP address of the server once the install is complete" %>
+        <%= form.text_field :ip_address, class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
+        <div class="form-hint" data-k3s-instructions-target="ipAddressMessage">
+        </div>
+      </div>
+    </div>
+
+    <div data-k3s-instructions-target="step" class="hidden">
+      2. Once the install is complete, run:
+      <pre class="block">sudo cat /etc/rancher/k3s/k3s.yaml</pre>
+    </div>
+
+    <div data-k3s-instructions-target="step" class="hidden">
+      3. Copy the output and paste it here:
+      <div class="form-group">
+        <%= form.text_area :kubeconfig_output, class: "textarea textarea-bordered w-full max-w-lg h-48", required: true %>
+      </div>
+    </div>
+
+    <div>
+      <button type="button" class="btn btn-primary" data-k3s-instructions-target="next" data-action="k3s-instructions#updateStep">Next</button>
+    </div>
+  </p>
+</div>
+
