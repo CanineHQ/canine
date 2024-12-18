@@ -26,14 +26,4 @@
       <%= render "clusters/cluster_types/instructions/k3s", form: form %>
     </div>
   </div>
-
-  <div class="form-footer">
-    <%= form.button "Submit", class: "btn btn-primary" %>
-
-    <% if form.object.new_record? %>
-      <%= link_to t("cancel"), clusters_path, class: "btn btn-secondary" %>
-    <% else %>
-      <%= link_to t("cancel"), cluster_path(@cluster), class: "btn btn-secondary" %>
-    <% end %>
-  </div>
 <% end %>

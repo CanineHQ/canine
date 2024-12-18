@@ -25,4 +25,14 @@
     <%= form.label :kubeconfig_file %>
     <%= form.file_field :kubeconfig_file, class: "file-input w-full" %>
   </div>
+
+  <div class="form-footer">
+    <%= form.button "Submit", class: "btn btn-primary" %>
+
+    <% if form.object.new_record? %>
+      <%= link_to t("cancel"), clusters_path, class: "btn btn-secondary" %>
+    <% else %>
+      <%= link_to t("cancel"), cluster_path(@cluster), class: "btn btn-secondary" %>
+    <% end %>
+  </div>
 </div>

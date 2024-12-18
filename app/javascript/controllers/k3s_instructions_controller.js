@@ -1,7 +1,63 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["instructions"]
+  static targets = ["step", "next", "ipAddress", "ipAddressError"]
+
+  connect() {
+    this.step = 0;
+  }
+
+  complete() {
+    this.nextTarget.type = "submit";
+    this.nextTarget.innerHTML = "Submit";
+  }
+
+  async checkIpAddress() {
+    const response = await fetch(`/clusters/check_k3s_ip_address`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ ip_address: this.ipAddressTarget.value })
+    })
+    const data = await response.json()
+    return data.success
+  }
+
+  setLoading(loading) {
+    this.nextTarget.disabled = loading;
+    this.nextTarget.innerHTML = loading ? "Loading..." : "Next";
+  }
+
+  async updateStep(event) {
+    if (this.stepTargets[this.step].dataset.validation === "ip-address") {
+      this.setLoading(true);
+      const ipAddressWorking = await this.checkIpAddress()
+      this.setLoading(false);
+      if (!ipAddressWorking) {
+        this.ipAddressTarget.classList.add("error")
+        this.ipAddressErrorTarget.innerHTML = "IP address is not working"
+        return
+      } else {
+        this.ipAddressTarget.classList.remove("error")
+        this.ipAddressErrorTarget.innerHTML = ""
+      }
+    }
+
+    this.step += 1;
+    this.stepTargets.forEach(step => {
+      step.classList.add("hidden")
+    })
+    // Show all steps up to the current step
+    for (let i = 0; i <= this.step; i++) {
+      this.stepTargets[i].classList.remove("hidden")
+    }
+    if (this.step === this.stepTargets.length - 1) {
+      this.complete()
+      event.preventDefault();
+    }
+  }
 
   update(event) {
     // Validate it is a valid IP address

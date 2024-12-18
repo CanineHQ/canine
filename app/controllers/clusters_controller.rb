@@ -33,6 +33,28 @@ class ClustersController < ApplicationController
   def logs
   end
 
+  def check_k3s_ip_address
+    # Check if the IP address is reachable at port 6443
+    ip_address = params[:ip_address]
+    port = 6443
+    timeout = 5  # seconds
+
+    begin
+      Timeout.timeout(timeout) do
+        TCPSocket.new(ip_address, port).close
+      end
+      render json: { success: true }
+    rescue Errno::ECONNREFUSED
+      render json: { success: false, error: "Connection refused" }, status: :unprocessable_entity
+    rescue Errno::EHOSTUNREACH
+      render json: { success: false, error: "Host unreachable" }, status: :unprocessable_entity
+    rescue Timeout::Error
+      render json: { success: false, error: "Connection timed out" }, status: :unprocessable_entity
+    rescue StandardError => e
+      render json: { success: false, error: e.message }, status: :unprocessable_entity
+    end
+  end
+
   def retry_install
     Clusters::InstallJob.perform_later(@cluster)
     redirect_to @cluster, notice: "Retrying installation for cluster..."
