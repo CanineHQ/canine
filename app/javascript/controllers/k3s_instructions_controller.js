@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["step", "next", "ipAddress", "ipAddressError"]
+  static targets = ["step", "next", "ipAddress", "ipAddressMessage"]
 
   connect() {
     this.step = 0;
@@ -37,11 +37,14 @@ export default class extends Controller {
       this.setLoading(false);
       if (!ipAddressWorking) {
         this.ipAddressTarget.classList.add("error")
-        this.ipAddressErrorTarget.innerHTML = "IP address is not working"
+        this.ipAddressMessageTarget.classList.add("error")
+        this.ipAddressMessageTarget.innerHTML = "IP address is not reachable. Please check that K3s is installed and running on the server, and allow port 6443 through any firewalls."
         return
       } else {
         this.ipAddressTarget.classList.remove("error")
-        this.ipAddressErrorTarget.innerHTML = ""
+        this.ipAddressMessageTarget.classList.remove("error")
+        this.ipAddressMessageTarget.classList.add("success")
+        this.ipAddressMessageTarget.innerHTML = "IP address is reachable."
       }
     }
 

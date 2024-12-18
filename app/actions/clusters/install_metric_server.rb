@@ -7,15 +7,15 @@ class Clusters::InstallMetricServer
     cluster = context.cluster
     runner = Cli::RunAndLog.new(cluster)
     kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
-    cluster.info("Checking if metric server is already installed...")
+    cluster.info("Checking if metric server is already installed...", color: :yellow)
 
     begin
       kubectl.("get deployment metrics-server -n kube-system")
-      cluster.info("Metric server ingress controller is already installed")
+      cluster.success("Metric server ingress controller is already installed")
     rescue Cli::CommandFailedError => e
-      cluster.info("Metric server not detected, installing...")
+      cluster.info("Metric server not detected, installing...", color: :yellow)
       kubectl.apply_yaml(Rails.root.join("resources", "k8", "shared", "metrics_server.yaml").read)
-      cluster.info("Metric server installed successfully")
+      cluster.success("Metric server installed successfully")
     end
   end
 end
