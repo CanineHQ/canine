@@ -46,7 +46,6 @@ export default class extends Controller {
         this.ipAddressMessageTarget.classList.add("success")
         this.ipAddressMessageTarget.innerHTML = "IP address is reachable ✓"
         this.ipAddressTarget.classList.add("input-success")
-        this.ipAddressTarget.disabled = true;
       }
     }
 
