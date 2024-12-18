@@ -4,9 +4,9 @@
       1. SSH into the server and run:
       <pre class="block">curl -sfL https://get.k3s.io | sh -</pre>
 
-      <%= form.label :ip_address, "IP Address" %>
-      <div class="form-group">
-        <%= form.text_field :ip_address, class: "input input-bordered", data: { "k3s-instructions-target": "ipAddress" } %>
+      <div class="form-group mt-4">
+        <%= form.label :ip_address, "Enter the IP address of the server once the install is complete" %>
+        <%= form.text_field :ip_address, class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
         <div class="form-hint" data-k3s-instructions-target="ipAddressMessage">
         </div>
       </div>

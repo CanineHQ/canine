@@ -46,6 +46,10 @@
   @apply input-error;
 }
 
+.input.success {
+  @apply input-success;
+}
+
 .form-hint {
   @apply text-sm;
 }

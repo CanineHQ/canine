@@ -36,7 +36,7 @@ export default class extends Controller {
       const ipAddressWorking = await this.checkIpAddress()
       this.setLoading(false);
       if (!ipAddressWorking) {
-        this.ipAddressTarget.classList.add("error")
+        this.ipAddressTarget.classList.add("input-error")
         this.ipAddressMessageTarget.classList.add("error")
         this.ipAddressMessageTarget.innerHTML = "IP address is not reachable. Please check that K3s is installed and running on the server, and allow port 6443 through any firewalls."
         return
@@ -44,7 +44,9 @@ export default class extends Controller {
         this.ipAddressTarget.classList.remove("error")
         this.ipAddressMessageTarget.classList.remove("error")
         this.ipAddressMessageTarget.classList.add("success")
-        this.ipAddressMessageTarget.innerHTML = "IP address is reachable."
+        this.ipAddressMessageTarget.innerHTML = "IP address is reachable ✓"
+        this.ipAddressTarget.classList.add("input-success")
+        this.ipAddressTarget.disabled = true;
       }
     }
 
