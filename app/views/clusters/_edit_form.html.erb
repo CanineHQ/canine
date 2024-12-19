@@ -1,0 +1,11 @@
+<div>
+  <%= form_with(model: cluster) do |form| %>
+    <div class="form-group">
+      <%= form.label :name, "Name" %>
+      <%= form.text_field :name, class: "input input-bordered" %>
+    </div>
+    <div class="form-footer">
+      <%= form.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

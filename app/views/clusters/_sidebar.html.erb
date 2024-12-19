@@ -14,4 +14,10 @@
       Metrics
     </div>
   <% end %>
+
+  <%= link_to edit_cluster_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_cluster_path(cluster))}" do %>
+    <div class="flex items-center gap-2">
+      Settings
+    </div>
+  <% end %>
 </div>

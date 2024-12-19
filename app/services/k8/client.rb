@@ -45,6 +45,16 @@ module K8
       end
     end
 
+    def server
+      cluster_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["cluster"]
+      cluster_info = @kubeconfig["clusters"].find { |cl| cl["name"] == cluster_name }["cluster"]
+      cluster_info["server"]
+    end
+
+    def kubecontext
+      @kubeconfig["current-context"]
+    end
+
     private
 
     def load_kubeconfig(kubeconfig_string)
@@ -54,7 +64,6 @@ module K8
     end
 
     def build_client
-      kubecontext = @kubeconfig["current-context"]
       cluster_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["cluster"]
       user_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["user"]
 
@@ -62,7 +71,7 @@ module K8
       user_info = @kubeconfig["users"].find { |usr| usr["name"] == user_name }["user"]
 
       Kubeclient::Client.new(
-        cluster_info["server"],
+        server,
         "v1",
         ssl_options: ssl_options(user_info, cluster_info),
         auth_options: auth_options(user_info)

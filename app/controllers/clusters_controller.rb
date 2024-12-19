@@ -147,6 +147,17 @@ class ClustersController < ApplicationController
     end
   end
 
+  def edit
+  end
+
+  def destroy
+    Clusters::DestroyJob.perform_later(@cluster)
+    respond_to do |format|
+      format.html { redirect_to clusters_url, status: :see_other, notice: "Cluster is being deleted... It may take a few minutes to complete." }
+      format.json { head :no_content }
+    end
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
