@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_15_025029) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_19_205418) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,7 +114,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_15_025029) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "cluster_type", default: 0
-    t.index ["account_id"], name: "index_clusters_on_account_id"
+    t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
   create_table "cron_schedules", force: :cascade do |t|

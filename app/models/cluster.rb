@@ -13,7 +13,7 @@
 #
 # Indexes
 #
-#  index_clusters_on_account_id  (account_id)
+#  index_clusters_on_account_id_and_name  (account_id,name) UNIQUE
 #
 # Foreign Keys
 #
@@ -31,7 +31,8 @@ class Cluster < ApplicationRecord
   has_many :users, through: :account
 
   validates :name, presence: true,
-                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
+                   uniqueness: { scope: :account_id }
   enum :status, {
     initializing: 0,
     installing: 1,
