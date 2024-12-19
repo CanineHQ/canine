@@ -11,9 +11,12 @@ module StorageHelper
   end
 
   def compute_to_integer(compute)
-    # Remove the m suffix
-    compute = compute.strip.gsub(/m$/, '')
-    compute.to_i
+    if compute.end_with?("m")
+      compute = compute.strip.gsub(/m$/, '')
+      compute.to_i
+    else
+      (compute.to_f * 1000).to_i
+    end
   end
 
   def size_to_integer(size)
