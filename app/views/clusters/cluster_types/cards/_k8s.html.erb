@@ -1,28 +1,34 @@
 <div
-  class="cursor-pointer card w-64 bg-base-200"
+  class="cursor-pointer card w-80 bg-base-200"
   data-card-name="k8s"
   data-action="click->new-add-ons#selectCard"
   data-new-add-ons-target="card"
 >
   <div class="card-body">
     <iconify-icon icon="devicon:kubernetes" height="2.5rem" width="2.5rem"></iconify-icon>
-    <h2 class="card-title">Kubernetes</h2>
+    <h2 class="card-title">Managed Kubernetes</h2>
+    <div class="italic text-gray-400 text-sm">
+      Choose this option for larger projects.
+    </div>
     <div class="space-y-2 text-sm text-gray-400">
+      <div class="mb-4">
+        A Managed Kubernetes instance is available on Digital Ocean, Linode, and Vultr. The cheapest option is Linode for $12 / month.
+      </div>
       <div class="flex items-center gap-2">
         <iconify-icon icon="lucide:dollar-sign" class="w-4 h-4"></iconify-icon>
-        <span>$24 / month</span>
+        <span>$12 / month</span>
       </div>
       <div class="flex items-center gap-2">
         <iconify-icon icon="lucide:memory-stick" class="w-4 h-4"></iconify-icon>
-        <span>4GB RAM</span>
+        <span>2GB RAM</span>
       </div>
       <div class="flex items-center gap-2">
         <iconify-icon icon="lucide:cpu" class="w-4 h-4"></iconify-icon>
-        <span>2 CPU</span>
+        <span>1 CPU</span>
       </div>
       <div class="flex items-center gap-2">
         <iconify-icon icon="lucide:hard-drive" class="w-4 h-4"></iconify-icon>
-        <span>80GB SSD</span>
+        <span>40GB SSD</span>
       </div>
     </div>
   </div>

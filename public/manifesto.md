@@ -69,10 +69,14 @@ It also makes up for some of the defects that are missing from out-of-the-box Ku
 
 ## Reason #2: The rich ecosystem of third party applications
 
-Helm is a package manager for Kubernetes that makes it trivial to host third party applications. Thanks to Helm, basically every single open source software application can be easily hosted through Canine. This makes it trivially easy to, for instance, deploy a hosted version of Sentry!
+Helm is a package manager for Kubernetes that makes it trivial to host third party applications. Thanks to Helm, basically every single open source software application can be easily hosted through Canine. This makes it trivially easy to, for instance, deploy a hosted version of Sentry! See the full list of supported applications [here](https://artifacthub.io/).
 
 Give Canine a whirl, on your [own system](https://github.com/czhu12/canine), or a [hosted version](https://canine.sh), completely free.
 
+Cheers,
+<img src="/images/signature.png" style="height: 60px; transform: rotate(-7deg); margin:0;" />
+
+
 <sub>
-\* No VC money was raised in the building of this product
+_\* No VC money was raised in the building of this product_
 </sub>

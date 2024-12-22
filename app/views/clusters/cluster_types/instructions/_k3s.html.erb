@@ -2,7 +2,9 @@
   <p data-k3s-instructions-target="instructions" class="hidden">
     <div data-k3s-instructions-target="step" data-validation="ip-address">
       1. SSH into the server and run:
-      <pre class="block">curl -sfL https://get.k3s.io | sh -s - --disable traefik</pre>
+      <div>
+        <pre class="inline cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -sfL https://get.k3s.io | sh -s - --disable traefik">curl -sfL https://get.k3s.io | sh -s - --disable traefik</pre>
+      </div>
 
       <div class="form-group mt-4">
         <%= form.label :ip_address, "Enter the IP address of the server once the install is complete" %>
@@ -14,7 +16,9 @@
 
     <div data-k3s-instructions-target="step" class="hidden">
       2. Once the install is complete, run:
-      <pre class="block">sudo cat /etc/rancher/k3s/k3s.yaml</pre>
+      <div>
+        <pre class="inline cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo cat /etc/rancher/k3s/k3s.yaml">sudo cat /etc/rancher/k3s/k3s.yaml</pre>
+      </div>
     </div>
 
     <div data-k3s-instructions-target="step" class="hidden">
