@@ -70,6 +70,7 @@ export default class extends Controller {
     searchInput.value = "";
     searchModal.showModal();
     this._searchInput("");
+    this.selectFirstLink();
   }
 
   _searchInput(term) {
@@ -90,12 +91,30 @@ export default class extends Controller {
       } else {
         item.removeAttribute("open");
         item.classList.add("hidden");
+        // Remove active class from all links
+        item.querySelectorAll("a").forEach(link => {
+          link.classList.remove("active");
+        });
       }
     });
   }
+
   searchInput(event) {
     const search = event.target.value;
     this._searchInput(search);
+    this.selectFirstLink();
+  }
+
+  selectFirstLink() {
+    // Only do this if there are no visible active links
+    const visibleLinks = this.linkItemTargets.filter(link => !link.closest('.hidden'));
+    if (!visibleLinks.some(link => link.classList.contains('active'))) {
+      const firstLink = this.linkItemTargets.find(link => !link.closest('.hidden'));
+      if (firstLink) {
+        firstLink.classList.add('active');
+        firstLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      }
+    }
   }
 
   handleArrowNavigation(isDownArrow) {
