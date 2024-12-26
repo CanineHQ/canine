@@ -5,8 +5,10 @@
   <% end %>
 >
   <% (chart['metadata'] || []).each do |variable| %>
-    <%= form.label variable['name'] %>
-    <%= form.text_field "metadata][#{chart['name']}][#{variable['key']}", class: "#{} input input-bordered w-full max-w-md" %>
+    <div class="<%= variable['hidden'] ? 'hidden' : '' %> form-group">
+      <%= form.label variable['name'] %>
+      <%= form.text_field "metadata][#{chart['name']}][#{variable['key']}", class: "input input-bordered w-full max-w-md" %>
+    </div>
   <% end %>
 
   <% (chart['template'] || []).each do |variable| %>
