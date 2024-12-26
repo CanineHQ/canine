@@ -70,6 +70,16 @@
               <% end %>
             </div>
           <% end %>
+
+          <div>
+            <div class="collapse">
+              <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+              <div class="collapse-title text-md font-medium">Advanced Settings</div>
+              <div class="collapse-content">
+                <%= form.text_area :values_yaml, class: "textarea textarea-bordered w-full", placeholder: "Paste your values.yaml here.", rows: 10 %>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="form-footer">

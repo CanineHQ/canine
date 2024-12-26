@@ -13,14 +13,24 @@ class AddOns::InstallHelmChart
     client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
     charts = client.ls
     unless charts.any? { |chart| chart['name'] == add_on.name }
+      helm_chart_url = add_on.helm_chart_url
       if chart['add_repo_command']
         client.add_repo(chart['add_repo_command'])
         client.repo_update!
       end
+      if add_on.helm_chart?
+        # Special case for helm_chart, we need to add the repo and update it
+        package_details = add_on.metadata['package_details']
+        add_repo_command = "helm repo add #{package_details['name']} #{package_details['repository']['url']}"
+        client.add_repo(add_repo_command)
+        client.repo_update!
+        helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['repository']['name']}"
+      end
+
       client.install(
         add_on.name,
-        add_on.helm_chart_url,
-        values: get_values(add_on),
+        helm_chart_url,
+        values: add_on.values,
         namespace: add_on.name
       )
     end
@@ -34,13 +44,17 @@ class AddOns::InstallHelmChart
   end
 
   def self.get_values(add_on)
+    # Merge the values from the form with the values.yaml object and create a new values.yaml file
+    values = add_on.values
+    values.extend(DotSettable)
+
     variables = add_on.metadata['template'] || {}
-    values = variables.keys.each_with_object({}) do |key, values|
+    variables.keys.each do |key|
       template = variables[key]
       if template.is_a?(Hash) && template['type'] == 'size'
-        values[key] = "#{template['value']}#{template['unit']}"
+        values.dotset(key, "#{template['value']}#{template['unit']}")
       else
-        values[key] = template
+        values.dotset(key, template)
       end
     end
     values

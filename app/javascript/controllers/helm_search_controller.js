@@ -1,8 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
+import { renderHelmChartCard } from "../utils/helm_charts"
 
 export default class extends Controller {
+  static values = {
+    chartName: String
+  }
+
   connect() {
-    this.input = this.element.querySelector('input')
+    this.input = this.element.querySelector(`input[name="add_on[metadata][${this.chartNameValue}][helm_chart.name]"]`)
     this.debounceTimer = null
     
     // Create and append dropdown
@@ -23,7 +28,7 @@ export default class extends Controller {
       return
     }
 
-    const url = `https://artifacthub.io/api/v1/packages/search?ts_query_web=${this.input.value}&facets=false&sort=relevance&limit=5&offset=0`
+    const url = `/add_ons/search?q=${this.input.value}`
     const response = await fetch(url)
     const data = await response.json()
     
@@ -37,8 +42,8 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = packages.map(pkg => `
-      <li class="hover:bg-base-200 p-2 cursor-pointer" data-package-name="${pkg.name}">
-        <div class="font-medium">
+      <li class="p-2 cursor-pointer" data-package-name="${pkg.name}" data-package-data='${JSON.stringify(pkg)}'>
+        <div class="font-medium block">
           ${pkg.name}
           <br/>
           <div class="text-sm text-base-content/70">${pkg.description}</div>
@@ -50,7 +55,10 @@ export default class extends Controller {
     this.dropdown.querySelectorAll('li').forEach(li => {
       li.addEventListener('click', () => {
         this.input.value = li.dataset.packageName
+        const packageData = JSON.parse(li.dataset.packageData);
         this.hideDropdown()
+        this.element.querySelector(`input[name="add_on[metadata][${this.chartNameValue}][package_id]"]`).value = packageData.package_id
+        this.element.appendChild(renderHelmChartCard(packageData))
       })
     })
 

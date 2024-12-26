@@ -21,6 +21,9 @@ Rails.application.routes.draw do
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
   resources :add_ons do
+    collection do
+      get :search
+    end
     member do
       post :restart
     end

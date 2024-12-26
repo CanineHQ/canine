@@ -40,6 +40,16 @@
       <% end %>
     </tbody>
   </table>
+
+  <div>
+    <div class="collapse">
+      <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+      <div class="collapse-title text-md font-medium">See values.yaml</div>
+      <div class="collapse-content">
+        <pre class="text-xs"><%= @add_on.values.to_yaml %></pre>
+      </div>
+    </div>
+  </div>
 </div>
 <% if @service.respond_to?(:internal_url) %>
   <h6 class="text-xl font-bold">Connection Details</h6>

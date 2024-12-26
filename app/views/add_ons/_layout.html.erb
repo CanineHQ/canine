@@ -29,7 +29,11 @@
           <%= @add_on.name %>
         </h1>
         <div class="text-sm">
-          <%= @add_on.chart_type %>
+          <% if @add_on.helm_chart? %>
+            <%= @add_on.metadata['package_details']['name'] %>
+          <% else %>
+            <%= @add_on.chart_type %>
+          <% end %>
           <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to add_on.cluster.name, add_on.cluster, target: "_blank", class: "underline" %></span>
         </div>
       </div>

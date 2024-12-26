@@ -10,6 +10,14 @@ class AddOnsController < ApplicationController
     # authorize @add_ons
   end
 
+  def search
+    result = AddOns::HelmChartDetails.execute(query: params[:q])
+    if result.success?
+      render json: result.response
+    else
+      render json: { error: "Failed to fetch package details" }, status: :unprocessable_entity
+    end
+  end
   # GET /add_ons/1 or /add_ons/1.json
   def show
   end
@@ -30,12 +38,13 @@ class AddOnsController < ApplicationController
 
   # POST /add_ons or /add_ons.json
   def create
-    @add_on = AddOn.new(add_on_params)
+    result = AddOns::Save.execute(add_on: AddOn.new(add_on_params))
+    @add_on = result.add_on
     # Uncomment to authorize with Pundit
     # authorize @add_on
 
     respond_to do |format|
-      if @add_on.save
+      if result.success?
         AddOns::InstallJob.perform_later(@add_on)
         format.html { redirect_to @add_on, notice: "Add on was successfully created." }
         format.json { render :show, status: :created, location: @add_on }
@@ -95,8 +104,11 @@ class AddOnsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def add_on_params
+    if params[:add_on][:values_yaml].present?
+      params[:add_on][:values] = YAML.safe_load(params[:add_on][:values_yaml])
+    end
     params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
-    params.require(:add_on).permit(:cluster_id, :chart_type, :name, metadata: {})
+    params.require(:add_on).permit(:cluster_id, :chart_type, :name, metadata: {}, values: {})
 
     # Uncomment to use Pundit permitted attributes
     # params.require(:add_on).permit(policy(@add_on).permitted_attributes)

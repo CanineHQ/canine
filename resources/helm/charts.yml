@@ -92,14 +92,16 @@ helm:
     - name: helm_chart
       friendly_name: "Helm Chart"
       logo: /images/helm/helm_chart.png
-      repository: https://grafana.github.io/helm-charts
-      coming_soon: true
-      template:
+      controller: "helm-search"
+      metadata:
         - name: Name
-          controller: "helm-search"
           key: helm_chart.name
           type: string
           hidden: false
+        - name: Package ID
+          key: package_id
+          type: string
+          hidden: true
     #- name: prometheus
     #  logo: /images/helm/prometheus.png
     #  version: 16.1.0

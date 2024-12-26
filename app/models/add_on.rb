@@ -7,6 +7,7 @@
 #  metadata   :jsonb
 #  name       :string           not null
 #  status     :integer          default("installing"), not null
+#  values     :jsonb
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  cluster_id :bigint           not null
@@ -29,9 +30,20 @@ class AddOn < ApplicationRecord
   validate :chart_type_exists
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates_uniqueness_of :name, scope: :cluster_id
+  validate :has_package_details, if: :helm_chart?
+
+  def has_package_details
+    if metadata['package_details'].blank?
+      errors.add(:metadata, "is missing required keys: package_details")
+    end
+  end
+
+  def helm_chart?
+    chart_type == 'helm_chart'
+  end
 
   def helm_chart_url
-    chart_definition["repository"]
+    chart_definition["repository"] || metadata["repository"]
   end
 
   def chart_definition

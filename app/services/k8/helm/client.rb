@@ -32,10 +32,16 @@ class K8::Helm::Client
 
   def install(name, chart_url, values: {}, namespace: 'default')
     with_kube_config do |kubeconfig_file|
-      values_string = values.map { |key, value| "#{key}=#{value}" }.join(',')
-      command = "helm install #{name} #{chart_url} --namespace #{namespace} --set #{values_string}"
-      exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-      return exit_status
+      # Load the values.yaml file
+      # Create a temporary file with the values.yaml content
+      Tempfile.create([ 'values', '.yaml' ]) do |values_file|
+        values_file.write(values.to_yaml)
+        values_file.flush
+
+        command = "helm install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace}"
+        exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+        return exit_status
+      end
     end
   end
 
