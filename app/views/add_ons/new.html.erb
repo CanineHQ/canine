@@ -31,7 +31,7 @@
           <div class="text-sm text-gray-500">
             More charts coming soon.
           </div>
-          <div class="grid grid-cols-5 gap-4 mt-4 mb-12">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-4 mb-12">
             <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
             <div class="relative">
               <% if chart['coming_soon'] %>
