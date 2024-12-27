@@ -18,6 +18,7 @@ class AddOnsController < ApplicationController
       render json: { error: "Failed to fetch package details" }, status: :unprocessable_entity
     end
   end
+
   # GET /add_ons/1 or /add_ons/1.json
   def show
   end
@@ -63,7 +64,7 @@ class AddOnsController < ApplicationController
     respond_to do |format|
       if result.success?
         AddOns::InstallJob.perform_later(@add_on)
-        format.html { redirect_to @add_on, notice: "Add on was successfully updated." }
+        format.html { redirect_to @add_on, notice: "Add on #{@add_on.name} is updating..." }
         format.json { render :show, status: :ok, location: @add_on }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -74,7 +75,7 @@ class AddOnsController < ApplicationController
 
   def restart
     @service.restart
-    redirect_to add_on_url(@add_on), notice: "Add on <b>#{@add_on.name}</b> restarted"
+    redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
   # DELETE /add_ons/1 or /add_ons/1.json

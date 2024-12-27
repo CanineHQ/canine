@@ -1,12 +1,17 @@
 <%
-  badge_color = if add_on.installed? 
-  "success" 
+  badge_color = if add_on.installed?
+    "success"
   elsif add_on.failed?
-  "error"
+    "error"
+  elsif add_on.updating?
+    "warning"
   else
-   'warning'
+    "warning"
   end
 %>
 <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
   <%= add_on.status.humanize %>
+  <% if add_on.updating? || add_on.installing? %>
+    <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+  <% end %>
 </div>

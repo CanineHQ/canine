@@ -5,7 +5,12 @@ class AddOns::InstallHelmChart
   executed do |context|
     add_on = context.add_on
     create_namespace(add_on)
-    add_on.installing!
+    if add_on.persisted?
+      add_on.updating!
+    else
+      add_on.installing!
+    end
+
     charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
     # First, check if the chart is already installed & running

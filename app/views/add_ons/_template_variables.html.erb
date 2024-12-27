@@ -8,7 +8,12 @@
   <div class="form-group">
     <%= form.label variable['name'] %>
     <% if variable['type'] == 'string' %>
-      <%= form.text_field variable['key'], name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]", class: "input input-bordered w-full max-w-md" %>
+      <%= form.text_field(
+        variable['key'],
+        name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]",
+        class: "input input-bordered w-full max-w-md",
+        value: form.object.metadata.dig('template', variable['key']) || variable['default']
+      ) %>
     <% elsif variable['type'] == 'enum' %>
       <%= form.select "metadata][#{chart['name']}][template][#{variable['key']}", options_for_select(variable['options']), {}, class: "select select-bordered w-full max-w-md" %>
     <% elsif variable['type'] == 'size' %>
@@ -21,14 +26,14 @@
         name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}][value]",
         class: "input input-bordered",
         type: 'number',
-        value: variable['default'][..-3]
+        value: form.object.metadata.dig('template', variable['key'], 'value') || variable['default'][..-3]
       ) %>
       <%= form.select(
         "metadata][#{chart['name']}][template][#{variable['key']}][unit",
         options_for_select([['Gi', 'Gi'], ['Mi', 'Mi'], ['Ki', 'Ki']]),
-        { value: variable['default'][-2..] },
-          { class: "select select-bordered" }
-        ) %>
+        { value: form.object.metadata.dig('template', variable['key'], 'unit') || variable['default'][-2..] },
+        { class: "select select-bordered" }
+      ) %>
       <% end %>
     </div>
   <% end %>
