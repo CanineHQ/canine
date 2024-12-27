@@ -62,7 +62,7 @@ class K8::Helm::Service
   end
 
   def get_volume_usage(pod_name, mount_path)
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("exec #{pod_name} -- df -h #{mount_path}")
+    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
     lines = output.strip.split("\n")
     return nil if lines.size < 2
 
