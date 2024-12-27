@@ -31,8 +31,7 @@ class K8::Helm::Service
 
     pvc_names = volumes.map { |volume| volume.persistentVolumeClaim.claimName }
     pvcs = client.get_persistent_volume_claims(
-      namespace: 'default',
-      field_selector: "metadata.name=#{pvc_names.join(',')}"
+      namespace: add_on.name,
     ).flatten
 
     pvcs.map do |pvc|
