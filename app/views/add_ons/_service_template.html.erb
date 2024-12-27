@@ -46,7 +46,13 @@
       <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
       <div class="collapse-title text-md font-medium">See values.yaml</div>
       <div class="collapse-content">
-        <pre class="text-xs"><%= @add_on.values.to_yaml %></pre>
+        <div class="max-w-lg min-w-md bg-base-200 p-4">
+          <pre class="text-xs"><%= @add_on.values.to_yaml %></pre>
+
+          <div class="mt-4">
+            <%= link_to "Edit values.yaml", edit_add_on_path(@add_on), class: "btn btn-sm btn-outline-secondary" %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -63,11 +69,3 @@
     </div>
   </div>
 <% end %>
-<h6 class="text-xl font-bold">Install Logs</h6>
-<div class="collapse">
-  <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
-  <div class="collapse-title p-0 underline m-0">Show install logs</div>
-  <div class="collapse-content p-0 mt-2">
-    <%= render "log_outputs/logs", loggable: @add_on %>
-  </div>
-</div>

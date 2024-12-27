@@ -57,8 +57,12 @@ class AddOnsController < ApplicationController
 
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
+    @add_on.assign_attributes(add_on_params)
+    result = AddOns::Save.execute(add_on: @add_on)
+
     respond_to do |format|
-      if @add_on.update(add_on_params)
+      if result.success?
+        AddOns::InstallJob.perform_later(@add_on)
         format.html { redirect_to @add_on, notice: "Add on was successfully updated." }
         format.json { render :show, status: :ok, location: @add_on }
       else

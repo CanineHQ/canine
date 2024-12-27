@@ -28,11 +28,17 @@ class AddOns::Save
 
     variables = add_on.metadata['template'] || {}
     variables.keys.each do |key|
-      template = variables[key]
-      if template.is_a?(Hash) && template['type'] == 'size'
-        add_on.values.dotset(key, "#{template['value']}#{template['unit']}")
+      variable = variables[key]
+
+      if variable.is_a?(Hash) && variable['type'] == 'size'
+        add_on.values.dotset(key, "#{variable['value']}#{variable['unit']}")
       else
-        add_on.values.dotset(key, template)
+        variable_definition = add_on.chart_definition['template'].find { |t| t['key'] == key }
+        if variable_definition['type'] == 'integer'
+          add_on.values.dotset(key, variable.to_i)
+        else
+          add_on.values.dotset(key, variable)
+        end
       end
     end
   end

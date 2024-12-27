@@ -35,6 +35,10 @@ class AddOns::InstallHelmChart
       )
     end
     add_on.installed!
+  rescue => e
+    add_on.failed!
+    add_on.error(e.message)
+    raise e
   end
 
   def self.create_namespace(add_on)

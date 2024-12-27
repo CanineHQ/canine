@@ -1,3 +1,14 @@
 <%= add_on_layout(@add_on) do %>
-  <%= render "add_ons/service_template", service: @service %>
+  <% if @add_on.installed? %>
+    <%= render "add_ons/service_template", service: @service %>
+  <% end %>
+
+  <h6 class="text-xl font-bold">Install & Update Logs</h6>
+  <div class="collapse">
+    <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+    <div class="collapse-title p-0 underline m-0">Show logs</div>
+    <div class="collapse-content p-0 mt-2">
+      <%= render "log_outputs/logs", loggable: @add_on %>
+    </div>
+  </div>
 <% end %>

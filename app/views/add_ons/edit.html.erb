@@ -9,6 +9,20 @@
       <% end %>
     </div>
     <div>
+      <h2 class="text-lg font-bold">Configuration</h2>
+      <%= form_with(model: @add_on) do |form| %>
+        <%= render "add_ons/template_variables", chart: @add_on.chart_definition, form: form %>
+        <div class="form-group">
+          <%= form.label :values_yaml, "Values YAML" %>
+          <%= form.text_area :values_yaml, class: "textarea textarea-bordered w-full", rows: 5, value: @add_on.values.to_yaml %>
+        </div>
+        <%= form.submit "Save", class: "btn btn-primary" %>
+      <% end %>
+      <div class="text-sm text-gray-500">
+        Changes updates to YAML values will update the chart, and could cause issues.
+      </div>
+    </div>
+    <div>
       <h2 class="text-lg font-bold">Delete Add-on</h2>
       <%= button_to "Uninstall", add_on_path(@add_on), method: :delete, class: "btn btn-danger" %>
     </div>

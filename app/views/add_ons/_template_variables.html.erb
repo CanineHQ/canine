@@ -1,0 +1,35 @@
+<% (chart['template'] || []).each do |variable| %>
+  <% if variable['hidden'] %>
+    <%= form.hidden_field(
+      "metadata][#{chart['name']}][template][#{variable['key']}",
+      value: variable['default']
+    ) %>
+  <% else %>
+  <div class="form-group">
+    <%= form.label variable['name'] %>
+    <% if variable['type'] == 'string' %>
+      <%= form.text_field variable['key'], name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]", class: "input input-bordered w-full max-w-md" %>
+    <% elsif variable['type'] == 'enum' %>
+      <%= form.select "metadata][#{chart['name']}][template][#{variable['key']}", options_for_select(variable['options']), {}, class: "select select-bordered w-full max-w-md" %>
+    <% elsif variable['type'] == 'size' %>
+      <%= form.hidden_field(
+        "metadata][#{chart['name']}][template][#{variable['key']}][type",
+        value: 'size'
+      ) %>
+      <%= form.text_field(
+        variable['key'],
+        name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}][value]",
+        class: "input input-bordered",
+        type: 'number',
+        value: variable['default'][..-3]
+      ) %>
+      <%= form.select(
+        "metadata][#{chart['name']}][template][#{variable['key']}][unit",
+        options_for_select([['Gi', 'Gi'], ['Mi', 'Mi'], ['Ki', 'Ki']]),
+        { value: variable['default'][-2..] },
+          { class: "select select-bordered" }
+        ) %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

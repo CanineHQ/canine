@@ -19,14 +19,16 @@ class K8::Helm::Client
     with_kube_config do |kubeconfig_file|
       command = "helm repo update"
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-      return exit_status
+      raise "Helm repo update failed with exit status #{exit_status}" unless exit_status.success?
+      exit_status
     end
   end
 
   def add_repo(command)
     with_kube_config do |kubeconfig_file|
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-      return exit_status
+      raise "Helm add repo failed with exit status #{exit_status}" unless exit_status.success?
+      exit_status
     end
   end
 
@@ -38,9 +40,10 @@ class K8::Helm::Client
         values_file.write(values.to_yaml)
         values_file.flush
 
-        command = "helm install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace}"
+        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace}"
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-        return exit_status
+        raise "Helm install failed with exit status #{exit_status}" unless exit_status.success?
+        exit_status
       end
     end
   end
@@ -49,7 +52,8 @@ class K8::Helm::Client
     with_kube_config do |kubeconfig_file|
       command = "helm uninstall #{name} --namespace #{namespace}"
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-      return exit_status
+      raise "Helm uninstall failed with exit status #{exit_status}" unless exit_status.success?
+      exit_status
     end
   end
 end
