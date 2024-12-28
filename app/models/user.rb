@@ -31,8 +31,8 @@ class User < ApplicationRecord
   before_save :downcase_email
 
   has_many :account_users, dependent: :destroy
-  has_many :accounts, through: :account_users
-  has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id"
+  has_many :accounts, through: :account_users, dependent: :destroy
+  has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id", dependent: :destroy
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
