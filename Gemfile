@@ -39,6 +39,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "pry", "~> 0.14.2"
   gem "rspec-rails", "~> 7.1"
+  gem "factory_bot_rails"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
@@ -56,6 +57,10 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+
+  gem "database_cleaner-active_record", '~> 2.2.0'
+  gem 'faker', '~> 3.5.1'
+  gem 'shoulda-matchers', '~> 6.0'
 end
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
