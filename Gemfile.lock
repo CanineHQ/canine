@@ -137,6 +137,10 @@ GEM
     cssbundling-rails (1.4.1)
       railties (>= 6.0.0)
     csv (3.3.0)
+    database_cleaner-active_record (2.2.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     date (3.4.1)
     debug (1.9.2)
       irb (~> 1.10)
@@ -176,6 +180,13 @@ GEM
       zeitwerk (~> 2.6)
     erubi (1.13.0)
     excon (0.111.0)
+    factory_bot (6.5.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.4.4)
+      factory_bot (~> 6.5)
+      railties (>= 5.0.0)
+    faker (3.5.1)
+      i18n (>= 1.8.11, < 2)
     faraday (2.12.0)
       faraday-net_http (>= 2.0, < 3.4)
       json
@@ -518,6 +529,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    shoulda-matchers (6.4.0)
+      activesupport (>= 5.2.0)
     sidekiq (6.5.12)
       connection_pool (>= 2.2.5, < 3)
       rack (~> 2.0)
@@ -598,9 +611,12 @@ DEPENDENCIES
   chartkick (~> 5.1)
   cron2english (~> 0.1.7)
   cssbundling-rails
+  database_cleaner-active_record (~> 2.2.0)
   debug
   devise (~> 4.9)
   dotenv (~> 3.1)
+  factory_bot_rails
+  faker (~> 3.5.1)
   friendly_id (~> 5.4)
   groupdate (~> 6.5)
   httparty (~> 0.22.0)
@@ -636,6 +652,7 @@ DEPENDENCIES
   rubyzip (~> 2.3)
   sassc-rails (~> 2.1)
   selenium-webdriver
+  shoulda-matchers (~> 6.0)
   sidekiq (~> 6.2)
   sitemap_generator (~> 6.1)
   sprockets-rails
