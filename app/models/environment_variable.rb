@@ -31,7 +31,7 @@ class EnvironmentVariable < ApplicationRecord
                   }
   validates :value, presence: true,
                    format: {
-                    without: /[`$\\";|><&!]/,
+                    without: /[`\\|><;]/,
                     message: "cannot contain special characters that might enable command injection"
                    }
 

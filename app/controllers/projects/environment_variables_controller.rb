@@ -26,7 +26,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
                     notice: "Environment variables will be applied on the next deployment."
       end
     else
-      redirect_to project_environment_variables_path(@project), alert: "Failed to update environment variables."
+      redirect_to project_environment_variables_path(@project), alert: "Failed to update environment variables: #{result.message}"
     end
   end
 
