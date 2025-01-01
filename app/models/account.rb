@@ -29,7 +29,7 @@ class Account < ApplicationRecord
   def github_username
     return unless github_provider
 
-    JSON.parse(github_account.auth)["info"]["nickname"]
+    JSON.parse(github_provider.auth)["info"]["nickname"]
   end
 
   def github_access_token
