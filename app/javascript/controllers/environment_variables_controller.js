@@ -19,6 +19,17 @@ export default class extends Controller {
     })
   }
 
+  download() {
+    const vars = JSON.parse(this.varsValue)
+    const env = vars.map(v => `${v.name}=${v.value}`).join("\n")
+    const blob = new Blob([env], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = ".env"
+    a.click()
+  }
+
   add(e) {
     e.preventDefault();
     this._add("", "")

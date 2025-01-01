@@ -7,8 +7,37 @@
   >
     <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
       <div data-environment-variables-target="container"></div>
-      <button class="btn btn-neutral btn-outline" type="button" data-action="environment-variables#add">Add New Environment Variable</button>
-      <%= form.submit "Save", class: "btn btn-primary" %>
+      <div class="flex flex-row justify-between">
+        <div>
+          <button class="btn btn-neutral btn-outline" type="button" data-action="environment-variables#add">Add new environment variable</button>
+          <%= form.submit "Save", class: "btn btn-primary" %>
+        </div>
+        <button type="button" class="btn btn-outline" data-action="environment-variables#download">Download as .env</button>
+      </div>
     <% end %>
+  </div>
+  
+  <div class="mt-12">
+    <div class="collapse bg-base-200">
+      <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+      <div class="collapse-title text-lg font-medium">Add from .env file</div>
+      <div class="collapse-content">
+        <div class="">
+          <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
+            <%= form.text_area(
+              :text_content,
+              class: "textarea textarea-bordered w-full",
+              placeholder: "KEY1=value1\nKEY2=value2",
+              rows: 6,
+              data: {
+                controller: "textarea-autogrow",
+                'textarea-autogrow-resize-debounce-delay-value': "500"
+              }
+            ) %>
+            <%= form.submit "Add variables", class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>

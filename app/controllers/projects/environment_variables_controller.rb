@@ -8,17 +8,25 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
   end
 
   def create
-    EnvironmentVariables::BulkUpdate.execute(project: @project, params:, current_user:)
-    @project.updated!
+    result = EnvironmentVariables::Update.call(
+      project: @project,
+      params:,
+      current_user:
+    )
+    if result.success?
+      @project.updated!
 
-    if @project.current_deployment.present?
-      Projects::DeploymentJob.perform_later(@project.current_deployment)
-      @project.events.create(user: current_user, eventable: @project.last_build, event_action: :update)
-      redirect_to project_environment_variables_path(@project),
-                  notice: "Deployment started to apply new environment variables."
+      if @project.current_deployment.present?
+        Projects::DeploymentJob.perform_later(@project.current_deployment)
+        @project.events.create(user: current_user, eventable: @project.last_build, event_action: :update)
+        redirect_to project_environment_variables_path(@project),
+                    notice: "Restarting services with new environment variables."
+      else
+        redirect_to project_environment_variables_path(@project),
+                    notice: "Environment variables will be applied on the next deployment."
+      end
     else
-      redirect_to project_environment_variables_path(@project),
-                  notice: "Environment variables will be applied on the next deployment."
+      redirect_to project_environment_variables_path(@project), alert: "Failed to update environment variables."
     end
   end
 
@@ -29,11 +37,5 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
       Projects::DeploymentJob.perform_later(@project.current_deployment)
     end
     render turbo_stream: turbo_stream.remove("environment_variable_#{@environment_variable.id}")
-  end
-
-  private
-
-  def environment_variable_params
-    params.require(:environment_variable).permit(:name, :value)
   end
 end
