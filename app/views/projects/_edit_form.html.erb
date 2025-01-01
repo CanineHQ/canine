@@ -37,6 +37,13 @@
     </label>
   </div>
 
+  <div class="form-control mt-1 w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Docker build context directory</span>
+    </label>
+    <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
+  </div>
+
   <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Docker command</span>
