@@ -93,7 +93,7 @@ class Project < ApplicationRecord
   end
 
   def container_registry_url
-    container_registry = self.attributes["container_registry_url"] || repository_url
+    container_registry = self.attributes["container_registry_url"].presence || repository_url
     "ghcr.io/#{container_registry}:latest"
   end
 
