@@ -86,7 +86,7 @@ class Projects::BuildJob < ApplicationJob
   end
 
   def push_to_dockerhub(project, build)
-    docker_push_command = [ "docker", "push", "ghcr.io/#{project.repository_url}:latest" ]
+    docker_push_command = [ "docker", "push", project.container_registry_url ]
 
     build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
     stdout, stderr, status = Open3.capture3(*docker_push_command)

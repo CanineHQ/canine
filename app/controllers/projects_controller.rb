@@ -96,7 +96,8 @@ class ProjectsController < ApplicationController
       :cluster_id,
       :docker_build_context_directory,
       :docker_command,
-      :dockerfile_path
+      :dockerfile_path,
+      :container_registry_url
     )
   end
 end

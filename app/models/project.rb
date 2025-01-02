@@ -5,6 +5,7 @@
 #  id                             :bigint           not null, primary key
 #  autodeploy                     :boolean          default(TRUE), not null
 #  branch                         :string           default("main"), not null
+#  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  docker_command                 :string
 #  dockerfile_path                :string           default("./Dockerfile"), not null
@@ -92,7 +93,8 @@ class Project < ApplicationRecord
   end
 
   def container_registry_url
-    "ghcr.io/#{repository_url}:latest"
+    container_registry = self.attributes["container_registry_url"] || repository_url
+    "ghcr.io/#{container_registry}:latest"
   end
 
   def deployable?
