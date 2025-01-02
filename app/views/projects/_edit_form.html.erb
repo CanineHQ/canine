@@ -62,7 +62,7 @@
     <label class="label">
       <span class="label-text">Container registry URL</span>
     </label>
-    <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: form.object.attributes["container_registry_url"] %>
   </div>
 
   <div class="form-footer">

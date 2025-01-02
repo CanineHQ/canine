@@ -1,4 +1,10 @@
 <div>
+  <% if service.web_service? %>
+    <div class="mb-4">
+      Internal URL: <pre class="inline-block cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= service.internal_url %>"><%= service.internal_url %></pre>
+    </div>
+  <% end %>
+
   <% if service.cron_job? %>
     <div class="text-right mb-4" data-tip="Run Job" class="tooltip">
       <%= button_to "Run Job", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm btn-outline #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>

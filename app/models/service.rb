@@ -50,6 +50,11 @@ class Service < ApplicationRecord
 
   accepts_nested_attributes_for :domains, allow_destroy: true
 
+  def internal_url
+    # Kubernetes internal URL
+    "#{name}.#{project.name}.svc.cluster.local:#{container_port}"
+  end
+
   def friendly_status
     if !web_service? && healthy?
       "deployed"
