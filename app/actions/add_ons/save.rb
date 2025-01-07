@@ -18,7 +18,12 @@ class AddOns::Save
         return
       end
       package = result.response['packages'].find { |package| package['package_id'] == add_on.metadata['package_id'] }
-      add_on.metadata['package_details'] = package
+      if package.present?
+        add_on.metadata['package_details'] = package
+      else
+        add_on.errors.add(:base, "Failed to fetch package details")
+        return
+      end
     end
   end
 

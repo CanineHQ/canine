@@ -22,8 +22,13 @@
             rows: 5,
             value: @service.values_yaml.to_yaml
           ) %>
+          <div class="text-sm text-gray-500">
+            Some settings like volume sizes and replica counts are not able to be edited after creation.
+          </div>
         </div>
-        <%= form.submit "Save", class: "btn btn-primary" %>
+        <div class="form-footer">
+          <%= form.submit "Save", class: "btn btn-primary" %>
+        </div>
       <% end %>
       <div class="text-sm text-gray-500">
         Changes updates to YAML values will update the chart, and could cause issues.
