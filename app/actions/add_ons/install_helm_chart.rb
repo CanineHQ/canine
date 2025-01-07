@@ -13,32 +13,29 @@ class AddOns::InstallHelmChart
 
     charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
-    # First, check if the chart is already installed & running
 
     client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
-    charts = client.ls
-    unless charts.any? { |chart| chart['name'] == add_on.name }
-      helm_chart_url = add_on.helm_chart_url
-      if chart['add_repo_command']
-        client.add_repo(chart['add_repo_command'])
-        client.repo_update!
-      end
-      if add_on.helm_chart?
-        # Special case for helm_chart, we need to add the repo and update it
-        package_details = add_on.metadata['package_details']
-        add_repo_command = "helm repo add #{package_details['name']} #{package_details['repository']['url']}"
-        client.add_repo(add_repo_command)
-        client.repo_update!
-        helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['repository']['name']}"
-      end
 
-      client.install(
-        add_on.name,
-        helm_chart_url,
-        values: add_on.values,
-        namespace: add_on.name
-      )
+    helm_chart_url = add_on.helm_chart_url
+    if chart['add_repo_command']
+      client.add_repo(chart['add_repo_command'])
+      client.repo_update!
     end
+    if add_on.helm_chart?
+      # Special case for helm_chart, we need to add the repo and update it
+      package_details = add_on.metadata['package_details']
+      add_repo_command = "helm repo add #{package_details['name']} #{package_details['repository']['url']}"
+      client.add_repo(add_repo_command)
+      client.repo_update!
+      helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['repository']['name']}"
+    end
+
+    client.install(
+      add_on.name,
+      helm_chart_url,
+      values: add_on.values,
+      namespace: add_on.name
+    )
     add_on.installed!
   rescue => e
     add_on.failed!
