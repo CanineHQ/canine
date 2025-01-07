@@ -48,7 +48,7 @@ class Project < ApplicationRecord
                               message: "must be in the format 'owner/repository'"
                             }
 
-  validate :name_is_unique_to_cluster
+  validate :name_is_unique_to_cluster, on: :create
 
   enum :status, {
     creating: 0,
