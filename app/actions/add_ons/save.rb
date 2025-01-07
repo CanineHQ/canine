@@ -22,7 +22,7 @@ class AddOns::Save
         add_on.metadata['package_details'] = package
       else
         add_on.errors.add(:base, "Failed to fetch package details")
-        return
+        nil
       end
     end
   end
