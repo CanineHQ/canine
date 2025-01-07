@@ -61,3 +61,7 @@
 .form-hint.success {
   @apply text-success;
 }
+
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Vazirmatn, Courier New, monospace;
+}

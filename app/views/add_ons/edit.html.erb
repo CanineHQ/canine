@@ -18,7 +18,7 @@
           <%= form.label :values_yaml, "Values YAML" %>
           <%= form.text_area(
             :values_yaml,
-            class: "textarea textarea-bordered w-full",
+            class: "code textarea textarea-bordered w-full",
             rows: 5,
             value: @service.values_yaml.to_yaml
           ) %>
