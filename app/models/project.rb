@@ -48,13 +48,19 @@ class Project < ApplicationRecord
                               message: "must be in the format 'owner/repository'"
                             }
 
-  validates_uniqueness_of :name, scope: :cluster_id
+  validate :name_is_unique_to_cluster
 
   enum :status, {
     creating: 0,
     deployed: 1,
     destroying: 2
   }
+
+  def name_is_unique_to_cluster
+    if cluster.namespaces.include?(name)
+      errors.add(:name, "must be unique to this cluster")
+    end
+  end
 
   def current_deployment
     deployments.order(created_at: :desc).where(status: :completed).first

@@ -44,4 +44,8 @@ class Cluster < ApplicationRecord
     k8s: 0,
     k3s: 1
   }
+
+  def namespaces
+    projects.pluck(:name) + add_ons.pluck(:name)
+  end
 end

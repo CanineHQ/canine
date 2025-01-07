@@ -23,6 +23,11 @@ class K8::Helm::Service
     @client.get_services(namespace: add_on.name)
   end
 
+  def values_yaml
+    helm_client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new)
+    helm_client.get_values_yaml(add_on.name, namespace: add_on.name)
+  end
+
   def storage_metrics
     pods = client.pods_for_namespace(add_on.name)
     volumes = pods.flat_map do |pod|
