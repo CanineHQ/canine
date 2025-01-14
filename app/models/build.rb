@@ -21,6 +21,7 @@
 #  fk_rails_...  (project_id => projects.id)
 #
 class Build < ApplicationRecord
+  include ActionView::RecordIdentifier
   include Loggable
   include Eventable
 
@@ -32,4 +33,10 @@ class Build < ApplicationRecord
     completed: 1,
     failed: 2
   }
+
+  after_update_commit do
+    if events.last
+      broadcast_replace_later_to [ project, :events ], target: dom_id(self, :index), partial: "projects/deployments/event_build_row", locals: { project:, event: events.last }
+    end
+  end
 end

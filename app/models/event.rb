@@ -25,4 +25,9 @@ class Event < ApplicationRecord
     create: 0,
     update: 1
   }, _prefix: true
+
+  after_create_commit do
+    broadcast_prepend_to [ project, :events ], target: "events", partial: "projects/deployments/event_row", locals: { project:, event: self }
+    broadcast_remove_to [ project, :events ], target: "no-events-message"
+  end
 end

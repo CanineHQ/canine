@@ -1,0 +1,5 @@
+<% if (build_type = event.eventable_type) == "Build" %>
+  <%= render 'projects/deployments/event_build_row', project:, event: %>
+<% elsif build_type == "EnvironmentVariable" %>
+  <%= render 'projects/deployments/event_env_row', project:, event: %>
+<% end %> 
