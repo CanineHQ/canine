@@ -1,14 +1,10 @@
 <%= content_for :title, "Projects ##{@project.id}" %>
-<%= turbo_stream_from @project %>
+<%= turbo_stream_from @project, :events %>
 
 <%= project_layout(@project) do %>
   <% if !@project.deployable? %>
     <div>
       <p class="text-gray-500">Please <%= link_to "add a service", project_services_path(@project), class: "link" %> before deploying.</p>
-    </div>
-  <% elsif @events.empty? %>
-    <div>
-      <p class="text-gray-500">No deployments yet</p>
     </div>
   <% else %>
     <table class="table mt-2 rounded-box" id="order_table" data-component="table">
@@ -21,9 +17,7 @@
             <span class="text-sm font-medium text-base-content/80">Sha</span>
           </th>
           <th>
-            <span class="text-sm font-medium text-base-content/80">
-              Status
-            </span>
+            <span class="text-sm font-medium text-base-content/80">Status</span>
           </th>
           <th>
             <span class="text-sm font-medium text-base-content/80">Deployed At</span>
@@ -39,13 +33,15 @@
           </th>
         </tr>
       </thead>
-      <tbody>
-        <% @events.each do |event| %>
-          <% if (build_type = event.eventable_type) == "Build" %>
-            <%= render 'projects/deployments/event_build_row', project: @project, event: %>
-          <% elsif build_type == "EnvironmentVariable" %>
-            <%= render 'projects/deployments/event_env_row', project: @project, event: %>
-          <% end %> 
+      <tbody id="events">
+        <% if @events.empty? %>
+          <tr id="no-events-message">
+            <td colspan="7" class="text-gray-500">No deployments yet</td>
+          </tr>
+        <% else %>
+          <% @events.each do |event| %>
+            <%= render 'projects/deployments/event_row', project: @project, event: event %>
+          <% end %>
         <% end %>
       </tbody>
     </table>
