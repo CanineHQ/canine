@@ -1,8 +1,24 @@
+export async function getDefaultValues(
+  repositoryName,
+  repositoryUrl,
+  chartName,
+) {
+  const params = new URLSearchParams({
+    repository_name: repositoryName,
+    repository_url: repositoryUrl,
+    chart_name: chartName
+  });
+
+  const url = `/add_ons/default_values?${params.toString()}`;
+  const response = await fetch(url);
+  const html = await response.text()
+  return html;
+}
+
 export function renderHelmChartCard(packageData) {
   const logoImageId = packageData.logo_image_id;
   const logoImageUrl = `https://artifacthub.io/image/${logoImageId}`;
     
-  console.log(packageData)
   // Create a temporary container to convert HTML string to DOM element
   const tempContainer = document.createElement('div');
   tempContainer.innerHTML = `

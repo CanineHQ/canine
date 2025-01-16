@@ -24,8 +24,11 @@ class K8::Helm::Service
   end
 
   def values_yaml
-    helm_client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new)
+    helm_client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new)
     helm_client.get_values_yaml(add_on.name, namespace: add_on.name)
+  rescue StandardError => e
+    Rails.logger.error("Error getting values.yaml for #{add_on.name}: #{e.message}")
+    nil
   end
 
   def storage_metrics
@@ -52,7 +55,7 @@ class K8::Helm::Service
   end
 
   def version
-    services = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).ls
+    services = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).ls
     chart = services.find { |service| service['name'] == add_on.name }['chart']
     chart.match(/\d+\.\d+\.\d+/)&.to_s
   end
