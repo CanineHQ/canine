@@ -24,7 +24,7 @@ class AddOns::InstallHelmChart
       # Special case for helm_chart, we need to add the repo and update it
       package_details = add_on.metadata['package_details']
       client.add_repo(
-        package_details['name'],
+        package_details['repository']['organization_name'],
         package_details['repository']['url']
       )
       client.repo_update!
