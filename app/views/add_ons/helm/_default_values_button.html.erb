@@ -1,0 +1,29 @@
+<div
+  data-controller="show-default-values"
+  data-show-default-values-repository-name-value="dagster"
+  data-show-default-values-repository-url-value="https://dagster-io.github.io/helm"
+  data-show-default-values-chart-name-value="dagster"
+>
+  <a
+    class="text-sm text-gray-500 underline"
+    href="#"
+    data-action="show-default-values#show"
+  >
+    See default values.yml for this chart
+  </a>
+
+  <dialog aria-label="Modal" class="modal" id="click_outside_modal" data-show-default-values-target="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div data-show-default-values-target="content" class="text-sm">
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+</div>

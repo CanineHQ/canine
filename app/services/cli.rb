@@ -4,6 +4,7 @@ module Cli
     def call(command, envs: {})
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
       output = `#{command.strip}`
+      raise CommandFailedError, "Command `#{command}` failed with exit code #{$?.exitstatus}" unless $?.success?
       output
     end
   end

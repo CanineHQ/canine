@@ -54,6 +54,7 @@ export default class extends Controller {
     // Add click handlers to all list items
     this.dropdown.querySelectorAll('li').forEach(li => {
       li.addEventListener('click', () => {
+        this.input.parentElement.classList.add('hidden')
         this.input.value = li.dataset.packageName
         const packageData = JSON.parse(li.dataset.packageData);
         this.hideDropdown()

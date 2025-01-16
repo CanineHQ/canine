@@ -14,20 +14,21 @@ class AddOns::InstallHelmChart
     charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
 
-    client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
+    client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
 
     helm_chart_url = add_on.helm_chart_url
     if chart['add_repo_command']
-      client.add_repo(chart['add_repo_command'])
+      client.run_command(chart['add_repo_command'])
       client.repo_update!
-    end
-    if add_on.helm_chart?
+    elsif add_on.helm_chart?
       # Special case for helm_chart, we need to add the repo and update it
       package_details = add_on.metadata['package_details']
-      add_repo_command = "helm repo add #{package_details['name']} #{package_details['repository']['url']}"
-      client.add_repo(add_repo_command)
+      client.add_repo(
+        package_details['name'],
+        package_details['repository']['url']
+      )
       client.repo_update!
-      helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['repository']['name']}"
+      helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['name']}"
     end
 
     client.install(

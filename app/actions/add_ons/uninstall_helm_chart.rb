@@ -4,7 +4,7 @@ class AddOns::UninstallHelmChart
 
   executed do |context|
     add_on = context.add_on
-    client = K8::Helm::Client.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
+    client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
     charts = client.ls
     if charts.any? { |chart| chart['name'] == add_on.name }
       client.uninstall(add_on.name, namespace: add_on.name)
