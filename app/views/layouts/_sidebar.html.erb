@@ -45,7 +45,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_account.projects.each do |project| %>
+                      <% current_account.projects.order(created_at: :desc).each do |project| %>
                         <li>
                           <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if current_page?(root_projects_path(project))}" do %>
                             <div class="flex items-center gap-2">
@@ -76,7 +76,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_account.clusters.each do |cluster| %>
+                      <% current_account.clusters.order(created_at: :desc).each do |cluster| %>
                         <li>
                           <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if current_page?(cluster_path(cluster))}" do %>
                             <div class="flex items-center gap-2">
@@ -107,7 +107,7 @@
                       <% end %>
                     </summary>
                     <ul>
-                      <% current_account.add_ons.each do |add_on| %>
+                      <% current_account.add_ons.order(created_at: :desc).each do |add_on| %>
                         <li>
                           <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if current_page?(add_on_path(add_on))}" do %>
                             <div class="flex items-center gap-2">

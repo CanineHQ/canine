@@ -20,7 +20,7 @@
       </tr>
     </thead>
     <tbody>
-      <% add_ons.each do |add_on| %>
+      <% add_ons.order(created_at: :desc).each do |add_on| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
             <div class="font-medium"><%= link_to add_on.name, add_on, class: "text-inherit hover:underline" %></div>

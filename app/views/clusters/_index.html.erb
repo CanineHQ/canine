@@ -14,7 +14,7 @@
       </tr>
     </thead>
     <tbody>
-      <% clusters.each do |cluster| %>
+      <% clusters.order(created_at: :desc).each do |cluster| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
             <div class="font-medium"><%= link_to cluster.name, cluster, class: "text-inherit hover:underline" %></div>
