@@ -67,7 +67,6 @@ class K8::Helm::Client
         values_file.flush
 
         command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace}"
-        debugger
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status
