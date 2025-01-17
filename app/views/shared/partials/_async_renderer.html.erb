@@ -1,0 +1,10 @@
+<div
+  data-controller="async-renderer"
+  data-async-renderer-view-model-value="<%= view_model.name %>"
+  data-async-renderer-params-value="<%= view_model.params.to_json %>"
+>
+  <div data-async-renderer-target="frame">
+    <%= view_model.initial_render.html_safe %>
+  </div>
+</div>
+
