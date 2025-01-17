@@ -16,6 +16,10 @@ module K8
       new(project.cluster.kubeconfig)
     end
 
+    def self.from_cluster(cluster)
+      new(cluster.kubeconfig)
+    end
+
     def initialize(kubeconfig)
       @_kubeconfig = kubeconfig
       @kubeconfig = kubeconfig.is_a?(String) ? JSON.parse(kubeconfig) : kubeconfig
@@ -49,6 +53,11 @@ module K8
       cluster_name = @kubeconfig["contexts"].find { |ctx| ctx["name"] == kubecontext }["context"]["cluster"]
       cluster_info = @kubeconfig["clusters"].find { |cl| cl["name"] == cluster_name }["cluster"]
       cluster_info["server"]
+    end
+
+    def version
+      result = K8::Kubectl.new(@_kubeconfig).call("version -o yaml")
+      YAML.safe_load(result)
     end
 
     def kubecontext
