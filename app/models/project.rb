@@ -50,7 +50,7 @@ class Project < ApplicationRecord
 
   validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
-    broadcast_replace_to [ self, :status ], target: "status", partial: "projects/status", locals: { project: self }
+    broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end
 
   enum :status, {

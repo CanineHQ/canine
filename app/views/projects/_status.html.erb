@@ -1,5 +1,5 @@
 <%= turbo_stream_from project, :status %>
-<div id="status">
+<div id="<%= dom_id(project, :status) %>">
   <% if project.last_build&.in_progress? %>
     <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
       Building <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
