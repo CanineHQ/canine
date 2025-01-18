@@ -1,24 +1,26 @@
 <%= turbo_stream_from project, :status %>
-<% if project.last_build&.in_progress? %>
-  <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
-    Building <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
-  </div>
-<% elsif project.last_deployment&.in_progress? %>
-  <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
-    Deploying <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
-  </div>
-<% else %>
-  <%
-    badge_color = case project.status
-    when "creating"
-      "warning"
-    when "deployed"
-      "success"
-    when "destroying"
-      "error"
-    end
-  %>
-  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-    <%= project.status %>
-  </div>
-<% end %>
+<div id="status">
+  <% if project.last_build&.in_progress? %>
+    <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
+      Building <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+    </div>
+  <% elsif project.last_deployment&.in_progress? %>
+    <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
+      Deploying <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+    </div>
+  <% else %>
+    <%
+      badge_color = case project.status
+      when "creating"
+        "warning"
+      when "deployed"
+        "success"
+      when "destroying"
+        "error"
+      end
+    %>
+    <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+      <%= project.status %>
+    </div>
+  <% end %>
+</div>
