@@ -9,6 +9,8 @@ module K8
       :get_pod_log,
       :delete_pod,
       :get_endpoints,
+      :get_namespaces,
+      :delete_namespace,
       to: :client
     )
 

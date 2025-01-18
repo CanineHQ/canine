@@ -10,10 +10,11 @@ class AddOns::UninstallHelmChart
       client.uninstall(add_on.name, namespace: add_on.name)
     end
 
-    kubeconfig = add_on.cluster.kubeconfig
-    kubectl = K8::Kubectl.new(kubeconfig)
+    client = K8::Client.from_cluster(add_on.cluster)
+    if (namespace = client.get_namespaces.find { |n| n.metadata.name == add_on.name }).present?
+      client.delete_namespace(namespace.metadata.name)
+    end
 
-    kubectl.call("delete namespace #{add_on.name}")
     add_on.uninstalled!
     add_on.destroy!
   end
