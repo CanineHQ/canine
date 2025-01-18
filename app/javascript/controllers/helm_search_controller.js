@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { renderHelmChartCard } from "../utils/helm_charts"
+import { renderHelmChartCard, getLogoImageUrl } from "../utils/helm_charts"
 
 export default class extends Controller {
   static values = {
@@ -43,10 +43,13 @@ export default class extends Controller {
 
     this.dropdown.innerHTML = packages.map(pkg => `
       <li class="p-2 cursor-pointer" data-package-name="${pkg.name}" data-package-data='${JSON.stringify(pkg)}'>
-        <div class="font-medium block">
-          ${pkg.name}
-          <br/>
-          <div class="text-sm text-base-content/70">${pkg.description}</div>
+        <div class="font-medium flex items-center">
+          <img src="${getLogoImageUrl(pkg)}" alt="${pkg.name} logo" class="w-8 h-8 mr-2"/>
+          <div>
+            ${pkg.name}
+            <br/>
+            <div class="text-sm text-base-content/70">${pkg.description}</div>
+          </div>
         </div>
       </li>
     `).join('')

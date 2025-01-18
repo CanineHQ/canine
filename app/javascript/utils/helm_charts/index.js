@@ -1,3 +1,8 @@
+export function getLogoImageUrl(packageData) {
+  const logoImageId = packageData.logo_image_id;
+  return logoImageId ? `https://artifacthub.io/image/${logoImageId}` : "https://artifacthub.io/static/media/placeholder_pkg_helm.png";
+}
+
 export async function getDefaultValues(
   repositoryName,
   repositoryUrl,
@@ -16,9 +21,7 @@ export async function getDefaultValues(
 }
 
 export function renderHelmChartCard(packageData) {
-  const logoImageId = packageData.logo_image_id;
-  const logoImageUrl = `https://artifacthub.io/image/${logoImageId}`;
-    
+  const logoImageUrl = getLogoImageUrl(packageData);
   // Create a temporary container to convert HTML string to DOM element
   const tempContainer = document.createElement('div');
   tempContainer.innerHTML = `
