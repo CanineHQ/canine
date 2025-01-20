@@ -1,17 +1,13 @@
 <h1 class="text-2xl font-bold mb-6"><%= @service.friendly_name %></h1>
 <h6 class="text-xl font-bold">Storage</h6>
 <div class="mb-4">
-  <% if @service.storage_metrics.any? %>
-    <% @service.storage_metrics.each do |metric| %>
-      <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
-      <% if metric[:usage] %>
-        <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
-        <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
-      <% end %>
-    <% end %>
-  <% else %>
-    <div class="text-gray-500">No storage volumes found</div>
-  <% end %>
+  <%= render(
+    "shared/partials/async_renderer",
+    view_model: Async::Helm::StorageViewModel.new(
+      current_user,
+      add_on_id: @add_on.id
+    )
+  ) %>
 </div>
 <h6 class="text-xl font-bold">Created</h6>
 <div class="mb-4">
@@ -40,21 +36,8 @@
       <% end %>
     </tbody>
   </table>
-
-  <div>
-    <div class="collapse">
-      <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
-      <div class="collapse-title text-md font-medium">See values.yaml</div>
-      <div class="collapse-content">
-        <div class="max-w-lg min-w-md bg-base-200 p-4">
-          <pre class="text-xs"><%= @add_on.values.to_yaml %></pre>
-
-          <div class="mt-4">
-            <%= link_to "Edit values.yaml", edit_add_on_path(@add_on), class: "btn btn-sm btn-outline-secondary" %>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="mt-4">
+    <%= link_to "Edit values.yaml", edit_add_on_path(@add_on), class: "btn btn-sm btn-outline-secondary" %>
   </div>
 </div>
 <% if @service.respond_to?(:internal_url) %>

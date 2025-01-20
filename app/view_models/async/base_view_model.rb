@@ -21,7 +21,7 @@ class Async::BaseViewModel
   end
 
   def render_error
-    "<div>Error</div>"
+    "<div class='text-red-500'>Error</div>"
   end
 
   def validate!
