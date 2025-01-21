@@ -28,7 +28,7 @@ class K8::Kubectl
         yaml_file.flush
 
         # Apply the YAML file to the cluster using the kubeconfig file
-        command = "kubectl --kubeconfig=#{kubeconfig_file.path} apply -f #{yaml_file.path} --validate=false"
+        command = "kubectl --kubeconfig=#{kubeconfig_file.path} apply -f #{yaml_file.path}"
         runner.call(command)
       end
     end
