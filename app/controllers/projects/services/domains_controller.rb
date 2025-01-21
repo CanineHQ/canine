@@ -7,7 +7,7 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
     respond_to do |format|
       if @domain.save
         Services::AddDomainJob.perform_later(@domain)
-        format.html { redirect_to project_path(@project), notice: "Domain was successfully added." }
+        format.html { redirect_to project_services_path(@project), notice: "Domain was successfully added." }
         format.json { render :show, status: :created, domain: @domain }
         format.turbo_stream { render :create }
       else
