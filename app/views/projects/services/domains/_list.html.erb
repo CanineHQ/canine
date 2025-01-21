@@ -12,8 +12,13 @@
       <tr id="<%= dom_id(domain) %>">
         <td><%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %></td>
         <td>
-          <% ip = K8::Stateless::Ingress.new(service).ip_address %>
-          <pre class="cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= ip %>"><%= ip %></pre>
+          <%= render(
+            "shared/partials/async_renderer",
+            view_model: Async::K8::ClusterIpViewModel.new(
+              current_user,
+              service_id: service.id
+            )
+          ) %>
         </td>
         <td>
           <%= render "projects/services/domains/status", domain: %>
