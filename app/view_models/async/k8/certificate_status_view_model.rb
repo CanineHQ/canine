@@ -7,7 +7,7 @@ class Async::K8::CertificateStatusViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    "<div class='loading loading-spinner loading-sm'></div>"
+    "Certificate Status: <div class='loading loading-spinner loading-sm'></div>"
   end
 
   def async_render

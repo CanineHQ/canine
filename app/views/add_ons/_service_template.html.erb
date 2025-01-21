@@ -15,7 +15,13 @@
 </div>
 <h6 class="text-xl font-bold"><%= @service.friendly_name %> Version</h6>
 <div class="mb-4">
-  <%= @service.version %>
+  <%= render(
+    "shared/partials/async_renderer",
+    view_model: Async::Helm::VersionViewModel.new(
+      current_user,
+      add_on_id: @add_on.id
+    )
+  ) %>
 </div>
 
 <h6 class="text-xl font-bold">Configuration</h6>
