@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["markdownTextarea", "previewContainer", "toggleButton"]
 
   connect() {
-    console.log("markdown editor connected")
     // Sync the preview container with the markdown container
     this.updatePreview()
     this.toggleButtonTarget.innerHTML = "Edit"

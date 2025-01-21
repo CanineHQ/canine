@@ -16,14 +16,13 @@
 
     <h5 class="my-4">Make sure to configure domains with the following DNS records</h5>
     <% if service.domains.any? %>
-      <div>
-        Certificate Status:
-        <% if K8::Stateless::Ingress.new(service).certificate_status %>
-          <span class="text-success ml-2 font-semibold">Issued</span>
-        <% else %>
-          <span class="text-warning ml-2 font-semibold">Issuing</span>
-        <% end %>
-      </div>
+      <%= render(
+        "shared/partials/async_renderer",
+        view_model: Async::K8::CertificateStatusViewModel.new(
+          current_user,
+          service_id: service.id
+        )
+      ) %>
     <% end %>
     <div id="domain-list" class="overflow-x-auto">
       <%= render partial: "projects/services/domains/list", locals: { service: } %>
