@@ -85,7 +85,7 @@ class Async::K8::PodsViewModel < Async::BaseViewModel
                 <td>
                   <div class="flex items-center space-x-2">
                     <div class="font-medium">
-                      <%= link_to "Show Logs", view_model.show_pod_logs_path, class: "btn btn-sm btn-outline" %>
+                      <a href="<%= view_model.show_pod_logs_path %>" class="btn btn-sm btn-outline">Show Logs</a>
                     </div>
 
                     <div class="font-medium">
@@ -109,10 +109,10 @@ class Async::K8::PodsViewModel < Async::BaseViewModel
                     <div class="font-medium">
                       <% if view_model.show_delete_pod_path? %>
                         <% if pod.status.phase != "Running" || pod.metadata.labels.oneoff %>
-                          <%= link_to "Delete", view_model.delete_pod_path, method: :delete, class: "btn btn-sm btn-error btn-outline" %>
+                          <a href="<%= view_model.delete_pod_path %>" class="btn btn-sm btn-error btn-outline" data-method="delete" rel="nofollow">Delete</a>
                         <% else %>
                           <div role="tooltip" data-tip="Be careful when deleting running pods, it can cause downtime for your project" class="tooltip tooltip-secondary">
-                            <%= link_to "Delete", view_model.delete_pod_path, method: :delete, class: "btn btn-sm btn-error btn-outline" %>
+                            <a href="<%= view_model.delete_pod_path %>" class="btn btn-sm btn-error btn-outline" data-method="delete" rel="nofollow">Delete</a>
                           </div>
                         <% end %>
                       <% end %>
