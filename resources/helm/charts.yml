@@ -1,11 +1,9 @@
 helm:
   charts:
     - name: postgresql
+      chart_url: bitnami/postgresql
       friendly_name: PostgreSQL
       logo: /images/helm/postgresql.png
-      version: 12.11.0
-      repository: oci://registry-1.docker.io/bitnamicharts/postgresql
-      install_command: helm install ${add_on_name} ${repository}
       template:
         - name: Storage
           key: primary.persistence.size
@@ -13,11 +11,9 @@ helm:
           default: 10Gi
           required: true
     - name: redis
+      chart_url: bitnami/redis
       friendly_name: Redis
       logo: /images/helm/redis.png
-      version: 18.10.0
-      repository: oci://registry-1.docker.io/bitnamicharts/redis
-      install_command: helm install ${add_on_name} ${repository}
       template:
         - name: Storage
           key: master.persistence.size
@@ -30,12 +26,9 @@ helm:
           default: 0
           hidden: true
     - name: metabase
+      chart_url: pmint93/metabase
       friendly_name: Metabase
       logo: /images/helm/metabase.png
-      version: 17.2.0
-      add_repo_command: helm repo add pmint93 https://pmint93.github.io/helm-charts
-      repository: pmint93/metabase
-      install_command: helm install ${add_on_name} ${repository}
       template:
         - name: Connection URI
           key: database.connectionURI
@@ -50,10 +43,8 @@ helm:
           required: true
     - name: elasticsearch
       logo: /images/helm/elasticsearch.png
-      version: 18.10.0
-      repository: https://charts.bitnami.com/bitnami
-      install_command: helm install ${add_on_name} ${repository}
-      coming_soon: true
+      chart_url: bitnami/elasticsearch
+      friendly_name: Elasticsearch
       template:
         - name: resources.limits.storage
           key: resources.limits.storage
@@ -61,31 +52,26 @@ helm:
           default: 10Gi
     - name: supabase
       logo: /images/helm/supabase.png
-      version: 0.1.0
       repository: https://github.com/supabase-community/supabase-kubernetes
       coming_soon: true
       
     - name: sentry
       logo: /images/helm/sentry.png
-      version: 2.10.0
       repository: https://sentry-kubernetes.github.io/charts
       coming_soon: true
       
     - name: clickhouse
       logo: /images/helm/clickhouse.png
-      version: 2.1.0
       repository: https://clickhouse.github.io/clickhouse-helm
       coming_soon: true
       
     - name: superset
       logo: /images/helm/superset.png
-      version: 0.6.1
       repository: https://apache.github.io/superset
       coming_soon: true
       
     - name: grafana
       logo: /images/helm/grafana.png
-      version: 6.56.0
       repository: https://grafana.github.io/helm-charts
       coming_soon: true
       
@@ -98,14 +84,8 @@ helm:
           key: helm_chart.name
           type: string
           hidden: false
-        - name: Package ID
-          key: package_id
-          type: string
-          hidden: true
     #- name: prometheus
     #  logo: /images/helm/prometheus.png
-    #  version: 16.1.0
     #  repository: https://prometheus-community.github.io/helm-charts
     #- name: wordpress
-    #  version: 12.1.0
     #  repository: https://charts.bitnami.com/bitnami

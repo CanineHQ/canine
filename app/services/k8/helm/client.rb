@@ -1,4 +1,5 @@
 class K8::Helm::Client
+  DEFAULT_TIMEOUT = "1000s"
   CHARTS = YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))
   include K8::Kubeconfig
   attr_reader :kubeconfig, :runner
@@ -41,9 +42,15 @@ class K8::Helm::Client
     end
   end
 
-  def repo_update!
+  def repo_update_all
     exit_status = runner.("helm repo update")
-    raise "Helm repo update failed with exit status #{exit_status}" unless exit_status.success?
+    raise "`helm repo update` failed with exit status #{exit_status}" unless exit_status.success?
+    exit_status
+  end
+
+  def repo_update(repo_name:)
+    exit_status = runner.("helm repo update #{repo_name}")
+    raise "`helm repo update #{repo_name}` failed with exit status #{exit_status}" unless exit_status.success?
     exit_status
   end
 
@@ -66,7 +73,7 @@ class K8::Helm::Client
         values_file.write(values.to_yaml)
         values_file.flush
 
-        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace}"
+        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace} --timeout=#{DEFAULT_TIMEOUT}"
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status

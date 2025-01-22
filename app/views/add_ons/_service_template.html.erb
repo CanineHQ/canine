@@ -34,10 +34,10 @@
       </tr>
     </thead>
     <tbody>
-      <% AddOns::InstallHelmChart.get_values(@add_on).each do |key, value| %>
+      <% flatten_hash(@service.values_yaml).each do |key, value| %>
         <tr>
-          <td><pre class="inline"><%= key %></pre></td>
-          <td><pre class="inline"><%= value %></pre></td>
+          <td><%= key %></td>
+          <td><%= value %></td>
         </tr>
       <% end %>
     </tbody>

@@ -4,8 +4,9 @@ class AddOns::InstallHelmChart
 
   executed do |context|
     add_on = context.add_on
+
     create_namespace(add_on)
-    if add_on.persisted?
+    if add_on.installed?
       add_on.updating!
     else
       add_on.installing!
@@ -16,24 +17,18 @@ class AddOns::InstallHelmChart
 
     client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
 
-    helm_chart_url = add_on.helm_chart_url
-    if chart['add_repo_command']
-      client.run_command(chart['add_repo_command'])
-      client.repo_update!
-    elsif add_on.helm_chart?
-      # Special case for helm_chart, we need to add the repo and update it
-      package_details = add_on.metadata['package_details']
-      client.add_repo(
-        package_details['repository']['organization_name'],
-        package_details['repository']['url']
-      )
-      client.repo_update!
-      helm_chart_url = "#{package_details['repository']['organization_name']}/#{package_details['name']}"
-    end
+    chart_url = add_on.chart_url
+
+    package_details = add_on.metadata['package_details']
+    client.add_repo(
+      package_details['repository']['name'],
+      package_details['repository']['url']
+    )
+    client.repo_update(repo_name: chart_url.split('/').first)
 
     client.install(
       add_on.name,
-      helm_chart_url,
+      chart_url,
       values: add_on.values,
       namespace: add_on.name
     )
