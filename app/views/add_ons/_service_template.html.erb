@@ -26,22 +26,13 @@
 
 <h6 class="text-xl font-bold">Configuration</h6>
 <div class="mb-4">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Key</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% flatten_hash(@service.values_yaml).each do |key, value| %>
-        <tr>
-          <td><%= key %></td>
-          <td><%= value %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <%= render(
+    "shared/partials/async_renderer",
+    view_model: Async::Helm::ValuesYamlViewModel.new(
+      current_user,
+      add_on_id: @add_on.id
+    )
+  ) %>
   <div class="mt-4">
     <%= link_to "Edit values.yaml", edit_add_on_path(@add_on), class: "btn btn-sm btn-outline-secondary" %>
   </div>
