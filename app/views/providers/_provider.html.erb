@@ -3,6 +3,6 @@
     <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
   </div>
   <label class="label">
-    <span class="label-text">Connected by <%= provider.user.email %></span>
+    <span class="label-text">Connected as <b><%= JSON.parse(provider.auth)["info"]["nickname"] %></b></span>
   </label>
 </div>
