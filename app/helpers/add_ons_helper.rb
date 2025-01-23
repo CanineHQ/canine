@@ -4,7 +4,7 @@ module AddOnsHelper
   end
 
   def flatten_hash(hash, parent_key = '', result = {})
-    hash.each do |key, value|
+    (hash || {}).each do |key, value|
       new_key = parent_key.empty? ? key.to_s : "#{parent_key}.#{key}"
       if value.is_a?(Hash)
         flatten_hash(value, new_key, result)
