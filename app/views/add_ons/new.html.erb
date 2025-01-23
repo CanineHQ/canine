@@ -41,6 +41,7 @@
               <% end %>
               <div class="card bg-base-100 shadow-xl <%= chart['coming_soon'] ? 'cursor-not-allowed' : 'cursor-pointer' %> overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
                   data-new-add-ons-target="card"
+                  data-chart-url="<%= chart['chart_url'] %>"
                   <% unless chart['coming_soon'] %>
                     data-action="click->new-add-ons#selectCard"
                   <% end %>
@@ -70,6 +71,8 @@
               <% end %>
             </div>
           <% end %>
+
+          <%= form.text_field "chart_url", data: { 'new-add-ons-target': "chartUrl" } %>
 
           <div>
             <div class="collapse">

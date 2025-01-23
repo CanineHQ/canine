@@ -1,4 +1,5 @@
 <%= add_on_layout(@add_on) do %>
+  <img src="<%= get_logo_image_url(@add_on.metadata.dig('package_details', 'logo_image_id') ) %>" class="h-16 w-16 mb-4">
   <% if @add_on.installed? %>
     <%= render "add_ons/service_template", service: @service %>
   <% end %>

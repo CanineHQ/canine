@@ -7,7 +7,7 @@ export default class extends Controller {
   }
 
   connect() {
-    this.input = this.element.querySelector(`input[name="add_on[metadata][${this.chartNameValue}][helm_chart.name]"]`)
+    this.input = this.element.querySelector(`input[name="add_on[metadata][helm_chart][helm_chart.name]"]`)
     this.debounceTimer = null
     
     // Create and append dropdown
@@ -61,7 +61,8 @@ export default class extends Controller {
         this.input.value = li.dataset.packageName
         const packageData = JSON.parse(li.dataset.packageData);
         this.hideDropdown()
-        this.element.querySelector(`input[name="add_on[metadata][${this.chartNameValue}][package_id]"]`).value = packageData.package_id
+        const chartUrl = `${packageData.repository.name}/${packageData.name}`
+        document.querySelector(`input[name="add_on[chart_url]"]`).value = chartUrl
         this.element.appendChild(renderHelmChartCard(packageData))
       })
     })
