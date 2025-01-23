@@ -93,12 +93,16 @@ class Project < ApplicationRecord
     "https://github.com/#{repository_url}"
   end
 
+  def github_provider
+    project_credential_provider&.provider || account.github_provider
+  end
+
   def github_username
-    project_credential_provider&.github_access_token || account.github_access_token
+    JSON.parse(github_provider.auth)["info"]["nickname"]
   end
 
   def github_access_token
-    project_credential_provider&.github_access_token || account.github_access_token
+    github_provider.access_token
   end
 
   def container_registry_url
