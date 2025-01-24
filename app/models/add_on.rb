@@ -4,6 +4,7 @@
 #
 #  id         :bigint           not null, primary key
 #  chart_type :string           not null
+#  chart_url  :string
 #  metadata   :jsonb
 #  name       :string           not null
 #  status     :integer          default("installing"), not null
@@ -46,10 +47,6 @@ class AddOn < ApplicationRecord
 
   def helm_chart?
     chart_type == 'helm_chart'
-  end
-
-  def helm_chart_url
-    chart_definition["repository"] || metadata["repository"]
   end
 
   def chart_definition

@@ -11,9 +11,6 @@
     <div>
       <h2 class="text-lg font-bold">Configuration</h2>
       <%= form_with(model: @add_on) do |form| %>
-        <%= form.hidden_field :chart_type, value: @add_on.chart_type %>
-        <%= render "add_ons/template_variables", chart: @add_on.chart_definition, form: form %>
-
         <div class="form-group">
           <%= form.label :values_yaml, "Values YAML" %>
           <%= form.text_area(

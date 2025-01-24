@@ -11,7 +11,7 @@ class AddOnsController < ApplicationController
   end
 
   def search
-    result = AddOns::HelmChartDetails.execute(query: params[:q])
+    result = AddOns::HelmChartSearch.execute(query: params[:q])
     if result.success?
       render json: result.response
     else
@@ -124,8 +124,10 @@ class AddOnsController < ApplicationController
     if params[:add_on][:values_yaml].present?
       params[:add_on][:values] = YAML.safe_load(params[:add_on][:values_yaml])
     end
-    params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
-    params.require(:add_on).permit(:cluster_id, :chart_type, :name, metadata: {}, values: {})
+    if params[:add_on][:metadata].present?
+      params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
+    end
+    params.require(:add_on).permit(:cluster_id, :chart_type, :chart_url, :name, metadata: {}, values: {})
 
     # Uncomment to use Pundit permitted attributes
     # params.require(:add_on).permit(policy(@add_on).permitted_attributes)

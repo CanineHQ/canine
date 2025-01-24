@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "card"]
+  static targets = ["input", "card", "chartUrl"]
   static values = { repository: String }
 
   connect() {
@@ -15,5 +15,7 @@ export default class extends Controller {
     // Show Input
     this.element.querySelectorAll('.card-form').forEach(form => form.classList.add('hidden'))
     this.element.querySelectorAll(`.card-${event.currentTarget.dataset.cardName}`).forEach(form => form.classList.remove("hidden"));
+
+    this.chartUrlTarget.value = event.currentTarget.dataset.chartUrl
   }
 }

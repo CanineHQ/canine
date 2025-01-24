@@ -5,9 +5,14 @@
       <span class="label-text">Repository path</span>
     </label>
     <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
-    <label class="label">
-      <span class="label-text-alt">Connected by <%= project.account.owner.email %></span>
-    </label>
+  </div>
+
+    <div class="form-control mt-1 w-full max-w-sm">
+    <div class="card bg-base-300 shadow-xl">
+      <div class="card-body">
+        <%= render "providers/provider", provider: project.github_provider %>
+      </div>
+    </div>
   </div>
 
   <div class="form-control mt-1 w-full max-w-sm">
@@ -37,7 +42,7 @@
     </label>
   </div>
 
-  <div class="form-control mt-1 w-full max-w-xs">
+  <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Docker build context directory</span>
     </label>

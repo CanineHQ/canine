@@ -11,20 +11,15 @@ class AddOns::Save
   end
 
   def self.fetch_package_details(add_on)
-    if add_on.helm_chart?
-      result = AddOns::HelmChartDetails.execute(query: add_on.metadata['helm_chart.name'])
-      if result.failure?
-        add_on.errors.add(:base, "Failed to fetch package details")
-        return
-      end
-      package = result.response['packages'].find { |package| package['package_id'] == add_on.metadata['package_id'] }
-      if package.present?
-        add_on.metadata['package_details'] = package
-      else
-        add_on.errors.add(:base, "Failed to fetch package details")
-        nil
-      end
+    result = AddOns::HelmChartDetails.execute(chart_url: add_on.chart_url)
+
+    if result.failure?
+      add_on.errors.add(:base, "Failed to fetch package details")
+      return
     end
+
+    result.response.delete('readme')
+    add_on.metadata['package_details'] = result.response
   end
 
   def self.apply_template_to_values(add_on)

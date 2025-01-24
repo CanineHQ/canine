@@ -1,7 +1,6 @@
 <div
   <% if chart['controller'] %>
     data-controller="<%= chart['controller'] %>"
-    data-helm-search-chart-name-value="<%= chart['name'] %>"
   <% end %>
 >
   <% (chart['metadata'] || []).each do |variable| %>
