@@ -4,6 +4,7 @@ class Clusters::MetricsController < Clusters::BaseController
   before_action :set_cluster
 
   def show
+    @nodes = K8::Metrics::Api::Node.ls(@cluster)
     @metrics = @cluster.metrics.node_only_tags.order(created_at: :desc).limit(1000)
   end
 
