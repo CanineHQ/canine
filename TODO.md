@@ -4,4 +4,3 @@
 - [ ] Need an onboarding flow
 - [ ] Github connectivity
 - [ ] Change the loading state of an add on install to have a better UX
-- [ ] Load deployments with websockets

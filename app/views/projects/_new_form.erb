@@ -23,17 +23,36 @@
     </div>
 
     <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Github Repository</span>
-      </label>
-      <%= form.text_field(
-        :repository_url,
-        class: "input input-bordered w-full focus:outline-offset-0",
-        placeholder: "accountname/repo",
-      ) %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
+      <div data-controller="github-select-repository">
+        <label class="label">
+          <span class="label-text">Github Repository</span>
+        </label>
+        <%= form.text_field(
+          :repository_url,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          placeholder: "accountname/repo",
+          data: {
+            "github-select-repository-target": "repository",
+          }
+        ) %>
+        <div class="flex justify-between mt-2">
+          <label class="label">
+            <span class="label-text-alt">* Required</span>
+          </label>
+          <button
+            class="btn btn-sm btn-outline"
+            type="button"
+            data-action="github-select-repository#connectToGithub"
+            data-github-select-repository-target="button"
+            data-disable-with="Loading..."
+          >
+            Select from <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+          </button>
+        </div>
+        <turbo-frame id="github-repositories-frame" data-github-select-repository-target="frame">
+          <!-- Repositories will be loaded here -->
+        </turbo-frame>
+      </div>
     </div>
 
     <div class="form-control mt-1 w-full max-w-sm">
