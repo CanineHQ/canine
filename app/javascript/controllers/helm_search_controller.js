@@ -42,7 +42,7 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = packages.map(pkg => `
-      <li class="p-2 cursor-pointer" data-package-name="${pkg.name}" data-package-data='${JSON.stringify(pkg)}'>
+      <li class="p-2 cursor-pointer" data-package-name="${pkg.name}" data-package-data="${encodeURIComponent(JSON.stringify(pkg))}">
         <div class="font-medium flex items-center">
           <img src="${getLogoImageUrl(pkg)}" alt="${pkg.name} logo" class="w-8 h-8 mr-2"/>
           <div>
@@ -59,7 +59,7 @@ export default class extends Controller {
       li.addEventListener('click', () => {
         this.input.parentElement.classList.add('hidden')
         this.input.value = li.dataset.packageName
-        const packageData = JSON.parse(li.dataset.packageData);
+        const packageData = JSON.parse(decodeURIComponent(li.dataset.packageData));
         this.hideDropdown()
         const chartUrl = `${packageData.repository.name}/${packageData.name}`
         document.querySelector(`input[name="add_on[chart_url]"]`).value = chartUrl
