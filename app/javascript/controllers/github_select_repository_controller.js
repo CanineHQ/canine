@@ -1,10 +1,22 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["frame", "repository", "button", "publicRepository", "modal"]
+  static targets = ["frame", "repository", "button", "publicRepository", "modal", "repositories"]
 
   connect() {
     this.frameTarget.addEventListener("turbo:frame-load", this.onFrameLoad.bind(this))
+  }
+
+  filterRepositories(e) {
+    const searchTerm = e.target.value.toLowerCase()
+    // Hide repositories that don't contain the search term
+    this.repositoriesTargets.forEach(repo => {
+      if (!repo.textContent.toLowerCase().includes(searchTerm)) {
+        repo.classList.add("hidden")
+      } else {
+        repo.classList.remove("hidden")
+      }
+    })
   }
 
   selectPublicRepository() {
