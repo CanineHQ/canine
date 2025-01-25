@@ -1,13 +1,13 @@
 <turbo-frame id="github-repositories-frame">
   <dialog aria-label="Modal" class="modal" id="github-repositories-modal" open="" data-github-select-repository-target="modal">
-    <div class="modal-box w-11/12 max-w-5xl bg-base-200">
+    <div class="modal-box px-6 py-0 w-11/12 max-w-5xl bg-base-200">
       <div class="modal-action">
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
       </div>
       <div class="p-2">
-        <h2 class="text-2xl font-bold mb-4">Update Repository</h2>
+        <h2 class="text-2xl font-bold mb-4">Select Repository</h2>
         <p class="mb-6">Select the repo you would like to back this service, or use an existing public repository's URL.</p>
         
         <div class="rounded-lg">
@@ -20,7 +20,7 @@
                 <span><%= repo['full_name'] %></span>
                 <button
                   type="button"
-                  class="btn btn-outline"
+                  class="btn btn-outline btn-sm"
                   data-action="github-select-repository#selectRepository"
                   data-repository-name="<%= repo['full_name'] %>">Connect</button>
               </li>
