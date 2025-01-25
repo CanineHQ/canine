@@ -52,7 +52,7 @@ class Service < ApplicationRecord
 
   def internal_url
     # Kubernetes internal URL
-    "#{name}.#{project.name}.svc.cluster.local:#{container_port}"
+    K8::Stateless::Service.new(self).internal_url
   end
 
   def friendly_status
