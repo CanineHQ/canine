@@ -23,7 +23,7 @@
     </div>
   </div>
   <div class="flex flex-col">
-    <div class="flex justify-end">
+    <div class="flex justify-end flex-col md:flex-row">
       <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
       <% if project.deployable? %>
         <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
@@ -42,7 +42,7 @@
 </div>
 
 <div class="md:card md:card-bordered md:bg-base-100">
-  <div class="md:card-body">
+  <div class="md:card-body overflow-x-auto">
     <%= render "projects/sidebar", project: project %>
 
     <div class="pt-4 pb-4">
