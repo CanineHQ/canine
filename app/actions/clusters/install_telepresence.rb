@@ -6,7 +6,7 @@ class Clusters::InstallTelepresence
     cluster = context.cluster
     runner = Cli::RunAndLog.new(cluster)
     kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
-    cluster.info("Checking if Nginx ingress controller is already installed...", color: :yellow)
+    cluster.info("Checking if Telepresence is already installed...", color: :yellow)
 
     begin
       kubectl.("get deployment traffic-manager -n #{Clusters::Install::DEFAULT_NAMESPACE}")
