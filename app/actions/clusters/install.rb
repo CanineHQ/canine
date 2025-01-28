@@ -10,6 +10,7 @@ class Clusters::Install
       Clusters::InstallNginxIngress,
       Clusters::InstallAcmeIssuer,
       Clusters::InstallMetricServer,
+      Clusters::InstallTelepresence,
     )
     cluster.running! if result.success?
     cluster.failed! if result.failure?

@@ -1,0 +1,1 @@
+telepresence helm install --namespace $NAMESPACE
