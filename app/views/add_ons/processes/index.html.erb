@@ -5,14 +5,12 @@
       <h3 class="text-lg font-medium">Processes</h3>
     </div>
 
-    <%= turbo_frame_tag "pod_logs" do %>
-      <%= render(
-        "shared/partials/async_renderer",
-        view_model: Async::K8::PodsViewModel.new(
-          current_account,
-          add_on_id: @add_on.id
-        )
-      ) %>
-    <% end %>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::K8::PodsViewModel.new(
+        current_account,
+        add_on_id: @add_on.id
+      )
+    ) %>
   </div>
 <% end %>

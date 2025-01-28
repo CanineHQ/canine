@@ -6,9 +6,7 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log(this.frequencyValue)
     this.refreshInterval = setInterval(() => {
-      console.log("Updating src");
       this.element.setAttribute("src", window.location.href);
     }, this.frequencyValue)
   }

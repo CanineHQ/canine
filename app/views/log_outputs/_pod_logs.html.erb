@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "pod_logs", data: { controller: "logs" } do %>
-  <%= link_to back_path, class: "btn btn-ghost btn-sm" do %>
+  <%= link_to back_path, class: "btn btn-ghost btn-sm", data: { turbo: "false" } do %>
     <iconify-icon icon="lucide:chevron-left"></iconify-icon> Back
   <% end %>
   <h4 class="text-md font-medium mb-2"><%= params[:id] %></h4>

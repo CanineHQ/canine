@@ -11,18 +11,16 @@
         One-off pods are useful for running a single instance of a pod for a short period of time, so you can test something or run a command that doesn't need to be permanent.
       </div>
     </div>
-    <%= turbo_frame_tag "pod_logs" do %>
-      <% if @pods.empty? %>
-        <div>
-          <p class="text-gray-500">Nothing running for this project</p>
-        </div>
-      <% else %>
-        <%= render(
-          "processes/pods",
-          pods: @pods,
-          parent: @project
-        ) %>
-      <% end %>
+    <% if @pods.empty? %>
+      <div>
+        <p class="text-gray-500">Nothing running for this project</p>
+      </div>
+    <% else %>
+      <%= render(
+        "processes/pods",
+        pods: @pods,
+        parent: @project
+      ) %>
     <% end %>
   </div>
 <% end %>
