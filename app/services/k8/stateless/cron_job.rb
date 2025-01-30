@@ -7,6 +7,6 @@ class K8::Stateless::CronJob < K8::Base
   end
 
   def restart
-    K8::Kubectl.from_project(project).call("rollout restart cronjob/#{service.name}")
+    K8::Kubectl.from_project(project).call("rollout restart cronjob/#{service.name} -n #{project.namespace}")
   end
 end
