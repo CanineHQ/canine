@@ -3,7 +3,7 @@ class Projects::Restart
   expects :project
 
   executed do |context|
-    context.project.services.each do |service|
+    context.project.services.running.each do |service|
       if service.web_service? || service.background_service?
         K8::Stateless::Deployment.new(service).restart
       elsif service.cron_job?

@@ -39,6 +39,7 @@ class Service < ApplicationRecord
     unhealthy: 2,
     updated: 3
   }
+  scope :running, -> { where(status: [:healthy, :unhealthy, :updated]) }
 
   has_one :cron_schedule, dependent: :destroy
   validates :cron_schedule, presence: true, if: :cron_job?
