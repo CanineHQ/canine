@@ -33,7 +33,7 @@ class Github::Client
 
   def remove_webhook!
     if webhook_exists?
-      client.remove_hook(project.repository_url, hook.id)
+      client.remove_hook(project.repository_url, webhook.id)
     end
   end
 

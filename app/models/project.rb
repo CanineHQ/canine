@@ -53,6 +53,10 @@ class Project < ApplicationRecord
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end
 
+  after_destroy_commit do
+    broadcast_remove_to [ :projects, self.account ], target: dom_id(self, :index)
+  end
+
   enum :status, {
     creating: 0,
     deployed: 1,

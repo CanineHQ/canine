@@ -1,3 +1,5 @@
+<%= turbo_stream_from [:projects, current_account] %>
+
 <div class="overflow-auto">
   <table class="table mt-2 rounded-box" id="shop_table" data-component="table">
     <thead>
@@ -21,7 +23,7 @@
     </thead>
     <tbody>
       <% projects.order(created_at: :desc).each do |project| %>
-        <tr class="cursor-pointer hover:bg-base-200/40">
+        <tr class="cursor-pointer hover:bg-base-200/40" id="<%= dom_id(project, :index) %>">
           <td>
             <div class="font-medium"><%= link_to project.name, project_deployments_path(project), class: "text-inherit hover:underline" %></div>
           </td>
