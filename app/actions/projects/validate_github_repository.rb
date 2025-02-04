@@ -5,8 +5,8 @@ class Projects::ValidateGithubRepository
   promises :project
 
   executed do |context|
-    client = Octokit::Client.new(access_token: context.project.github_access_token)
-    unless client.repository?(context.project.repository_url)
+    client = Github::Client.new(context.project)
+    unless client.repository_exists?
       context.project.errors.add(:repository_url, 'does not exist')
       context.fail_and_return!('Repository does not exist')
     end

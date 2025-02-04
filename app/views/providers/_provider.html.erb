@@ -1,6 +1,22 @@
-<div class="flex items-end gap-2">
-  <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
-  <span class="text-sm">
-    Connected as <b><%= JSON.parse(provider.auth)["info"]["nickname"] %></b>
-  </span>
+<div>
+  <div class="flex items-start gap-2">
+    <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+    <div>
+      <span class="text-sm">
+        Connected as <b><%= JSON.parse(provider.auth)["info"]["nickname"] %></b>
+      </span>
+      <% if defined?(@project) %>
+        <div class="mt-2">
+          <%= render(
+            "shared/partials/async_renderer",
+            view_model: Async::Github::WebhookStatusViewModel.new(
+              current_user,
+              project_id: @project.id
+            )
+          ) %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
 </div>
