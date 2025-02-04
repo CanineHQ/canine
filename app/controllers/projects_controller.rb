@@ -35,7 +35,9 @@ class ProjectsController < ApplicationController
   end
 
   # GET /projects/1/edit
-  def edit; end
+  def edit
+    @client = Github::Client.new(@project)
+  end
 
   # POST /projects or /projects.json
   def create

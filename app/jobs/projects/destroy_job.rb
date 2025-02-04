@@ -14,10 +14,8 @@ class Projects::DestroyJob < ApplicationJob
   end
 
   def remove_github_webhook(project)
-    client = Octokit::Client.new(access_token: project.github_access_token)
-    hooks = client.hooks(project.repository_url)
-    hook = hooks.find { |h| h.config.url.include?(Rails.application.routes.url_helpers.inbound_webhooks_github_index_path) }
-    client.remove_hook(project.repository_url, hook.id) if hook
+    client = Github::Client.new(project)
+    client.remove_hook!
   rescue Octokit::NotFound
     # If the hook is not found, do nothing
   end

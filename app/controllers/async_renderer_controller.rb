@@ -4,6 +4,7 @@ class AsyncRendererController < ApplicationController
     view_model = renderer.new(current_user, params)
     html = view_model.async_render
   rescue => e
+    puts e.message
     html = view_model.render_error
   ensure
     render inline: html.html_safe
