@@ -1,46 +1,60 @@
+import { get } from "@rails/request.js";
 import { Controller } from "@hotwired/stimulus"
+import { debounce } from "../utils";
 
 export default class extends Controller {
-  static targets = ["frame", "repository", "button", "publicRepository", "modal", "repositories"]
+  static targets = ["repository", "button", "publicRepository", "modal", "repositories", "repositoriesList"]
 
   connect() {
-    this.frameTarget.addEventListener("turbo:frame-load", this.onFrameLoad.bind(this))
+    this.page = 1
+    this.repositoriesListTarget.addEventListener("scroll", this.onScroll.bind(this)) // Added scroll event listener
+    this.searchFunc = debounce(async (e) => {
+      const searchTerm = e.target.value.toLowerCase()
+      await get(`/integrations/github/repositories?q=${searchTerm}`, {
+        responseKind: "turbo-stream"
+      })
+    }, 500)
   }
 
-  filterRepositories(e) {
-    const searchTerm = e.target.value.toLowerCase()
-    // Hide repositories that don't contain the search term
-    this.repositoriesTargets.forEach(repo => {
-      if (!repo.textContent.toLowerCase().includes(searchTerm)) {
-        repo.classList.add("hidden")
-      } else {
-        repo.classList.remove("hidden")
-      }
-    })
+  async filterRepositories(e) {
+    this.searchFunc(e)
+  }
+
+  closeModal() {
+    this.buttonTarget.removeAttribute("disabled")
+    this.modalTarget.removeAttribute("open")
   }
 
   selectPublicRepository() {
     this.repositoryTarget.value = this.publicRepositoryTarget.value
-
-    // Close the modal
-    this.modalTarget.removeAttribute("open")
-  }
-
-  onFrameLoad(event) {
-    this.buttonTarget.removeAttribute("disabled")
+    this.closeModal()
   }
 
   selectRepository(e) {
     this.repositoryTarget.value = e.target.dataset.repositoryName;
-    this.modalTarget.removeAttribute("open")
+    this.closeModal()
   }
 
   connectToGithub(e) {
     // Set attribute of src to the url of the frame
-    console.log(this.frameTarget)
-    this.frameTarget.setAttribute("src", "/integrations/github/repositories")
+    this.modalTarget.setAttribute("open", "true")
     
     // Disable the button after clicking
     this.buttonTarget.setAttribute("disabled", "true")
+    this.fetchMoreRepositories();
+  }
+
+  async onScroll(event) {
+    const target = event.target;
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight) {
+      await this.fetchMoreRepositories();
+    }
+  }
+
+  async fetchMoreRepositories() {
+    await get(`/integrations/github/repositories?page=${this.page}`, {
+      responseKind: "turbo-stream"
+    })
+    this.page += 1;
   }
 }

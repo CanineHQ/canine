@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { renderHelmChartCard, getLogoImageUrl } from "../utils/helm_charts"
+import { debounce } from "../utils"
 
 export default class extends Controller {
   static values = {
@@ -8,7 +9,6 @@ export default class extends Controller {
 
   connect() {
     this.input = this.element.querySelector(`input[name="add_on[metadata][helm_chart][helm_chart.name]"]`)
-    this.debounceTimer = null
     
     // Create and append dropdown
     this.dropdown = document.createElement('ul')
@@ -16,10 +16,7 @@ export default class extends Controller {
     this.element.appendChild(this.dropdown)
     
     // Bind search handler with debounce
-    this.input.addEventListener('input', () => {
-      clearTimeout(this.debounceTimer)
-      this.debounceTimer = setTimeout(() => this.performSearch(), 500)
-    })
+    this.input.addEventListener('input', debounce(this.performSearch.bind(this), 500));
   }
 
   async performSearch() {

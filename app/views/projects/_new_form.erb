@@ -46,12 +46,10 @@
             data-github-select-repository-target="button"
             data-disable-with="Loading..."
           >
-            Select from <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+            Connect with Github <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
           </button>
         </div>
-        <turbo-frame id="github-repositories-frame" data-github-select-repository-target="frame">
-          <!-- Repositories will be loaded here -->
-        </turbo-frame>
+        <%= render "integrations/github/repositories/modal" %>
       </div>
     </div>
 

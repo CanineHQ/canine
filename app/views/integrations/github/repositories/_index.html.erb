@@ -1,42 +1,13 @@
-<turbo-frame id="github-repositories-frame">
-  <dialog aria-label="Modal" class="modal" id="github-repositories-modal" open="" data-github-select-repository-target="modal">
-    <div class="modal-box px-6 py-0 w-11/12 max-w-5xl bg-base-200">
-      <div class="modal-action">
-        <form method="dialog">
-          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-        </form>
-      </div>
-      <div class="p-2">
-        <h2 class="text-2xl font-bold mb-4">Select Repository</h2>
-        <p class="mb-6">Select the repo you would like to back this service, or use an existing public repository's URL.</p>
-        
-        <div class="rounded-lg">
-          <div class="mb-4">
-            <input type="text" placeholder="Search" class="input input-bordered w-full" data-action="github-select-repository#filterRepositories" />
-          </div>
-          <ul class="space-y-2 h-64 overflow-y-auto bg-base-100">
-            <% repositories.each do |repo| %>
-              <li class="border-b border-b-gray-500 flex justify-between items-center px-4 py-2" data-github-select-repository-target="repositories">
-                <span><%= repo['full_name'] %></span>
-                <button
-                  type="button"
-                  class="btn btn-outline btn-sm"
-                  data-action="github-select-repository#selectRepository"
-                  data-repository-name="<%= repo['full_name'] %>">Connect</button>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-
-        <div class="mt-6 p-4 rounded-lg">
-          <h3 class="text-lg font-semibold mb-2">Public Git Repository</h3>
-          <p class="mb-4">Use a public repository by entering the URL below. Features like PR Previews and Auto-Deploy are not available if the repository has not been configured for Render.</p>
-          <div class="flex gap-4">
-            <input type="text" placeholder="czhu12/whiteboarder" data-github-select-repository-target="publicRepository" class="input input-bordered w-full mb-4" />
-            <button type="button" data-action="github-select-repository#selectPublicRepository" class="btn btn-outline">Continue</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </dialog>
-</turbo-frame>
+  <% repositories.each do |repo| %>
+    <li
+      class="border-b border-b-gray-500 flex justify-between items-center px-4 py-2"
+      data-github-select-repository-target="repositories"
+    >
+      <span><%= repo.full_name %></span>
+      <button
+        type="button"
+        class="btn btn-outline btn-sm"
+        data-action="github-select-repository#selectRepository"
+        data-repository-name="<%= repo.full_name %>">Connect</button>
+    </li>
+  <% end %>
