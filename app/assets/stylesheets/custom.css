@@ -65,3 +65,7 @@
 .code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Vazirmatn, Courier New, monospace;
 }
+
+.youtube-aspect {
+  aspect-ratio: 16 / 9;
+}
