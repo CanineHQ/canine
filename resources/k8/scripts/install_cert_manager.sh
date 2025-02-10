@@ -1,7 +1,7 @@
 set -e
 
 helm repo add jetstack https://charts.jetstack.io --force-update
-helm repo update
+helm repo update jetstack
 helm install \
   cert-manager jetstack/cert-manager \
   --namespace $NAMESPACE \
