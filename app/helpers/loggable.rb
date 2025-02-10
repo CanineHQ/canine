@@ -2,15 +2,14 @@ module Loggable
   extend ActiveSupport::Concern
 
   included do
-    has_one :log_output, as: :loggable, dependent: :destroy
+    has_many :log_outputs, as: :loggable, dependent: :destroy
   end
 
   def info(line, color: nil)
     color = LogColorsHelper::FRIENDLY_COLORS[color]
     output = "\e[#{color}m#{line}\e[0m"
     Rails.logger.info(line)
-    ensure_log_output
-    log_output.update(output: log_output.output.to_s + output + "\n")
+    self.log_outputs.create(output: output)
   end
 
   def error(line)
@@ -22,12 +21,4 @@ module Loggable
   end
 
   private
-
-  def ensure_log_output
-    create_log_output if log_output.nil?
-  end
-
-  def create_log_output
-    self.log_output = LogOutput.create!(loggable: self)
-  end
 end

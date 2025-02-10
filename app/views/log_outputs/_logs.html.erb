@@ -1,6 +1,15 @@
-<div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg" data-controller="logs" id="<%= dom_id(loggable, :logs) %>">
-  <div class="overflow-auto h-96 bg-gray-800 p-2 rounded" data-logs-target="container">
-    <pre class="text-sm font-mono whitespace-pre-wrap"><%= ansi_to_tailwind(loggable.log_output&.output || "Your logs will appear here...").html_safe %></pre>
+<div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg" data-controller="logs">
+  <div
+    class="overflow-auto h-96 bg-gray-800 p-2 rounded"
+    data-logs-target="container"
+    id="<%= dom_id(loggable, :logs) %>"
+  >
+    <% loggable.log_outputs.order(created_at: :asc).each do |log_output| %>
+      <%= render "log_outputs/log_line", log_output: log_output %>
+    <% end %>
+    <% if loggable.log_outputs.empty? %>
+      <pre class="text-sm font-mono whitespace-pre-wrap">Your logs will appear here...</pre>
+    <% end %>
   </div>
 </div>
 

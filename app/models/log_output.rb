@@ -14,11 +14,11 @@ class LogOutput < ApplicationRecord
 
   belongs_to :loggable, polymorphic: true
 
-  after_update_commit :broadcast_log_output
+  after_create_commit :broadcast_log_output
 
   private
 
   def broadcast_log_output
-    broadcast_replace_to dom_id(loggable, :logs), target: dom_id(loggable, :logs), partial: "log_outputs/logs", locals: { loggable: loggable }
+    broadcast_append_later_to dom_id(loggable, :logs), target: dom_id(loggable, :logs), partial: "log_outputs/log_line", locals: { log_output: self }
   end
 end
