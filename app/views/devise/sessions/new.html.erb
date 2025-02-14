@@ -2,9 +2,47 @@
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
       <h1 class="text-2xl font-bold text-center">Log in</h1>
-      <div class="text-center mt-4">
-        <%= render "devise/shared/links" %>
+      <div class="text-center text-sm">
+        <%= link_to "Sign up", new_user_registration_path, class: "underline" %> instead
       </div>
+
+      <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+        <%= render "error_messages", resource: resource %>
+
+        <div class="form-control">
+          <%= f.label :email, class: "label" do %>
+            <span class="label-text">Email</span>
+          <% end %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: true, class: "input input-bordered w-full" %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password, class: "label" do %>
+            <span class="label-text">Password</span>
+          <% end %>
+          <%= f.password_field :password, autocomplete: "current-password", placeholder: true, class: "input input-bordered w-full" %>
+        </div>
+
+        <% if devise_mapping.rememberable? -%>
+          <div class="form-control flex items-start">
+            <label class="cursor-pointer label mb-0">
+              <%= f.check_box :remember_me, class: "checkbox checkbox-primary" %>
+              <span class="label-text ml-2">Remember me</span>
+            </label>
+          </div>
+        <% end %>
+
+        <div class="form-control mt-6">
+          <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+
+      <div class="flex items-center my-4">
+        <div class="flex-grow border-t border-gray-600"></div>
+        <span class="mx-4 text-gray-500">OR</span>
+        <div class="flex-grow border-t border-gray-600"></div>
+      </div>
+      <%= render "devise/shared/links" %>
     </div>
   </div>
 </div>
