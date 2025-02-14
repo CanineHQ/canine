@@ -25,5 +25,17 @@
 require 'rails_helper'
 
 RSpec.describe Volume, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:volume) { build(:volume) }
+  describe 'validations' do
+    it 'is invalid without an absolute mount_path' do
+      volume.mount_path = 'relative/path'
+      expect(volume).not_to be_valid
+      expect(volume.errors[:mount_path]).to include("must be an absolute path")
+    end
+
+    it 'is valid with an absolute mount_path' do
+      volume.mount_path = '/absolute/path'
+      expect(volume).to be_valid
+    end
+  end
 end

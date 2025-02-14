@@ -44,8 +44,16 @@ class Cluster < ApplicationRecord
     k8s: 0,
     k3s: 1
   }
+  RESERVED_NAMESPACES = [
+    "default",
+    "kube-system",
+    "kube-public",
+    "kube-node-lease",
+    "kube-flannel",
+    "canine-system"
+  ]
 
   def namespaces
-    projects.pluck(:name) + add_ons.pluck(:name)
+    RESERVED_NAMESPACES + projects.pluck(:name) + add_ons.pluck(:name)
   end
 end

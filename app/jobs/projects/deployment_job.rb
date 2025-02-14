@@ -111,7 +111,6 @@ class Projects::DeploymentJob < ApplicationJob
     resources_to_sweep.each do |resource_type|
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
       results['items'].each do |resource|
-        puts "Checking #{resource_type}: #{resource['metadata']['name']}"
         if @marked_resources.select { |r| r.is_a?(K8::Stateless.const_get(resource_type)) }.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
           @logger.info("Deleting #{resource_type}: #{resource['metadata']['name']}", color: :yellow)
           kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
