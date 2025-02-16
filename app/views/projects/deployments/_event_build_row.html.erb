@@ -32,13 +32,6 @@
   </td>
   <td>
     <div class="text-sm capitalize">
-      <%= button_to redeploy_project_deployment_path(project, event.eventable), method: :post, class: "btn btn-primary btn-sm min-w-max" do %>
-        <iconify-icon icon="lucide:rocket"></iconify-icon> Redeploy
-      <% end %>
-    </div>
-  </td>
-  <td>
-    <div class="text-sm capitalize">
       <%= link_to project_deployment_path(project, event.eventable), class: "btn btn-primary btn-sm min-w-max" do %>
         <iconify-icon icon="lucide:logs"></iconify-icon> Logs
       <% end %>
