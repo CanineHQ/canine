@@ -10,3 +10,4 @@
 - [ ] Support login without Github
 - [ ] Support organization projects
 - [ ] Support dockerhub deployments
+- [ ] Review Dockerfile.dev to be faster
