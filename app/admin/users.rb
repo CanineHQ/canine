@@ -25,6 +25,10 @@ ActiveAdmin.register User do
     redirect_to root_path, notice: "Logged in as #{resource.email}"
   end
 
+  action_item :login_as, only: [ :show ] do
+    link_to 'Login As', login_as_admin_user_path(resource), method: :post
+  end
+
   actions :all, except: []
 
   show do
