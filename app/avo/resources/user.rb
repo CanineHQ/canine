@@ -9,7 +9,6 @@ class Avo::Resources::User < Avo::BaseResource
     field :id, as: :id
     field :email, as: :text
     field :first_name, as: :text
-    field :last_name, as: :text
     field :announcements_last_read_at, as: :date_time
     field :admin, as: :boolean
     field :avatar, as: :file

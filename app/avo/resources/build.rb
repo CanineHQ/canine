@@ -7,12 +7,12 @@ class Avo::Resources::Build < Avo::BaseResource
 
   def fields
     field :id, as: :id
-    field :repository_url, as: :text
-    field :git_sha, as: :text
     field :commit_message, as: :text
-    field :status, as: :select, enum: ::Build.statuses
-    field :commit_sha, as: :text
     field :project, as: :belongs_to
     field :deployment, as: :has_one
+    field :repository_url, as: :text
+    field :git_sha, as: :text
+    field :status, as: :select, enum: ::Build.statuses
+    field :commit_sha, as: :text
   end
 end
