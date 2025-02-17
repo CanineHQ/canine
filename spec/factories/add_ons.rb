@@ -25,6 +25,7 @@
 FactoryBot.define do
   factory :add_on do
     cluster
+    chart_url { 'bitnami/redis' }
     chart_type { "helm_chart" }
     sequence(:name) { |n| "example-addon-#{n}" }
     status { :installing }
