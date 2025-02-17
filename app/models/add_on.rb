@@ -31,6 +31,7 @@ class AddOn < ApplicationRecord
   validate :chart_type_exists
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validate :name_is_unique_to_cluster, on: :create
+  validates_presence_of :chart_url
   validate :has_package_details, if: :helm_chart?
 
   def name_is_unique_to_cluster
