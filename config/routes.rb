@@ -1,7 +1,9 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  ActiveAdmin.routes(self)
+  authenticate :user, ->(user) { user.admin? } do
+    mount Avo::Engine, at: Avo.configuration.root_path
+  end
   resources :accounts, only: [ :create ] do
     resources :account_users, only: %i[create index destroy], module: :accounts
     member do
