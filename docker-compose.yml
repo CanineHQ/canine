@@ -19,7 +19,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     # Overrides default command so things don't shut down after the process ends.
     # command: sleep infinity
     depends_on:
@@ -37,12 +37,11 @@ services:
       - CANINE_USERNAME=${CANINE_USERNAME}
       - CANINE_PASSWORD=${CANINE_PASSWORD}
       - LOCAL_MODE=true
+      # This docker file is only expected to be used in the laptop deployment, so we can hardcode the secret key base
+      - SECRET_KEY_BASE=a38fcb39d60f9d146d2a0053a25024b9
       - APP_HOST=http://localhost:${PORT:-3000}
     volumes:
-      - .:/rails
-      - node_modules:/rails/node_modules
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   postgres:
-  node_modules:
