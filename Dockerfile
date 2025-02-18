@@ -36,6 +36,9 @@ RUN apt-get update -qq && \
     ./get_helm.sh && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/v2.21.1/telepresence-linux-amd64 -o /usr/local/bin/telepresence && \
+    chmod a+x /usr/local/bin/telepresence
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
@@ -74,7 +77,7 @@ COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 COPY --from=build /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=build /usr/local/bin/helm /usr/local/bin/helm
-
+COPY --from=build /usr/local/bin/telepresence /usr/local/bin/telepresence
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
