@@ -6,9 +6,9 @@ if [ -z "${LD_PRELOAD+x}" ] && [ -f /usr/lib/*/libjemalloc.so.2 ]; then
   export LD_PRELOAD="$(echo /usr/lib/*/libjemalloc.so.2)"
 fi
 
-# If running the rails server or bin/dev then create or migrate existing database
+# If running the rails server, bin/dev, or bin/run then create or migrate existing database
 echo "Checking if database needs to be prepared..."
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ] || [ "${1}" == "./bin/dev" ]; then
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ] || [ "${1}" == "./bin/dev" ] || [ "${1}" == "./bin/run" ]; then
   echo "Preparing database..."
   ./bin/rails db:create
   ./bin/rails db:prepare
