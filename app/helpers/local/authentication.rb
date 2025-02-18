@@ -27,7 +27,7 @@ module Local::Authentication
     end
     if ENV["CANINE_USERNAME"].presence && ENV["CANINE_PASSWORD"].presence
       authenticate_or_request_with_http_basic do |username, password|
-        @current_user = User.find_by!(email: "#{username}@example.com")
+        @current_user = User.find_by!(email: "#{username}@#{Local::CreateDefaultUser::BASE_DOMAIN}")
         @current_account = @current_user.accounts.first
       end
     else
