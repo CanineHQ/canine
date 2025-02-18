@@ -72,17 +72,16 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y git docker.io && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 COPY --from=build /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=build /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=build /usr/local/bin/telepresence /usr/local/bin/telepresence
-# Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
