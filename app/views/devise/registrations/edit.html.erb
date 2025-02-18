@@ -24,13 +24,19 @@
       <% end %>
 
       <div class="mb-3 d-grid">
-        <%= f.submit "Save Changes", class: 'btn btn-lg btn-primary' %>
+        <%= f.submit "Save Changes", class: 'btn btn-primary' %>
       </div>
     <% end %>
-    <hr>
+    <div>
+      <h2 class="text-2xl font-bold">Danger zone</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
 
-    <p class="text-center">
-      <%= link_to "Deactivate my account", registration_path(resource_name), class: "btn btn-error", data: { confirm: "Are you sure? You cannot undo this." }, method: :delete %>
-    </p>
+      <div class="mt-6">
+        <%= link_to "Deactivate my account", registration_path(resource_name), class: "btn btn-error", data: { confirm: "Are you sure? You cannot undo this." }, method: :delete %>
+        <div class="mt-2 text-sm text-gray-500">
+          This will recursively delete all associated projects and clusters from Canine, but the underlying Kubernetes cluster will remain.
+        </div>
+      </div>
+    </div>
   </div>
 </div>
