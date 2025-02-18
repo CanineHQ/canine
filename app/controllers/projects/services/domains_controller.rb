@@ -6,7 +6,8 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
     @service.updated!
     respond_to do |format|
       if @domain.save
-        Services::AddDomainJob.perform_later(@domain)
+        # TODO: Explore how best to renable this without causing strage bugs
+        # Services::AddDomainJob.perform_later(@service)
         format.html { redirect_to project_services_path(@project), notice: "Domain was successfully added." }
         format.json { render :show, status: :created, domain: @domain }
         format.turbo_stream { render :create }

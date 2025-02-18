@@ -106,9 +106,6 @@ class Projects::BuildJob < ApplicationJob
     Dir.mktmpdir do |repository_path|
       build.info("Cloning repository: #{project.repository_url} to #{repository_path}", color: :yellow)
 
-      # Ensure the temporary directory doesn't exist
-      FileUtils.rm_rf(repository_path) if Dir.exist?(repository_path)
-
       git_clone(project, build, repository_path)
 
       execute_docker_build(project, build, repository_path)
