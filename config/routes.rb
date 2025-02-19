@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     Avo::Engine.routes.draw do
       # This route is not protected, secure it with authentication if needed.
       get "dashboard", to: "tools#dashboard", as: :dashboard
+      post "login_as/:id", to: "tools#login_as", as: :login_as
     end
   end
   resources :accounts, only: [ :create ] do

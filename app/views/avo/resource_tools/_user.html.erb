@@ -10,15 +10,9 @@
       <div class="flex flex-col p-4 min-h-24">
         <div class="space-y-4">
           <h3>Manage User</h3>
-
-          <p>
-            You can edit this file here <code class='p-1 rounded bg-gray-500 text-white text-sm'>app/views/avo/resource_tools/_user.html.erb</code>.
-          </p>
-
-          <p>
-            The resource tool configuration file should be here <code class='p-1 rounded bg-gray-500 text-white text-sm'>app/avo/resource_tools/user.rb</code>.
-          </p>
-
+          <%= form_with url: login_as_path(@resource.record.id), method: :post, data: { turbo: false } do |f| %>
+            <%= f.submit "Login As", class: Avo::Config.button_css %>
+          <% end %>
           <%
             # In this partial you have access to the following variables:
             # tool
