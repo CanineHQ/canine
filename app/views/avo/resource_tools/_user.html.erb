@@ -1,0 +1,37 @@
+<div class="flex flex-col">
+  <%= render Avo::PanelComponent.new(name: "User") do |c| %>
+    <% c.with_tools do %>
+      <%= a_link('/avo', icon: 'heroicons/solid/academic-cap', color: :primary, style: :primary) do %>
+        Login As
+      <% end %>
+    <% end %>
+
+    <% c.with_body do %>
+      <div class="flex flex-col p-4 min-h-24">
+        <div class="space-y-4">
+          <h3>Manage User</h3>
+
+          <p>
+            You can edit this file here <code class='p-1 rounded bg-gray-500 text-white text-sm'>app/views/avo/resource_tools/_user.html.erb</code>.
+          </p>
+
+          <p>
+            The resource tool configuration file should be here <code class='p-1 rounded bg-gray-500 text-white text-sm'>app/avo/resource_tools/user.rb</code>.
+          </p>
+
+          <%
+            # In this partial you have access to the following variables:
+            # tool
+            # @resource
+            # @resource.record
+            # params
+            # Avo::Current.context
+            # current_user
+          %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+

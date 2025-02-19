@@ -6,6 +6,8 @@ class Avo::Resources::User < Avo::BaseResource
   # }
 
   def fields
+    tool Avo::ResourceTools::User, show_on: :index
+
     field :id, as: :id
     field :email, as: :text
     field :first_name, as: :text

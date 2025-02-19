@@ -1,0 +1,20 @@
+<div class="flex flex-col">
+  <%= render Avo::PanelComponent.new(name: 'Dashboard', display_breadcrumbs: true) do |c| %>
+    <% c.with_tools do %>
+      <div class="text-sm italic">This is the panels tools section.</div>
+    <% end %>
+
+    <% c.with_body do %>
+      <div class="flex flex-col justify-between py-6 min-h-24">
+        <div class="px-6 space-y-4">
+          <div class="grid grid-cols-4 gap-4">
+            <%= render 'avo/custom/statistics/hanging_builds_count' %>
+            <%= render 'avo/custom/statistics/deployment_success_rate' %>
+            <%= render 'avo/custom/statistics/new_users' %>
+            <%= render 'avo/custom/statistics/projects_and_clusters' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

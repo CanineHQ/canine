@@ -3,6 +3,10 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
+    Avo::Engine.routes.draw do
+      # This route is not protected, secure it with authentication if needed.
+      get "dashboard", to: "tools#dashboard", as: :dashboard
+    end
   end
   resources :accounts, only: [ :create ] do
     resources :account_users, only: %i[create index destroy], module: :accounts
