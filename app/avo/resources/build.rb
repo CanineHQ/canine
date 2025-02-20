@@ -10,6 +10,7 @@ class Avo::Resources::Build < Avo::BaseResource
     field :commit_message, as: :text
     field :project, as: :belongs_to
     field :deployment, as: :has_one
+    field :created_at, as: :date_time
     field :repository_url, as: :text
     field :git_sha, as: :text
     field :status, as: :select, enum: ::Build.statuses
