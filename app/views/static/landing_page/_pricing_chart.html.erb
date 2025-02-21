@@ -13,7 +13,7 @@
         <div class="relative flex flex-col items-center flex-grow pb-5 group">
           <span class="absolute top-0 -mt-8 font-bold block">$<%= price[:price] %></span>
           <div class="relative flex justify-center w-full <%= price[:style] %> animated-height" style="height: 0px; transition: height 0.5s;" data-price="<%= price[:price] %>"></div>
-          <span class="absolute bottom-[-5px] text-sm font-semibold"><%= price[:name] %></span>
+          <span class="absolute bottom-[-20px] text-center sm:bottom-[-5px] transform rotate-[30deg] sm:rotate-0 text-sm font-semibold"><%= price[:name] %></span>
         </div>
       <% end %>
 		</div>
