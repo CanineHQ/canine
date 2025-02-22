@@ -1,6 +1,5 @@
 <%= project_layout(@project) do %>
-  <div>
-    <%= turbo_frame_tag "new_service" do %>
+  <%= turbo_frame_tag "new_service" do %>
       <%= link_to new_project_service_path(@project) do %>
         <button class="btn btn-primary btn-sm inline-flex">
           <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
@@ -9,7 +8,8 @@
       <% end %>
     <% end %>
   </div>
-  <div class="overflow-x-auto mt-2">
+  <div class="overflow-x-auto mt-2" data-controller="services">
+    <%= render "projects/services/telepresence_guide", cluster: @project.cluster %>
     <% if @project.services.empty? %>
       <div>
         <p class="text-gray-500">No services yet</p>

@@ -15,7 +15,7 @@ export default class extends Controller {
 
   showConnectionInstructions(event) {
     event.preventDefault();
-    const text = `KUBECONFIG=/path/to/kubeconfig kubectl exec -it -n ${event.target.dataset.namespace} ${event.target.dataset.podName} -- /bin/bash`
+    const text = `KUBECONFIG=/path/to/kubeconfig.yml kubectl exec -it -n ${event.target.dataset.namespace} ${event.target.dataset.podName} -- /bin/bash`
     this.commandTarget.textContent = text
     click_outside_modal.showModal()
   }
