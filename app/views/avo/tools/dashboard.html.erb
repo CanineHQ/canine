@@ -1,17 +1,35 @@
 <div class="flex flex-col">
-  <%= render Avo::PanelComponent.new(name: 'Dashboard', display_breadcrumbs: true) do |c| %>
+  <%= render Avo::PanelComponent.new(name: 'Performance Dashboard', display_breadcrumbs: true) do |c| %>
     <% c.with_tools do %>
-      <div class="text-sm italic">This is the panels tools section.</div>
+      <div class="text-sm italic">Performance metrics for clusters, projects, builds and deployments.</div>
     <% end %>
 
+    <% @time_period = (params[:time_period].to_i || 7).days %>
     <% c.with_body do %>
       <div class="flex flex-col justify-between py-6 min-h-24">
         <div class="px-6 space-y-4">
+          <div class="px-4 mb-4">
+            <%= form_with url: dashboard_path, method: :get, local: true do %>
+              <label for="time_period" class="mr-2">Select Time Period:</label>
+              <span>Last</span>
+              <%= select_tag :time_period, options_for_select([[7, 7], [30, 30], [365, 365]], (params[:time_period].to_i || 7)), class: "border rounded" %>
+              <span>days</span>
+              <%= submit_tag 'Filter', class: "ml-2 bg-blue-500 text-white rounded px-4 py-2" %>
+            <% end %>
+          </div>
+
           <div class="grid grid-cols-4 gap-4">
-            <%= render 'avo/custom/statistics/hanging_builds_count' %>
-            <%= render 'avo/custom/statistics/deployment_success_rate' %>
+            <%= render 'avo/custom/statistics/hanging_builds_count', time_period: @time_period %>
+            <%= render 'avo/custom/statistics/deployment_success_rate', time_period: @time_period %>
             <%= render 'avo/custom/statistics/projects' %>
             <%= render 'avo/custom/statistics/clusters' %>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col justify-between py-6 min-h-24">
+        <div class="px-6 space-y-4">
+          <div class="grid grid-cols-4 gap-4">
+            <%= render 'avo/custom/statistics/new_users', time_period: @time_period %>
           </div>
         </div>
       </div>
