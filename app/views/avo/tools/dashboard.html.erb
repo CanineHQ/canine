@@ -19,7 +19,7 @@
           </div>
 
           <div class="grid grid-cols-4 gap-4">
-            <%= render 'avo/custom/statistics/hanging_builds_count', time_period: @time_period %>
+            <%= render 'avo/custom/statistics/build_success_rate', time_period: @time_period %>
             <%= render 'avo/custom/statistics/deployment_success_rate', time_period: @time_period %>
             <%= render 'avo/custom/statistics/projects' %>
             <%= render 'avo/custom/statistics/clusters' %>

@@ -1,5 +1,0 @@
-<div class="px-4" style="border-right: 1px solid #e0e0e0;">
-  <% @hanging_builds_count = Build.where(updated_at: 20.minutes.ago..).where(status: :in_progress).count %>
-  <p class="text-sm text-gray-500 mb-2">Hanging builds</p>
-  <p class="text-2xl font-bold"><%= @hanging_builds_count %></p>
-</div>
