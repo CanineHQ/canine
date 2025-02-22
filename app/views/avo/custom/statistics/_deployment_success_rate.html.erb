@@ -1,6 +1,7 @@
 <div class="px-4" style="border-right: 1px solid #e0e0e0;">
   <% @builds_count = Build.where(created_at: time_period.ago.., status: :completed).count.to_f %>
-  <% @deployment_success_rate = @builds_count > 0 ? Deployment.where(created_at: time_period.ago.., status: :success).count / @builds_count * 100 : 0 %>
+  <% @deployments_count = Deployment.where(created_at: time_period.ago.., status: :completed).count.to_f %>
+  <% @deployment_success_rate = @builds_count > 0 ? @deployments_count / @builds_count * 100 : 0 %>
   <p class="text-sm text-gray-500 mb-2">Deployment success rate</p>
-  <p class="text-2xl font-bold"><%= @deployment_success_rate %>%</p>
+  <p class="text-2xl font-bold"><%= @deployment_success_rate.to_i %>% <span class="text-sm text-gray-500">(<%= @deployments_count.to_i %> / <%= @builds_count.to_i %>)</span></p>
 </div>
