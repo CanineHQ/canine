@@ -1,0 +1,5 @@
+<% if provider.provider == Provider::GITHUB_PROVIDER %>
+  <%= JSON.parse(provider.auth)["info"]["nickname"] %>
+<% elsif provider.provider == Provider::DOCKER_HUB_PROVIDER %>
+  <%= JSON.parse(provider.auth)["info"]["username"] %>
+<% end %>

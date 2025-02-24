@@ -40,6 +40,7 @@ Rails.application.routes.draw do
     resources :processes, only: %i[index show], module: :add_ons
   end
 
+  resources :providers, only: %i[index new create destroy]
   resources :projects do
     member do
       post :restart
