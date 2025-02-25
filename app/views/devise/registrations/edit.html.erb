@@ -1,32 +1,36 @@
-<div class="row">
-  <div class="col-lg-4 offset-lg-4">
-    <h1 class="text-lg">Account</h1>
+<%= settings_layout do %>
+  <div class="space-y-16">
+    <div>
+      <h2 class="text-2xl font-bold">Account</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-      <div class="mb-3">
-        <%= f.text_field :name, autofocus: false, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Full name" %>
-      </div>
+        <div class="mb-3">
+          <%= f.text_field :name, autofocus: false, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Full name" %>
+        </div>
 
-      <div class="mb-3">
-        <%= f.email_field :email, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: 'Email Address' %>
-      </div>
+        <div class="mb-3">
+          <%= f.email_field :email, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: 'Email Address' %>
+        </div>
 
-      <div class="mb-3">
-        <div>Avatar</div>
-        <%= f.file_field :avatar, accept:'image/*', class: "file-input max-w-64 bg-base-200 sm:max-w-xs" %>
-      </div>
-      <%= image_tag avatar_path(f.object), class: "rounded shadow-sm d-block my-3" %>
+        <div class="mb-3">
+          <div>Avatar</div>
+          <%= f.file_field :avatar, accept:'image/*', class: "file-input max-w-64 bg-base-200 sm:max-w-xs" %>
+        </div>
+        <%= image_tag avatar_path(f.object), class: "rounded shadow-sm d-block my-3" %>
 
-      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-        <div class="alert alert-warning">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div class="alert alert-warning">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% end %>
+
+        <div class="mb-3 d-grid">
+          <%= f.submit "Save Changes", class: 'btn btn-primary' %>
+        </div>
       <% end %>
+    </div>
 
-      <div class="mb-3 d-grid">
-        <%= f.submit "Save Changes", class: 'btn btn-primary' %>
-      </div>
-    <% end %>
     <div>
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
@@ -39,4 +43,4 @@
       </div>
     </div>
   </div>
-</div>
+<% end %>

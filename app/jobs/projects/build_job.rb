@@ -8,6 +8,7 @@ class Projects::BuildJob < ApplicationJob
 
   def perform(build)
     project = build.project
+    project.project_credential_provider.used!
 
     clone_repository_and_build_docker(project, build)
 

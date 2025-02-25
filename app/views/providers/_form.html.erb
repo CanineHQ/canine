@@ -1,0 +1,24 @@
+<%= form_with model: provider do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+  <%= form.hidden_field :provider, value: params[:provider_type] %>
+  <% if params[:provider_type] == Provider::DOCKER_HUB_PROVIDER || form.object.provider == Provider::DOCKER_HUB_PROVIDER %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Username</span>
+      </label>
+      <%= form.text_field :username, class: "input input-bordered", required: true %>
+    </div>
+  <% end %>
+
+  <div class="form-control mt-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Access Token</span>
+    </label>
+    <%= form.text_field :access_token, class: "input input-bordered", required: true %>
+  </div>
+
+  <div class="form-footer">
+    <%= form.submit "Save", class: "btn btn-primary" %>
+    <%= link_to "Cancel", providers_path, class: "btn btn-outline" %>
+  </div>
+<% end %>

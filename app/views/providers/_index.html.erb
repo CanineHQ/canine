@@ -1,0 +1,40 @@
+<div class="overflow-x-auto mb-4">
+  <table class="table">
+    <!-- head -->
+    <thead>
+      <tr>
+        <th>Provider</th>
+        <th>Username</th>
+        <th>Last Used</th>
+        <th>Used By</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% current_user.providers.each do |provider| %>
+        <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
+        <tr>
+          <td><%= provider.provider %></td>
+          <td>
+            <%= render "providers/show", provider: %>
+          </td>
+          <td>
+            <%= (provider.last_used_at.strftime("%b %d, %Y") if provider.last_used_at) || "Never" %>
+          </td>
+          <td>
+            <% project_credential_providers.each do |project_credential_provider| %>
+              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover: underline" %>
+            <% end %>
+          </td>
+          <td>
+            <% if project_credential_providers.empty? %>
+              <%= link_to "Delete", provider, method: :delete, class: "btn btn-error btn-sm" %>
+            <% else %>
+              <%= link_to "Delete", "#", class: "btn btn-error btn-sm", disabled: true %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

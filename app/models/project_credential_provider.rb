@@ -24,6 +24,8 @@ class ProjectCredentialProvider < ApplicationRecord
   belongs_to :provider
   validates_uniqueness_of :provider_id, scope: :project_id
 
+  delegate :used!, to: :provider
+
   def github_username
     JSON.parse(provider.auth)["info"]["nickname"]
   end

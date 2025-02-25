@@ -7,6 +7,7 @@
 #  access_token_secret :string
 #  auth                :text
 #  expires_at          :datetime
+#  last_used_at        :datetime
 #  provider            :string
 #  refresh_token       :string
 #  uid                 :string
@@ -23,6 +24,11 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Provider < ApplicationRecord
+  attr_accessor :username
+  GITHUB_PROVIDER = "github"
+  DOCKER_HUB_PROVIDER = "docker_hub"
+  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER ].freeze
+
   belongs_to :user
 
   Devise.omniauth_configs.keys.each do |provider|
@@ -52,4 +58,8 @@ class Provider < ApplicationRecord
   end
 
   def twitter_refresh_token!(token); end
+
+  def used!
+    update!(last_used_at: Time.current)
+  end
 end
