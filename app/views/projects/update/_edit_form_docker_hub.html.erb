@@ -29,13 +29,6 @@
     <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
   </div>
 
-  <div class="form-control my-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Container registry URL</span>
-    </label>
-    <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: form.object.attributes["container_registry_url"] %>
-  </div>
-
   <div class="form-footer">
     <%= form.button "Submit", class: "btn btn-primary" %>
 

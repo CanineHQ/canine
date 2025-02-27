@@ -9,7 +9,7 @@
       "Delete",
       project_volume_path(volume.project, volume),
       method: :delete,
-      data: { turbo_confirm: "Are you sure?" },
+      data: { turbo_confirm: "Are you sure you want to delete volume #{volume.name}?" },
       class: "text-error"
     ) %>
   </td>

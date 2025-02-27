@@ -30,4 +30,12 @@ class Event < ApplicationRecord
     broadcast_prepend_to [ project, :events ], target: "events", partial: "projects/deployments/event_row", locals: { project:, event: self }
     broadcast_remove_to [ project, :events ], target: "no-events-message"
   end
+
+  def external_link
+    if project.github?
+      "https://github.com/#{project.repository_url}/commit/#{eventable.commit_sha}"
+    else
+      "https://hub.docker.com/r/#{project.repository_url}/tags"
+    end
+  end
 end
