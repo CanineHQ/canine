@@ -1,11 +1,15 @@
 <div>
   <div class="flex items-start gap-2">
-    <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+    <% if provider.github? %>
+      <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+    <% else %>
+      <iconify-icon icon="mdi:docker" width="24" height="24"></iconify-icon>
+    <% end %>
     <div>
       <span class="text-sm">
-        Connected as <b><%= JSON.parse(provider.auth)["info"]["nickname"] %></b>
+        Connected as <b><%= provider.username %></b>
       </span>
-      <% if defined?(@project) %>
+      <% if defined?(@project) && @project.github? %>
         <div class="mt-2">
           <%= render(
             "shared/partials/async_renderer",

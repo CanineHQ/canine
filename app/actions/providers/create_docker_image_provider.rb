@@ -7,7 +7,7 @@ class Providers::CreateDockerImageProvider
   executed do |context|
     context.provider.auth = {
       info: {
-        username: context.provider.username
+        username: context.provider.username_param
       }
     }.to_json
     if context.provider.save

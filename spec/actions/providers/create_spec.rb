@@ -5,7 +5,7 @@ RSpec.describe Providers::Create do
 
   describe '.call' do
     context 'when the provider is dockerhub' do
-      let(:provider) { build(:provider, provider: Provider::DOCKER_HUB_PROVIDER) }
+      let(:provider) { build(:provider, :docker_hub) }
       it 'creates the provider' do
         subject
         expect(subject).to be_success
@@ -13,7 +13,7 @@ RSpec.describe Providers::Create do
     end
 
     context 'when the provider is github' do
-      let(:provider) { build(:provider, provider: Provider::GITHUB_PROVIDER) }
+      let(:provider) { build(:provider, :github) }
       context 'when the access token is valid' do
         before do
           allow(Octokit::Client).to receive(:new).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo', 'write:packages' ]))

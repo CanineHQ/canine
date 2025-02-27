@@ -37,5 +37,10 @@ FactoryBot.define do
     branch { "main" }
     dockerfile_path { "./Dockerfile" }
     docker_build_context_directory { "." }
+
+    after(:build) do |project|
+      provider = create(:provider, :github)
+      ProjectCredentialProvider.new(project: project, provider: provider)
+    end
   end
 end

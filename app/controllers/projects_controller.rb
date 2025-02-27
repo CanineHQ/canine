@@ -28,6 +28,10 @@ class ProjectsController < ApplicationController
 
   # GET /projects/new
   def new
+    selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
+    @providers = current_user.providers.where(provider: selected_provider)
+    # Temporary hack
+    @provider = @providers.first
     @project = Project.new
 
     # Uncomment to authorize with Pundit
@@ -36,12 +40,12 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
-    @client = Github::Client.new(@project)
+    @client = Github::Client.from_project(@project)
   end
 
   # POST /projects or /projects.json
   def create
-    result = Projects::Create.call(Project.new(project_params), params, current_user)
+    result = Projects::Create.call(params, current_user)
 
     @project = result.project
     respond_to do |format|
@@ -91,15 +95,6 @@ class ProjectsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def project_params
-    params.require(:project).permit(
-      :name,
-      :repository_url,
-      :branch,
-      :cluster_id,
-      :docker_build_context_directory,
-      :docker_command,
-      :dockerfile_path,
-      :container_registry_url
-    )
+    Projects::Create.create_params(params)
   end
 end

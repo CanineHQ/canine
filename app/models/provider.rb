@@ -24,7 +24,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Provider < ApplicationRecord
-  attr_accessor :username
+  attr_accessor :username_param
   GITHUB_PROVIDER = "github"
   DOCKER_HUB_PROVIDER = "docker_hub"
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER ].freeze
@@ -37,6 +37,18 @@ class Provider < ApplicationRecord
 
   def client
     send("#{provider}_client")
+  end
+
+  def username
+    JSON.parse(auth)["info"]["nickname"] || JSON.parse(auth)["info"]["username"]
+  end
+
+  def registry
+    if github?
+      "ghcr.io"
+    else
+      "https://index.docker.io/v1/"
+    end
   end
 
   def expired?
@@ -55,6 +67,14 @@ class Provider < ApplicationRecord
       config.access_token        = access_token
       config.access_token_secret = access_token_secret
     end
+  end
+
+  def docker_hub?
+    provider == DOCKER_HUB_PROVIDER
+  end
+
+  def github?
+    provider == GITHUB_PROVIDER
   end
 
   def twitter_refresh_token!(token); end

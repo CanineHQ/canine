@@ -8,13 +8,19 @@ class Projects::BuildJob < ApplicationJob
 
   def perform(build)
     project = build.project
-    project.project_credential_provider.used!
+    # If its a dockerhub deploy, we don't need to build the docker image
+    if project.github?
+      project_credential_provider = project.project_credential_provider
+      project_credential_provider.used!
 
-    clone_repository_and_build_docker(project, build)
+      clone_repository_and_build_docker(project, build)
 
-    login_to_docker(project, build)
+      login_to_docker(project_credential_provider, build)
 
-    push_to_dockerhub(project, build)
+      push_to_github_container_registry(project, build)
+    else
+      build.info("Skipping build for #{project.name} because it's a Docker Hub deploy")
+    end
 
     complete_build!(build)
     # TODO: Step 7: Optionally, add post-deploy tasks or slack notifications
@@ -26,7 +32,8 @@ class Projects::BuildJob < ApplicationJob
   private
 
   def project_git(project)
-    "https://#{project.github_username}:#{project.github_access_token}@github.com/#{project.repository_url}.git"
+    project_credential_provider = project.project_credential_provider
+    "https://#{project_credential_provider.username}:#{project_credential_provider.access_token}@github.com/#{project.repository_url}.git"
   end
 
   def git_clone(project, build, repository_path)
@@ -39,7 +46,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Failed to clone repository: #{stderr}" unless status.success?
 
-    build.success("Repository cloned successfully.")
+    build.success("Repository cloned successfully to #{repository_path}.")
   end
 
   def build_docker_build_command(project, repository_path)
@@ -72,21 +79,21 @@ class Projects::BuildJob < ApplicationJob
     raise BuildFailure, e.message
   end
 
-  def login_to_docker(project, build)
+  def login_to_docker(project_credential_provider, build)
     docker_login_command = %w[docker login ghcr.io --username] +
-                           [ project.github_username, "--password", project.github_access_token ]
+                           [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
 
-    build.info("Logging into ghcr.io as #{project.github_username}", color: :yellow)
+    build.info("Logging into ghcr.io as #{project_credential_provider.username}", color: :yellow)
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
-      build.success("Logged in to Docker Hub successfully.")
+      build.success("Logged in to Github Container Registry successfully.")
     else
-      build.error("Docker Hub login failed with error:\n#{stderr}")
+      build.error("Github Container Registry login failed with error:\n#{stderr}")
     end
   end
 
-  def push_to_dockerhub(project, build)
+  def push_to_github_container_registry(project, build)
     docker_push_command = [ "docker", "push", project.container_registry_url ]
 
     build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
@@ -94,7 +101,7 @@ class Projects::BuildJob < ApplicationJob
 
     raise BuildFailure, "Docker push failed for project #{project.name} with error:\n#{stderr}" unless status.success?
 
-    build.success("Docker image pushed successfully for project #{project.name}:\n#{stdout}")
+    build.success("Docker image pushed to `#{project.container_registry_url}` successfully for project #{project.name}:\n#{stdout}")
   end
 
   def complete_build!(build)

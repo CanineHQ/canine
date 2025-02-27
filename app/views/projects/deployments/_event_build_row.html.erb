@@ -8,8 +8,8 @@
   </td>
   <td>
     <div class="font-medium">
-      <%= link_to event.eventable.commit_sha[0..6], 
-      "https://github.com/#{project.repository_url}/commit/#{event.eventable.commit_sha}",
+      <%= link_to event.eventable.commit_sha[0..6],
+        event.external_link,
         class: "underline",
         target: "_blank",
         rel: "noopener noreferrer" %>
