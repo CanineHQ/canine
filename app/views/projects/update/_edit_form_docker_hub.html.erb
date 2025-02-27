@@ -1,0 +1,48 @@
+<%= form_with(model: project) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+  <div class="form-control mt-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Repository path</span>
+    </label>
+    <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+  </div>
+
+    <div class="form-control mt-1 w-full max-w-sm">
+    <div class="card bg-base-300 shadow-xl">
+      <div class="card-body">
+        <%= render "providers/provider", provider: project.project_credential_provider.provider %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-control mt-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Docker command</span>
+    </label>
+    <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+  </div>
+
+  <div class="form-control my-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Predeploy command</span>
+    </label>
+    <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+  </div>
+
+  <div class="form-control my-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Container registry URL</span>
+    </label>
+    <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: form.object.attributes["container_registry_url"] %>
+  </div>
+
+  <div class="form-footer">
+    <%= form.button "Submit", class: "btn btn-primary" %>
+
+    <% if form.object.new_record? %>
+      <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
+    <% else %>
+      <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+<% end %>

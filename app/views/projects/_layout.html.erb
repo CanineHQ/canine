@@ -14,12 +14,17 @@
     <% end %>
     <div class="text-sm">
       <%= link_to project.full_repository_url, target: "_blank" do %>
-        <iconify-icon icon="lucide:github"></iconify-icon>
-        <span class="underline mr-2"><%= project.repository_url %></span>
-        <iconify-icon icon="lucide:git-branch"></iconify-icon>
-        <span class="underline"><%= project.branch %></span>
+        <% if project.github? %>
+          <iconify-icon icon="lucide:github"></iconify-icon>
+          <span class="underline mr-2"><%= project.repository_url %></span>
+          <iconify-icon icon="lucide:git-branch"></iconify-icon>
+          <span class="underline"><%= project.branch %></span>
+        <% else %>
+          <iconify-icon icon="logos:docker-icon"></iconify-icon>
+          <span class="underline"><%= project.repository_url %></span>
+        <% end %>
       <% end %>
-      <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
+      <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
     </div>
   </div>
   <div class="flex flex-col">

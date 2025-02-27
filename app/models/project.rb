@@ -97,7 +97,11 @@ class Project < ApplicationRecord
   end
 
   def full_repository_url
-    "https://github.com/#{repository_url}"
+    if github?
+      "https://github.com/#{repository_url}"
+    else
+      "https://hub.docker.com/r/#{repository_url}"
+    end
   end
 
   def provider

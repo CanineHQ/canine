@@ -1,6 +1,10 @@
 <div>
   <div class="flex items-start gap-2">
-    <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+    <% if provider.github? %>
+      <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+    <% else %>
+      <iconify-icon icon="mdi:docker" width="24" height="24"></iconify-icon>
+    <% end %>
     <div>
       <span class="text-sm">
         Connected as <b><%= provider.username %></b>
