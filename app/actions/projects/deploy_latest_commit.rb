@@ -9,14 +9,23 @@ class Projects::DeployLatestCommit
     # Fetch the latest commit from the default branch
     project = context.project
     current_user = context.current_user || project.account.owner
-    client = Octokit::Client.new(access_token: project.github_access_token)
-    commit = client.commits(project.repository_url).first
+    if project.github?
+      project_credential_provider = project.project_credential_provider
+      client = Github::Client.from_project(project)
+      commit = client.commits.first
+      build = project.builds.create!(
+        commit_sha: commit.sha,
+        commit_message: commit.commit[:message],
+        current_user:
+      )
+    else
+      build = project.builds.create!(
+        commit_sha: "latest",
+        commit_message: "Deploying from #{project.repository_url}",
+        current_user:
+      )
+    end
 
-    build = project.builds.create!(
-      commit_sha: commit.sha,
-      commit_message: commit.commit[:message],
-      current_user: current_user
-    )
     Projects::BuildJob.perform_later(build)
   end
 end

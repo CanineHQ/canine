@@ -25,6 +25,10 @@ class ProjectCredentialProvider < ApplicationRecord
   validates_uniqueness_of :provider_id, scope: :project_id
 
   delegate :used!, to: :provider
+  delegate :username, to: :provider
+  delegate :access_token, to: :provider
+  delegate :github?, to: :provider
+  delegate :docker_hub?, to: :provider
 
   def github_username
     JSON.parse(provider.auth)["info"]["nickname"]

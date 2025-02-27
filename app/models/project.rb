@@ -47,6 +47,7 @@ class Project < ApplicationRecord
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
                               message: "must be in the format 'owner/repository'"
                             }
+  validates :project_credential_provider, presence: true
 
   validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
@@ -62,6 +63,8 @@ class Project < ApplicationRecord
     deployed: 1,
     destroying: 2
   }
+  delegate :github?, to: :project_credential_provider
+  delegate :docker_hub?, to: :project_credential_provider
 
   def name_is_unique_to_cluster
     if cluster.namespaces.include?(name)
@@ -97,21 +100,12 @@ class Project < ApplicationRecord
     "https://github.com/#{repository_url}"
   end
 
-  def github_provider
-    project_credential_provider&.provider || account.github_provider
-  end
-
-  def github_username
-    JSON.parse(github_provider.auth)["info"]["nickname"]
-  end
-
-  def github_access_token
-    github_provider.access_token
+  def provider
+    project_credential_provider&.provider
   end
 
   def container_registry_url
-    container_registry = self.attributes["container_registry_url"].presence || repository_url
-    "ghcr.io/#{container_registry}:latest"
+    project_credential_provider.container_registry_url
   end
 
   def deployable?
@@ -124,5 +118,14 @@ class Project < ApplicationRecord
 
   def updated!
     services.each(&:updated!)
+  end
+
+  def container_registry_url
+    container_registry = self.attributes["container_registry_url"].presence || repository_url
+    if github?
+      "ghcr.io/#{container_registry}:latest"
+    else
+      "docker.io/#{container_registry}:latest"
+    end
   end
 end

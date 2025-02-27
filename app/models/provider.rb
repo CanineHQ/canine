@@ -39,6 +39,18 @@ class Provider < ApplicationRecord
     send("#{provider}_client")
   end
 
+  def username
+    JSON.parse(auth)["info"]["nickname"] || JSON.parse(auth)["info"]["username"]
+  end
+
+  def registry
+    if github?
+      "ghcr.io"
+    else
+      "https://index.docker.io/v1/"
+    end
+  end
+
   def expired?
     expires_at? && expires_at <= Time.zone.now
   end
@@ -55,6 +67,14 @@ class Provider < ApplicationRecord
       config.access_token        = access_token
       config.access_token_secret = access_token_secret
     end
+  end
+
+  def docker_hub?
+    provider == DOCKER_HUB_PROVIDER
+  end
+
+  def github?
+    provider == GITHUB_PROVIDER
   end
 
   def twitter_refresh_token!(token); end

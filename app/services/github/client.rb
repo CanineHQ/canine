@@ -1,19 +1,31 @@
 class Github::Client
   WEBHOOK_SECRET = ENV["OMNIAUTH_GITHUB_WEBHOOK_SECRET"]
 
-  attr_accessor :client, :project
-  def initialize(project)
-    @project = project
-    @client = Octokit::Client.new(access_token: project.github_access_token)
+  attr_accessor :client, :repository_url
+
+  def self.from_project(project)
+    new(
+      access_token: project.project_credential_provider.access_token,
+      repository_url: project.repository_url
+    )
+  end
+
+  def commits
+    client.commits(project.repository_url)
+  end
+
+  def initialize(access_token:, repository_url:)
+    @client = Octokit::Client.new(access_token:)
+    @repository_url = repository_url
   end
 
   def repository_exists?
-    client.repository?(project.repository_url)
+    client.repository?(repository_url)
   end
 
   def register_webhook!
     client.create_hook(
-      project.repository_url,
+      repository_url,
       "web",
       {
         url: Rails.application.routes.url_helpers.inbound_webhooks_github_index_url,
@@ -33,7 +45,7 @@ class Github::Client
 
   def remove_webhook!
     if webhook_exists?
-      client.remove_hook(project.repository_url, webhook.id)
+      client.remove_hook(repository_url, webhook.id)
     end
   end
 
@@ -42,7 +54,7 @@ class Github::Client
   end
 
   def webhooks
-    client.hooks(project.repository_url)
+    client.hooks(repository_url)
   end
 
   private

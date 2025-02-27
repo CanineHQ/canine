@@ -3,9 +3,9 @@
     <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
     <div>
       <span class="text-sm">
-        Connected as <b><%= JSON.parse(provider.auth)["info"]["nickname"] %></b>
+        Connected as <b><%= provider.username %></b>
       </span>
-      <% if defined?(@project) %>
+      <% if defined?(@project) && @project.github? %>
         <div class="mt-2">
           <%= render(
             "shared/partials/async_renderer",

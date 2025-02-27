@@ -98,6 +98,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def apply_namespace(project, kubectl)
+    @logger.info("Creating namespace: #{project.name}", color: :yellow)
     namespace_yaml = K8::Namespace.new(project).to_yaml
     kubectl.apply_yaml(namespace_yaml)
   end
@@ -135,29 +136,14 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def upload_registry_secrets(kubectl, deployment)
+    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
     project = deployment.project
-    docker_config_json = create_docker_config_json(
-      project.github_username,
-      project.github_access_token,
+    result = Providers::GenerateConfigJson.execute(
+      provider: project.project_credential_provider.provider,
     )
-    secret_yaml = K8::Secrets::RegistrySecret.new(project, docker_config_json).to_yaml
+    raise StandardError, result.message if result.failure?
+
+    secret_yaml = K8::Secrets::RegistrySecret.new(project, result.docker_config_json).to_yaml
     kubectl.apply_yaml(secret_yaml)
-  end
-
-  def create_docker_config_json(username, password)
-    # First base64 encoding
-    auth_value = Base64.strict_encode64("#{username}:#{password}")
-
-    # Create the JSON structure
-    docker_config = {
-      "auths" => {
-        "ghcr.io" => {
-          "auth" => auth_value
-        }
-      }
-    }
-
-    # Second base64 encoding of the entire JSON
-    Base64.strict_encode64(JSON.generate(docker_config))
   end
 end

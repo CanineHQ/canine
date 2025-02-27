@@ -1,0 +1,5 @@
+<% if provider.docker_hub? %>
+  <%= render "projects/create/new_form_docker_hub", project:, provider: %>
+<% else %>
+  <%= render "projects/create/new_form_github", project:, provider: %>
+<% end %>

@@ -7,5 +7,6 @@
 - [ ] Support login without Github
 - [ ] Support organization projects
 - [ ] Support dockerhub deployments
-- [ ] Review Dockerfile.dev to be faster
 - [ ] Migrate to goodjob for queues
+- [ ] Add skeleton loader for processes page
+- [ ] Migrate to goodjob to support scheduled jobs without a ton of separate gems

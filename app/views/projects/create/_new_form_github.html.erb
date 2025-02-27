@@ -1,5 +1,13 @@
 <div data-controller="new-project">
   <%= form_with(model: project) do |form| %>
+    <h2 class="text-2xl font-bold">Create a new project from Github</h2>
+    <%= link_to(
+      "Deploy from Docker Hub instead →",
+      new_project_path(provider: Provider::DOCKER_HUB_PROVIDER),
+      class: "inline-block mt-2 underline underline-offset-4 text-blue-300 hover:text-blue-200 text-sm",
+    ) %>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+
     <%= render "shared/error_messages", resource: form.object %>
 
     <div class="form-control mt-1 w-full max-w-sm">
@@ -22,11 +30,16 @@
       </label>
     </div>
 
+    <%= form.fields_for(:project_credential_provider) do |fields| %>
+      <%= fields.hidden_field :provider_id, value: provider.id %>
+    <% end %>
+
     <div class="form-control mt-1 w-full max-w-sm">
       <div data-controller="github-select-repository">
         <label class="label">
           <span class="label-text">Github Repository</span>
         </label>
+
         <%= form.text_field(
           :repository_url,
           class: "input input-bordered w-full focus:outline-offset-0",
@@ -114,7 +127,7 @@
       <%= form.button "Submit", class: "btn btn-primary" %>
 
       <% if form.object.new_record? %>
-        <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
+        <%= link_to t("cancel"), projects_path, class: "btn btn-secondary", data: { turbo: false } %>
       <% else %>
         <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
       <% end %>
