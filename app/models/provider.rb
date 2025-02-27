@@ -24,7 +24,7 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Provider < ApplicationRecord
-  attr_accessor :username
+  attr_accessor :username_param
   GITHUB_PROVIDER = "github"
   DOCKER_HUB_PROVIDER = "docker_hub"
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER ].freeze

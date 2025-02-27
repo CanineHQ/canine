@@ -136,8 +136,8 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def upload_registry_secrets(kubectl, deployment)
-    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
     project = deployment.project
+    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
     result = Providers::GenerateConfigJson.execute(
       provider: project.project_credential_provider.provider,
     )

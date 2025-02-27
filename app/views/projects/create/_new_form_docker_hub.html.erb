@@ -1,5 +1,5 @@
 <div data-controller="new-project">
-  <%= form_with(model: project) do |form| %>
+  <%= form_with(model: project, data: { turbo: false }) do |form| %>
     <h2 class="text-2xl font-bold">Create a new project from Docker Hub</h2>
     <%= link_to(
       "Deploy from Github instead →",
@@ -65,7 +65,7 @@
       <% if form.object.new_record? %>
         <%= link_to t("cancel"), projects_path, class: "btn btn-secondary", data: { turbo: false } %>
       <% else %>
-        <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
+        <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary", data: { turbo: false } %>
       <% end %>
     </div>
   <% end %>

@@ -6,9 +6,8 @@ class Projects::DestroyJob < ApplicationJob
     # Delete the github webhook for the project IF there are no more projects that refer to that repository
     # TODO: This might have overlapping repository urls across different providers.
     # Need to check for provider uniqueness
-    unless Project.where(
-      repository_url: project.repository_url,
-    ).where.not(id: project.id).exists?
+    if project.github? && Project.where(
+      repository_url: project.repository_url).where.not(id: project.id).empty?
       remove_github_webhook(project)
     end
     project.destroy!

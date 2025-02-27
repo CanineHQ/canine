@@ -1,5 +1,5 @@
 <div data-controller="new-project">
-  <%= form_with(model: project) do |form| %>
+  <%= form_with(model: project, data: { turbo: false }) do |form| %>
     <h2 class="text-2xl font-bold">Create a new project from Github</h2>
     <%= link_to(
       "Deploy from Docker Hub instead →",

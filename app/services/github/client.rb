@@ -11,7 +11,7 @@ class Github::Client
   end
 
   def commits
-    client.commits(project.repository_url)
+    client.commits(repository_url)
   end
 
   def initialize(access_token:, repository_url:)
