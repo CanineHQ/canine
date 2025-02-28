@@ -31,7 +31,23 @@
     <div class="flex justify-end flex-col md:flex-row">
       <%= button_to "Restart", restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } %>
       <% if project.deployable? %>
-        <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn btn-primary m-1", data: { turbo: false, disable_with: "Loading..." } %>
+        <div class="join m-1">
+          <%= button_to "Deploy", deploy_project_deployments_url(project), class: "btn join-item btn-primary", data: { turbo: false, disable_with: "Loading..." } %>
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn join-item btn-primary"><iconify-icon icon="lucide:chevron-down"></iconify-icon></div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
+              <li>
+                <%= button_to(
+                  "Deploy without rebuilding",
+                  deploy_project_deployments_url(project, skip_build: true),
+                ) %>
+              </li>
+            </ul>
+          </div>
+
+
+
+        </div>
       <% else %>
         <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
           <%= button_to "Deploy", "#", class: "btn btn-primary m-1", disabled: true %>

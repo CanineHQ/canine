@@ -3,6 +3,7 @@ class Projects::DeployLatestCommit
 
   expects :project
   expects :current_user, default: nil
+  expects :skip_build, default: false
   promises :project
 
   executed do |context|
@@ -26,6 +27,13 @@ class Projects::DeployLatestCommit
       )
     end
 
-    Projects::BuildJob.perform_later(build)
+    if context.skip_build
+      build.info("Skipping build...", color: :yellow)
+      build.update!(status: :completed)
+      deployment = Deployment.create!(build:)
+      Projects::DeploymentJob.perform_later(deployment)
+    else
+      Projects::BuildJob.perform_later(build)
+    end
   end
 end

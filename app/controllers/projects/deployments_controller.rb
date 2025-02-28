@@ -22,7 +22,11 @@ class Projects::DeploymentsController < Projects::BaseController
   end
 
   def deploy
-    result = Projects::DeployLatestCommit.execute(project: @project, current_user:)
+    result = Projects::DeployLatestCommit.execute(
+      project: @project,
+      current_user:,
+      skip_build: params[:skip_build] == "true"
+    )
     if result.success?
       redirect_to @project, notice: "Deploying project..."
     else
