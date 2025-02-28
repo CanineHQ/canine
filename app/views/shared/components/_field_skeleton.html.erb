@@ -1,0 +1,9 @@
+<% size = size || :medium %>
+
+<% if size == :small %>
+  <div class="skeleton h-4 w-32"></div>
+<% elsif size == :medium %>
+  <div class="skeleton h-6 w-32"></div>
+<% elsif size == :large %>
+  <div class="skeleton h-8 w-32"></div>
+<% end %>

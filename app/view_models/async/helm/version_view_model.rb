@@ -7,7 +7,7 @@ class Async::Helm::VersionViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    "<div class='loading loading-spinner loading-sm'></div>"
+    render "shared/components/field_skeleton", locals: { size: :medium }
   end
 
   def async_render
