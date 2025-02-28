@@ -14,7 +14,7 @@ class Async::AddOns::Processes::PodsViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    render "shared/components/table_skeleton"
+    render "shared/components/table_skeleton", locals: { columns: 4 }
   end
 
 

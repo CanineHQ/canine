@@ -5,7 +5,7 @@ class Async::Projects::Processes::IndexViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    render "shared/components/table_skeleton"
+    render "shared/components/table_skeleton", locals: { columns: 4 }
   end
 
   def async_render
