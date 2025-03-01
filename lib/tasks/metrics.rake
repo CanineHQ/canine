@@ -1,36 +1,16 @@
 namespace :metrics do
-  desc "Query healthchecks" do
-  end
+  desc "Query the web services to make sure they are healthy"
   task check_health: :environment do
-    Service.web_service.where('healthcheck_url IS NOT NULL').each do |service|
-      # url = File.join("http://#{service.name}-service.#{service.project.name}.svc.cluster.local", service.healthcheck_url)
-      # K8::Client.from_project(service.project).run_command("curl -s -o /dev/null -w '%{http_code}' #{url}")
-      if service.domains.any?
-        url = File.join("https://#{service.domains.first.domain_name}", service.healthcheck_url)
-        Rails.logger.info("Checking health for #{service.name} at #{url}")
-        response = HTTParty.get(url)
-        if response.success?
-          service.status = :healthy
-        else
-          service.status = :unhealthy
-        end
-        service.last_health_checked_at = DateTime.current
-        service.save
-      end
-    end
+    Scheduled::CheckHealthJob.perform_now
   end
 
   desc "Poll Kubernetes cluster metrics"
   task fetch: :environment do
-    Cluster.running.each do |cluster|
-      nodes = K8::Metrics::Metrics.call(cluster)
-    rescue => e
-      Rails.logger.error("Error fetching metrics for cluster #{cluster.name}: #{e.message}")
-    end
+    Scheduled::FetchMetricsJob.perform_now
   end
 
-  desc "flush metrics"
+  desc "Flush metrics older than 1 week"
   task flush: :environment do |_, args|
-    Metric.where("created_at < ?", 1.week.ago).destroy_all
+    Scheduled::FlushMetricsJob.perform_now
   end
 end

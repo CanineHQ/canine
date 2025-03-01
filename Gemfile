@@ -110,3 +110,5 @@ gem "sassc-rails", "~> 2.1"
 gem "cron2english", "~> 0.1.7"
 
 gem "avo", "~> 3.17"
+
+gem "sidekiq-scheduler", "~> 5.0"
