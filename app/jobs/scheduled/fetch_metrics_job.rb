@@ -9,4 +9,3 @@ class Scheduled::FetchMetricsJob < ApplicationJob
     end
   end
 end
-

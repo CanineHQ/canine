@@ -20,4 +20,3 @@ class Scheduled::CheckHealthJob < ApplicationJob
     end
   end
 end
-
