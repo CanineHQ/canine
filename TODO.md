@@ -8,3 +8,6 @@
 - [ ] Add skeleton loader for processes page
 - [ ] Migrate to goodjob to support scheduled jobs without a ton of separate gems
 - [ ] Gray out deploy button if there are no services
+- [ ] Make the metrics page look better + filter
+- [ ] Show ingress logs at the cluster level -- parse NGINX logs
+- [ ] Streaming logs for pods
