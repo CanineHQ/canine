@@ -26,10 +26,18 @@ module K8::Metrics::Api
         )
         if with_namespaces
           cluster.projects.each do |project|
-            node.namespaces[project.name] = K8::Metrics::Api::Pod.fetch(cluster, project.name)
+            begin
+              node.namespaces[project.name] = K8::Metrics::Api::Pod.fetch(cluster, project.name)
+            rescue StandardError => e
+              Rails.logger.error("Failed to fetch pod metrics for project #{project.name}: #{e.message}")
+            end
           end
           cluster.add_ons.each do |add_on|
-            node.namespaces[add_on.name] = K8::Metrics::Api::Pod.fetch(cluster, add_on.name)
+            begin
+              node.namespaces[add_on.name] = K8::Metrics::Api::Pod.fetch(cluster, add_on.name)
+            rescue StandardError => e
+              Rails.logger.error("Failed to fetch pod metrics for add-on #{add_on.name}: #{e.message}")
+            end
           end
         end
         node
