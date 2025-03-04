@@ -8,7 +8,7 @@ Chartkick.options = {
     tension: 0.1,
     pointRadius: 0,
     pointHoverBorderColor: 'rgba(75, 192, 192, 1)',
-    pointHoverBackgroundColor: 'rgba(75, 192, 192, 0.2)',
+    pointHoverBackgroundColor: 'rgba(75, 192, 192, 0.2)'
   },
   library: {
     font: {
