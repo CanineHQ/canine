@@ -1,6 +1,33 @@
 class StaticController < ApplicationController
   INSTALL_SCRIPT = "curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install/install.sh | bash"
   skip_before_action :authenticate_user!
+  ILLUSTRATIONS = [
+    {
+      src: "/images/illustrations/design_2.png",
+      title: "You enjoy vendor lock-in",
+      description: "Canine makes it possible to deploy to 230+ cloud providers, with the same UI.",
+      background_color: "bg-green-100"
+
+    },
+    {
+      src: "/images/illustrations/design_3.png",
+      title: "You like spending more, for less",
+      description: "Pay Hetzner like pricing for Heroku like dev experiences.",
+      background_color: "bg-yellow-100"
+    },
+    {
+      src: "/images/illustrations/design_4.png",
+      title: "You don't want modern infrastructure",
+      description: "Would rather cobble together SSH scripts? Look elsewhere.",
+      background_color: "bg-blue-100"
+    },
+    {
+      src: "/images/illustrations/design_5.png",
+      title: "You like configuring infrastructure more than building apps",
+      description: "Please press Ctrl + W now, or ask your network administrator to close your window.",
+      background_color: "bg-violet-100"
+    }
+  ]
   PRICES = [
     {
       name: "Heroku",
