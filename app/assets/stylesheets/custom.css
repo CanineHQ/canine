@@ -69,11 +69,3 @@
 .youtube-aspect {
   aspect-ratio: 16 / 9;
 }
-
-.max-w-8xl {
-  max-width: 88rem;
-}
-
-.max-w-9xl {
-  max-width: 96rem;
-}
