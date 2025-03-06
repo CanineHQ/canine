@@ -1,0 +1,30 @@
+<!-- needed so that tailwind builds our background colors -->
+<div class="bg-green-100 bg-yellow-100 bg-blue-100 bg-violet-100"></div>
+<div class="mx-auto mt-8 sm:mt-16 max-w-9xl">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl sm:text-center">
+      <h2 class="text-base font-semibold leading-7 text-indigo-400">Downsides</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Why you should <span class="text-red-500 font-bold">NOT</span> use Canine</p>
+      <p class="mt-6 text-lg leading-8 text-gray-300">Bring your own servers, or use our hosted version.</p>
+    </div>
+  </div>
+  <div class="relative overflow-hidden pt-16">
+    <div class="mx-auto px-0 lg:px-2">
+      <div class="grid gap-8 gap-y-16 grid-cols-4 py-10 lg:overflow-x-hidden overflow-x-auto lg:w-11/12">
+        <% StaticController::ILLUSTRATIONS.each do |illustration| %>
+          <div class="card min-w-60 <%= illustration[:background_color] %> odd:rotate-3 even:-rotate-3">
+            <div class="card-body flex flex-col justify-evenly gap-2 text-black">
+              <div class="font-bold text-lg md:text-2xl leading-7">
+                <%= illustration[:title] %>
+              </div>
+              <img src="<%= illustration[:src] %>">
+              <div class="text-sm">
+                <%= illustration[:description] %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
