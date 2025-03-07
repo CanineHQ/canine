@@ -24,7 +24,7 @@ class StaticController < ApplicationController
     {
       src: "/images/illustrations/design_5.png",
       title: "You like configuring infrastructure more than building apps",
-      description: "Please press Ctrl + W now, or ask your network administrator to close your window.",
+      description: "Canine makes your infrastructure \"just work\".",
       background_color: "bg-violet-100"
     }
   ]
