@@ -11,3 +11,5 @@
 - [ ] Make the metrics page look better + filter
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
 - [ ] Streaming logs for pods
+- [ ] Project groupings?
+- [ ] Validate kubeconfig file
