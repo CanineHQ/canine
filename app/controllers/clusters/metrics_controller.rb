@@ -5,10 +5,20 @@ class Clusters::MetricsController < Clusters::BaseController
 
   def show
     @nodes = K8::Metrics::Api::Node.ls(@cluster)
-    @metrics = @cluster.metrics.node_only_tags.order(created_at: :desc).limit(1000)
+    @time_range = params[:time_range] || "2h"
+    start_time = parse_time_range(@time_range)
+    end_time = Time.now
+
+    # Get sampled metrics across the time range
+    @metrics = sample_metrics_across_timerange(
+      @cluster.metrics.node_only_tags,
+      start_time,
+      end_time,
+    )
   end
 
   protected
+
   def parse_cpu_metrics(metrics)
     metrics.select { |m| m.cpu? }.each_with_object({}) do |metric, h|
       h[metric.created_at] = 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")

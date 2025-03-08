@@ -1,0 +1,21 @@
+<h2 class="text-2xl font-bold">Historical Metrics</h2>
+<hr class="mt-3 mb-4 border-t border-base-300" />
+<div class="my-4">
+  <div class="flex space-x-2">
+    <%= form_with url: search_path, method: :get do |form| %>
+      <%= form.select :time_range, 
+        options_for_select([
+          ["Past 2hrs", "2h"],
+          ["Past 24hrs", "24h"],
+          ["48 - 24hrs ago", "48h"],
+          ["72 - 48hrs ago", "72h"],
+          ["144 - 72hrs ago", "144h"],
+          ["288 - 144hrs ago", "288h"]
+        ], params[:time_range] || "2h"),
+        {},
+        { class: "select select-bordered focus:outline-offset-0", "aria-label": "Select example" } 
+      %>
+      <%= form.submit "Refresh", class: "btn btn-neutral" %>
+    <% end %>
+  </div>
+</div>
