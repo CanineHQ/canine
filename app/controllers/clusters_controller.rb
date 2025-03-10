@@ -7,7 +7,7 @@ class ClustersController < ApplicationController
 
   # GET /clusters
   def index
-        sortable_column = params[:sort] || "created_at"
+    sortable_column = params[:sort] || "created_at"
     @pagy, @clusters = pagy(current_account.clusters.order(sortable_column => "asc"))
 
     # Uncomment to authorize with Pundit
@@ -108,12 +108,13 @@ class ClustersController < ApplicationController
   # POST /clusters or /clusters.json
   def create
     @cluster = current_account.clusters.new(cluster_params)
+    result = Clusters::Create.call(@cluster)
 
     # Uncomment to authorize with Pundit
     # authorize @cluster
 
     respond_to do |format|
-      if @cluster.save
+      if result.success?
         # Kick off cluster job
         Clusters::InstallJob.perform_later(@cluster)
         format.html { redirect_to @cluster, notice: "Cluster was successfully created." }
