@@ -23,7 +23,7 @@
 
   <div class="form-group">
     <%= form.label :kubeconfig_file %>
-    <%= form.file_field :kubeconfig_file, class: "file-input w-full" %>
+    <%= form.file_field :kubeconfig_file, class: "file-input w-full", accept: ".yaml,.yml" %>
   </div>
 
   <div class="form-footer">

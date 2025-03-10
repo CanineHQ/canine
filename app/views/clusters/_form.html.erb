@@ -1,4 +1,5 @@
 <%= form_with(model: cluster) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
 
   <div class="form-group">
     <%= form.label :name %>

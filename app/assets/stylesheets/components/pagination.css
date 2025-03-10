@@ -1,0 +1,36 @@
+/* Light Jumpstart theme for Pagy's default renderer */
+
+.pagination {
+  @apply inline-flex flex-wrap items-center justify-start;
+
+  .page {
+    &:first-child a, &:first-child {
+      @apply rounded-tl rounded-bl;
+    }
+
+    &:last-child a, &:last-child {
+      @apply rounded-tr rounded-br;
+    }
+  }
+
+  .disabled, .gap {
+    @apply relative block leading-tight no-underline py-2 px-3;
+    margin-left: -1px;
+  }
+
+  .page {
+    &.active {
+      @apply bg-base-300 relative block leading-tight no-underline py-2 px-3;
+      margin-left: -1px;
+    }
+
+    a {
+      @apply relative block leading-tight bg-base-100 no-underline py-2 px-3;
+      margin-left: -1px;
+
+      &:hover {
+        @apply bg-base-300;
+      }
+    }
+  }
+}

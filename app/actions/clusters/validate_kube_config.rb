@@ -7,14 +7,13 @@ class Clusters::ValidateKubeConfig
     validation_result = valid_kubeconfig_structure?(context.cluster.kubeconfig)
     unless validation_result[:valid]
       context.cluster.errors.add(:kubeconfig, validation_result[:error])
-      context.fail!(validation_result[:error])
-      return
+      context.fail_and_return!(validation_result[:error])
     end
     
     # Then check if we can connect
     unless can_connect?(context.cluster.kubeconfig)
       context.cluster.errors.add(:kubeconfig, "appears to be valid, but we cannot connect to the cluster")
-      context.fail!("Cannot connect to Kubernetes cluster")
+      context.fail_and_return!("Cannot connect to Kubernetes cluster")
     end
   end
 
