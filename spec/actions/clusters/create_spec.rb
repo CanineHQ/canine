@@ -18,4 +18,4 @@ RSpec.describe Clusters::Create do
       end
     end
   end
-end 
+end

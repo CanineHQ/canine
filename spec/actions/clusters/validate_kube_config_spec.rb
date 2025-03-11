@@ -15,7 +15,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing apiVersion' do
       valid_kubeconfig.delete("apiVersion")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("apiVersion")
@@ -23,7 +23,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing kind' do
       valid_kubeconfig.delete("kind")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("kind")
@@ -31,7 +31,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing clusters' do
       valid_kubeconfig.delete("clusters")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("clusters")
@@ -39,7 +39,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing contexts' do
       valid_kubeconfig.delete("contexts")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("contexts")
@@ -47,7 +47,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing current-context' do
       valid_kubeconfig.delete("current-context")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("current-context")
@@ -55,7 +55,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
 
     it 'returns valid: false with error for missing users' do
       valid_kubeconfig.delete("users")
-      
+
       expect(subject[:valid]).to be false
       expect(subject[:error]).to include("missing required keys")
       expect(subject[:error]).to include("users")

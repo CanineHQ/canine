@@ -13,3 +13,4 @@
 - [ ] Streaming logs for pods
 - [ ] Project groupings?
 - [ ] Validate kubeconfig file
+- [ ] Create a pricing calculator
