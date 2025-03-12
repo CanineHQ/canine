@@ -14,3 +14,9 @@
 - [ ] Project groupings?
 - [ ] Validate kubeconfig file
 - [ ] Create a pricing calculator
+<<<<<<< Updated upstream
+- [ ] Constantly refresh the processes page for readiness of pods
+=======
+- [ ] Pre-deploy task
+- [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor
+>>>>>>> Stashed changes
