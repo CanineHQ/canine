@@ -30,10 +30,10 @@
       <div class="lg:hidden">
         <div id="card-stack-container" class="mx-auto relative h-96 w-80">
           <!-- Add the "What are you waiting for?" card at the bottom of the stack -->
-          <div class="swipe-card absolute top-0 left-0  w-full min-w-60 bg-transparent shadow-none border-4 border-dashed border-gray-500" 
+          <div class="card absolute top-0 left-0 w-full min-w-60 bg-transparent shadow-none border-4 border-dashed border-gray-500" 
                data-index="<%= StaticController::ILLUSTRATIONS.length %>" 
                style="z-index: 0; transform: translateY(<%= StaticController::ILLUSTRATIONS.length * 5 - 5 %>px) scale(0.85); height: calc(100% - 40px); width: calc(100% - 40px); margin: 20px;">
-            <div class="swipe-card-body flex flex-col justify-center items-center h-full gap-2 text-gray-500 p-4">
+            <div class="card-body flex flex-col justify-center items-center h-full gap-2 text-gray-500 p-4">
               <div class="text-center">
                 <div class="font-bold text-xl md:text-2xl">
                   What are you waiting for?
