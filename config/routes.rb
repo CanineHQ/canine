@@ -106,6 +106,7 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "async_render" => "async_renderer#async_render"
 
+  get "/pricing_calculator", to: "static#calculator"
   # Public marketing homepage
   if Rails.application.config.local_mode
     get "/github_token", to: "local/pages#github_token"

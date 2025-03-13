@@ -1,0 +1,565 @@
+<!-- Inspired by https://judoscale.com/tools/paas-pricing-calculator -->
+
+<div class="bg-slate-900 min-h-screen text-white">
+  <!-- Header -->
+  <header class="container mx-auto py-8 px-4">
+    <h1 class="text-4xl font-bold text-center mb-4">The Ultimate PaaS Pricing Comparison Calculator</h1>
+    <p class="text-center text-lg mb-12">Compare cloud providers. Find out how much it will cost to run your web app.</p>
+  </header>
+
+  <div class="container mx-auto px-4 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Left Column - Configuration -->
+      <div>
+        <!-- Team Section -->
+        <div class="bg-slate-800 rounded-lg p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Team</h2>
+          
+          <div class="mb-4">
+            <div class="flex justify-between mb-2">
+              <label for="team-size" class="text-sm">Team size: <span id="team-size-value">11</span> members</label>
+            </div>
+            <input type="range" id="team-size" min="1" max="50" value="11" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>1</span>
+              <span>50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Web Service Section -->
+        <div class="bg-slate-800 rounded-lg p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Web Service</h2>
+          
+          <!-- CPU -->
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <label for="web-cpu" class="text-sm">CPU: <span id="web-cpu-value">2</span> cores</label>
+              <div class="flex space-x-2">
+                <button id="web-cpu-shared" class="bg-emerald-500 text-white text-xs px-3 py-1 rounded-md">Shared</button>
+                <button id="web-cpu-dedicated" class="bg-slate-700 text-white text-xs px-3 py-1 rounded-md">Dedicated</button>
+              </div>
+            </div>
+            <input type="range" id="web-cpu" min="0.5" max="16" step="0.5" value="2" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>0.5</span>
+              <span>16</span>
+            </div>
+          </div>
+          
+          <!-- Memory -->
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <label for="web-memory" class="text-sm">Memory: <span id="web-memory-value">2</span> GB</label>
+            </div>
+            <input type="range" id="web-memory" min="0.5" max="32" step="0.5" value="2" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>0.5</span>
+              <span>32</span>
+            </div>
+          </div>
+          
+          <!-- Instances/Replicas -->
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <label for="web-instances" class="text-sm">Instances/Replicas: <span id="web-instances-value">5</span></label>
+            </div>
+            <input type="range" id="web-instances" min="1" max="30" value="5" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>1</span>
+              <span>30</span>
+            </div>
+          </div>
+          
+          <!-- Egress -->
+          <div class="mb-2">
+            <div class="flex justify-between mb-2">
+              <label for="web-egress" class="text-sm">Egress (outbound data): <span id="web-egress-value">200</span> GB</label>
+            </div>
+            <input type="range" id="web-egress" min="10" max="2000" value="200" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>10</span>
+              <span>2000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Worker Service Section -->
+        <div class="bg-slate-800 rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">Worker Service</h2>
+          
+          <!-- CPU -->
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <label for="worker-cpu" class="text-sm">CPU: <span id="worker-cpu-value">1</span> cores</label>
+              <div class="flex space-x-2">
+                <button id="worker-cpu-shared" class="bg-emerald-500 text-white text-xs px-3 py-1 rounded-md">Shared</button>
+                <button id="worker-cpu-dedicated" class="bg-slate-700 text-white text-xs px-3 py-1 rounded-md">Dedicated</button>
+              </div>
+            </div>
+            <input type="range" id="worker-cpu" min="0.5" max="16" step="0.5" value="1" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>0.5</span>
+              <span>16</span>
+            </div>
+          </div>
+          
+          <!-- Memory -->
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <label for="worker-memory" class="text-sm">Memory: <span id="worker-memory-value">1</span> GB</label>
+            </div>
+            <input type="range" id="worker-memory" min="0.5" max="32" step="0.5" value="1" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>0.5</span>
+              <span>32</span>
+            </div>
+          </div>
+          
+          <!-- Instances/Replicas -->
+          <div class="mb-2">
+            <div class="flex justify-between mb-2">
+              <label for="worker-instances" class="text-sm">Instances/Replicas: <span id="worker-instances-value">3</span></label>
+            </div>
+            <input type="range" id="worker-instances" min="1" max="30" value="3" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            <div class="flex justify-between text-xs text-slate-400 mt-1">
+              <span>1</span>
+              <span>30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Results -->
+      <div class="bg-slate-800 rounded-lg p-6">
+        <h2 class="text-lg font-semibold mb-4 uppercase text-slate-400">Plan Comparison</h2>
+        
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div class="font-semibold">PaaS Provider</div>
+          <div class="font-semibold text-right">Monthly Cost (USD)</div>
+        </div>
+
+        <!-- Railway -->
+        <div class="border-t border-slate-700 py-4" data-provider="railway">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+              <span class="font-medium">Railway</span>
+              <span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-slate-700 rounded-full text-xs cursor-help tooltip" data-tooltip="Railway is a modern PaaS that offers simple deployment and scaling.">?</span>
+            </div>
+            <div class="text-emerald-400 font-semibold total-cost">$620.00</div>
+          </div>
+          <div class="text-sm text-slate-400 mb-1">Team members</div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - CPU</div>
+            <div class="text-right web-cpu-cost">$220.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Memory</div>
+            <div class="text-right web-memory-cost">$200.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Egress</div>
+            <div class="text-right web-egress-cost">$100.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Worker Service - CPU</div>
+            <div class="text-right worker-cpu-cost">$60.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Worker Service - Memory</div>
+            <div class="text-right worker-memory-cost">$40.00</div>
+          </div>
+        </div>
+
+        <!-- Heroku -->
+        <div class="border-t border-slate-700 py-4" data-provider="heroku">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+              <span class="font-medium">Heroku</span>
+              <span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-slate-700 rounded-full text-xs cursor-help tooltip" data-tooltip="Heroku is a cloud platform that lets companies build, deliver, monitor and scale apps.">?</span>
+            </div>
+            <div class="text-emerald-400 font-semibold total-cost">$1,400.00</div>
+          </div>
+          <div class="text-sm text-slate-400 mb-1">Team members</div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Perf-M (5)</div>
+            <div class="text-right web-cost">$1,250.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Egress</div>
+            <div class="text-right">—</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Worker Service - Std-2x (3)</div>
+            <div class="text-right worker-cost">$150.00</div>
+          </div>
+        </div>
+
+        <!-- Fly -->
+        <div class="border-t border-slate-700 py-4" data-provider="fly">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+              <span class="font-medium">Fly</span>
+              <span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-slate-700 rounded-full text-xs cursor-help tooltip" data-tooltip="Fly.io is a platform for running full-stack apps and databases close to your users.">?</span>
+            </div>
+            <div class="text-emerald-400 font-semibold total-cost">$96.56</div>
+          </div>
+          <div class="text-sm text-slate-400 mb-1">Team members</div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - shared-cpu-2x (5)</div>
+            <div class="text-right web-cpu-cost">$71.20</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Egress</div>
+            <div class="text-right web-egress-cost">$4.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Worker Service - shared-cpu-1x (3)</div>
+            <div class="text-right worker-cost">$21.36</div>
+          </div>
+        </div>
+
+        <!-- Render -->
+        <div class="border-t border-slate-700 py-4" data-provider="render">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+              <span class="font-medium">Render</span>
+              <span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-slate-700 rounded-full text-xs cursor-help tooltip" data-tooltip="Render is a unified cloud to build and run all your apps and websites with free SSL, a global CDN, private networks and auto deploys from Git.">?</span>
+            </div>
+            <div class="text-emerald-400 font-semibold total-cost">$1,169.00</div>
+          </div>
+          <div class="text-sm text-slate-400 mb-1">Team members</div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Pro Plus (5)</div>
+            <div class="text-right web-cost">$219.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Web Service - Egress</div>
+            <div class="text-right web-egress-cost">$875.00</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-sm mb-1">
+            <div>Worker Service - Standard (3)</div>
+            <div class="text-right worker-cost">$75.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Custom slider styling */
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: #1e293b;
+    outline: none;
+    position: relative;
+  }
+  
+  /* This creates the colored track before the thumb */
+  input[type="range"]::before {
+    content: '';
+    position: absolute;
+    height: 8px;
+    left: 0;
+    right: calc(100% - var(--range-progress, 50%));
+    border-radius: 4px;
+    background: #10b981;
+    pointer-events: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #10b981;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    z-index: 2;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #10b981;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+    position: relative;
+    z-index: 2;
+  }
+  
+  input[type="range"]::-moz-range-progress {
+    background: #10b981;
+    border-radius: 4px;
+    height: 8px;
+  }
+  
+  input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+  }
+  
+  /* Tooltip styling */
+  .tooltip {
+    position: relative;
+  }
+  
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    margin-bottom: 5px;
+    background: #0f172a;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .tooltip:hover::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #0f172a transparent transparent transparent;
+    z-index: 10;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to update slider progress
+    function updateSliderProgress(slider) {
+      const min = parseFloat(slider.min) || 0;
+      const max = parseFloat(slider.max) || 100;
+      const value = parseFloat(slider.value) || 0;
+      const percentage = ((value - min) / (max - min)) * 100;
+      slider.style.setProperty('--range-progress', `${percentage}%`);
+    }
+    
+    // Get all range sliders
+    const sliders = document.querySelectorAll('input[type="range"]');
+    
+    // Initialize and add event listeners to all sliders
+    sliders.forEach(slider => {
+      updateSliderProgress(slider);
+      slider.addEventListener('input', () => {
+        updateSliderProgress(slider);
+      });
+    });
+    
+    // Team size slider
+    const teamSizeSlider = document.getElementById('team-size');
+    const teamSizeValue = document.getElementById('team-size-value');
+    
+    teamSizeSlider.addEventListener('input', function() {
+      teamSizeValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    // Web Service sliders
+    const webCpuSlider = document.getElementById('web-cpu');
+    const webCpuValue = document.getElementById('web-cpu-value');
+    const webCpuShared = document.getElementById('web-cpu-shared');
+    const webCpuDedicated = document.getElementById('web-cpu-dedicated');
+    
+    webCpuSlider.addEventListener('input', function() {
+      webCpuValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    webCpuShared.addEventListener('click', function() {
+      webCpuShared.classList.add('bg-emerald-500');
+      webCpuShared.classList.remove('bg-slate-700');
+      webCpuDedicated.classList.add('bg-slate-700');
+      webCpuDedicated.classList.remove('bg-emerald-500');
+      updatePricing();
+    });
+    
+    webCpuDedicated.addEventListener('click', function() {
+      webCpuDedicated.classList.add('bg-emerald-500');
+      webCpuDedicated.classList.remove('bg-slate-700');
+      webCpuShared.classList.add('bg-slate-700');
+      webCpuShared.classList.remove('bg-emerald-500');
+      updatePricing();
+    });
+    
+    const webMemorySlider = document.getElementById('web-memory');
+    const webMemoryValue = document.getElementById('web-memory-value');
+    
+    webMemorySlider.addEventListener('input', function() {
+      webMemoryValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    const webInstancesSlider = document.getElementById('web-instances');
+    const webInstancesValue = document.getElementById('web-instances-value');
+    
+    webInstancesSlider.addEventListener('input', function() {
+      webInstancesValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    const webEgressSlider = document.getElementById('web-egress');
+    const webEgressValue = document.getElementById('web-egress-value');
+    
+    webEgressSlider.addEventListener('input', function() {
+      webEgressValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    // Worker Service sliders
+    const workerCpuSlider = document.getElementById('worker-cpu');
+    const workerCpuValue = document.getElementById('worker-cpu-value');
+    const workerCpuShared = document.getElementById('worker-cpu-shared');
+    const workerCpuDedicated = document.getElementById('worker-cpu-dedicated');
+    
+    workerCpuSlider.addEventListener('input', function() {
+      workerCpuValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    workerCpuShared.addEventListener('click', function() {
+      workerCpuShared.classList.add('bg-emerald-500');
+      workerCpuShared.classList.remove('bg-slate-700');
+      workerCpuDedicated.classList.add('bg-slate-700');
+      workerCpuDedicated.classList.remove('bg-emerald-500');
+      updatePricing();
+    });
+    
+    workerCpuDedicated.addEventListener('click', function() {
+      workerCpuDedicated.classList.add('bg-emerald-500');
+      workerCpuDedicated.classList.remove('bg-slate-700');
+      workerCpuShared.classList.add('bg-slate-700');
+      workerCpuShared.classList.remove('bg-emerald-500');
+      updatePricing();
+    });
+    
+    const workerMemorySlider = document.getElementById('worker-memory');
+    const workerMemoryValue = document.getElementById('worker-memory-value');
+    
+    workerMemorySlider.addEventListener('input', function() {
+      workerMemoryValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    const workerInstancesSlider = document.getElementById('worker-instances');
+    const workerInstancesValue = document.getElementById('worker-instances-value');
+    
+    workerInstancesSlider.addEventListener('input', function() {
+      workerInstancesValue.textContent = this.value;
+      updatePricing();
+    });
+    
+    // Pricing calculation function
+    function updatePricing() {
+      // This is a simplified pricing model
+      // In a real implementation, you would have more complex pricing logic
+      
+      const teamSize = parseInt(teamSizeSlider.value);
+      const webCpu = parseFloat(webCpuSlider.value);
+      const webMemory = parseFloat(webMemorySlider.value);
+      const webInstances = parseInt(webInstancesSlider.value);
+      const webEgress = parseInt(webEgressSlider.value);
+      const workerCpu = parseFloat(workerCpuSlider.value);
+      const workerMemory = parseFloat(workerMemorySlider.value);
+      const workerInstances = parseInt(workerInstancesSlider.value);
+      
+      const isWebCpuShared = webCpuShared.classList.contains('bg-emerald-500');
+      const isWorkerCpuShared = workerCpuShared.classList.contains('bg-emerald-500');
+      
+      // Calculate Railway pricing
+      const railwayCpuCost = webCpu * (isWebCpuShared ? 20 : 30) * webInstances;
+      const railwayMemoryCost = webMemory * 20 * webInstances;
+      const railwayEgressCost = webEgress * 0.5;
+      const railwayWorkerCpuCost = workerCpu * (isWorkerCpuShared ? 20 : 30) * workerInstances;
+      const railwayWorkerMemoryCost = workerMemory * 20 * workerInstances;
+      const railwayTotal = railwayCpuCost + railwayMemoryCost + railwayEgressCost + railwayWorkerCpuCost + railwayWorkerMemoryCost;
+      
+      // Calculate Heroku pricing
+      const herokuWebCost = webInstances * 250;
+      const herokuWorkerCost = workerInstances * 50;
+      const herokuTotal = herokuWebCost + herokuWorkerCost;
+      
+      // Calculate Fly pricing
+      const flyCpuCost = webInstances * (isWebCpuShared ? 14.24 : 28.48);
+      const flyEgressCost = webEgress * 0.02;
+      const flyWorkerCost = workerInstances * (isWorkerCpuShared ? 7.12 : 14.24);
+      const flyTotal = flyCpuCost + flyEgressCost + flyWorkerCost;
+      
+      // Calculate Render pricing
+      const renderWebCost = webInstances * 43.80;
+      const renderEgressCost = webEgress * 4.375;
+      const renderWorkerCost = workerInstances * 25;
+      const renderTotal = renderWebCost + renderEgressCost + renderWorkerCost;
+      
+      // Update Railway UI
+      document.querySelector('[data-provider="railway"] .web-cpu-cost').textContent = `$${railwayCpuCost.toFixed(2)}`;
+      document.querySelector('[data-provider="railway"] .web-memory-cost').textContent = `$${railwayMemoryCost.toFixed(2)}`;
+      document.querySelector('[data-provider="railway"] .web-egress-cost').textContent = `$${railwayEgressCost.toFixed(2)}`;
+      document.querySelector('[data-provider="railway"] .worker-cpu-cost').textContent = `$${railwayWorkerCpuCost.toFixed(2)}`;
+      document.querySelector('[data-provider="railway"] .worker-memory-cost').textContent = `$${railwayWorkerMemoryCost.toFixed(2)}`;
+      document.querySelector('[data-provider="railway"] .total-cost').textContent = `$${railwayTotal.toFixed(2)}`;
+      
+      // Update Heroku UI
+      document.querySelector('[data-provider="heroku"] .web-cost').textContent = `$${herokuWebCost.toFixed(2)}`;
+      document.querySelector('[data-provider="heroku"] .worker-cost').textContent = `$${herokuWorkerCost.toFixed(2)}`;
+      document.querySelector('[data-provider="heroku"] .total-cost').textContent = `$${herokuTotal.toFixed(2)}`;
+      
+      // Update Fly UI
+      document.querySelector('[data-provider="fly"] .web-cpu-cost').textContent = `$${flyCpuCost.toFixed(2)}`;
+      document.querySelector('[data-provider="fly"] .web-egress-cost').textContent = `$${flyEgressCost.toFixed(2)}`;
+      document.querySelector('[data-provider="fly"] .worker-cost').textContent = `$${flyWorkerCost.toFixed(2)}`;
+      document.querySelector('[data-provider="fly"] .total-cost').textContent = `$${flyTotal.toFixed(2)}`;
+      
+      // Update Render UI
+      document.querySelector('[data-provider="render"] .web-cost').textContent = `$${renderWebCost.toFixed(2)}`;
+      document.querySelector('[data-provider="render"] .web-egress-cost').textContent = `$${renderEgressCost.toFixed(2)}`;
+      document.querySelector('[data-provider="render"] .worker-cost').textContent = `$${renderWorkerCost.toFixed(2)}`;
+      document.querySelector('[data-provider="render"] .total-cost').textContent = `$${renderTotal.toFixed(2)}`;
+      
+      // Highlight the cheapest option
+      const providers = ['railway', 'heroku', 'fly', 'render'];
+      const totals = [railwayTotal, herokuTotal, flyTotal, renderTotal];
+      
+      // Find the cheapest provider
+      const minTotal = Math.min(...totals);
+      const cheapestProviderIndex = totals.indexOf(minTotal);
+      const cheapestProvider = providers[cheapestProviderIndex];
+      
+      // Remove highlight from all providers
+      providers.forEach(provider => {
+        document.querySelector(`[data-provider="${provider}"] .total-cost`).classList.remove('text-green-300', 'font-bold');
+        document.querySelector(`[data-provider="${provider}"] .total-cost`).classList.add('text-emerald-400');
+      });
+      
+      // Add highlight to cheapest provider
+      document.querySelector(`[data-provider="${cheapestProvider}"] .total-cost`).classList.remove('text-emerald-400');
+      document.querySelector(`[data-provider="${cheapestProvider}"] .total-cost`).classList.add('text-green-300', 'font-bold');
+    }
+    
+    // Initialize pricing on page load
+    updatePricing();
+  });
+</script>
+
