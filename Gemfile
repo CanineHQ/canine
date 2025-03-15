@@ -112,3 +112,6 @@ gem "cron2english", "~> 0.1.7"
 gem "avo", "~> 3.17"
 
 gem "sidekiq-scheduler", "~> 5.0"
+
+gem "sentry-ruby", "~> 5.23"
+gem "sentry-rails", "~> 5.23"
