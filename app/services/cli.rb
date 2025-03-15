@@ -16,7 +16,6 @@ module Cli
 
     def call(command, envs: {})
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
-      @loggable.info(command.strip)
       Open3.popen3(command.strip) do |stdin, stdout, stderr, wait_thr|
         stdin.close
         stdout.each_line { |line| @loggable.info(line.chomp) }
