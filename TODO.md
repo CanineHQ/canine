@@ -16,3 +16,4 @@
 - [ ] Constantly refresh the processes page for readiness of pods
 - [ ] Pre-deploy task
 - [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor
+- [ ] Add metrics page for add ons
