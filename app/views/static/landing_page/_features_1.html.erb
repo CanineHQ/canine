@@ -1,4 +1,4 @@
-<div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-24 lg:px-8">
+<div class="mx-auto mt-8 max-w-7xl px-6 sm:mt-16 lg:px-8">
   <div class="mx-auto max-w-2xl text-center">
     <h2 class="text-base font-semibold leading-7 text-indigo-400">Deploy faster</h2>
     <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Everything you need to deploy your app</p>
@@ -41,6 +41,24 @@
         title: 'Add Ons',
         description: 'Extend the functionality of your application with popular open source projects, completely free',
         icon: 'package'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'No Vendor Lock-In',
+        description: 'Over 200+ cloud providers supported. Never get gouged on pricing again.',
+        icon: 'lock'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Easy Autoscaling',
+        description: 'Easily upgrade servers, with a single click, with no downtime. Scale it back down when you don\'t need it.',
+        icon: 'cpu'
+      ) %>
+      <%= render(
+        'static/landing_page/feature_card',
+        title: 'Collaborative',
+        description: 'No more extra costs for a team plan. Invite whoever you want, we\'ll be happy to host them too!',
+        icon: 'users'
       ) %>
     </dl>
   </div>

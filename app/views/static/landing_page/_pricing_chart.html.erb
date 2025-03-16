@@ -1,0 +1,35 @@
+
+	<!-- 
+  https://codepen.io/robstinson/pen/ZEpKvjM
+	-->
+	
+	<!-- Component Start -->
+	<div class="flex flex-col w-full items-center rounded-lg shadow-xl">
+    <!-- Needed to make sure tailwind generates the styles for the background colors -->
+    <div class="bg-indigo-400 bg-green-400"></div>
+		<h2 class="text-xl font-bold">Monthly cost of running a 4GB app</h2>
+		<div class="flex items-end flex-grow w-full mt-12 space-x-2 sm:space-x-3 h-[318px]">
+      <% StaticController::PRICES.each do |price| %>
+        <div class="relative flex flex-col items-center flex-grow pb-5 group">
+          <span class="absolute top-0 -mt-8 font-bold block">$<%= price[:price] %></span>
+          <div class="relative flex justify-center w-full <%= price[:style] %> animated-height" style="height: 0px; transition: height 0.5s;" data-price="<%= price[:price] %>"></div>
+          <span class="absolute bottom-[-20px] text-center sm:bottom-[-5px] transform rotate-[30deg] sm:rotate-0 text-sm font-semibold"><%= price[:name] %></span>
+        </div>
+      <% end %>
+		</div>
+	</div>
+	<!-- Component End  -->
+	
+	<script>
+	document.addEventListener('scroll', function() {
+		const elements = document.querySelectorAll('.animated-height');
+		elements.forEach(element => {
+			const rect = element.getBoundingClientRect();
+			if (rect.top < window.innerHeight && rect.bottom >= 0) {
+				const price = element.getAttribute('data-price');
+				element.style.height = price + 'px';
+			}
+		});
+	});
+	</script>
+	

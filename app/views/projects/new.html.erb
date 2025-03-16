@@ -11,7 +11,9 @@
 
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
-      <%= render "new_form", project: @project %>
+      <%= turbo_frame_tag "new-project" do %>
+        <%= render "new_form", project: @project, provider: @provider %>
+      <% end %>
     </div>
   </div>
 </div>

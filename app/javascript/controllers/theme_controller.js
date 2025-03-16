@@ -29,6 +29,7 @@ export default class extends Controller {
     // Add keyboard navigation event listener
     document.addEventListener('keydown', (e) => {
       const searchModal = document.getElementById("search_modal");
+      if (!searchModal) return;
       if (!searchModal.open) return;
       
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {

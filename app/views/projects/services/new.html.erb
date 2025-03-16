@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "new_service" do %>
-  <div class="overflow-x-auto">
+  <div>
     <%= form_with(model: [@project, @service], url: project_services_path) do |form| %>
       <div class="form-group">
         <%= form.label :name %>
@@ -14,7 +14,7 @@
         </label>
       </div>
 
-      <div data-controller="new-add-ons">
+      <div data-controller="card-select">
         <div class="form-group">
           <div class="flex gap-4">
             <%= form.select(
@@ -22,13 +22,13 @@
               Service.service_types.keys.map { |type| [type.titleize, type] },
               {},
               class: "select select-bordered hidden",
-              data: { 'new-add-ons-target': "input" }
+              data: { 'card-select-target': "input" }
             ) %>
             <div
               class="cursor-pointer card w-64 bg-base-200"
               data-card-name="web_service"
-              data-action="click->new-add-ons#selectCard"
-              data-new-add-ons-target="card"
+              data-action="click->card-select#selectCard"
+              data-card-select-target="card"
             >
               <div class="card-body">
                 <iconify-icon icon="lucide:globe"></iconify-icon>
@@ -41,8 +41,8 @@
             <div
               class="cursor-pointer card w-64 bg-base-200"
               data-card-name="background_service"
-              data-action="click->new-add-ons#selectCard"
-              data-new-add-ons-target="card"
+              data-action="click->card-select#selectCard"
+              data-card-select-target="card"
             >
               <div class="card-body">
                 <iconify-icon icon="lucide:cpu"></iconify-icon>
@@ -56,8 +56,8 @@
             <div
               class="cursor-pointer card w-64 bg-base-300"
               data-card-name="cron_job"
-              data-action="click->new-add-ons#selectCard"
-              data-new-add-ons-target="card"
+              data-action="click->card-select#selectCard"
+              data-card-select-target="card"
             >
               <div class="card-body">
                 <iconify-icon icon="lucide:clock"></iconify-icon>

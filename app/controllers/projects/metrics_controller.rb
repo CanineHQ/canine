@@ -1,7 +1,15 @@
 class Projects::MetricsController < Projects::BaseController
+  include MetricsHelper
   def index
     @pods = K8::Metrics::Api::Pod.fetch(@project.cluster, @project.name)
-    @metrics = @project.cluster.metrics.for_project(@project).order(created_at: :desc).limit(1000)
+    @time_range = params[:time_range] || "2h"
+    start_time = parse_time_range(@time_range)
+    end_time = Time.now
+    @metrics = sample_metrics_across_timerange(
+      @project.cluster.metrics.for_project(@project),
+      start_time,
+      end_time,
+    )
   end
 
   protected

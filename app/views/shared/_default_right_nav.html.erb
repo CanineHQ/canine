@@ -5,15 +5,20 @@
     <%#= link_to t(".api_tokens"), api_tokens_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Jumpstart.config.payments_enabled? %>
     <%= link_to edit_user_registration_path do %>
       <iconify-icon icon="lucide:user" height="16"></iconify-icon>
-      My Profile
+      Account
     <% end %>
-
+  </div>
+  <div>
+    <%= link_to providers_path do %>
+      <iconify-icon icon="lucide:key-round" height="16"></iconify-icon>
+      Credentials
+    <% end %>
   </div>
 </li>
 <% if current_user.admin? %>
   <li>
     <div>
-      <%= link_to admin_root_path do %>
+      <%= link_to avo_path do %>
         <iconify-icon icon="lucide:lock-keyhole" height="16"></iconify-icon>
         Admin
       <% end %>

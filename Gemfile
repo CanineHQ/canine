@@ -105,8 +105,13 @@ gem "chartkick", "~> 5.1"
 
 gem "groupdate", "~> 6.5"
 
-gem "activeadmin", "~> 3.2"
-
 gem "sassc-rails", "~> 2.1"
 
 gem "cron2english", "~> 0.1.7"
+
+gem "avo", "~> 3.17"
+
+gem "sidekiq-scheduler", "~> 5.0"
+
+gem "sentry-ruby", "~> 5.23"
+gem "sentry-rails", "~> 5.23"

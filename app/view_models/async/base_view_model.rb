@@ -31,4 +31,8 @@ class Async::BaseViewModel
       end
     end
   end
+
+  def render(partial_name, locals: {})
+    ApplicationController.renderer.render(partial: partial_name, locals:, context: self)
+  end
 end

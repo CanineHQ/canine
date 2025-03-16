@@ -9,7 +9,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["typing"]
   connect() {
-    console.log("Hello");
     const typed = new Typed(this.typingTarget, {
       strings: [
         '<b style="color: #7F4B8B">Sentry</b>',

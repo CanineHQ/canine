@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <%= name %>
+  namespace: <%= project.name %>
+  labels:
+    caninemanaged: 'true'
+    app: <%= project.name %>
+    component: predeployment
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: <%= project.name %>
+        component: predeployment
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: <%= project.name %>
+        image: <%= project.container_registry_url %>
+        imagePullPolicy: Always
+        command: <%= command.split.to_json %>
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      imagePullSecrets:
+      - name: dockerconfigjson-github-com
+      <% if @project.volumes.present? %>
+      volumes:
+      <% project.volumes.each do |volume| %>
+      - name: <%= volume.name %>
+        persistentVolumeClaim:
+          claimName: <%= volume.name %>
+      <% end %>
+      <% end %>

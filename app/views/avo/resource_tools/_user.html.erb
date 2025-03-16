@@ -1,0 +1,31 @@
+<div class="flex flex-col">
+  <%= render Avo::PanelComponent.new(name: "User") do |c| %>
+    <% c.with_tools do %>
+      <%= a_link('/avo', icon: 'heroicons/solid/academic-cap', color: :primary, style: :primary) do %>
+        Login As
+      <% end %>
+    <% end %>
+
+    <% c.with_body do %>
+      <div class="flex flex-col p-4 min-h-24">
+        <div class="space-y-4">
+          <h3>Manage User</h3>
+          <%= form_with url: login_as_path(@resource.record.id), method: :post, data: { turbo: false } do |f| %>
+            <%= f.submit "Login As", class: Avo::Config.button_css %>
+          <% end %>
+          <%
+            # In this partial you have access to the following variables:
+            # tool
+            # @resource
+            # @resource.record
+            # params
+            # Avo::Current.context
+            # current_user
+          %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
+

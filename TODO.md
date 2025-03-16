@@ -1,9 +1,18 @@
 # Todos
-- [ ] Add a tutorial section
-- [ ] Record videos of the app in action for a rails deployment
 - [ ] Need an onboarding flow
 - [ ] Change the loading state of an add on install to have a better UX
-- [ ] Need to investigate telepresence more
+  - [ ] Show multi step install progress
 - [ ] Automatic DNS mapping for canineapp.run
-- [ ] Add skeleton animations for async view models
 - [ ] Support login without Github
+- [ ] Support organization projects
+- [ ] Add skeleton loader for processes page
+- [ ] Migrate to goodjob to support scheduled jobs without a ton of separate gems
+- [ ] Gray out deploy button if there are no services
+- [ ] Make the metrics page look better + filter
+- [ ] Show ingress logs at the cluster level -- parse NGINX logs
+- [ ] Streaming logs for pods
+- [ ] Project groupings?
+- [ ] Create a pricing calculator
+- [ ] Constantly refresh the processes page for readiness of pods
+- [ ] Pre-deploy task
+- [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor

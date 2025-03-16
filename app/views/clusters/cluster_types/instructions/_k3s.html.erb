@@ -11,6 +11,13 @@
         <%= form.text_field :ip_address, class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
         <div class="form-hint" data-k3s-instructions-target="ipAddressMessage">
         </div>
+
+        <div class="text-sm mt-2">
+          (You may have to run
+            <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo ufw allow 6443 && sudo ufw restart">sudo ufw allow 6443 && sudo ufw restart</code>
+            to allow outside connections to K3s.)
+        </div>
+
       </div>
     </div>
 

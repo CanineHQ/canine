@@ -1,0 +1,11 @@
+:scheduler:
+  :schedule:
+    check_health_job:
+      every: '15m'
+      class: Scheduled::CheckHealthJob
+    fetch_metrics_job:
+      every: '15m'
+      class: Scheduled::FetchMetricsJob
+    flush_metrics_job:
+      every: '1d'
+      class: Scheduled::FlushMetricsJob

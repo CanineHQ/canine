@@ -8,7 +8,7 @@ class Async::Helm::ValuesYamlViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    "<div class='loading loading-spinner loading-sm'></div>"
+    render "shared/components/table_skeleton", locals: { columns: 2 }
   end
 
   def async_render

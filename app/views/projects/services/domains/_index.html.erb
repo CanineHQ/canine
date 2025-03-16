@@ -1,6 +1,6 @@
-<%= turbo_frame_tag "#{service.id}/domains" do %>
+<%= turbo_frame_tag "service/#{service.id}/domains" do %>
   <div>
-    <h4>Custom Domains</h4>
+    <h4 class="text-lg font-bold mb-2">Custom Domains</h4>
     <div>
       <%= form_with(
         model: [service.project, service, Domain.new],
@@ -8,9 +8,9 @@
         class: "flex gap-2 lg:max-w-xl"
       ) do |form| %>
         <div class="flex-grow">
-          <%= form.text_field :domain_name, class: "input input-bordered w-full", placeholder: "Domain Name" %>
+          <%= form.text_field :domain_name, class: "input input-bordered w-full", placeholder: "Domain Name", required: true %>
         </div>
-        <%= form.submit "Add Domain", class: "btn btn-primary", data: { turbo: false, disable_with: "Loading..." } %>
+        <%= form.submit "Add Domain", class: "btn btn-primary", data: { disable_with: "Loading..." } %>
       <% end %>
     </div>
 

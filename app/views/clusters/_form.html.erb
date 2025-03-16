@@ -1,11 +1,12 @@
 <%= form_with(model: cluster) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
 
   <div class="form-group">
     <%= form.label :name %>
     <%= form.text_field :name, class: "input input-bordered", value: RandomNameGenerator.generate_name %>
   </div>
 
-  <div data-controller="new-add-ons">
+  <div data-controller="card-select">
     <label class="mb-4 inline-block">Which managed Kubernetes provider are you using?</label>
     <div class="form-group">
       <div class="flex gap-4">
@@ -14,7 +15,7 @@
           :to_s,
           :titleize,
           { },
-          { class: "select select-bordered hidden", data: { new_add_ons_target: "input" } } 
+          { class: "select select-bordered hidden", data: { "card-select-target": "input" } } 
         %>
         <%= render "clusters/cluster_types/cards/k8s" %>
         <%= render "clusters/cluster_types/cards/k3s" %>

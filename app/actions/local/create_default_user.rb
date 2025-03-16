@@ -1,4 +1,5 @@
 class Local::CreateDefaultUser
+  BASE_DOMAIN = "oncanine.run"
   extend LightService::Action
 
   promises :user, :account
@@ -6,7 +7,7 @@ class Local::CreateDefaultUser
   executed do |context|
     ActiveRecord::Base.transaction do
       context.user = User.first || User.new
-      context.user.email = "#{ENV["CANINE_USERNAME"].presence || SecureRandom.uuid}@example.com"
+      context.user.email = "#{ENV["CANINE_USERNAME"].presence || SecureRandom.uuid}@#{BASE_DOMAIN}"
       context.user.password = ENV["CANINE_PASSWORD"].presence || "password"
       context.user.password_confirmation = ENV["CANINE_PASSWORD"].presence || "password"
       context.user.save!

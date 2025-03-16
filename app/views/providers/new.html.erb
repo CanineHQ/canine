@@ -1,0 +1,9 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "provider" do %>
+    <%= render "providers/index" %>
+    <div class="font-lg font-bold mt-4">
+      Add <%= params[:provider_type]&.titleize || @provider.provider.titleize %> Credentials
+    </div>
+    <%= render "providers/form", provider: @provider %>
+  <% end %>
+<% end %>

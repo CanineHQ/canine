@@ -2,7 +2,6 @@ class Projects::ProcessesController < Projects::BaseController
   include LogColorsHelper
 
   def index
-    @pods = get_pods_for_project(@project)
   end
 
   def create
@@ -24,11 +23,6 @@ class Projects::ProcessesController < Projects::BaseController
   end
 
   private
-    def get_pods_for_project(project)
-      # Get all pods for a given namespace
-      client = K8::Client.from_project(project).client
-      pods = client.get_pods(namespace: project.name)
-    end
 
     def set_cluster
       @cluster = current_account.clusters.find(params[:cluster_id])

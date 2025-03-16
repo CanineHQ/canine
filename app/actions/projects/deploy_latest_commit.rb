@@ -3,20 +3,37 @@ class Projects::DeployLatestCommit
 
   expects :project
   expects :current_user, default: nil
+  expects :skip_build, default: false
   promises :project
 
   executed do |context|
     # Fetch the latest commit from the default branch
     project = context.project
     current_user = context.current_user || project.account.owner
-    client = Octokit::Client.new(access_token: project.github_access_token)
-    commit = client.commits(project.repository_url).first
+    if project.github?
+      project_credential_provider = project.project_credential_provider
+      client = Github::Client.from_project(project)
+      commit = client.commits.first
+      build = project.builds.create!(
+        commit_sha: commit.sha,
+        commit_message: commit.commit[:message],
+        current_user:
+      )
+    else
+      build = project.builds.create!(
+        commit_sha: "latest",
+        commit_message: "Deploying from #{project.repository_url}",
+        current_user:
+      )
+    end
 
-    build = project.builds.create!(
-      commit_sha: commit.sha,
-      commit_message: commit.commit[:message],
-      current_user: current_user
-    )
-    Projects::BuildJob.perform_later(build)
+    if context.skip_build
+      build.info("Skipping build...", color: :yellow)
+      build.update!(status: :completed)
+      deployment = Deployment.create!(build:)
+      Projects::DeploymentJob.perform_later(deployment)
+    else
+      Projects::BuildJob.perform_later(build)
+    end
   end
 end

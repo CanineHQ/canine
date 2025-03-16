@@ -22,9 +22,9 @@
           <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, {}, { class: "select select-bordered" } %>
         </div>
 
-        <div data-controller="new-add-ons">
+        <div data-controller="card-select">
           <div class="form-group">
-            <%= form.text_field :chart_type, class: "hidden", data: { 'new-add-ons-target': "input" } %>
+            <%= form.text_field :chart_type, class: "hidden", data: { 'card-select-target': "input" } %>
           </div>
 
           <h4>Select a chart</h4>
@@ -40,10 +40,10 @@
                 </div>
               <% end %>
               <div class="card bg-base-100 shadow-xl <%= chart['coming_soon'] ? 'cursor-not-allowed' : 'cursor-pointer' %> overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
-                  data-new-add-ons-target="card"
+                  data-card-select-target="card"
                   data-chart-url="<%= chart['chart_url'] %>"
                   <% unless chart['coming_soon'] %>
-                    data-action="click->new-add-ons#selectCard"
+                    data-action="click->card-select#selectCard"
                   <% end %>
                   data-card-name="<%= chart['name'] %>">
                 <figure class="px-4 pt-8 overflow-visible">
@@ -72,7 +72,7 @@
             </div>
           <% end %>
 
-          <%= form.text_field "chart_url", class: "hidden", data: { 'new-add-ons-target': "chartUrl" } %>
+          <%= form.text_field "chart_url", class: "hidden", data: { 'card-select-target': "chartUrl" } %>
 
           <div>
             <div class="collapse">

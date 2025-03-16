@@ -1,0 +1,182 @@
+<!-- needed so that tailwind builds our background colors -->
+<div class="bg-green-100 bg-yellow-100 bg-blue-100 bg-violet-100"></div>
+<div class="mx-auto mt-8 sm:mt-16 max-w-9xl">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl sm:text-center">
+      <h2 class="text-base font-semibold leading-7 text-indigo-400">Downsides</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Why you should <span class="text-red-500 font-bold">NOT</span> use Canine</p>
+      <p class="mt-6 text-lg leading-8 text-gray-300">Bring your own servers, or use our hosted version.</p>
+    </div>
+  </div>
+  <div class="pt-16">
+    <div class="px-0 lg:px-2">
+      <div class="hidden lg:block">
+        <div class="mx-auto grid gap-8 gap-y-16 grid-cols-2 lg:grid-cols-4 py-10 px-4 w-11/12">
+          <% StaticController::ILLUSTRATIONS.each do |illustration| %>
+            <div class="card min-w-60 <%= illustration[:background_color] %> shadow-xl odd:rotate-3 even:-rotate-3">
+              <div class="card-body flex flex-col justify-evenly gap-2 text-black">
+                <div class="font-bold text-lg md:text-2xl leading-7">
+                  <%= illustration[:title] %>
+                </div>
+                <img src="<%= illustration[:src] %>">
+                <div class="text-sm">
+                  <%= illustration[:description] %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="lg:hidden">
+        <div id="card-stack-container" class="mx-auto relative h-96 w-80">
+          <!-- Add the "What are you waiting for?" card at the bottom of the stack -->
+          <div class="card absolute top-0 left-0 w-full min-w-60 bg-transparent shadow-none border-4 border-dashed border-gray-500" 
+               data-index="<%= StaticController::ILLUSTRATIONS.length %>" 
+               style="z-index: 0; transform: translateY(<%= StaticController::ILLUSTRATIONS.length * 5 - 5 %>px) scale(0.85); height: calc(100% - 40px); width: calc(100% - 40px); margin: 20px;">
+            <div class="card-body flex flex-col justify-center items-center h-full gap-2 text-gray-500 p-4">
+              <div class="text-center">
+                <div class="font-bold text-xl md:text-2xl">
+                  What are you waiting for?
+                </div>
+                <div class="mt-6">
+                  <%= link_to "Get Started", new_user_registration_path, class: "rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400" %>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <% StaticController::ILLUSTRATIONS.each_with_index do |illustration, index| %>
+            <div class="swipe-card absolute top-0 left-0 w-full min-w-60 <%= illustration[:background_color] %> shadow-xl" 
+                 data-index="<%= index %>" 
+                 style="z-index: <%= StaticController::ILLUSTRATIONS.length - index %>; transform: translateY(<%= index * 5 %>px) scale(<%= 1 - (index * 0.05) %>);">
+              <div class="swipe-card-body flex flex-col justify-evenly gap-2 text-black p-4">
+                <div class="font-bold text-lg md:text-2xl leading-7">
+                  <%= illustration[:title] %>
+                </div>
+                <img src="<%= illustration[:src] %>">
+                <div class="text-sm">
+                  <%= illustration[:description] %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="text-center text-sm mt-16 text-gray-500">
+          <p>(Swipe cards to dismiss)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .swipe-card {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    cursor: grab;
+    user-select: none;
+    touch-action: pan-y;
+  }
+  .swipe-card.swiping {
+    transition: none;
+    cursor: grabbing;
+  }
+  .swipe-card.swiped-left {
+    transform: translateX(-150%) rotate(-30deg);
+    opacity: 0;
+  }
+  .swipe-card.swiped-right {
+    transform: translateX(150%) rotate(30deg);
+    opacity: 0;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('#card-stack-container .swipe-card');
+    
+    cards.forEach(card => {
+      let startX = 0;
+      let currentX = 0;
+      let isDragging = false;
+      
+      // Touch events
+      card.addEventListener('touchstart', handleStart, { passive: false });
+      card.addEventListener('touchmove', handleMove, { passive: false });
+      card.addEventListener('touchend', handleEnd);
+      
+      // Mouse events
+      card.addEventListener('mousedown', handleStart);
+      card.addEventListener('mousemove', handleMove);
+      card.addEventListener('mouseup', handleEnd);
+      card.addEventListener('mouseleave', handleEnd);
+      
+      function handleStart(e) {
+        if (card.classList.contains('swiped-left') || card.classList.contains('swiped-right')) {
+          return;
+        }
+        
+        isDragging = true;
+        card.classList.add('swiping');
+        
+        // Get starting position
+        startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        currentX = startX;
+        
+        e.preventDefault();
+      }
+      
+      function handleMove(e) {
+        if (!isDragging) return;
+        
+        // Get current position
+        currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const deltaX = currentX - startX;
+        
+        // Apply transform to card
+        const rotation = deltaX * 0.1; // Rotate slightly based on swipe distance
+        card.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+        
+        // Adjust opacity based on swipe distance
+        const opacity = Math.max(1 - Math.abs(deltaX) / 500, 0.5);
+        card.style.opacity = opacity;
+        
+        e.preventDefault();
+      }
+      
+      function handleEnd() {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        card.classList.remove('swiping');
+        
+        const deltaX = currentX - startX;
+        const threshold = 100; // Minimum distance to trigger a swipe
+        
+        if (Math.abs(deltaX) >= threshold) {
+          // Swipe was strong enough to dismiss the card
+          if (deltaX > 0) {
+            card.classList.add('swiped-right');
+          } else {
+            card.classList.add('swiped-left');
+          }
+          
+          // After animation completes, reveal the card below
+          setTimeout(() => {
+            card.style.display = 'none';
+            
+            // Adjust the position of remaining cards
+            const remainingCards = document.querySelectorAll('#card-stack-container .swipe-card:not(.swiped-left):not(.swiped-right)');
+            remainingCards.forEach((remainingCard, idx) => {
+              remainingCard.style.transform = `translateY(${idx * 5}px) scale(${1 - (idx * 0.05)})`;
+            });
+          }, 300);
+        } else {
+          // Not strong enough, return to original position
+          const index = parseInt(card.getAttribute('data-index'));
+          card.style.transform = `translateY(${index * 5}px) scale(${1 - (index * 0.05)})`;
+          card.style.opacity = '1';
+        }
+      }
+    });
+  });
+</script>

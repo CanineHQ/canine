@@ -1,0 +1,46 @@
+<dialog id="telepresence_guide" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <h3 class="mb-8 w-full text-xl font-bold">Connecting to private services</h3>
+    <p>
+      Inside a cluster, your services are not exposed to the public internet unless you explicitly check <span class="font-bold">Allow Public Networking</span>.
+    </p>
+    <p>
+      All clusters set up in Canine are configured to install Telepresence by default.
+    </p>
+    <div class="my-4 space-y-4">
+      <div>
+        <h4 class="font-bold mb-2">Step 1: <a class="text-blue-500 hover:text-blue-600" href="https://www.telepresence.io/docs/install/manager" target="_blank">Install Telepresence</a> to your local machine.</h4>
+      </div>
+      <div>
+        <h4 class="font-bold mb-2">Step 2: Download your Kubeconfig file</h4>
+        <%= link_to(
+          "Download Kubeconfig",
+          download_kubeconfig_cluster_path(cluster),
+          class: "btn btn-sm btn-outline",
+          target: "_blank"
+        ) %>
+      </div>
+      <div>
+        <h4 class="font-bold mb-2">Step 3: Connect to your cluster with Telepresence</h4>
+
+        <p class="text-lg">
+          <div class="mockup-code before:content-none">
+            <pre data-prefix="$"><code>KUBECONFIG=/path/to/kubeconfig.yml telepresence connect</code></pre>
+            <pre data-prefix=">"><code>Connected to context</code></pre>
+          </div>
+        </p>
+      </div>
+      <p class="py-4">
+        You can now access your service at <a data-services-target="internalUrl" class="text-blue-500 hover:text-blue-600" target="_blank"><code></code></a>
+      </p>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

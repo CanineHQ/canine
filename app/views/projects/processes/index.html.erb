@@ -11,16 +11,12 @@
         One-off pods are useful for running a single instance of a pod for a short period of time, so you can test something or run a command that doesn't need to be permanent.
       </div>
     </div>
-    <% if @pods.empty? %>
-      <div>
-        <p class="text-gray-500">Nothing running for this project</p>
-      </div>
-    <% else %>
-      <%= render(
-        "processes/pods",
-        pods: @pods,
-        parent: @project
-      ) %>
-    <% end %>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::Projects::Processes::IndexViewModel.new(
+        current_user,
+        project_id: @project.id
+      )
+    ) %>
   </div>
 <% end %>

@@ -20,7 +20,7 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
-    predeploy(project, deployment)
+    predeploy(project, kubectl)
     # For each of the projects services
     deploy_services(project, kubectl)
 
@@ -53,15 +53,17 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  def predeploy(project, deployment)
+  def predeploy(project, kubectl)
     return unless project.predeploy_command.present?
 
-    @logger.info("Running predeploy command: #{project.predeploy_command}", color: :yellow)
-    success = system(project.predeploy_command)
+    @logger.info("Running predeploy command: `#{project.predeploy_command}`...", color: :yellow)
+    command = K8::Stateless::Command.new(project)
+    command_yaml = command.to_yaml
+    command.delete_if_exists!
+    kubectl.apply_yaml(command_yaml)
 
-    return if success
-
-    raise DeploymentFailure, "Predeploy command failed for project #{project.name}"
+    # Wait for the predeploy to finish
+    command.wait_for_completion
   end
 
 
@@ -98,6 +100,7 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def apply_namespace(project, kubectl)
+    @logger.info("Creating namespace: #{project.name}", color: :yellow)
     namespace_yaml = K8::Namespace.new(project).to_yaml
     kubectl.apply_yaml(namespace_yaml)
   end
@@ -136,28 +139,13 @@ class Projects::DeploymentJob < ApplicationJob
 
   def upload_registry_secrets(kubectl, deployment)
     project = deployment.project
-    docker_config_json = create_docker_config_json(
-      project.github_username,
-      project.github_access_token,
+    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
+    result = Providers::GenerateConfigJson.execute(
+      provider: project.project_credential_provider.provider,
     )
-    secret_yaml = K8::Secrets::RegistrySecret.new(project, docker_config_json).to_yaml
+    raise StandardError, result.message if result.failure?
+
+    secret_yaml = K8::Secrets::RegistrySecret.new(project, result.docker_config_json).to_yaml
     kubectl.apply_yaml(secret_yaml)
-  end
-
-  def create_docker_config_json(username, password)
-    # First base64 encoding
-    auth_value = Base64.strict_encode64("#{username}:#{password}")
-
-    # Create the JSON structure
-    docker_config = {
-      "auths" => {
-        "ghcr.io" => {
-          "auth" => auth_value
-        }
-      }
-    }
-
-    # Second base64 encoding of the entire JSON
-    Base64.strict_encode64(JSON.generate(docker_config))
   end
 end

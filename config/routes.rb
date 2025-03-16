@@ -1,7 +1,14 @@
 require "sidekiq/web"
 
 Rails.application.routes.draw do
-  ActiveAdmin.routes(self)
+  authenticate :user, ->(user) { user.admin? } do
+    mount Avo::Engine, at: Avo.configuration.root_path
+    Avo::Engine.routes.draw do
+      # This route is not protected, secure it with authentication if needed.
+      get "dashboard", to: "tools#dashboard", as: :dashboard
+      post "login_as/:id", to: "tools#login_as", as: :login_as
+    end
+  end
   resources :accounts, only: [ :create ] do
     resources :account_users, only: %i[create index destroy], module: :accounts
     member do
@@ -13,7 +20,6 @@ Rails.application.routes.draw do
   end
   get "/privacy", to: "static#privacy"
   get "/terms", to: "static#terms"
-  get "/manifesto", to: "static#manifesto"
 
   authenticated :user do
     root to: "projects#index", as: :user_root
@@ -33,6 +39,7 @@ Rails.application.routes.draw do
     resources :processes, only: %i[index show], module: :add_ons
   end
 
+  resources :providers, only: %i[index new create destroy]
   resources :projects do
     member do
       post :restart

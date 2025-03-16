@@ -2,31 +2,37 @@
   <%= link_to project_deployments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_deployments_path(project))}" do %>
     <div class="flex items-center gap-2">
       Deployments
+      <iconify-icon icon="lucide:rocket"></iconify-icon>
     </div>
   <% end %>
   <%= link_to project_services_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_services_path(project))}" do %>
     <div class="flex items-center gap-2">
       Services
+      <iconify-icon icon="lucide:server"></iconify-icon>
     </div>
   <% end %>
   <%= link_to project_environment_variables_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_environment_variables_path(project))}" do %>
     <div class="flex items-center gap-2">
       Environment
+      <iconify-icon icon="lucide:lock"></iconify-icon>
     </div>
   <% end %>
   <%= link_to project_processes_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_processes_path(project))}" do %>
     <div class="flex items-center gap-2">
       Processes
+      <iconify-icon icon="lucide:cpu"></iconify-icon>
     </div>
   <% end %>
   <%= link_to project_metrics_url(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_metrics_url(project))}" do %>
     <div class="flex items-center gap-2">
       Metrics
+      <iconify-icon icon="lucide:chart-line"></iconify-icon>
     </div>
   <% end %>
   <%= link_to edit_project_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_project_path(project))}" do %>
     <div class="flex items-center gap-2">
       Settings
+      <iconify-icon icon="lucide:settings"></iconify-icon>
     </div>
   <% end %>
 </div>

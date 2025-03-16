@@ -5,20 +5,26 @@
     <%= render "projects/metrics/live_metrics" %>
   <% end %>
 
-  <div class="flex flex-row gap-4 mt-8">
-    <%= line_chart(
-      parse_cpu_metrics(@metrics),
-      suffix: "%",
-      xtitle: "CPU Usage",
-      ytitle: "Percentage",
-      library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
-    ) %>
-    <%= line_chart(
-      parse_memory_metrics(@metrics),
-      suffix: "%",
-      xtitle: "Memory Usage",
-      ytitle: "Percentage",
-      library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
-    ) %>
-  </div>
+  <%= turbo_frame_tag "metrics-search" do %>
+    <div class="mt-8">
+      <%= render "clusters/metrics/search", search_path: project_metrics_path(@project) %>
+
+      <div class="flex flex-row gap-4 mt-8">
+        <%= line_chart(
+          parse_cpu_metrics(@metrics),
+          suffix: "%",
+          xtitle: "CPU Usage",
+          ytitle: "Percentage",
+          library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
+        ) %>
+        <%= line_chart(
+          parse_memory_metrics(@metrics),
+          suffix: "%",
+          xtitle: "Memory Usage",
+          ytitle: "Percentage",
+          library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
+        ) %>
+      </div>
+    </div>
+  <% end %>
 <% end %>
