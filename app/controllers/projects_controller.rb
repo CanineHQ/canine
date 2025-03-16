@@ -28,8 +28,8 @@ class ProjectsController < ApplicationController
 
   # GET /projects/new
   def new
-    selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
-    @providers = current_user.providers.where(provider: selected_provider)
+    @selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
+    @providers = current_user.providers.where(provider: @selected_provider)
     # Temporary hack
     @provider = @providers.first
     @project = Project.new
