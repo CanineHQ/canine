@@ -20,7 +20,7 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
-    predeploy(project, deployment)
+    predeploy(project, kubectl)
     # For each of the projects services
     deploy_services(project, kubectl)
 
@@ -53,15 +53,17 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  def predeploy(project, deployment)
+  def predeploy(project, kubectl)
     return unless project.predeploy_command.present?
 
-    @logger.info("Running predeploy command: #{project.predeploy_command}", color: :yellow)
-    success = system(project.predeploy_command)
+    @logger.info("Running predeploy command: `#{project.predeploy_command}`...", color: :yellow)
+    command = K8::Stateless::Command.new(project)
+    command_yaml = command.to_yaml
+    command.delete_if_exists!
+    kubectl.apply_yaml(command_yaml)
 
-    return if success
-
-    raise DeploymentFailure, "Predeploy command failed for project #{project.name}"
+    # Wait for the predeploy to finish
+    command.wait_for_completion
   end
 
 

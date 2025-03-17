@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "new_service" do %>
-  <div class="overflow-x-auto">
+  <div>
     <%= form_with(model: [@project, @service], url: project_services_path) do |form| %>
       <div class="form-group">
         <%= form.label :name %>
