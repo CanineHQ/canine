@@ -14,6 +14,20 @@ Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 ```bash
 curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install/install.sh | bash
 ```
+---
+
+Or run manually if you prefer:
+```bash
+git clone git@github.com:czhu12/canine.git
+cd canine/install
+docker compose up -d
+```
+and open http://localhost:3000 in a browser.
+
+To customize the web ui port, supply the PORT env var when running docker compose:
+```bash
+PORT=3456 docker compose up -d
+```
 
 ## Cloud
 
