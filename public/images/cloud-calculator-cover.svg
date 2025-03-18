@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a365d" />
+      <stop offset="100%" stop-color="#2a4365" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background -->
+  <rect width="800" height="400" fill="url(#bg-gradient)" />
+  
+  <!-- Title text -->
+  <text x="400" y="50" font-family="Arial, sans-serif" font-size="28" fill="#ffffff" font-weight="bold" text-anchor="middle">Cloud Provider Pricing Calculator</text>
+  
+  <!-- Configuration panel -->
+  <rect x="100" y="80" width="250" height="220" fill="#ffffff" fill-opacity="0.1" rx="10" ry="10" />
+  <text x="225" y="105" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" font-weight="bold" text-anchor="middle">Configuration</text>
+  
+  <!-- CPU slider -->
+  <text x="125" y="135" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">CPU (cores):</text>
+  <rect x="125" y="145" width="200" height="10" rx="5" ry="5" fill="#333" opacity="0.5" />
+  <rect x="125" y="145" width="140" height="10" rx="5" ry="5" fill="#46E3B7" />
+  <circle cx="265" cy="150" r="12" fill="#46E3B7" stroke="#fff" stroke-width="2" />
+  <text x="325" y="150" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="end">2.5</text>
+  
+  <!-- Memory slider -->
+  <text x="125" y="185" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Memory (GB):</text>
+  <rect x="125" y="195" width="200" height="10" rx="5" ry="5" fill="#333" opacity="0.5" />
+  <rect x="125" y="195" width="160" height="10" rx="5" ry="5" fill="#79589F" />
+  <circle cx="285" cy="200" r="12" fill="#79589F" stroke="#fff" stroke-width="2" />
+  <text x="325" y="200" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="end">4</text>
+  
+  <!-- Replicas slider -->
+  <text x="125" y="235" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Replicas:</text>
+  <rect x="125" y="245" width="200" height="10" rx="5" ry="5" fill="#333" opacity="0.5" />
+  <rect x="125" y="245" width="100" height="10" rx="5" ry="5" fill="#0080FF" />
+  <circle cx="225" cy="250" r="12" fill="#0080FF" stroke="#fff" stroke-width="2" />
+  <text x="325" y="250" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="end">3</text>
+  
+  <!-- Calculate button -->
+  <rect x="155" y="275" width="140" height="35" rx="5" ry="5" fill="#4299E1" />
+  <text x="225" y="298" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" font-weight="bold" text-anchor="middle">CALCULATE</text>
+  
+  <!-- Results chart -->
+  <rect x="380" y="80" width="320" height="220" fill="#ffffff" fill-opacity="0.1" rx="10" ry="10" />
+  
+  <!-- Bars for different cloud providers in specified order with descending heights -->
+  <!-- Heroku - highest price -->
+  <rect x="410" y="120" width="45" height="160" fill="#79589F" />
+  <text x="432" y="295" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Heroku</text>
+  
+  <!-- Render - second highest -->
+  <rect x="465" y="140" width="45" height="140" fill="#46E3B7" />
+  <text x="487" y="295" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Render</text>
+  
+  <!-- Fly.io - middle -->
+  <rect x="520" y="160" width="45" height="120" fill="#7B42BC" />
+  <text x="542" y="295" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Fly.io</text>
+  
+  <!-- Digital Ocean - second lowest -->
+  <rect x="575" y="180" width="45" height="100" fill="#0080FF" />
+  <text x="597" y="295" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">DO</text>
+  
+  <!-- Hetzner - lowest price -->
+  <rect x="630" y="200" width="45" height="80" fill="#D50C2D" />
+  <text x="652" y="295" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Hetzner</text>
+  
+  <!-- Price indicators -->
+  <text x="432" y="110" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">$125</text>
+  <text x="487" y="130" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">$95</text>
+  <text x="542" y="150" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">$75</text>
+  <text x="597" y="170" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">$55</text>
+  <text x="652" y="190" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">$35</text>
+  
+  <!-- Y-axis label -->
+  <text x="540" y="95" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Monthly Cost ($)</text>
+  
+  <!-- Tagline -->
+  <text x="400" y="350" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle">Compare costs based on your exact requirements</text>
+</svg>

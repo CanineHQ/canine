@@ -8,7 +8,11 @@
 
 <meta property="og:title" content="Canine - An open source alternative to Heroku" />
 <meta property="og:url" content="https://canine.sh" />
-<meta property="og:image" content="https://canine.sh/images/deployment_styled.png" />
+<% if content_for?(:og_image) %>
+  <meta property="og:image" content="<%= yield :og_image %>" />
+<% else %>
+  <meta property="og:image" content="https://canine.sh/images/deployment_styled.png" />
+<% end %>
 <meta http-equiv="content-language" content="<%= I18n.locale %>"/>
 
 <meta charset="utf-8">
