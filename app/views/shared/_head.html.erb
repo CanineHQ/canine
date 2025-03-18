@@ -6,8 +6,24 @@
 </title>
 <meta name="description" content="Canine is an open source deployment platform that makes it easy to deploy and manage your applications.">
 
-<meta property="og:title" content="Canine - An open source alternative to Heroku" />
-<meta property="og:url" content="https://canine.sh" />
+<% if content_for?(:og_title) %>
+  <meta property="og:title" content="<%= yield :og_title %>" />
+<% else %>
+  <meta property="og:title" content="Canine - An open source alternative to Heroku" />
+<% end %>
+
+<% if content_for?(:og_url) %>
+  <meta property="og:url" content="<%= yield :og_url %>" />
+<% else %>
+  <meta property="og:url" content="https://canine.sh" />
+<% end %>
+
+<% if content_for?(:og_description) %>
+  <meta property="og:description" content="<%= yield :og_description %>" />
+<% else %>
+  <meta property="og:description" content="Canine is an open source deployment platform that makes it easy to deploy and manage your applications." />
+<% end %>
+
 <% if content_for?(:og_image) %>
   <meta property="og:image" content="<%= yield :og_image %>" />
 <% else %>
