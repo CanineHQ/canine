@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static targets = ["chart"]
   static values = {
     prices: Object
   }
 
   connect() {
-    console.log(this.pricesValue)
     this.computed = {
       team: {
         'team-size': 1,
@@ -22,17 +22,77 @@ export default class extends Controller {
         'worker-instances': 0,
       },
     }
+
     // Initialize sliders and pricing on page load
     this.calculateAll();
+  }
+
+  renderChart(breakdowns) {
+    const data = breakdowns.map(b => {
+      const { service, breakdown } = b;
+      if (breakdown.error) {
+        return null;
+      }
+      const serviceName = this.pricesValue[service].name;
+      const color = this.pricesValue[service].color;
+      return {
+        breakdown,
+        serviceName,
+        color,
+      }
+    }).filter(b => b !== null);
+
+    let chartStatus = Chart.getChart("price-chart");
+    if (chartStatus != undefined) {
+      chartStatus.destroy();
+    }
+
+    new Chart(this.chartTarget, {
+      type: 'bar',
+      data: {
+        labels: data.map(b => b.serviceName),
+        datasets: [{
+          label: 'Cost',
+          backgroundColor: data.map(b => b.color),
+          borderColor: data.map(b => b.color),
+          borderWidth: 1,
+          data: data.map(b => this.cost(b.breakdown)),
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return '$' + value;
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return '$' + context.formattedValue;
+              }
+            }
+          }
+        }
+      }
+    });
   }
 
   instanceSize(tiers, cpuNeeded, memoryNeeded) {
     for (let i = 0; i < tiers.length; i++) {
       if (cpuNeeded <= tiers[i].cpu && memoryNeeded <= tiers[i].memory) {
-        return {instanceNeeded: tiers[i], i}
+        return { instanceNeeded: tiers[i], i }
       }
     }
-    return {instanceNeeded: null, i: -1}
+    return { instanceNeeded: null, i: -1 }
   }
 
   calculateBreakdown(service) {
@@ -42,7 +102,7 @@ export default class extends Controller {
 
     const webCpuNeeded = this.computed.web['web-cpu']
     const webMemoryNeeded = this.computed.web['web-memory']
-    const {instanceNeeded: webInstanceNeeded, i: webInstanceIndex} = this.instanceSize(prices.tiers, webCpuNeeded, webMemoryNeeded)
+    const { instanceNeeded: webInstanceNeeded, i: webInstanceIndex } = this.instanceSize(prices.tiers, webCpuNeeded, webMemoryNeeded)
     const webReplicas = this.computed.web['web-instances']
 
     if (webInstanceNeeded) {
@@ -58,7 +118,7 @@ export default class extends Controller {
 
     const workerCpuNeeded = this.computed.worker['worker-cpu']
     const workerMemoryNeeded = this.computed.worker['worker-memory']
-    const {instanceNeeded: workerInstanceNeeded, i: workerInstanceIndex} = this.instanceSize(prices.tiers, workerCpuNeeded, workerMemoryNeeded)
+    const { instanceNeeded: workerInstanceNeeded, i: workerInstanceIndex } = this.instanceSize(prices.tiers, workerCpuNeeded, workerMemoryNeeded)
     const workerReplicas = this.computed.worker['worker-instances']
 
     if (workerInstanceNeeded) {
@@ -76,10 +136,13 @@ export default class extends Controller {
   }
 
   calculateAll() {
-    const services = ["render", "heroku", "digitalocean", "hetzner"];
-    services.forEach(service => {
-      this.place(this.render(service, this.calculateBreakdown(service)), `${service.toLowerCase()}-breakdown`);
+    const services = ["heroku", "render", "digitalocean", "hetzner"];
+    const breakdowns = services.map(service => {
+      const breakdown = this.calculateBreakdown(service);
+      this.place(this.render(service, breakdown), `${service.toLowerCase()}-breakdown`);
+      return { breakdown, service }
     });
+    this.renderChart(breakdowns);
   }
 
   place(html, id) {
@@ -91,8 +154,10 @@ export default class extends Controller {
     container.appendChild(el);
   }
 
+  cost(breakdown) {
+    return breakdown.reduce((sum, b) => sum + (typeof b.cost === 'number' ? b.cost : 0), 0);
+  }
   render(service, breakdown) {
-    console.log(breakdown);
     const serviceName = this.pricesValue[service].name
     if (breakdown.error) {
       return `
@@ -104,7 +169,7 @@ export default class extends Controller {
       </div>
       `
     }
-    const total = breakdown.reduce((sum, b) => sum + (typeof b.cost === 'number' ? b.cost : 0), 0);
+    const total = this.cost(breakdown);
     const header = `
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center">
@@ -140,7 +205,7 @@ export default class extends Controller {
       if (!obj[k]) obj[k] = {};
       return obj[k];
     }, object);
-    
+
     // Set the final value
     lastObj[lastKey] = value;
     return object;

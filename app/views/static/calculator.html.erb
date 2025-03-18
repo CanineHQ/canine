@@ -1,4 +1,5 @@
 <!-- Inspired by https://judoscale.com/tools/paas-pricing-calculator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <div class="bg-slate-900 min-h-screen text-white" data-controller="pricing" data-pricing-prices-value="<%= @prices.to_json %>">
   <!-- Header -->
@@ -198,7 +199,10 @@
 
         <div id="digitalocean-breakdown"></div>
         <div id="hetzner-breakdown"></div>
-
+        <div class="mt-4 text-center">
+          <h4 class="mb-2 font-semibold text-lg">Pricing Chart (monthly)</h4>
+          <canvas id="price-chart" data-pricing-target="chart"></canvas>
+        </div>
       </div>
     </div>
   </div>

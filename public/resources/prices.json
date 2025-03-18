@@ -1,6 +1,7 @@
 {
   "heroku": {
     "name": "Heroku",
+    "color": "#430098",
     "seat": 0,
     "canine": true,
     "tiers": [
@@ -50,6 +51,7 @@
   },
   "digitalocean": {
     "name": "DigitalOcean",
+    "color": "#0080FF",
     "seat": 0,
     "canine": true,
     "tiers": [
@@ -111,6 +113,7 @@
   },
   "hetzner": {
     "name": "Hetzner",
+    "color": "#c32d36",
     "seat": 0,
     "canine": true,
     "tiers": [
@@ -142,6 +145,7 @@
   },
   "render": {
     "name": "Render",
+    "color": "#46e3b7",
     "canine": false,
     "seat": 19,
     "tiers": [
