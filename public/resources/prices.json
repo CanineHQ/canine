@@ -7,8 +7,8 @@
     "tiers": [
       {
         "name": "Basic",
-        "price": 250,
-        "cpu": 0.5,
+        "price": 7,
+        "cpu": 1,
         "memory": 0.5
       },
       {
