@@ -1,0 +1,174 @@
+{
+  "heroku": {
+    "name": "Heroku",
+    "seat": 0,
+    "canine": true,
+    "tiers": [
+      {
+        "name": "Basic",
+        "price": 250,
+        "cpu": 0.5,
+        "memory": 0.5
+      },
+      {
+        "name": "Std-2X",
+        "price": 25,
+        "cpu": 1,
+        "memory": 1
+      },
+      {
+        "name": "Perf-M",
+        "price": 250,
+        "cpu": 2,
+        "memory": 2
+      },
+      {
+        "name": "Perf-L",
+        "price": 500,
+        "cpu": 4,
+        "memory": 8
+      },
+      {
+        "name": "Perf-L-RAM",
+        "price": 500,
+        "cpu": 4,
+        "memory": 16
+      },
+      {
+        "name": "Perf-XL",
+        "price": 750,
+        "cpu": 8,
+        "memory": 32
+      },
+      {
+        "name": "Perf-2XL",
+        "price": 1500,
+        "cpu": 16,
+        "memory": 32
+      }
+    ]
+  },
+  "digitalocean": {
+    "name": "DigitalOcean",
+    "seat": 0,
+    "canine": true,
+    "tiers": [
+      {
+        "name": "x-small",
+        "price": 4,
+        "cpu": 1,
+        "memory": 0.5
+      },
+      {
+        "name": "small",
+        "price": 6,
+        "cpu": 1,
+        "memory": 1
+      },
+      {
+        "name": "small",
+        "price": 12,
+        "cpu": 1,
+        "memory": 2
+      },
+      {
+        "name": "medium",
+        "price": 18,
+        "cpu": 2,
+        "memory": 2
+      },
+      {
+        "name": "medium",
+        "price": 24,
+        "cpu": 2,
+        "memory": 4
+      },
+      {
+        "name": "large",
+        "price": 48,
+        "cpu": 4,
+        "memory": 8
+      },
+      {
+        "name": "x-large",
+        "price": 96,
+        "cpu": 8,
+        "memory": 16
+      },
+      {
+        "name": "2x-large",
+        "price": 192,
+        "cpu": 8,
+        "memory": 32
+      },
+      {
+        "name": "3x-large",
+        "price": 504,
+        "cpu": 16,
+        "memory": 64
+      }
+    ]
+  },
+  "hetzner": {
+    "name": "Hetzner",
+    "seat": 0,
+    "canine": true,
+    "tiers": [
+      {
+        "name": "CX22",
+        "price": 5,
+        "cpu": 2,
+        "memory": 4
+      },
+      {
+        "name": "CX32",
+        "price": 8,
+        "cpu": 4,
+        "memory": 8
+      },
+      {
+        "name": "CX42",
+        "price": 18,
+        "cpu": 8,
+        "memory": 16
+      },
+      {
+        "name": "CX52",
+        "price": 35,
+        "cpu": 16,
+        "memory": 32
+      }
+    ]
+  },
+  "render": {
+    "name": "Render",
+    "canine": false,
+    "seat": 19,
+    "tiers": [
+      {
+        "name": "Standard",
+        "price": 25,
+        "cpu": 1,
+        "memory": 2
+      },
+      {
+        "name": "Pro",
+        "price": 84,
+        "cpu": 2,
+        "memory": 4
+      },
+      {
+        "name": "Pro Plus",
+        "price": 175,
+        "cpu": 4,
+        "memory": 8
+      },
+      {
+        "name": "Pro Max",
+        "price": 450,
+        "cpu": 8,
+        "memory": 16
+      }
+    ]
+  }
+}

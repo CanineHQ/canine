@@ -58,4 +58,8 @@ class StaticController < ApplicationController
 
   def index
   end
+
+  def calculator
+    @prices = JSON.parse(File.read(File.join(Rails.root, 'public', 'resources', 'prices.json')))
+  end
 end
