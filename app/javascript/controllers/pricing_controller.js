@@ -46,6 +46,7 @@ export default class extends Controller {
     if (chartStatus != undefined) {
       chartStatus.destroy();
     }
+    Chart.defaults.color = '#fff';
 
     new Chart(this.chartTarget, {
       type: 'bar',
@@ -60,17 +61,19 @@ export default class extends Controller {
         }]
       },
       options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function (value) {
-                return '$' + value;
-              }
-            }
-          }
-        },
         plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            offset: 4,
+            formatter: function(value) {
+              return '$' + value;
+            },
+            font: {
+              weight: 'bold',
+              size: 14
+            }
+          },
           legend: {
             display: false
           },
@@ -81,8 +84,20 @@ export default class extends Controller {
               }
             }
           }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: Math.max(...data.map(b => this.cost(b.breakdown))) * 1.2,
+            ticks: {
+              callback: function (value) {
+                return '$' + value;
+              }
+            }
+          }
         }
-      }
+      },
+      plugins: [ChartDataLabels]
     });
   }
 

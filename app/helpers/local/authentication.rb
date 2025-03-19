@@ -3,7 +3,7 @@ module Local::Authentication
 
   included do
     before_action :authenticate_user!
-    before_action :set_github_token_if_not_exists
+    before_action :set_github_token_if_not_exists, if: :current_user
   end
 
   def set_github_token_if_not_exists
