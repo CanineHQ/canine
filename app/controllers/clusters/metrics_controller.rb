@@ -20,16 +20,22 @@ class Clusters::MetricsController < Clusters::BaseController
   protected
 
   def parse_cpu_metrics(metrics)
-    metrics.select { |m| m.cpu? }.each_with_object({}) do |metric, h|
-      h[metric.created_at] = 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")
+    metrics.select { |m| m.cpu? }.map do |metric|
+      {
+        x: metric.created_at,
+        y: 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")
+      }
     end
   end
 
   helper_method :parse_cpu_metrics
 
   def parse_memory_metrics(metrics)
-    metrics.select { |m| m.memory? }.each_with_object({}) do |metric, h|
-      h[metric.created_at] = 100 * metric.metadata.dig("memory") / metric.metadata.dig("total_memory")
+    metrics.select { |m| m.memory? }.map do |metric|
+      {
+        x: metric.created_at,
+        y: 100 * metric.metadata.dig("memory") / metric.metadata.dig("total_memory")
+      }
     end
   end
 
