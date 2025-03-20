@@ -18,7 +18,7 @@ curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/instal
 
 Or run manually if you prefer:
 ```bash
-git clone git@github.com:czhu12/canine.git
+git clone https://github.com/czhu12/canine.git
 cd canine/install
 docker compose up -d
 ```
