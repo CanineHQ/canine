@@ -3,7 +3,7 @@
     "name": "Heroku",
     "color": "#430098",
     "seat": 0,
-    "canine": true,
+    "canine": false,
     "tiers": [
       {
         "name": "Basic",
