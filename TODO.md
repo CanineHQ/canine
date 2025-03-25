@@ -18,3 +18,4 @@
 - [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor
 - [ ] Add metrics page for add ons
 - [ ] improve helm chart previews
+- [ ] Web socket issues with deployment status's
