@@ -1,5 +1,7 @@
-<% if provider.nil? %>
-  <%= render "projects/create/missing_credentials", project: %>
+<% if provider.nil? && @selected_provider == Provider::GITHUB_PROVIDER %>
+  <%= render "projects/create/missing_github_credentials", project: %>
+<% elsif provider.nil? && @selected_provider == Provider::DOCKER_HUB_PROVIDER %>
+  <%= render "projects/create/missing_docker_hub_credentials", project: %>
 <% elsif provider.docker_hub? %>
   <%= render "projects/create/new_form_docker_hub", project:, provider: %>
 <% else %>
