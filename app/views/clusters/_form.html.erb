@@ -3,7 +3,7 @@
 
   <div class="form-group">
     <%= form.label :name %>
-    <%= form.text_field :name, class: "input input-bordered", value: RandomNameGenerator.generate_name %>
+    <%= form.text_field :name, class: "input input-bordered", autofocus: true, required: true %>
   </div>
 
   <div data-controller="card-select">
