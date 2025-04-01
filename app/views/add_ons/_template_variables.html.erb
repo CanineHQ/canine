@@ -17,6 +17,13 @@
         class: "input input-bordered w-full max-w-md",
         value: form.object.metadata.dig('template', variable['key']) || variable['default']
       ) %>
+    <% elsif variable['type'] == 'integer' %>
+      <%= form.number_field(
+        variable['key'],
+        name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]",
+        class: "input input-bordered",
+        value: form.object.metadata.dig('template', variable['key']) || variable['default']
+      ) %>
     <% elsif variable['type'] == 'enum' %>
       <%= form.select "metadata][#{chart['name']}][template][#{variable['key']}", options_for_select(variable['options']), {}, class: "select select-bordered w-full max-w-md" %>
     <% elsif variable['type'] == 'size' %>
