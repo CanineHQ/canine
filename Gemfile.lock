@@ -334,7 +334,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.3-x86_64-linux-gnu)
       racc (~> 1.4)
-    noticed (2.4.3)
+    noticed (2.6.0)
       rails (>= 6.1.0)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
@@ -639,7 +639,7 @@ DEPENDENCIES
   kubeclient (~> 4.12)
   light-service (~> 0.19.0)
   name_of_person!
-  noticed (~> 2.0)
+  noticed (~> 2.6)
   octokit (~> 9.2)
   oj (~> 3.16)
   omniauth (~> 2.1)
