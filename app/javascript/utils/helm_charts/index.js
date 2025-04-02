@@ -20,12 +20,9 @@ export async function getDefaultValues(
   return html;
 }
 
-export function renderHelmChartCard(packageData) {
+export function helmChartHeader(packageData) {
   const logoImageUrl = getLogoImageUrl(packageData);
-  // Create a temporary container to convert HTML string to DOM element
-  const tempContainer = document.createElement('div');
-  tempContainer.innerHTML = `
-    <div class="mt-4 card bg-base-300 shadow-xl p-4">
+  return `
       <div class="flex items-center gap-4">
         <img src="${logoImageUrl}" alt="${packageData.name}" class="h-16 w-16">
         <div class="flex-1">
@@ -61,6 +58,15 @@ export function renderHelmChartCard(packageData) {
           </div>
         </div>
       </div>
+  `
+}
+
+export function renderHelmChartCard(packageData) {
+  // Create a temporary container to convert HTML string to DOM element
+  const tempContainer = document.createElement('div');
+  tempContainer.innerHTML = `
+    <div class="mt-4 card bg-base-300 shadow-xl p-4">
+      ${helmChartHeader(packageData)}
     </div>
   `;
 

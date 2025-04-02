@@ -11,7 +11,6 @@
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
 - [ ] Streaming logs for pods
 - [ ] Project groupings?
-- [ ] Create a pricing calculator
 - [ ] Constantly refresh the processes page for readiness of pods
 - [ ] Pre-deploy task
 - [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor
