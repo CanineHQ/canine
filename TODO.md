@@ -3,18 +3,14 @@
 - [ ] Change the loading state of an add on install to have a better UX
   - [ ] Show multi step install progress
 - [ ] Automatic DNS mapping for canineapp.run
-- [ ] Support login without Github
-- [ ] Support organization projects
+- [ ] Migrate Login with Github to github apps
+  - [ ] Support organization projects on github
 - [ ] Add skeleton loader for processes page
-- [ ] Migrate to goodjob to support scheduled jobs without a ton of separate gems
-- [ ] Gray out deploy button if there are no services
-- [ ] Make the metrics page look better + filter
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
 - [ ] Streaming logs for pods
 - [ ] Project groupings?
-- [ ] Create a pricing calculator
 - [ ] Constantly refresh the processes page for readiness of pods
-- [ ] Pre-deploy task
+- [ ] Make the metrics page look better + filter
 - [ ] Metrics improvement: https://stackoverflow.com/questions/68058199/chartjs-need-help-on-drawing-a-vertical-line-when-hovering-cursor
 - [ ] Add metrics page for add ons
-- [ ] improve helm chart previews
+- [ ] Web socket issues with deployment status's

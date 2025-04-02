@@ -50,6 +50,33 @@ helm:
           key: resources.limits.storage
           type: size
           default: 10Gi
+
+    - name: clickhouse
+      logo: /images/helm/clickhouse.png
+      chart_url: bitnami/clickhouse
+      friendly_name: ClickHouse
+      template:
+        - name: persistence.size
+          key: persistence.size
+          type: size
+          default: 10Gi
+        - name: shards
+          key: shards
+          type: integer
+          default: 1
+        - name: Replica count
+          key: replicaCount
+          type: integer
+          default: 1
+        - name: "Zookeeper enabled"
+          key: zookeeper.enabled
+          type: boolean
+          default: false
+        - name: "Zookeeper replica count"
+          key: zookeeper.replicaCount
+          type: integer
+          default: 1
+      
     - name: supabase
       logo: /images/helm/supabase.png
       repository: https://github.com/supabase-community/supabase-kubernetes
@@ -58,11 +85,6 @@ helm:
     - name: sentry
       logo: /images/helm/sentry.png
       repository: https://sentry-kubernetes.github.io/charts
-      coming_soon: true
-      
-    - name: clickhouse
-      logo: /images/helm/clickhouse.png
-      repository: https://clickhouse.github.io/clickhouse-helm
       coming_soon: true
       
     - name: superset

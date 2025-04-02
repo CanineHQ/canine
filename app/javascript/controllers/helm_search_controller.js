@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { renderHelmChartCard, getLogoImageUrl } from "../utils/helm_charts"
+import { renderHelmChartCard, helmChartHeader } from "../utils/helm_charts"
 import { debounce } from "../utils"
 
 export default class extends Controller {
@@ -9,10 +9,12 @@ export default class extends Controller {
 
   connect() {
     this.input = this.element.querySelector(`input[name="add_on[metadata][helm_chart][helm_chart.name]"]`)
+    // disable autocomplete
+    this.input.setAttribute('autocomplete', 'off')
     
     // Create and append dropdown
     this.dropdown = document.createElement('ul')
-    this.dropdown.className = 'hidden absolute z-10 w-full mt-1 menu bg-base-100 rounded-box shadow-lg'
+    this.dropdown.className = 'hidden absolute z-10 w-full mt-1 menu bg-base-200 block rounded-box shadow-lg max-h-[300px] overflow-y-auto'
     this.element.appendChild(this.dropdown)
     
     // Bind search handler with debounce
@@ -39,15 +41,8 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = packages.map(pkg => `
-      <li class="p-2 cursor-pointer" data-package-name="${pkg.name}" data-package-data="${encodeURIComponent(JSON.stringify(pkg))}">
-        <div class="font-medium flex items-center">
-          <img src="${getLogoImageUrl(pkg)}" alt="${pkg.name} logo" class="w-8 h-8 mr-2"/>
-          <div>
-            ${pkg.name}
-            <br/>
-            <div class="text-sm text-base-content/70">${pkg.description}</div>
-          </div>
-        </div>
+      <li class="p-2" data-package-name="${pkg.name}" data-package-data="${encodeURIComponent(JSON.stringify(pkg))}">
+        ${helmChartHeader(pkg)}
       </li>
     `).join('')
 

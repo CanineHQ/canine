@@ -1,6 +1,15 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   layout 'homepage', only: [ :new, :create ]
 
+  def create
+    ActiveRecord::Base.transaction do
+      super do |user|
+        account = Account.create!(name: "#{user.first_name}'s Account", owner: user) if user.persisted?
+        AccountUser.create!(account:, user:)
+      end
+    end
+  end
+
   protected
    def update_resource(resource, params)
     if account_update_params[:password].blank?

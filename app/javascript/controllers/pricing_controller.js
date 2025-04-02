@@ -172,8 +172,10 @@ export default class extends Controller {
   cost(breakdown) {
     return breakdown.reduce((sum, b) => sum + (typeof b.cost === 'number' ? b.cost : 0), 0);
   }
+
   render(service, breakdown) {
     const serviceName = this.pricesValue[service].name
+    const supportsCanine = this.pricesValue[service].canine
     if (breakdown.error) {
       return `
       <div class="flex items-center justify-between mb-2">
@@ -188,7 +190,7 @@ export default class extends Controller {
     const header = `
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center">
-          <span class="font-medium">${serviceName}</span>
+          <span class="font-medium">${serviceName}${supportsCanine ? '<span class="ml-2 mr-1">+</span><img src="/images/logo-full.png" class="inline h-8" />' : ''}</span>
         </div>
         <div class="text-emerald-400 font-semibold total-cost">${total == 0 ? 'FREE' : `$${total}.00`}</div>
       </div>

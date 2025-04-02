@@ -9,14 +9,6 @@ module Users
       redirect_to root_path, alert: "Something went wrong"
     end
 
-    def facebook
-      handle_auth "Facebook"
-    end
-
-    def twitter
-      handle_auth "Twitter"
-    end
-
     def github
       handle_auth "Github"
     end

@@ -1,5 +1,11 @@
 <li>
   <div>
+    <%= link_to providers_path do %>
+      <iconify-icon icon="lucide:key-round" height="16"></iconify-icon>
+      Credentials
+    <% end %>
+  </div>
+  <div>
     <%# <%= link_to t(".connected_accounts"), user_connected_accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Devise.omniauth_configs.any? %>
     <%# <%= link_to t(".accounts"), accounts_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' %>
     <%#= link_to t(".api_tokens"), api_tokens_path, class: 'text-gray-800 bg-white hover:bg-primary-50 dark:text-gray-50 dark:bg-gray-800 dark:hover:bg-primary-800 transition ease-in-out duration-200 whitespace-nowrap no-underline block px-6 py-3' if Jumpstart.config.payments_enabled? %>

@@ -14,7 +14,7 @@
       <label class="label">
         <span class="label-text">Name</span>
       </label>
-      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", value: RandomNameGenerator.generate_name %>
+      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>

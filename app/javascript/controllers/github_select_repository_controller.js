@@ -17,7 +17,8 @@ export default class extends Controller {
   }
 
   async filterRepositories(e) {
-    this.searchFunc(e)
+    e.preventDefault();
+    this.searchFunc(e);
   }
 
   closeModal() {
