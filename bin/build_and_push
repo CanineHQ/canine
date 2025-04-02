@@ -1,5 +1,4 @@
 #!/bin/bash
 set -e
 
-docker buildx build -t ghcr.io/czhu12/canine -f Dockerfile.dev .
-docker push ghcr.io/czhu12/canine:latest
+docker buildx build --platform linux/amd64,linux/arm64 -t chriszhu12/canine -f Dockerfile --push .
