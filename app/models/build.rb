@@ -35,6 +35,10 @@ class Build < ApplicationRecord
   }
 
   after_update_commit do
+    broadcast_build
+  end
+
+  def broadcast_build
     if events.last
       broadcast_replace_later_to [ project, :events ], target: dom_id(self, :index), partial: "projects/deployments/event_build_row", locals: { project:, event: events.last }
     end
