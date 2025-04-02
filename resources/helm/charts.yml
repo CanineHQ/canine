@@ -64,11 +64,15 @@ helm:
           key: shards
           type: integer
           default: 1
-        - name: replicaCount
+        - name: Replica count
           key: replicaCount
           type: integer
           default: 1
-        - name: "Zookeeper replica Count"
+        - name: "Zookeeper enabled"
+          key: zookeeper.enabled
+          type: boolean
+          default: false
+        - name: "Zookeeper replica count"
           key: zookeeper.replicaCount
           type: integer
           default: 1
