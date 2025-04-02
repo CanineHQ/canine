@@ -44,4 +44,4 @@ For more information & pricing, take a look at our landing page [https://canine.
 
 ## License
 
-[MIT License](https://github.com/czhu12/canine/blob/main/LICENSE)
+[Apache 2.0 License](https://github.com/czhu12/canine/blob/main/LICENSE)
