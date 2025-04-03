@@ -24,7 +24,7 @@ class Clusters::MetricsController < Clusters::BaseController
       {
         x: metric.created_at,
         value: metric.metadata.dig("cpu"),
-        total: metric.metadata.dig("total_cpu"),
+        total: metric.metadata.dig("total_cpu")
       }
     end
   end
@@ -36,7 +36,7 @@ class Clusters::MetricsController < Clusters::BaseController
       {
         x: metric.created_at,
         value: metric.metadata.dig("memory"),
-        total: metric.metadata.dig("total_memory"),
+        total: metric.metadata.dig("total_memory")
       }
     end
   end

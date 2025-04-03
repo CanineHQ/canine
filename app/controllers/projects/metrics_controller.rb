@@ -20,7 +20,7 @@ class Projects::MetricsController < Projects::BaseController
         {
           x: metric.created_at,
           value: metric.metadata.dig("cpu"),
-          total: metric.metadata.dig("total_cpu"),
+          total: metric.metadata.dig("total_cpu")
         }
       end
       { name: pod, values: }
@@ -36,7 +36,7 @@ class Projects::MetricsController < Projects::BaseController
         {
           x: metric.created_at,
           value: metric.metadata.dig("memory"),
-          total: metric.metadata.dig("total_memory"),
+          total: metric.metadata.dig("total_memory")
         }
       end
       { name: pod, values: }
