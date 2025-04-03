@@ -91,7 +91,7 @@ export default class extends Controller {
             if (this.configValue.metric_display === "percentage") {
               return value + '%'
             }
-            return value + this.unit()
+            return `${value} ${this.unit()}`
           }
         },
         min: this.suggestedMinY(),
@@ -109,7 +109,12 @@ export default class extends Controller {
   }
 
   formatBytes(bytes) {
-    const units = ['B', 'KB', 'MB', 'GB'];
+    let units;
+    if (this.configValue.metric_type === "cpu") {
+      units = ['m'];
+    } else {
+      units = ['B', 'KB', 'MB', 'GB'];
+    }
     let value = bytes;
     let unitIndex = 0;
     
