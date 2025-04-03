@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["container"]
 
   connect() {
-    console.log("connected")
     // Scroll to the bottom of the container
     this.scrollToBottom();
 

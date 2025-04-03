@@ -26,13 +26,35 @@ class AddOn < ApplicationRecord
   include Loggable
   belongs_to :cluster
   has_one :account, through: :cluster
-  enum :status, { installing: 0, installed: 1, uninstalling: 2, uninstalled: 3, failed: 4, updating: 5 }
+
+  enum :status, {
+    installing: 0,
+    installed: 1,
+    uninstalling: 2,
+    uninstalled: 3,
+    failed: 4,
+    updating: 5
+  }
+
   validates :chart_type, presence: true
   validate :chart_type_exists
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validate :name_is_unique_to_cluster, on: :create
   validates_presence_of :chart_url
   validate :has_package_details, if: :helm_chart?
+
+  after_update_commit do
+    broadcast_replace_later_to [ self, :install_stage ], target: dom_id(self, :install_stage), partial: "add_ons/install_stage", locals: { add_on: self }
+  end
+
+  def update_install_stage!(stage)
+    self.metadata['install_stage'] = stage
+    save
+  end
+
+  def install_stage
+    metadata['install_stage'] || 0
+  end
 
   def name_is_unique_to_cluster
     if cluster.namespaces.include?(name)

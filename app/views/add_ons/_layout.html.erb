@@ -1,20 +1,21 @@
 <% if add_on.installing? %>
 <div class="card card-bordered bg-base-100">
   <div class="card-body">
-    <div class="flex flex-col items-center justify-center">
-      <%= render "add_ons/installing" %>
-      <div class="mt-4 text-lg">
-        Your add-on is installing... Go grab a coffee, this could take a while.
-      </div>
+    <div class="container">
+      <div>
+        <%= render "add_ons/install_animation", add_on: %>
 
-      <div class="collapse">
-        <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
-        <div class="collapse-title p-0 underline m-0">Show install logs</div>
-        <div class="collapse-content p-0 mt-2">
-          <%= render "log_outputs/logs", loggable: @add_on %>
+        <%= turbo_stream_from [add_on, :install_stage] %>
+        <%= render "add_ons/install_stage", add_on: %>
+
+        <div class="collapse">
+          <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+          <div class="collapse-title p-0 underline m-0">Show install logs</div>
+          <div class="collapse-content p-0 mt-2">
+            <%= render "log_outputs/logs", loggable: add_on %>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -23,20 +24,20 @@
     <div class="flex items-center justify-between mb-4">
       <div>
         <div class="text-sm">
-          <%= render "add_ons/status", add_on: @add_on %>
+          <%= render "add_ons/status", add_on: add_on %>
         </div>
         <h1 class="text-lg font-medium">
-          <%= @add_on.name %>
+          <%= add_on.name %>
         </h1>
         <div class="text-sm">
-          <%= link_to "https://artifacthub.io/packages/helm/#{@add_on.chart_url}", class: "underline", target: "_blank" do %>
-            <iconify-icon icon="simple-icons:helm"></iconify-icon> <%= @add_on.chart_url %>
+          <%= link_to "https://artifacthub.io/packages/helm/#{add_on.chart_url}", class: "underline", target: "_blank" do %>
+            <iconify-icon icon="simple-icons:helm"></iconify-icon> <%= add_on.chart_url %>
           <% end %>
           <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon> <%= link_to add_on.cluster.name, add_on.cluster, target: "_blank", class: "underline" %></span>
         </div>
       </div>
       <div>
-        <%= button_to "Restart", restart_add_on_path(@add_on), method: :post, class: "btn btn-primary" %>
+        <%= button_to "Restart", restart_add_on_path(add_on), method: :post, class: "btn btn-primary" %>
       </div>
     </div>
 

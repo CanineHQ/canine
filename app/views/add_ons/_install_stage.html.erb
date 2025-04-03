@@ -1,0 +1,36 @@
+<%= turbo_frame_tag dom_id(add_on, :install_stage) do %>
+  <% if add_on.installed? %>
+    <script>window.location.reload();</script>
+  <% end %>
+  <div class="mt-4 w-full">
+    <div class="grid grid-cols-4 gap-4">
+      <% 4.times do |i| %>
+        <progress
+          <% if add_on.install_stage == i %>
+            data-controller="progress-progressing"
+          <% end %>
+          class="progress progress-primary w-full"
+          <% if add_on.install_stage > i %>
+            value="100"
+          <% else %>
+            value="0"
+          <% end %>
+          max="100">
+        </progress>
+      <% end %>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      <% ["Creating namespace", "Downloading chart", "Installing chart", "Waiting for chart to be ready"].each_with_index do |step, i| %>
+        <div class="flex items-center gap-1 text-sm <%= add_on.install_stage >= i ? "text-gray-300" : "text-gray-500" %>">
+          <%= step %>
+          <% if add_on.install_stage > i %>
+            <iconify-icon class="text-success" icon="lucide:check"></iconify-icon>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="my-4 text-lg">
+      Go grab a coffee, this could take a while.
+    </div>
+  </div>
+<% end %>
