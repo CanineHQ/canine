@@ -23,7 +23,8 @@ class Clusters::MetricsController < Clusters::BaseController
     metrics.select { |m| m.cpu? }.map do |metric|
       {
         x: metric.created_at,
-        y: 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")
+        value: metric.metadata.dig("cpu"),
+        total: metric.metadata.dig("total_cpu"),
       }
     end
   end
@@ -34,7 +35,8 @@ class Clusters::MetricsController < Clusters::BaseController
     metrics.select { |m| m.memory? }.map do |metric|
       {
         x: metric.created_at,
-        y: 100 * metric.metadata.dig("memory") / metric.metadata.dig("total_memory")
+        value: metric.metadata.dig("memory"),
+        total: metric.metadata.dig("total_memory"),
       }
     end
   end

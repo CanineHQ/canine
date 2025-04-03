@@ -1,1 +1,4 @@
-<div class="flex-1 h-[400px]" data-controller="chart" data-chart-config-value="<%= config.to_json %>"></div>
+<div class="flex flex-col gap-4 w-full">
+  <h4 class="text-lg font-bold"><%= config[:title] %></h4>
+  <div class="flex-1 h-[400px]" data-controller="chart" data-chart-config-value="<%= config.to_json %>"></div>
+</div>

@@ -16,10 +16,14 @@ class Projects::MetricsController < Projects::BaseController
   def parse_cpu_metrics(metrics)
     cpu_metrics = metrics.select { |m| m.cpu? }
     cpu_metrics.group_by { |m| m.tag_value("pod") }.map do |pod, metrics|
-      data = metrics.each_with_object({}) do |metric, h|
-        h[metric.created_at] = 100 * metric.metadata.dig("cpu") / metric.metadata.dig("total_cpu")
+      values = metrics.map do |metric|
+        {
+          x: metric.created_at,
+          value: metric.metadata.dig("cpu"),
+          total: metric.metadata.dig("total_cpu"),
+        }
       end
-      { name: pod, data: }
+      { name: pod, values: }
     end
   end
 
@@ -28,10 +32,14 @@ class Projects::MetricsController < Projects::BaseController
   def parse_memory_metrics(metrics)
     memory_metrics = metrics.select { |m| m.memory? }
     memory_metrics.group_by { |m| m.tag_value("pod") }.map do |pod, metrics|
-      data = metrics.each_with_object({}) do |metric, h|
-        h[metric.created_at] = 100 * metric.metadata.dig("memory") / metric.metadata.dig("total_memory")
+      values = metrics.map do |metric|
+        {
+          x: metric.created_at,
+          value: metric.metadata.dig("memory"),
+          total: metric.metadata.dig("total_memory"),
+        }
       end
-      { name: pod, data: }
+      { name: pod, values: }
     end
   end
 
