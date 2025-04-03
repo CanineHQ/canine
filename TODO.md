@@ -1,7 +1,5 @@
 # Todos
 - [ ] Need an onboarding flow
-- [ ] Change the loading state of an add on install to have a better UX
-  - [ ] Show multi step install progress
 - [ ] Automatic DNS mapping for canineapp.run
 - [ ] Migrate Login with Github to github apps
   - [ ] Support organization projects on github
