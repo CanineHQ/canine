@@ -7,22 +7,26 @@
 
   <%= turbo_frame_tag "metrics-search" do %>
     <div class="mt-8">
-      <%= render "clusters/metrics/search", search_path: project_metrics_path(@project) %>
+      <% metric_type = params[:metric_type] || "percentage" %>
+      <%= render "clusters/metrics/search", search_path: project_metrics_path(@project), metric_type: %>
 
       <div class="flex flex-row gap-4 mt-8">
-        <%= line_chart(
-          parse_cpu_metrics(@metrics),
-          suffix: "%",
-          xtitle: "CPU Usage",
-          ytitle: "Percentage",
-          library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
+        <%= render(
+          "shared/charts/chart",
+          config: {
+            metric_type:,
+            title: "CPU Usage",
+            data: parse_cpu_metrics(@metrics)
+          },
         ) %>
-        <%= line_chart(
-          parse_memory_metrics(@metrics),
-          suffix: "%",
-          xtitle: "Memory Usage",
-          ytitle: "Percentage",
-          library: { scales: { y: { ticks: { suggestedMin: 0, suggestedMax: 100 } } } }
+
+        <%= render(
+          "shared/charts/chart",
+          config: {
+            metric_type:,
+            title: "Memory Usage",
+            data: parse_memory_metrics(@metrics)
+          },
         ) %>
       </div>
     </div>
