@@ -20,8 +20,8 @@
       </div>
 
       <div role="tablist" class="tabs tabs-sm !h-[2rem] tabs-boxed h-full">
-        <a href="<%= url_for(metric_type: "percentage") %>" role="tab" class="tab <%= metric_type == "percentage" ? "tab-active" : "" %>">Percentage</a>
-        <a href="<%= url_for(metric_type: "total") %>" role="tab" class="tab <%= metric_type == "total" ? "tab-active" : "" %>">Total</a>
+        <a href="<%= url_for(metric_display: "percentage") %>" role="tab" class="tab <%= metric_display == "percentage" ? "tab-active" : "" %>">Percentage</a>
+        <a href="<%= url_for(metric_display: "total") %>" role="tab" class="tab <%= metric_display == "total" ? "tab-active" : "" %>">Total</a>
       </div>
     <% end %>
   </div>

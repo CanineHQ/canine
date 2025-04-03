@@ -88,7 +88,7 @@ export default class extends Controller {
             colors: '#9ca3af'
           },
           formatter: (value) => {
-            if (this.configValue.metric_type === "percentage") {
+            if (this.configValue.metric_display === "percentage") {
               return value + '%'
             }
             return value + this.unit()
@@ -102,7 +102,7 @@ export default class extends Controller {
   }
 
   value(point) {
-    if (this.configValue.metric_type === "percentage") {
+    if (this.configValue.metric_display === "percentage") {
       return Math.round(100.0 * point.value / point.total * 10) / 10
     }
     return this.formatBytes(point.value);
@@ -122,11 +122,16 @@ export default class extends Controller {
   }
 
   unit() {
-    if (this.configValue.metric_type === "percentage") {
+    if (this.configValue.metric_display === "percentage") {
       return '%';
     }
     const bytes = this.configValue.data[0]?.values[0]?.value || 0;
-    const units = ['B', 'KB', 'MB', 'GB'];
+    let units;
+    if (this.configValue.metric_type === "cpu") {
+      units = ['m'];
+    } else {
+      units = ['B', 'KB', 'MB', 'GB'];
+    }
     let value = bytes;
     let unitIndex = 0;
     
