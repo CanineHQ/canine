@@ -5,7 +5,9 @@ class AddOns::InstallHelmChart
   executed do |context|
     add_on = context.add_on
 
+    add_on.update_install_stage!(0)
     create_namespace(add_on)
+
     if add_on.installed?
       add_on.updating!
     else
@@ -20,12 +22,17 @@ class AddOns::InstallHelmChart
     chart_url = add_on.chart_url
 
     package_details = add_on.metadata['package_details']
+
+    add_on.update_install_stage!(1)
     client.add_repo(
       package_details['repository']['name'],
       package_details['repository']['url']
     )
+
+    add_on.update_install_stage!(2)
     client.repo_update(repo_name: chart_url.split('/').first)
 
+    add_on.update_install_stage!(3)
     client.install(
       add_on.name,
       chart_url,
