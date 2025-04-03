@@ -99,7 +99,7 @@ gem "httparty", "~> 0.22.0"
 
 gem "redcarpet", "~> 3.6"
 
-gem "rubyzip", "~> 2.3"
+gem "rubyzip", "~> 2.4"
 
 gem "sassc-rails", "~> 2.1"
 
