@@ -10,7 +10,7 @@
   <% else %>
   <div class="form-group">
     <% if variable['type'] == 'string' %>
-      <%= form.label variable['name'] %>
+      <%= form.label variable['key'], variable['name'] %>
       <%= form.text_field(
         variable['key'],
         name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]",
@@ -30,7 +30,7 @@
         </span>
       </label>
     <% elsif variable['type'] == 'integer' %>
-      <%= form.label variable['name'] %>
+      <%= form.label variable['key'], variable['name'] %>
       <%= form.number_field(
         variable['key'],
         name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]",
@@ -38,7 +38,7 @@
         value: form.object.metadata.dig('template', variable['key']) || variable['default']
       ) %>
     <% elsif variable['type'] == 'enum' %>
-      <%= form.label variable['name'] %>
+      <%= form.label variable['key'], variable['name'] %>
       <%= form.select "metadata][#{chart['name']}][template][#{variable['key']}", options_for_select(variable['options']), {}, class: "select select-bordered w-full max-w-md" %>
     <% elsif variable['type'] == 'size' %>
       <%= form.label variable['name'] %>

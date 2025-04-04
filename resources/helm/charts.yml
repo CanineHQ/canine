@@ -34,7 +34,7 @@ helm:
           key: database.connectionURI
           type: string
           required: true
-        - name: Database Type
+        - name: Database type
           key: database.type
           type: enum
           options:
@@ -46,7 +46,7 @@ helm:
       chart_url: bitnami/elasticsearch
       friendly_name: Elasticsearch
       template:
-        - name: resources.limits.storage
+        - name: Storage size
           key: resources.limits.storage
           type: size
           default: 10Gi
@@ -56,15 +56,15 @@ helm:
       chart_url: bitnami/clickhouse
       friendly_name: ClickHouse
       template:
-        - name: persistence.size
+        - name: Storage Size
           key: persistence.size
           type: size
           default: 10Gi
-        - name: shards
+        - name: Shards
           key: shards
           type: integer
           default: 1
-        - name: Replica count
+        - name: Replicas
           key: replicaCount
           type: integer
           default: 1
@@ -76,20 +76,19 @@ helm:
           key: zookeeper.replicaCount
           type: integer
           default: 1
+
+    - name: airbyte
+      friendly_name: Airbyte
+      logo: /images/helm/airbyte.png
+      repository: https://airbytehq.github.io/helm-charts
+      
+    - name: prometheus
+      logo: /images/helm/prometheus.png
+      repository: https://prometheus-community.github.io/helm-charts
       
     - name: supabase
       logo: /images/helm/supabase.png
       repository: https://github.com/supabase-community/supabase-kubernetes
-      coming_soon: true
-      
-    - name: sentry
-      logo: /images/helm/sentry.png
-      repository: https://sentry-kubernetes.github.io/charts
-      coming_soon: true
-      
-    - name: superset
-      logo: /images/helm/superset.png
-      repository: https://apache.github.io/superset
       coming_soon: true
       
     - name: grafana
