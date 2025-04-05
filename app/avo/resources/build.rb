@@ -7,13 +7,13 @@ class Avo::Resources::Build < Avo::BaseResource
 
   def fields
     field :id, as: :id
-    field :commit_message, as: :text
     field :project, as: :belongs_to
+    field :status, as: :select, enum: ::Build.statuses
     field :deployment, as: :has_one
     field :created_at, as: :date_time
     field :repository_url, as: :text
     field :git_sha, as: :text
-    field :status, as: :select, enum: ::Build.statuses
     field :commit_sha, as: :text
+    field :commit_message, as: :text, format_using: -> { value.truncate 30 }
   end
 end
