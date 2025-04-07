@@ -52,6 +52,7 @@ class Projects::BuildJob < ApplicationJob
   def build_docker_build_command(project, repository_path)
     docker_build_command = [
       "docker", "build",
+      "--progress=plain",
       "--platform", "linux/amd64",
       "-t", project.container_registry_url,
       "-f", File.join(repository_path, project.dockerfile_path)
