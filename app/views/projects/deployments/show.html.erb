@@ -10,7 +10,7 @@
     <div>
       <!-- link to github -->
       <%= link_to @build.commit_sha[0..6], "https://github.com/#{@project.repository_url}/commit/#{@build.commit_sha}", class: "underline", target: "_blank", rel: "noopener noreferrer" %>
-      <span class="font-light"><%= @build.commit_message %></span>
+      <span class="font-light"><%= @build.commit_message.truncate(50) %></span>
     </div>
   </div>
   <hr class="mt-2 mb-6 border-base-content/10" />
