@@ -56,7 +56,7 @@ class Async::K8::NodesViewModel < Async::BaseViewModel
               </td>
               <td>
                 <div class="font-medium">
-                  <%= integer_to_size(node.total_cpu) %>#{' '}
+                  <%= integer_to_compute(node.total_cpu) %>#{' '}
                 </div>
               </td>
               <td>
@@ -66,7 +66,7 @@ class Async::K8::NodesViewModel < Async::BaseViewModel
               </td>
               <td>
                 <div class="font-medium">
-                  <%= integer_to_size(node.total_memory) %>
+                  <%= integer_to_memory(node.total_memory) %>
                 </div>
               </td>
               <td>
@@ -115,12 +115,12 @@ class Async::K8::NodesViewModel < Async::BaseViewModel
                   </td>
                   <td>
                     <div class="font-medium">
-                      <%= integer_to_size(pod.cpu) %>#{' '}
+                      <%= integer_to_compute(pod.cpu) %>#{' '}
                     </div>
                   </td>
                   <td>
                     <div class="font-medium">
-                      <%= integer_to_size(pod.memory) %>
+                      <%= integer_to_memory(pod.memory) %>
                     </div>
                   </td>
                 </tr>

@@ -1,0 +1,44 @@
+<%= add_on_layout(@add_on) do %>
+  <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 5000 } do %>
+    <%= render "projects/metrics/live_metrics" %>
+  <% end %>
+
+  <%= turbo_frame_tag "charts" do %>
+    <div class="mt-8">
+      <% metric_display = params[:metric_display] || "percentage" %>  
+      <%= render "clusters/metrics/search", search_path: add_on_metrics_path(@add_on), metric_display: %>
+
+      <div class="flex flex-row gap-4 mt-8">
+        <%= render(
+          "shared/charts/chart",
+          config: {
+            title: "CPU Usage",
+            metric_display:,
+            metric_type: "cpu",
+            data: [
+              {
+                name: "CPU Usage",
+                values: parse_cpu_metrics(@metrics)
+              }
+            ]
+          },
+        ) %>
+
+        <%= render(
+          "shared/charts/chart",
+          config: {
+            title: "Memory Usage",
+            metric_display:,
+            metric_type: "memory",
+            data: [
+              {
+                name: "Memory Usage",
+                values: parse_memory_metrics(@metrics)
+              }
+            ]
+          },
+        ) %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -11,10 +11,10 @@ module K8::Metrics::Api
       parsed_data.map do |data|
         capacities = YAML.safe_load(kubectl.call("get node/#{data[:name]} -o wide -o yaml"))
 
-        total_memory = size_to_integer(capacities["status"]["allocatable"]["memory"])
+        total_memory = memory_to_integer(capacities["status"]["allocatable"]["memory"])
         total_cpu = compute_to_integer(capacities["status"]["allocatable"]["cpu"])
 
-        used_memory = size_to_integer(data[:memory_bytes])
+        used_memory = memory_to_integer(data[:memory_bytes])
         cpu_cores = compute_to_integer(data[:cpu_cores])
 
         node = Node.new(
@@ -107,8 +107,8 @@ module K8::Metrics::Api
       parsed_data.map do |data|
         Pod.new(
           name: data[:name],
-          cpu: size_to_integer(data[:cpu]),
-          memory: size_to_integer(data[:memory])
+          cpu: compute_to_integer(data[:cpu]),
+          memory: memory_to_integer(data[:memory])
         )
       end
     end

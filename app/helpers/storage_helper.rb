@@ -19,7 +19,7 @@ module StorageHelper
     end
   end
 
-  def size_to_integer(size)
+  def memory_to_integer(size)
     size = size.strip
     match = size.match(/^(\d+(?:\.\d+)?)\s*([KMGTkmgt]i?)?$/)
     return nil unless match
@@ -30,7 +30,7 @@ module StorageHelper
     (value * (SIZE_UNITS[unit] || 1)).to_i
   end
 
-  def integer_to_size(integer)
+  def integer_to_memory(integer)
     SIZE_UNITS.to_a.reverse.each do |unit, bytes|
       if integer >= bytes
         value = (integer.to_f / bytes).round(2)
@@ -41,6 +41,6 @@ module StorageHelper
   end
 
   def standardize_size(size)
-    integer_to_size(size_to_integer(size)).to_s
+    integer_to_memory(memory_to_integer(size)).to_s
   end
 end

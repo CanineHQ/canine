@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     member do
       post :restart
     end
+    resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
     resources :processes, only: %i[index show], module: :add_ons
   end
