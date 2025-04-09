@@ -2,7 +2,10 @@
   <%= link_to back_path, class: "btn btn-ghost btn-sm", data: { turbo: "false" } do %>
     <iconify-icon icon="lucide:chevron-left"></iconify-icon> Back
   <% end %>
-  <h4 class="text-md font-medium mb-2"><%= params[:id] %></h4>
+  <div class="flex space-x-2 items-center mb-2">
+    <h4 class="text-md font-medium"><%= params[:id] %></h4>
+    <div class="badge badge-success">• LIVE</div>
+  </div>
   <div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg">
     <div class="overflow-auto h-96 bg-gray-800 p-2 rounded" data-logs-target="container">
       <pre class="text-sm font-mono whitespace-pre-wrap" id="logs">

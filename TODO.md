@@ -12,4 +12,3 @@
 - [ ] Add metrics page for add ons
 - [ ] Support GPU backed clusters
 - [ ] Make accidental deletions harder
-- [ ] Stream docker logs as it runs

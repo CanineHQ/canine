@@ -4,6 +4,9 @@ import { get } from "@rails/request.js"
 const REFRESH_INTERVAL = 4000;
 export default class extends Controller {
   static targets = ["container"]
+  static values = {
+    url: String
+  }
 
   connect() {
     // Scroll to the bottom of the container
@@ -23,8 +26,8 @@ export default class extends Controller {
 
   async loadNewLogs() {
     // Only do this if the scroll is at the bottom
-    if (this.containerTarget.scrollTop === this.containerTarget.scrollHeight) {
-      await get(this.element.dataset.url, {
+    if (this.containerTarget.scrollTop === (this.containerTarget.scrollHeight - this.containerTarget.offsetHeight)) {
+      await get(this.urlValue, {
         responseKind: 'turbo-stream'
       });
       this.scrollToBottom();
