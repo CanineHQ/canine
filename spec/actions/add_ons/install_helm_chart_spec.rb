@@ -54,4 +54,4 @@ RSpec.describe AddOns::InstallHelmChart do
       expect(values['key_2']).to eq('value_2')
     end
   end
-end 
+end
