@@ -8,9 +8,7 @@
   </div>
   <div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg">
     <div class="overflow-auto h-96 bg-gray-800 p-2 rounded" data-logs-target="container">
-      <pre class="text-sm font-mono whitespace-pre-wrap" id="logs">
-        <%= ansi_to_tailwind(logs.force_encoding("UTF-8")).html_safe || "No logs yet..." %>
-      </pre>
+      <pre class="text-sm font-mono whitespace-pre-wrap" id="logs"><%= ansi_to_tailwind(logs.force_encoding("UTF-8")).html_safe || "No logs yet..." %></pre>
     </div>
   </div>
 </div>
