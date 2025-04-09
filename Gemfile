@@ -36,7 +36,8 @@ gem "bootsnap", require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "debug", platforms: %i[ mri windows ]
+  gem "simplecov", require: false
   gem "pry", "~> 0.14.2"
   gem "rspec-rails", "~> 7.1"
   gem "factory_bot_rails"

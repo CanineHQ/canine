@@ -29,6 +29,6 @@ FactoryBot.define do
     chart_type { "helm_chart" }
     sequence(:name) { |n| "example-addon-#{n}" }
     status { :installing }
-    metadata { { "package_details" => "some details" } }
+    metadata { { "package_details" => { "repository" => { "name" => "bitnami", "url" => "https://bitnami.com/charts" } } } }
   end
 end
