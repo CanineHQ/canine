@@ -15,12 +15,7 @@
             title: "CPU Usage",
             metric_display:,
             metric_type: "cpu",
-            data: [
-              {
-                name: "CPU Usage",
-                values: parse_cpu_metrics(@metrics)
-              }
-            ]
+            data: NamespaceMetricsHelper.parse_cpu_metrics(@metrics)
           },
         ) %>
 
@@ -30,12 +25,7 @@
             title: "Memory Usage",
             metric_display:,
             metric_type: "memory",
-            data: [
-              {
-                name: "Memory Usage",
-                values: parse_memory_metrics(@metrics)
-              }
-            ]
+            data: NamespaceMetricsHelper.parse_memory_metrics(@metrics)
           },
         ) %>
       </div>
