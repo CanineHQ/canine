@@ -13,6 +13,11 @@ class Projects::ValidateGithubRepository
       context.project.errors.add(:repository_url, 'does not exist')
       context.fail_and_return!('Repository does not exist')
     end
+    # Validate that we have permissions to create a webhook
+    unless client.can_write_webhooks?
+      context.project.errors.add(:repository_url, "does not have write access")
+      context.fail_and_return!('Repository does not have write access')
+    end
   rescue Octokit::Forbidden => e
     context.project.errors.add(:repository_url, "cannot be accessed, #{e.message}")
     context.fail_and_return!('Repository cannot be accessed')

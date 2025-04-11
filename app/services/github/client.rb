@@ -23,6 +23,13 @@ class Github::Client
     client.repository?(repository_url)
   end
 
+  def can_write_webhooks?
+    webhooks
+    true
+  rescue Octokit::NotFound
+    false
+  end
+
   def register_webhook!
     client.create_hook(
       repository_url,

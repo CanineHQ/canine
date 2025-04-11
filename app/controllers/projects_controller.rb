@@ -1,6 +1,7 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
   before_action :set_project, only: %i[show edit update destroy restart]
+  before_action :set_provider, only: %i[new create]
 
   # GET /projects
   def index
@@ -28,10 +29,6 @@ class ProjectsController < ApplicationController
 
   # GET /projects/new
   def new
-    @selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
-    @providers = current_user.providers.where(provider: @selected_provider)
-    # Temporary hack
-    @provider = @providers.first
     @project = Project.new
 
     # Uncomment to authorize with Pundit
@@ -96,5 +93,12 @@ class ProjectsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def project_params
     Projects::Create.create_params(params)
+  end
+
+  def set_provider
+    @selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
+    @providers = current_user.providers.where(provider: @selected_provider)
+    # Temporary hack
+    @provider = @providers.first
   end
 end
