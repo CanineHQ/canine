@@ -12,3 +12,5 @@
 - [ ] Add metrics page for add ons
 - [ ] Support GPU backed clusters
 - [ ] Make accidental deletions harder
+- [ ] Add connection tutorial to add on endpoints
+- [ ] Make it more obvious that Account is an organization you can invite people to
