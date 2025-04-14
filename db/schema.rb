@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_23_231448) do
+ActiveRecord::Schema[7.2].define(version: 2025_04_14_222529) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -246,7 +246,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_23_231448) do
     t.datetime "updated_at", null: false
     t.string "container_registry_url"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
-    t.index ["name"], name: "index_projects_on_name", unique: true
   end
 
   create_table "providers", force: :cascade do |t|

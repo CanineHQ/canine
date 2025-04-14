@@ -20,7 +20,6 @@
 # Indexes
 #
 #  index_projects_on_cluster_id  (cluster_id)
-#  index_projects_on_name        (name) UNIQUE
 #
 # Foreign Keys
 #
