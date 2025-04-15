@@ -5,7 +5,10 @@ class Services::CreateAssociations
 
   executed do |context|
     if context.params[:service][:cron_schedule].present?
-      CronSchedule.create(schedule: context.params[:service][:cron_schedule][:schedule], service: context.service)
+      CronSchedule.new(
+        schedule: context.params[:service][:cron_schedule][:schedule],
+        service: context.service,
+      )
     end
   end
 end
