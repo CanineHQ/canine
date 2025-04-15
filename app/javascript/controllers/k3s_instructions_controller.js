@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["step", "next", "ipAddress", "ipAddressMessage"]
+  static targets = ["step", "next", "ipAddress", "ipAddressMessage", "installCommand"]
 
   connect() {
     this.step = 0;
@@ -30,8 +30,18 @@ export default class extends Controller {
     this.nextTarget.innerHTML = loading ? "Loading..." : "Next";
   }
 
+  async setInstallCommand() {
+    const command = `curl -sfL https://get.k3s.io | sh -s - --disable traefik --tls-san ${this.ipAddressTarget.value}`;
+    this.installCommandTarget.innerHTML = command;
+    this.installCommandTarget.dataset.clipboardText = command;
+  }
+
   async updateStep(event) {
-    if (this.stepTargets[this.step].dataset.validation === "ip-address") {
+
+    const val = this.stepTargets[this.step].dataset.validation;
+    if (val === "ip-address") {
+      this.setInstallCommand();
+    } else if (val === "validate-ip-address") {
       this.setLoading(true);
       const ipAddressWorking = await this.checkIpAddress()
       this.setLoading(false);
@@ -46,6 +56,7 @@ export default class extends Controller {
         this.ipAddressMessageTarget.classList.add("success")
         this.ipAddressMessageTarget.innerHTML = "IP address is reachable ✓"
         this.ipAddressTarget.classList.add("input-success")
+        this.ipAddressTarget.classList.remove("input-error")
       }
     }
 

@@ -1,35 +1,44 @@
 <div class="card-form hidden card-k3s space-y-4" data-controller="k3s-instructions">
-  <p data-k3s-instructions-target="instructions" class="hidden">
+  <p data-k3s-instructions-target="instructions">
     <div data-k3s-instructions-target="step" data-validation="ip-address">
-      1. SSH into the server and run:
-      <div>
-        <pre class="inline cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -sfL https://get.k3s.io | sh -s - --disable traefik">curl -sfL https://get.k3s.io | sh -s - --disable traefik</pre>
-      </div>
-
+      1. Enter the IP address of your server:
       <div class="form-group mt-4">
-        <%= form.label :ip_address, "Enter the IP address of the server once the install is complete" %>
+        <%= form.label :ip_address, "IP Address" %>
         <%= form.text_field :ip_address, class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
         <div class="form-hint" data-k3s-instructions-target="ipAddressMessage">
         </div>
-
-        <div class="text-sm mt-2">
-          (You may have to run
-            <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo ufw allow 6443 && sudo ufw restart">sudo ufw allow 6443 && sudo ufw restart</code>
-            to allow outside connections to K3s.)
-        </div>
-
       </div>
     </div>
 
+    <div data-k3s-instructions-target="step" class="hidden" data-validation="validate-ip-address">
+      2. SSH into the server and run:
+      <div>
+        <code
+          data-k3s-instructions-target="installCommand"
+          class="inline cursor-pointer"
+          data-controller="clipboard"
+          data-clipboard-text="TO_REPLACE"
+        >
+          TO_REPLACE
+        </code>
+      </div>
+      <div class="text-sm mt-2">
+        (You may have to run
+          <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo ufw allow 6443 && sudo ufw restart">sudo ufw allow 6443 && sudo ufw restart</code>
+          to allow outside connections to K3s.)
+      </div>
+
+    </div>
+
     <div data-k3s-instructions-target="step" class="hidden">
-      2. Once the install is complete, run:
+      3. Once the install is complete, run:
       <div>
         <pre class="inline cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo cat /etc/rancher/k3s/k3s.yaml">sudo cat /etc/rancher/k3s/k3s.yaml</pre>
       </div>
     </div>
 
     <div data-k3s-instructions-target="step" class="hidden">
-      3. Copy the output and paste it here:
+      4. Copy the output and paste it here:
       <div class="form-group">
         <%= form.text_area :kubeconfig_output, class: "textarea textarea-bordered w-full max-w-lg h-48" %>
       </div>
