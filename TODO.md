@@ -14,3 +14,4 @@
 - [ ] Make accidental deletions harder
 - [ ] Add connection tutorial to add on endpoints
 - [ ] Make it more obvious that Account is an organization you can invite people to
+- [ ] Allow creating a one off pod even if there are no services or deployments yet.

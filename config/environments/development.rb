@@ -1,11 +1,6 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost"), port: 3000 }
-  config.hosts << /.*\.github\.dev/
-  config.hosts << ENV["APP_HOST"] if ENV["APP_HOST"].present?
-  config.hosts << "canine.chriszhu.me"
-
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time
@@ -68,7 +63,6 @@ Rails.application.configure do
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
-  config.assets.debug = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
