@@ -3,6 +3,24 @@
     <%- resource_class.omniauth_providers.each do |provider| %>
       <%= button_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(:user, provider), class: "btn btn-#{provider} w-full", data: { turbo: false, disable_with: t(".redirecting") } %>
     <% end -%>
+
+    <div class="mt-6 text-sm text-gray-300">
+      <details class="group">
+        <summary class="flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 group-open:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          Why are so many permissions required on Github? (I know it sucks)
+        </summary>
+        <div class="mt-2 pl-6">
+          <div class="rounded-lg space-y-4">
+            <p>Canine uses Github container registry to store containers.</p>
+            <p>Github only allows <a class="underline" target="_blank" href="https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#authenticating-to-the-container-registry">OAuth tokens to be used for uploading to packages</a>.</p>
+            <p>If you don't want to provide OAuth permissions, you can sign up with an email and password.</p>
+          </div>
+        </div>
+      </details>
+    </div>
   </div>
 <% end -%>
 
