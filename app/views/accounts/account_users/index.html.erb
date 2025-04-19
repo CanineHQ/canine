@@ -2,8 +2,18 @@
 <%= turbo_stream_from :account_users %>
 
 <div>
-  <div class="flex items-center justify-between">
+  <div>
     <h3 class="text-lg font-medium">Team Members</h3>
+    <div class="flex text-sm">
+      <div class="flex items-center gap-1">
+        <iconify-icon icon="lucide:building"></iconify-icon>
+        <%= @account.name %>
+      </div>
+      <div class="flex items-center ml-4 gap-1">
+        <iconify-icon icon="lucide:users"></iconify-icon>
+        <%= @account.users.count %> Member<%= "s" if @account.users.count != 1 %>
+      </div>
+    </div>
   </div>
 
   <div class="mt-5">
@@ -13,7 +23,7 @@
             <!--  Start: User Action -->
              <button class="btn btn-primary btn-sm" onclick="team_member_modal.showModal()">
                 <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-                <span class="hidden sm:inline">New Team Member</span>
+                <span class="hidden sm:inline">Add Team Member</span>
               </button>
             <!--  End: User Action -->
             </div>
@@ -43,20 +53,20 @@
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <div class="mb-4 w-full text-xl font-bold">New Team Member</div>
+    <div class="mb-4 w-full text-xl font-bold">Invite Team Member to <%= @account.name %></div>
     <div>
       <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
         <div class="form-control mt-1 w-full">
           <label class="label">
             <span class="label-text">Email</span>
           </label>
-          <%= form.text_field :email, class: "input input-bordered w-full focus:outline-offset-0" %>
+          <%= form.text_field :email, type: :email, class: "input input-bordered w-full focus:outline-offset-0" %>
           <label class="label">
-            <span class="label-text-alt">Use the email associated with their Github account</span>
+            <span class="label-text-alt">Use the email associated with their Canine account.</span>
           </label>
         </div>
         <div class="form-footer">
-          <%= form.button "Submit", class: "btn btn-primary" %>
+          <%= form.button "Invite", class: "btn btn-primary" %>
         </div>
       <% end %>
     </div>

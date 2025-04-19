@@ -3,7 +3,10 @@
     <thead>
       <tr>
         <th>
-          <span class="text-sm font-medium text-base-content/80">Member Email</span>
+          <span class="text-sm font-medium text-base-content/80">Name</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Email</span>
         </th>
         <th>
           <span class="text-sm font-medium text-base-content/80">Role</span>
@@ -13,6 +16,9 @@
     <tbody>
       <% account_users.each do |account_user| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
+          <td>
+            <div class="font-medium"><%= account_user.user.name %></div>
+          </td>
           <td>
             <div class="font-medium"><%= account_user.user.email %></div>
           </td>
