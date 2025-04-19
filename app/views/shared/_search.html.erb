@@ -26,12 +26,28 @@
         <li class="menu-title">Projects</li>
         <% current_account.projects.each do |project| %>
           <li class="">
-            <details open data-theme-target="menuItem" data-project-name="<%= project.name %>">
-              <summary><div class="project-name"><%= project.name %></div></summary>
+            <details open data-theme-target="menuItem" data-name="<%= project.name %>">
+              <summary><div class="name"><%= project.name %></div></summary>
               <ul>
                 <% %w(deployments services environment_variables processes metrics).each do |name| %>
                   <li>
                     <a href="<%= send("project_#{name}_path", project) %>" data-theme-target="linkItem">
+                      <%= name.titleize %>
+                    </a>
+                  </li>
+                <% end %>
+              </ul>
+            </details>
+          </li>
+        <% end %>
+        <% current_account.add_ons.each do |addon| %>
+          <li class="">
+            <details open data-theme-target="menuItem" data-name="<%= addon.name %>">
+              <summary><div class="name"><%= addon.name %></div></summary>
+              <ul>
+                <% %w(processes metrics).each do |name| %>
+                  <li>
+                    <a href="<%= send("add_on_#{name}_path", addon) %>" data-theme-target="linkItem">
                       <%= name.titleize %>
                     </a>
                   </li>

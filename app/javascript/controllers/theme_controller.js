@@ -76,18 +76,18 @@ export default class extends Controller {
 
   _searchInput(term) {
     this.menuItemTargets.forEach(item => {
-      const projectName = item.dataset.projectName;
-      if (projectName.toLowerCase().includes(term.toLowerCase())) {
+      const name = item.dataset.name;
+      if (name.toLowerCase().includes(term.toLowerCase())) {
         item.setAttribute("open", "true");
         item.classList.remove("hidden");
         
         // Add underlining for matching text
         if (term) {
           const regex = new RegExp(`(${term})`, 'gi');
-          const highlightedText = projectName.replace(regex, '<span class="search-highlight">$1</span>');
-          item.querySelector('.project-name').innerHTML = highlightedText;
+          const highlightedText = name.replace(regex, '<span class="search-highlight">$1</span>');
+          item.querySelector('.name').innerHTML = highlightedText;
         } else {
-          item.querySelector('.project-name').textContent = projectName;
+          item.querySelector('.name').textContent = name;
         }
       } else {
         item.removeAttribute("open");

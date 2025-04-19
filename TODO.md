@@ -8,9 +8,7 @@
 - [ ] Streaming logs for pods
 - [ ] Project groupings?
 - [ ] Constantly refresh the processes page for readiness of pods
-- [ ] Add metrics page for add ons
 - [ ] Support GPU backed clusters
 - [ ] Make accidental deletions harder
 - [ ] Add connection tutorial to add on endpoints
 - [ ] Allow creating a one off pod even if there are no services or deployments yet.
-- [ ] Add addons to search
