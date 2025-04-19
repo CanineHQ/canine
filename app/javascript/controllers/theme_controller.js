@@ -67,11 +67,11 @@ export default class extends Controller {
 
     // Otherwise, proceed with opening the modal
     const searchInput = this.searchInputTarget;
-    searchInput.focus();
     searchInput.value = "";
     searchModal.showModal();
     this._searchInput("");
     this.selectFirstLink();
+    searchInput.focus();
   }
 
   _searchInput(term) {
