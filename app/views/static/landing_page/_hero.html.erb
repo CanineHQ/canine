@@ -15,10 +15,12 @@
   </div>
   <div class="mx-auto max-w-7xl px-6 pb-24 pt-2 sm:pb-40 lg:flex lg:px-8 lg:pt-4 justify-center">
     <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-4xl lg:pt-2">
-      <%= link_to "https://discord.gg/68YthskqEz", class: "btn btn-ghost btn-sm lg:btn-md mb-6 lg:mb-24" do %>
-        <span class="lg:inline">Join us on Discord</span> <iconify-icon icon="skill-icons:discord" height="20"></iconify-icon>
-      <% end %>
-      <img class="h-[70px]" src="/images/logo-full.png" alt="Your Company">
+      <div class="mb-6 lg:mb-24">
+        <%= link_to "https://discord.gg/68YthskqEz", class: "btn btn-ghost btn-sm lg:btn-md" do %>
+          <span class="lg:inline">Join us on Discord</span> <iconify-icon icon="skill-icons:discord" height="20"></iconify-icon>
+        <% end %>
+      </div>
+      <img class="h-[70px]" src="/images/logo-full.png" alt="Canine">
       <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">A modern, open source alternative to Heroku</h1>
       <p class="mt-6 text-lg leading-8 text-gray-300">Canine is an open source deployment platform that makes it easy to deploy and manage your applications.</p>
       <div class="mt-10 flex items-center gap-x-6">

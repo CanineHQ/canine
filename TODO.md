@@ -1,8 +1,7 @@
 # Todos
 - [ ] Need an onboarding flow
 - [ ] Automatic DNS mapping for canineapp.run
-- [ ] Migrate Login with Github to github apps
-  - [ ] Support organization projects on github
+- [ ] Support organization projects on github
 - [ ] Add skeleton loader for processes page
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
 - [ ] Streaming logs for pods
