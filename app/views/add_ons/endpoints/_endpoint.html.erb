@@ -1,8 +1,9 @@
 <%= turbo_frame_tag endpoint.metadata.name do %>
   <h2 class="text-lg font-bold mb-4"><%= endpoint.metadata.name %></h2>
-  <div>
+  <div class="my-4">
     <h4 class="text-sm font-bold text-gray-500 uppercase">Internal URLs</h4>
-    <p>
+    <%= render "projects/services/telepresence_guide", cluster: add_on.cluster, url: "#{endpoint.metadata.name}.#{add_on.name}.svc.cluster.local:#{endpoint.spec.ports.first.port}" %>
+    <p class="my-2">
       <% endpoint.spec.ports.each do |port| %>
         <% url = "#{endpoint.metadata.name}.#{add_on.name}.svc.cluster.local:#{port.port}" %>
         <div class="cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= url %>">

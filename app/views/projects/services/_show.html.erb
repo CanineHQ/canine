@@ -7,13 +7,7 @@
         data-controller="clipboard"
         data-clipboard-text="<%= service.internal_url %>"><%= service.internal_url %></pre>
 
-      <a
-        class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block"
-        data-internal-url="http://<%= service.internal_url %>"
-        data-action="services#showTelepresenceGuide"
-      >
-        How do I connect to this?
-      </a>
+      <%= render "projects/services/telepresence_guide", cluster: @project.cluster, url: "http://#{service.internal_url}" %>
     </div>
   <% end %>
 
