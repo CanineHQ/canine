@@ -112,3 +112,5 @@ gem "sidekiq-scheduler", "~> 5.0"
 
 gem "sentry-ruby", "~> 5.23"
 gem "sentry-rails", "~> 5.23"
+
+gem "sys-proctable", "~> 1.3"
