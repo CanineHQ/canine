@@ -11,3 +11,4 @@
 - [ ] Make accidental deletions harder
 - [ ] Add connection tutorial to add on endpoints
 - [ ] Allow creating a one off pod even if there are no services or deployments yet.
+- [ ] Automatically detect node architecture for build target
