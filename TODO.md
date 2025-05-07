@@ -13,3 +13,5 @@
 - [ ] Allow creating a one off pod even if there are no services or deployments yet.
 - [ ] Automatically detect node architecture for build target
 - [ ] The IP Address being reported in the DNS mapper is the private, instead of public, IP address.
+- [ ] Restart all services after add on update
+- [ ] *Updating a template variable after add on installation is not working*
