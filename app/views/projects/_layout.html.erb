@@ -1,5 +1,5 @@
-<div class="flex items-center justify-between mb-4">
-  <div>
+<div class="flex flex-col md:flex-row items-center justify-between mb-4">
+  <div class="self-stretch">
     <div>
       <%= render "projects/status", project: project %>
     </div>
@@ -7,8 +7,10 @@
     <% if project.domains.any? %>
       <div class="my-3">
         <% project.domains.each do |domain| %>
-          <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-          <iconify-icon icon="lucide:external-link"></iconify-icon>
+          <span>
+            <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank", class: "text-sm text-ellipsis" %>
+            <iconify-icon icon="lucide:external-link"></iconify-icon>
+          </span>
         <% end %>
       </div>
     <% end %>
@@ -27,11 +29,10 @@
       <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
     </div>
   </div>
-  <div class="flex flex-col">
-    <div class="flex justify-end flex-row">
+  <div class="flex flex-col self-stretch mt-4 lg:mt-0">
+    <div class="flex lg:justify-end flex-row">
       <%= button_to restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } do %>
-        <span class="hidden md:block">Restart</span>
-        <iconify-icon icon="lucide:refresh-cw" class="md:hidden"></iconify-icon>
+        Restart
       <% end %>
       <% if project.deployable? %>
         <div class="join m-1">
@@ -40,8 +41,7 @@
             class: "btn join-item btn-primary",
             data: { turbo: false, disable_with: "Loading..." },
           ) do %>
-            <span class="hidden md:block">Deploy</span>
-            <iconify-icon icon="lucide:rocket" class="md:hidden"></iconify-icon>
+            Deploy
           <% end %>
           <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn join-item btn-primary"><iconify-icon icon="lucide:chevron-down"></iconify-icon></div>
@@ -58,14 +58,13 @@
       <% else %>
         <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
           <%= button_to "#", class: "btn btn-primary m-1", disabled: true do %>
-            <span class="hidden md:block">Deploy</span>
-            <iconify-icon icon="lucide:rocket" class="md:hidden"></iconify-icon>
+            Deploy
           <% end %>
         </div>
       <% end %>
     </div>
     <% if project.has_updates? %>
-      <div class="flex justify-end items-center text-gray-500 text-sm italic">
+      <div class="flex lg:justify-end items-center text-gray-500 text-sm italic">
         <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-warning"></iconify-icon> Project has updates that require a deploy to take effect.
       </div>
     <% end %>

@@ -15,3 +15,5 @@
 - [ ] The IP Address being reported in the DNS mapper is the private, instead of public, IP address.
 - [ ] Restart all services after add on update
 - [ ] *Updating a template variable after add on installation is not working*
+- [ ] Failing to add webhooks to projects in different organizations.
+- [ ] Github filtering across organizations is not working
