@@ -17,3 +17,4 @@
 - [ ] *Updating a template variable after add on installation is not working*
 - [ ] Failing to add webhooks to projects in different organizations.
 - [ ] Github filtering across organizations is not working
+- [ ] Explore allowing local PC's on DHCP to be a host
