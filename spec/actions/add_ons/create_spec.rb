@@ -2,7 +2,6 @@ require 'rails_helper'
 
 RSpec.describe AddOns::Create do
   let(:add_on) { build(:add_on) }
-  let(:context) { LightService::Context.new(add_on: add_on) }
   let(:chart_details) { { 'name' => 'test-chart', 'version' => '1.0.0' } }
 
   before do
@@ -14,7 +13,7 @@ RSpec.describe AddOns::Create do
   describe '#execute' do
     it 'applies template and fetches package details' do
       expect(add_on).to receive(:save)
-      result = described_class.execute(context)
+      result = described_class.execute(add_on:)
       expect(result.add_on.metadata['package_details']).to eq(chart_details)
     end
 
@@ -26,7 +25,8 @@ RSpec.describe AddOns::Create do
       end
 
       it 'adds error and returns' do
-        result = described_class.execute(context)
+        result = described_class.execute(add_on:)
+        expect(result.failure?).to be_truthy
         expect(result.add_on.errors[:base]).to include('Failed to fetch package details')
       end
     end
@@ -35,27 +35,20 @@ RSpec.describe AddOns::Create do
   describe '.apply_template_to_values' do
     let(:template) do
       {
-        'size_var' => { 'type' => 'size', 'value' => '10', 'unit' => 'Gi' },
-        'int_var' => '5',
-        'str_var' => 'test'
+        'master.persistence.size' => { 'type' => 'size', 'value' => '10', 'unit' => 'Gi' },
+        'replica.replicaCount' => '5'
       }
     end
 
     before do
       add_on.metadata['template'] = template
-      add_on.chart_definition = {
-        'template' => [
-          { 'key' => 'int_var', 'type' => 'integer' },
-          { 'key' => 'str_var', 'type' => 'string' }
-        ]
-      }
+      add_on.chart_type = "redis"
     end
 
     it 'applies template values correctly' do
       described_class.apply_template_to_values(add_on)
-      expect(add_on.values.dotset('size_var')).to eq('10Gi')
-      expect(add_on.values.dotset('int_var')).to eq(5)
-      expect(add_on.values.dotset('str_var')).to eq('test')
+      expect(add_on.values['master']['persistence']['size']).to eq('10Gi')
+      expect(add_on.values['replica']['replicaCount']).to eq(5)
     end
   end
-end 
+end

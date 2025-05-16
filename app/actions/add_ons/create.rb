@@ -6,16 +6,16 @@ class AddOns::Create
   executed do |context|
     add_on = context.add_on
     apply_template_to_values(add_on)
-    fetch_package_details(add_on)
+    fetch_package_details(context, add_on)
     add_on.save
   end
 
-  def self.fetch_package_details(add_on)
+  def self.fetch_package_details(context, add_on)
     result = AddOns::HelmChartDetails.execute(chart_url: add_on.chart_url)
 
     if result.failure?
       add_on.errors.add(:base, "Failed to fetch package details")
-      return
+      context.fail_and_return!("Failed to fetch package details")
     end
 
     result.response.delete('readme')
