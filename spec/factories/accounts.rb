@@ -18,7 +18,7 @@
 #
 FactoryBot.define do
   factory :account do
-    name { Faker::App.name }
+    sequence(:name) { |n| "test-account-#{n}" }
     association :owner, factory: :user
 
     after(:create) do |account|

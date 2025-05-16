@@ -30,6 +30,7 @@ class Project < ApplicationRecord
   belongs_to :cluster
   has_one :account, through: :cluster
   has_many :users, through: :account
+
   has_many :services, dependent: :destroy
   has_many :environment_variables, dependent: :destroy
   has_many :builds, dependent: :destroy

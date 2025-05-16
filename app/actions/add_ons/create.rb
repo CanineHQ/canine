@@ -1,4 +1,4 @@
-class AddOns::Save
+class AddOns::Create
   extend LightService::Action
   expects :add_on
   promises :add_on
