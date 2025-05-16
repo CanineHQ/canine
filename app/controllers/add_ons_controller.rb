@@ -39,7 +39,7 @@ class AddOnsController < ApplicationController
 
   # POST /add_ons or /add_ons.json
   def create
-    result = AddOns::Save.execute(add_on: AddOn.new(add_on_params))
+    result = AddOns::Create.execute(add_on: AddOn.new(add_on_params))
     @add_on = result.add_on
     # Uncomment to authorize with Pundit
     # authorize @add_on
@@ -59,7 +59,7 @@ class AddOnsController < ApplicationController
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
     @add_on.assign_attributes(add_on_params)
-    result = AddOns::Save.execute(add_on: @add_on)
+    result = AddOns::Update.execute(add_on: @add_on)
 
     respond_to do |format|
       if result.success?
