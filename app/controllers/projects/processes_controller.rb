@@ -14,10 +14,14 @@ class Projects::ProcessesController < Projects::BaseController
   def show
     client = K8::Client.new(@project.cluster.kubeconfig)
     @logs = client.get_pod_log(params[:id], @project.name)
+
     respond_to do |format|
       format.html
       format.turbo_stream { render turbo_stream: turbo_stream.update("logs", partial: "log_outputs/log_chunk", locals: { logs: @logs }) }
     end
+  rescue Kubeclient::ResourceNotFoundError
+    flash[:alert] = "Pod #{params[:id]} not found"
+    redirect_to project_processes_path(@project)
   end
 
   def destroy
