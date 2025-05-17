@@ -1,25 +1,19 @@
 require 'rails_helper'
 
-RSpec.describe Async::K8::ClusterIpViewModel do
+RSpec.describe Networks::CheckDns do
   let(:cluster) { create(:cluster) }
   let(:project) { create(:project, cluster: cluster) }
   let(:service) { create(:service, project: project) }
-  let(:view_model) { described_class.new(cluster.account.owner, service_id: service.id) }
+  let(:ingress) { K8::Stateless::Ingress.new(service) }
 
-  describe '#async_render' do
-    let(:ingress) { instance_double(K8::Stateless::Ingress) }
-
-    before do
-      allow(K8::Stateless::Ingress).to receive(:new).with(service).and_return(ingress)
-    end
-
+  describe '.infer_expected_ip' do
     context 'when ingress returns public IP' do
       before do
         allow(ingress).to receive(:ip_address).and_return('8.8.8.8')
       end
 
-      it 'returns the IP in a pre tag' do
-        expect(view_model.async_render).to include('8.8.8.8')
+      it 'returns the IP' do
+        expect(described_class.infer_expected_ip(ingress)).to eq('8.8.8.8')
       end
     end
 
@@ -30,7 +24,7 @@ RSpec.describe Async::K8::ClusterIpViewModel do
       end
 
       it 'resolves and returns public IP' do
-        expect(view_model.async_render).to include('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress)).to eq('1.2.3.4')
       end
     end
 
@@ -53,7 +47,7 @@ RSpec.describe Async::K8::ClusterIpViewModel do
       end
 
       it 'returns the hostname IP' do
-        expect(view_model.async_render).to include('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress)).to eq('1.2.3.4')
       end
     end
   end
