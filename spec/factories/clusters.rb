@@ -23,7 +23,15 @@ FactoryBot.define do
   factory :cluster do
     account
     sequence(:name) { |n| "test-cluster-#{n}" }
-    kubeconfig { { "apiVersion" => "v1", "clusters" => [] }.to_json }
+    kubeconfig do
+      {
+        "apiVersion" => "v1",
+        "clusters" => [ { "name" => "test-cluster", "cluster" => { "server" => "https://example.com" } } ],
+        "contexts" => [ { "name" => "test-cluster", "context" => { "cluster" => "test-cluster", "user" => "test-user" } } ],
+        "current-context" => "test-cluster",
+        "users" => [ { "name" => "test-user", "user" => { "token" => "test-token" } } ]
+      }.to_json
+    end
     status { :initializing }
     cluster_type { :k8s }
   end

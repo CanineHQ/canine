@@ -1,21 +1,16 @@
 # Todos
 - [ ] Need an onboarding flow
 - [ ] Automatic DNS mapping for canineapp.run
-- [ ] Support organization projects on github
-- [ ] Add skeleton loader for processes page
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
 - [ ] Streaming logs for pods
 - [ ] Project groupings?
 - [ ] Constantly refresh the processes page for readiness of pods
 - [ ] Support GPU backed clusters
 - [ ] Make accidental deletions harder
-- [ ] Add connection tutorial to add on endpoints
 - [ ] Allow creating a one off pod even if there are no services or deployments yet.
 - [ ] Automatically detect node architecture for build target
 - [ ] The IP Address being reported in the DNS mapper is the private, instead of public, IP address.
-- [ ] Restart all services after add on update
-- [ ] *Updating a template variable after add on installation is not working*
 - [ ] Failing to add webhooks to projects in different organizations.
 - [ ] Github filtering across organizations is not working
 - [ ] Explore allowing local PC's on DHCP to be a host
-- [ ] Kill older builds if there is a newer build thats already started
+- [ ] Button to kill a build
