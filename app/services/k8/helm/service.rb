@@ -1,6 +1,18 @@
 class K8::Helm::Service
   attr_reader :add_on, :client
 
+  def self.create_from_add_on(add_on)
+    if add_on.chart_type == "redis"
+      K8::Helm::Redis.new(add_on)
+    elsif add_on.chart_type == "postgresql"
+      K8::Helm::Postgresql.new(add_on)
+    elsif add_on.chart_type == "clickhouse"
+      K8::Helm::Clickhouse.new(add_on)
+    else
+      K8::Helm::Service.new(add_on)
+    end
+  end
+
   def initialize(add_on)
     @add_on = add_on
     @client = K8::Client.new(add_on.cluster.kubeconfig)
