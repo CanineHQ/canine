@@ -72,6 +72,7 @@ Rails.application.routes.draw do
   end
   resources :clusters do
     member do
+      post :transfer_ownership
       get :download_kubeconfig
       get :download_yaml
       get :logs

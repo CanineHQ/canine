@@ -29,8 +29,17 @@
       </div>
     </div>
     <div>
-      <h2 class="text-lg font-bold">Delete Add-on</h2>
-      <%= button_to "Uninstall", add_on_path(@add_on), method: :delete, class: "btn btn-error" %>
+      <h2 class="text-2xl font-bold">Danger zone</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <div class="mt-6">
+        <%= button_to @add_on, method: :delete, class: "btn btn-error btn-outline group mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
+          <iconify-icon icon="lucide:trash" height="20" class="text-error group-hover:text-error-content"></iconify-icon>
+          Delete Add-on
+        <% end %>
+        <div class="mt-2 text-sm text-gray-500">
+          This will uninstall the add-on from the cluster (equivalent to `helm uninstall`)
+        </div>
+      </div>
     </div>
   </div>
 <% end %>

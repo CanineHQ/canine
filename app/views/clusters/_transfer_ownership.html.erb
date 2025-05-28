@@ -1,0 +1,36 @@
+<dialog aria-label="Modal" class="modal" id="transfer_ownership_modal">
+  <div class="modal-box bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-8 w-full text-xl font-bold">Transfer Ownership</div>
+    <div class="my-4">
+      <%= form_with model: cluster, url: transfer_ownership_cluster_path(cluster), method: :post do |f| %>
+        <div class="form-control">
+          <label class="label" for="cluster_account_id">
+            <span class="label-text">Transfer to Account</span>
+          </label>
+          <%= f.select(
+            :account_id,
+            current_user
+              .accounts
+              .select { |account| account.id != cluster.account_id }
+              .map { |account| [account.name, account.id] },
+            { include_blank: true },
+            required: true,
+            class: "select select-bordered w-full"
+          ) %>
+        </div>
+        <div class="form-footer">
+          <%= f.submit "Transfer", class: "btn btn-primary" %>
+          <button class="btn btn-outline" onclick="transfer_ownership_modal.close()">Cancel</button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
