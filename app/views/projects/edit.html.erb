@@ -17,10 +17,9 @@
     <div>
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
-
       <div class="mt-6">
-        <%= button_to @project, method: :delete, class: "btn btn-error btn-outline mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
-          <iconify-icon icon="lucide:trash" height="20" class="text-error-content"></iconify-icon>
+        <%= button_to @project, method: :delete, class: "btn btn-error btn-outline group mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
+          <iconify-icon icon="lucide:trash" height="20" class="text-error group-hover:text-error-content"></iconify-icon>
           Delete Project
         <% end %>
       </div>

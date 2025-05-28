@@ -9,8 +9,8 @@
 - [ ] Make accidental deletions harder
 - [ ] Allow creating a one off pod even if there are no services or deployments yet.
 - [ ] Automatically detect node architecture for build target
-- [ ] The IP Address being reported in the DNS mapper is the private, instead of public, IP address.
 - [ ] Failing to add webhooks to projects in different organizations.
 - [ ] Github filtering across organizations is not working
 - [ ] Explore allowing local PC's on DHCP to be a host
 - [ ] Button to kill a build
+- [ ] Deployments API

@@ -2,7 +2,7 @@ class ClustersController < ApplicationController
   before_action :set_cluster, only: [
     :show, :edit, :update, :destroy,
     :test_connection, :download_kubeconfig, :logs, :download_yaml,
-    :retry_install
+    :retry_install, :transfer_ownership
   ]
 
   # GET /clusters
@@ -157,6 +157,11 @@ class ClustersController < ApplicationController
       format.html { redirect_to clusters_url, status: :see_other, notice: "Cluster is being deleted... It may take a few minutes to complete." }
       format.json { head :no_content }
     end
+  end
+
+  def transfer_ownership
+    @cluster.update(account_id: params[:cluster][:account_id])
+    redirect_to cluster_url(@cluster), notice: "Cluster ownership transferred successfully"
   end
 
   private
