@@ -107,6 +107,9 @@
         <span class="label-text">Docker command</span>
       </label>
       <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
+      </label>
     </div>
 
     <div class="form-control my-1 w-full max-w-sm">
@@ -121,6 +124,9 @@
         <span class="label-text">Container registry URL</span>
       </label>
       <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: "" %>
+      <label class="label">
+        <span class="label-text-alt">If this is left blank, Github Container Registry will be used</span>
+      </label>
     </div>
 
     <div class="form-footer">
