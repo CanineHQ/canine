@@ -114,3 +114,5 @@ gem "sentry-ruby", "~> 5.23"
 gem "sentry-rails", "~> 5.23"
 
 gem "sys-proctable", "~> 1.3"
+
+gem "solid_errors", "~> 0.7.0"

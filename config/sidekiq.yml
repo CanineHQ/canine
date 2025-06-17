@@ -9,3 +9,6 @@
     flush_metrics_job:
       every: '1d'
       class: Scheduled::FlushMetricsJob
+    cancel_hanging_builds_job:
+      every: '1h'
+      class: Scheduled::CancelHangingBuildsJob
