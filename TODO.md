@@ -14,3 +14,6 @@
 - [ ] Explore allowing local PC's on DHCP to be a host
 - [ ] Button to kill a build
 - [ ] Deployments API
+- [ ] Pull request preview apps
+- [ ] Gitlab support
+- [ ] Update vocabulary on landing page
