@@ -13,6 +13,8 @@
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
           <%= link_to "Find your Github token →", "https://github.com/settings/tokens", target: "_blank", class: "text-sm text-gray-500 " %>
+        <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
+          <%= link_to "Find your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500 " %>
         <% end %>
       </div>
     </div>

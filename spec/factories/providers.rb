@@ -41,5 +41,9 @@ FactoryBot.define do
       provider { Provider::GITHUB_PROVIDER }
       auth { { "info" => { "nickname" => "test_user" } }.to_json }
     end
+
+    trait :gitlab do
+      provider { Provider::GITLAB_PROVIDER }
+    end
   end
 end

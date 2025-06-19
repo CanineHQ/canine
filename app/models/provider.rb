@@ -27,7 +27,8 @@ class Provider < ApplicationRecord
   attr_accessor :username_param
   GITHUB_PROVIDER = "github"
   DOCKER_HUB_PROVIDER = "docker_hub"
-  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER ].freeze
+  GITLAB_PROVIDER = "gitlab"
+  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER, GITLAB_PROVIDER ].freeze
 
   belongs_to :user
 

@@ -41,6 +41,7 @@ group :development, :test do
   gem "pry", "~> 0.14.2"
   gem "rspec-rails", "~> 7.1"
   gem "factory_bot_rails"
+  gem "webmock"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
