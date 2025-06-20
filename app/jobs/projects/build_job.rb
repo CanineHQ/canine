@@ -24,16 +24,18 @@ class Projects::BuildJob < ApplicationJob
 
     complete_build!(build)
     # TODO: Step 7: Optionally, add post-deploy tasks or slack notifications
-  rescue BuildFailure => e
+  rescue StandardError => e
     build.error(e.message)
     build.failed!
+    raise e
   end
 
   private
 
   def project_git(project)
     project_credential_provider = project.project_credential_provider
-    "https://#{project_credential_provider.username}:#{project_credential_provider.access_token}@github.com/#{project.repository_url}.git"
+    base_url = project_credential_provider.provider.github? ? "github.com" : "gitlab.com"
+    "https://#{project_credential_provider.username}:#{project_credential_provider.access_token}@#{base_url}/#{project.repository_url}.git"
   end
 
   def git_clone(project, build, repository_path)
@@ -81,16 +83,17 @@ class Projects::BuildJob < ApplicationJob
   end
 
   def login_to_docker(project_credential_provider, build)
-    docker_login_command = %w[docker login ghcr.io --username] +
+    base_url = project_credential_provider.provider.github? ? "ghcr.io" : "registry.gitlab.com"
+    docker_login_command = ["docker", "login", base_url, "--username"] +
                            [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
 
-    build.info("Logging into ghcr.io as #{project_credential_provider.username}", color: :yellow)
+    build.info("Logging into #{base_url} as #{project_credential_provider.username}", color: :yellow)
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
-      build.success("Logged in to Github Container Registry successfully.")
+      build.success("Logged in to #{base_url} successfully.")
     else
-      build.error("Github Container Registry login failed with error:\n#{stderr}")
+      build.error("#{base_url} login failed with error:\n#{stderr}")
     end
   end
 
@@ -115,14 +118,9 @@ class Projects::BuildJob < ApplicationJob
     Dir.mktmpdir do |repository_path|
       build.info("Cloning repository: #{project.repository_url} to #{repository_path}", color: :yellow)
 
-      # Ensure the temporary directory doesn't exist
-      FileUtils.rm_rf(repository_path) if Dir.exist?(repository_path)
-
       git_clone(project, build, repository_path)
 
       execute_docker_build(project, build, repository_path)
-    rescue StandardError => e
-      raise BuildFailure, "Build failed: #{e.message}"
     end
   end
 end

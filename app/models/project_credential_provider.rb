@@ -29,6 +29,7 @@ class ProjectCredentialProvider < ApplicationRecord
   delegate :access_token, to: :provider
   delegate :github?, to: :provider
   delegate :docker_hub?, to: :provider
+  delegate :gitlab?, to: :provider
 
   def github_username
     JSON.parse(provider.auth)["info"]["nickname"]

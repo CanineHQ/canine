@@ -28,6 +28,13 @@ class Provider < ApplicationRecord
   GITHUB_PROVIDER = "github"
   DOCKER_HUB_PROVIDER = "docker_hub"
   GITLAB_PROVIDER = "gitlab"
+  GIT_TYPE = "git"
+  DOCKER_TYPE = "docker"
+  PROVIDER_TYPES = {
+    GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER ],
+    DOCKER_TYPE => [ DOCKER_HUB_PROVIDER ],
+  }
+
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER, GITLAB_PROVIDER ].freeze
 
   belongs_to :user
@@ -47,6 +54,8 @@ class Provider < ApplicationRecord
   def registry
     if github?
       "ghcr.io"
+    elsif gitlab?
+      "registry.gitlab.com"
     else
       "https://index.docker.io/v1/"
     end
@@ -78,9 +87,17 @@ class Provider < ApplicationRecord
     provider == GITHUB_PROVIDER
   end
 
+  def gitlab?
+    provider == GITLAB_PROVIDER
+  end
+
   def twitter_refresh_token!(token); end
 
   def used!
     update!(last_used_at: Time.current)
+  end
+
+  def friendly_name
+    "#{provider} (#{username})"
   end
 end

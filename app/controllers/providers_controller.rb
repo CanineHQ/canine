@@ -9,7 +9,6 @@ class ProvidersController < ApplicationController
   def create
     @provider = Provider.new(provider_params.merge(user: current_user))
     result = Providers::Create.call(@provider)
-    debugger
     if result.success?
       redirect_to providers_path, notice: "#{@provider.provider.titleize} credentials added"
     else

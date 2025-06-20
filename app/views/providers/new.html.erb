@@ -9,12 +9,26 @@
         <% if params[:provider_type] == Provider::DOCKER_HUB_PROVIDER %>
           <%= link_to "Find your Docker Hub token →", "https://app.docker.com/settings/personal-access-tokens", target: "_blank", class: "text-sm text-gray-500 underline" %>
           <div class=" mt-2">
-            Make sure you select the <b>Read & Write</b> permission if you want to deploy a private project.
+            Make sure you select the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private project.
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
           <%= link_to "Find your Github token →", "https://github.com/settings/tokens", target: "_blank", class: "text-sm text-gray-500 " %>
+          <div class="mt-2">
+            Select the
+            <% Providers::CreateGithubProvider::EXPECTED_SCOPES.each do |scope| %>
+              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
+            <% end %>
+            permissions.
+          </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
           <%= link_to "Find your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500 " %>
+          <div class="mt-2">
+            Select the
+            <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>
+              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
+            <% end %>
+            permissions.
+          </div>
         <% end %>
       </div>
     </div>

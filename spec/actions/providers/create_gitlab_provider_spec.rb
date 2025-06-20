@@ -11,7 +11,7 @@ RSpec.describe Providers::CreateGitlabProvider do
   describe '.execute' do
     context 'when the access token is valid and has correct scopes' do
       before do
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_API_URL)
+        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
           .to_return(
             status: 200,
             body: personal_access_tokens_data.to_json,
@@ -27,7 +27,7 @@ RSpec.describe Providers::CreateGitlabProvider do
 
     context 'when the access token is invalid' do
       before do
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_API_URL)
+        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
           .to_return(
             status: 401,
             body: { error: "Unauthorized" }.to_json,
@@ -49,7 +49,7 @@ RSpec.describe Providers::CreateGitlabProvider do
       before do
         error_response = personal_access_tokens_data.deep_dup
         error_response["scopes"] = []
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_API_URL)
+        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
           .to_return(
             status: 200,
             body: error_response.to_json,
