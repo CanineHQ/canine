@@ -51,6 +51,10 @@ class Provider < ApplicationRecord
     JSON.parse(auth)["info"]["nickname"] || JSON.parse(auth)["info"]["username"]
   end
 
+  def git?
+    github? || gitlab?
+  end
+
   def registry
     if github?
       "ghcr.io"

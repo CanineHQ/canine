@@ -63,7 +63,7 @@ class Project < ApplicationRecord
     deployed: 1,
     destroying: 2
   }
-  delegate :github?, :gitlab?, to: :project_credential_provider
+  delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :docker_hub?, to: :project_credential_provider
 
   def name_is_unique_to_cluster

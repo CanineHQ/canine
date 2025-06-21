@@ -1,4 +1,4 @@
-class Github::Client
+class Git::Github::Client < Git::Client
   WEBHOOK_SECRET = ENV["OMNIAUTH_GITHUB_WEBHOOK_SECRET"]
 
   attr_accessor :client, :repository_url
@@ -10,8 +10,8 @@ class Github::Client
     )
   end
 
-  def commits
-    client.commits(repository_url)
+  def commits(branch)
+    client.commits(repository_url, branch)
   end
 
   def initialize(access_token:, repository_url:)
@@ -31,6 +31,10 @@ class Github::Client
   end
 
   def register_webhook!
+    if webhook_exists?
+      return
+    end
+
     client.create_hook(
       repository_url,
       "web",

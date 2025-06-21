@@ -1,12 +1,12 @@
-class Projects::ValidateGithubRepository
+class Projects::ValidateGitRepository
   extend LightService::Action
 
   expects :project, :project_credential_provider
 
   executed do |context|
     # The project is not created yet, so we can't call Github::Client.from_project
-    client = Github::Client.new(
-      access_token: context.project_credential_provider.access_token,
+    client = Git::Client.from_provider(
+      provider: context.project_credential_provider.provider,
       repository_url: context.project.repository_url
     )
     unless client.repository_exists?
