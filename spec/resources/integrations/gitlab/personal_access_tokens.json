@@ -7,7 +7,8 @@
   "scopes": [
     "read_registry",
     "write_registry",
-    "read_repository"
+    "read_repository",
+    "api"
   ],
   "user_id": 620334,
   "last_used_at": "2025-06-19T21:21:35.734Z",

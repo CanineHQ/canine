@@ -8,6 +8,10 @@ RSpec.describe Providers::CreateGitlabProvider do
     JSON.parse(File.read(Rails.root.join('spec/resources/integrations/gitlab/personal_access_tokens.json')))
   end
 
+  let(:user_data) do
+    JSON.parse(File.read(Rails.root.join('spec/resources/integrations/gitlab/user.json')))
+  end
+
   describe '.execute' do
     context 'when the access token is valid and has correct scopes' do
       before do
@@ -17,10 +21,17 @@ RSpec.describe Providers::CreateGitlabProvider do
             body: personal_access_tokens_data.to_json,
             headers: { 'Content-Type' => 'application/json' }
           )
+        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_USER_API_URL)
+          .to_return(
+            status: 200,
+            body: user_data.to_json,
+            headers: { 'Content-Type' => 'application/json' }
+          )
       end
 
       it 'saves the provider' do
         expect(subject).to be_success
+        expect(JSON.parse(subject.provider.auth)["info"]["nickname"]).to eq("czhu12")
         expect(subject.provider).to be_persisted
       end
     end

@@ -23,6 +23,7 @@ module Canine
     config.after_initialize do |app|
       Rails.application.routes.default_url_options[:host] = ENV["APP_HOST"]
     end
+    config.hosts << ENV['APP_HOST']
 
     config.autoload_paths << Rails.root.join("lib")
     config.eager_load_paths << Rails.root.join("lib")

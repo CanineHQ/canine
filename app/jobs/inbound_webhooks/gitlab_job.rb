@@ -18,9 +18,12 @@ module InboundWebhooks
     end
 
     def process_webhook(body, current_user:)
+      return if body["object_kind"] != "push"
+      branch = body["ref"].gsub("refs/heads/", "")
+
       projects = Project.where(
         "LOWER(repository_url) = ?",
-        body["repository"]["full_name"].downcase,
+        body["project"]["path_with_namespace"].downcase,
       ).where(
         "LOWER(branch) = ?",
         branch.downcase,
@@ -29,8 +32,8 @@ module InboundWebhooks
         # Trigger a docker build & docker deploy
         build = project.builds.create!(
           current_user:,
-          commit_sha: body["head_commit"]["id"],
-          commit_message: body["head_commit"]["message"]
+          commit_sha: body["commits"][0]["id"],
+          commit_message: body["commits"][0]["title"]
         )
         Projects::BuildJob.perform_later(build)
       end
