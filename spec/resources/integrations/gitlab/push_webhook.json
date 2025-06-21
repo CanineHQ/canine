@@ -1,0 +1,134 @@
+{
+  "object_kind": "push",
+  "event_name": "push",
+  "before": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+  "after": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+  "ref": "refs/heads/master",
+  "ref_protected": true,
+  "checkout_sha": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+  "message": null,
+  "user_id": 620334,
+  "user_name": "Chris Zhu",
+  "user_username": "czhu12",
+  "user_email": "[FILTERED]",
+  "user_avatar": "https://secure.gravatar.com/avatar/e802cfdce04be7dba61350a24483ed31a0150912259310be932c6c9537ca9ec9?s=80&d=identicon",
+  "project_id": 70976599,
+  "project": {
+    "id": 70976599,
+    "name": "echo",
+    "description": null,
+    "web_url": "https://gitlab.com/czhu12/echo",
+    "avatar_url": null,
+    "git_ssh_url": "git@gitlab.com:czhu12/echo.git",
+    "git_http_url": "https://gitlab.com/czhu12/echo.git",
+    "namespace": "First Last",
+    "visibility_level": 0,
+    "path_with_namespace": "czhu12/echo",
+    "default_branch": "master",
+    "ci_config_path": "",
+    "homepage": "https://gitlab.com/czhu12/echo",
+    "url": "git@gitlab.com:czhu12/echo.git",
+    "ssh_url": "git@gitlab.com:czhu12/echo.git",
+    "http_url": "https://gitlab.com/czhu12/echo.git"
+  },
+  "commits": [
+    {
+      "id": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+      "message": "added working version\n",
+      "title": "added working version",
+      "timestamp": "2025-06-19T12:27:49-07:00",
+      "url": "https://gitlab.com/czhu12/echo/-/commit/37a8fd5aca47a123e2e9932089707747a8a19c0a",
+      "author": {
+        "name": "Chris",
+        "email": "[FILTERED]"
+      },
+      "added": [
+        ".gitignore",
+        "Cargo.lock",
+        "Cargo.toml",
+        "Dockerfile",
+        "src/main.rs"
+      ],
+      "modified": [],
+      "removed": []
+    }
+  ],
+  "total_commits_count": 1,
+  "push_options": {},
+  "repository": {
+    "name": "echo",
+    "url": "git@gitlab.com:czhu12/echo.git",
+    "description": null,
+    "homepage": "https://gitlab.com/czhu12/echo",
+    "git_http_url": "https://gitlab.com/czhu12/echo.git",
+    "git_ssh_url": "git@gitlab.com:czhu12/echo.git",
+    "visibility_level": 0
+  },
+  "gitlab": {
+    "object_kind": "push",
+    "event_name": "push",
+    "before": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+    "after": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+    "ref": "refs/heads/master",
+    "ref_protected": true,
+    "checkout_sha": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+    "message": null,
+    "user_id": 620334,
+    "user_name": "Chris Zhu",
+    "user_username": "czhu12",
+    "user_email": "[FILTERED]",
+    "user_avatar": "https://secure.gravatar.com/avatar/e802cfdce04be7dba61350a24483ed31a0150912259310be932c6c9537ca9ec9?s=80&d=identicon",
+    "project_id": 70976599,
+    "project": {
+      "id": 70976599,
+      "name": "echo",
+      "description": null,
+      "web_url": "https://gitlab.com/czhu12/echo",
+      "avatar_url": null,
+      "git_ssh_url": "git@gitlab.com:czhu12/echo.git",
+      "git_http_url": "https://gitlab.com/czhu12/echo.git",
+      "namespace": "Chris Zhu",
+      "visibility_level": 0,
+      "path_with_namespace": "czhu12/echo",
+      "default_branch": "master",
+      "ci_config_path": "",
+      "homepage": "https://gitlab.com/czhu12/echo",
+      "url": "git@gitlab.com:czhu12/echo.git",
+      "ssh_url": "git@gitlab.com:czhu12/echo.git",
+      "http_url": "https://gitlab.com/czhu12/echo.git"
+    },
+    "commits": [
+      {
+        "id": "37a8fd5aca47a123e2e9932089707747a8a19c0a",
+        "message": "added working version\n",
+        "title": "added working version",
+        "timestamp": "2025-06-19T12:27:49-07:00",
+        "url": "https://gitlab.com/czhu12/echo/-/commit/37a8fd5aca47a123e2e9932089707747a8a19c0a",
+        "author": {
+          "name": "Chris",
+          "email": "[FILTERED]"
+        },
+        "added": [
+          ".gitignore",
+          "Cargo.lock",
+          "Cargo.toml",
+          "Dockerfile",
+          "src/main.rs"
+        ],
+        "modified": [],
+        "removed": []
+      }
+    ],
+    "total_commits_count": 1,
+    "push_options": {},
+    "repository": {
+      "name": "echo",
+      "url": "git@gitlab.com:czhu12/echo.git",
+      "description": null,
+      "homepage": "https://gitlab.com/czhu12/echo",
+      "git_http_url": "https://gitlab.com/czhu12/echo.git",
+      "git_ssh_url": "git@gitlab.com:czhu12/echo.git",
+      "visibility_level": 0
+    }
+  }
+}

@@ -13,6 +13,10 @@ module Providers
         with(provider:).reduce(
           Providers::CreateDockerImageProvider,
         )
+      elsif provider.provider == Provider::GITLAB_PROVIDER
+        with(provider:).reduce(
+          Providers::CreateGitlabProvider,
+        )
       end
     end
   end

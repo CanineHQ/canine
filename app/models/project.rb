@@ -63,7 +63,7 @@ class Project < ApplicationRecord
     deployed: 1,
     destroying: 2
   }
-  delegate :github?, to: :project_credential_provider
+  delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :docker_hub?, to: :project_credential_provider
 
   def name_is_unique_to_cluster
@@ -99,6 +99,8 @@ class Project < ApplicationRecord
   def full_repository_url
     if github?
       "https://github.com/#{repository_url}"
+    elsif gitlab?
+      "https://gitlab.com/#{repository_url}"
     else
       "https://hub.docker.com/r/#{repository_url}"
     end
@@ -106,10 +108,6 @@ class Project < ApplicationRecord
 
   def provider
     project_credential_provider&.provider
-  end
-
-  def container_registry_url
-    project_credential_provider.container_registry_url
   end
 
   def deployable?
@@ -128,6 +126,8 @@ class Project < ApplicationRecord
     container_registry = self.attributes["container_registry_url"].presence || repository_url
     if github?
       "ghcr.io/#{container_registry}:latest"
+    elsif gitlab?
+      "registry.gitlab.com/#{container_registry}:latest"
     else
       "docker.io/#{container_registry}:latest"
     end

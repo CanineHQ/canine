@@ -1,0 +1,33 @@
+[
+  {
+    "id": 56808278,
+    "url": "http://canine.chriszhu.me/inbound_webhooks/gitlab",
+    "name": "canine-webhook",
+    "description": null,
+    "created_at": "2025-06-21T00:23:46.454Z",
+    "push_events": true,
+    "tag_push_events": false,
+    "merge_requests_events": false,
+    "repository_update_events": false,
+    "enable_ssl_verification": true,
+    "alert_status": "executable",
+    "disabled_until": null,
+    "push_events_branch_filter": null,
+    "branch_filter_strategy": "wildcard",
+    "custom_webhook_template": null,
+    "project_id": 70976599,
+    "issues_events": false,
+    "confidential_issues_events": false,
+    "note_events": false,
+    "confidential_note_events": null,
+    "pipeline_events": false,
+    "wiki_page_events": false,
+    "deployment_events": false,
+    "feature_flag_events": false,
+    "job_events": false,
+    "releases_events": false,
+    "emoji_events": false,
+    "resource_access_token_events": false,
+    "vulnerability_events": false
+  }
+]

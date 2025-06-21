@@ -24,8 +24,8 @@ RSpec.describe Projects::Create do
   end
 
   before do
-    allow(Projects::ValidateGithubRepository).to receive(:execute)
-    allow(Projects::RegisterGithubWebhook).to receive(:execute)
+    allow(Projects::ValidateGitRepository).to receive(:execute)
+    allow(Projects::RegisterGitWebhook).to receive(:execute)
   end
 
   describe '.call' do
@@ -56,9 +56,9 @@ RSpec.describe Projects::Create do
 
       it 'validates with github and registers webhooks' do
         expect(subject).to eq([
-          Projects::ValidateGithubRepository,
+          Projects::ValidateGitRepository,
           Projects::Save,
-          Projects::RegisterGithubWebhook
+          Projects::RegisterGitWebhook
         ])
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe Projects::Create do
 
       it 'validates with github and registers webhooks' do
         expect(subject).to eq([
-          Projects::ValidateGithubRepository,
+          Projects::ValidateGitRepository,
           Projects::Save
         ])
       end

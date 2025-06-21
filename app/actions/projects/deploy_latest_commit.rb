@@ -12,8 +12,8 @@ class Projects::DeployLatestCommit
     current_user = context.current_user || project.account.owner
     if project.github?
       project_credential_provider = project.project_credential_provider
-      client = Github::Client.from_project(project)
-      commit = client.commits.first
+      client = Git::Client.from_project(project)
+      commit = client.commits(project.branch).first
       build = project.builds.create!(
         commit_sha: commit.sha,
         commit_message: commit.commit[:message],

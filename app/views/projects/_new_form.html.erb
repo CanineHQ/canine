@@ -1,9 +1,9 @@
-<% if provider.nil? && @selected_provider == Provider::GITHUB_PROVIDER %>
-  <%= render "projects/create/missing_github_credentials", project: %>
-<% elsif provider.nil? && @selected_provider == Provider::DOCKER_HUB_PROVIDER %>
+<% if selected_provider_type == Provider::GIT_TYPE && selectable_providers.empty? %>
+  <%= render "projects/create/missing_git_credentials", project: %>
+<% elsif selected_provider_type == Provider::DOCKER_TYPE && selectable_providers.empty? %>
   <%= render "projects/create/missing_docker_hub_credentials", project: %>
-<% elsif provider.docker_hub? %>
-  <%= render "projects/create/new_form_docker_hub", project:, provider: %>
+<% elsif selected_provider_type == Provider::DOCKER_TYPE %>
+  <%= render "projects/create/new_form_docker_hub", project:, provider:, selectable_providers: %>
 <% else %>
-  <%= render "projects/create/new_form_github", project:, provider: %>
+  <%= render "projects/create/new_form_git", project:, provider:, selectable_providers: %>
 <% end %>

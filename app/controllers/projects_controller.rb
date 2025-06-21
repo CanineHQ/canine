@@ -1,7 +1,7 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
   before_action :set_project, only: %i[show edit update destroy restart]
-  before_action :set_provider, only: %i[new create]
+  before_action :set_provider_type, only: %i[new create]
 
   # GET /projects
   def index
@@ -37,7 +37,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
-    @client = Github::Client.from_project(@project)
+    @client = Git::Client.from_project(@project)
   end
 
   # POST /projects or /projects.json
@@ -98,10 +98,8 @@ class ProjectsController < ApplicationController
     Projects::Create.create_params(params)
   end
 
-  def set_provider
-    @selected_provider = params[:provider] || Provider::GITHUB_PROVIDER
-    @providers = current_user.providers.where(provider: @selected_provider)
-    # Temporary hack
-    @provider = @providers.first
+  def set_provider_type
+    @selected_provider_type = params[:provider_type] || Provider::GIT_TYPE
+    @selectable_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[@selected_provider_type])
   end
 end

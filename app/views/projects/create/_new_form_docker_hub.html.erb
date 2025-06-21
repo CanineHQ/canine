@@ -2,7 +2,7 @@
   <%= form_with(model: project, data: { turbo: false }) do |form| %>
     <h2 class="text-2xl font-bold">Create a new project from Docker Hub</h2>
     <%= link_to(
-      "Deploy from Github instead →",
+      "Deploy from Git repository instead →",
       new_project_path(provider: Provider::GITHUB_PROVIDER),
       class: "inline-block mt-2 underline underline-offset-4 text-blue-300 hover:text-blue-200 text-sm",
     ) %>
@@ -30,9 +30,8 @@
       </label>
     </div>
 
-    <%= form.fields_for(:project_credential_provider) do |fields| %>
-      <%= fields.hidden_field :provider_id, value: provider.id %>
-    <% end %>
+    <%= render "projects/create/select_credentials", form:, selectable_providers: %>
+
     <div class="form-control mt-1 w-full max-w-sm">
       <label class="label">
         <span class="label-text">Docker Hub Repository</span>

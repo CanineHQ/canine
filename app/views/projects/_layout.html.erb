@@ -16,8 +16,12 @@
     <% end %>
     <div class="text-sm">
       <%= link_to project.full_repository_url, target: "_blank" do %>
-        <% if project.github? %>
-          <iconify-icon icon="lucide:github"></iconify-icon>
+        <% if project.git? %>
+          <% if project.github? %>
+            <iconify-icon icon="lucide:github"></iconify-icon>
+          <% elsif project.gitlab? %>
+            <iconify-icon icon="lucide:gitlab"></iconify-icon>
+          <% end %>
           <span class="underline mr-2"><%= project.repository_url %></span>
           <iconify-icon icon="lucide:git-branch"></iconify-icon>
           <span class="underline"><%= project.branch %></span>

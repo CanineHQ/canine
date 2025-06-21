@@ -136,6 +136,9 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     cron2english (0.1.7)
     cssbundling-rails (1.4.1)
@@ -357,6 +360,9 @@ GEM
     omniauth-github (2.0.1)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8)
+    omniauth-gitlab (4.1.0)
+      omniauth (~> 2.0)
+      omniauth-oauth2 (~> 1.8.0)
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
@@ -597,6 +603,10 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
+    webmock (3.25.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
     websocket (1.2.11)
     websocket-driver (0.7.6)
@@ -648,6 +658,7 @@ DEPENDENCIES
   omniauth (~> 2.1)
   omniauth-digitalocean (~> 0.3.2)
   omniauth-github (~> 2.0)
+  omniauth-gitlab (~> 4.1)
   omniauth-rails_csrf_protection (~> 1.0)
   pagy (~> 9.3)
   pg (~> 1.1)
@@ -680,6 +691,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  webmock
   whenever
 
 BUNDLED WITH

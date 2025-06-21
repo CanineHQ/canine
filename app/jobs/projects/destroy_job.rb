@@ -21,7 +21,7 @@ class Projects::DestroyJob < ApplicationJob
   end
 
   def remove_github_webhook(project)
-    client = Github::Client.from_project(project)
+    client = Git::Client.from_project(project)
     client.remove_webhook!
   rescue Octokit::NotFound
     # If the hook is not found, do nothing

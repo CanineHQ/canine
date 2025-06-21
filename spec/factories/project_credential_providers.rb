@@ -19,24 +19,9 @@
 #  fk_rails_...  (project_id => projects.id)
 #  fk_rails_...  (provider_id => providers.id)
 #
-class ProjectCredentialProvider < ApplicationRecord
-  belongs_to :project
-  belongs_to :provider
-  validates_uniqueness_of :provider_id, scope: :project_id
-
-  delegate :used!, to: :provider
-  delegate :username, to: :provider
-  delegate :access_token, to: :provider
-  delegate :github?, to: :provider
-  delegate :docker_hub?, to: :provider
-  delegate :gitlab?, to: :provider
-  delegate :git?, to: :provider
-
-  def github_username
-    JSON.parse(provider.auth)["info"]["nickname"]
-  end
-
-  def github_access_token
-    provider&.access_token
+FactoryBot.define do
+  factory :project_credential_provider do
+    project
+    provider
   end
 end
