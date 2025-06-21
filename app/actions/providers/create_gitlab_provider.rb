@@ -39,7 +39,7 @@ class Providers::CreateGitlabProvider
       context.fail_and_return!(message)
       next
     end
-    body = {"info" => { "nickname" => response["username"] } }.merge(response).to_json
+    body = { "info" => { "nickname" => response["username"] } }.merge(response).to_json
     context.provider.auth = body
 
     context.provider.save!

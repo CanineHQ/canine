@@ -84,7 +84,7 @@ class Projects::BuildJob < ApplicationJob
 
   def login_to_docker(project_credential_provider, build)
     base_url = project_credential_provider.provider.github? ? "ghcr.io" : "registry.gitlab.com"
-    docker_login_command = ["docker", "login", base_url, "--username"] +
+    docker_login_command = [ "docker", "login", base_url, "--username" ] +
                            [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
 
     build.info("Logging into #{base_url} as #{project_credential_provider.username}", color: :yellow)
