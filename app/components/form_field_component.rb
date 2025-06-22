@@ -3,4 +3,3 @@ class FormFieldComponent < ViewComponent::Base
     @label = label
   end
 end
-
