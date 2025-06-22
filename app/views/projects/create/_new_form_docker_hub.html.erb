@@ -10,26 +10,38 @@
 
     <%= render "shared/error_messages", resource: form.object %>
 
-    <div class="space-y-4">
-      <%= render(FormFieldComponent.new(label: "Name")) do %>
+    <div class="space-y-8">
+      <%= render(FormFieldComponent.new(
+        label: "Name",
+        description: "A unique name for your project, only lowercase letters, numbers, and hyphens are allowed."
+      )) do %>
         <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
         <label class="label">
           <span class="label-text-alt">* Required</span>
         </label>
       <% end %>
 
-      <%= render(FormFieldComponent.new(label: "Cluster")) do %>
+      <%= render(FormFieldComponent.new(
+        label: "Cluster",
+        description: "The cluster to deploy your project to."
+      )) do %>
         <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
         <label class="label">
           <span class="label-text-alt">* Required</span>
         </label>
       <% end %>
 
-      <%= render(FormFieldComponent.new(label: "Git Credentials")) do %>
+      <%= render(FormFieldComponent.new(
+        label: "Docker Hub Credentials",
+        description: "The credentials to use to connect to your Docker Hub repository"
+      )) do %>
         <%= render "projects/create/select_credentials", form:, selectable_providers: %>
       <% end %>
 
-      <%= render(FormFieldComponent.new(label: "Docker Hub Repository")) do %>
+      <%= render(FormFieldComponent.new(
+        label: "Docker Hub Repository",
+        description: "The image to pull from Docker Hub."
+      )) do %>
         <%= form.text_field(
           :repository_url,
           class: "input input-bordered w-full focus:outline-offset-0",
@@ -37,11 +49,20 @@
         ) %>
       <% end %>
 
-      <%= render(FormFieldComponent.new(label: "Docker command")) do %>
+      <%= render(FormFieldComponent.new(
+        label: "Docker command",
+        description: "The command to run to start the container."
+      )) do %>
         <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+        <label class="label">
+          <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
+        </label>
       <% end %>
 
-      <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
+      <%= render(FormFieldComponent.new(
+        label: "Predeploy command",
+        description: "The command to run before deploying the project. This is useful for running migrations or other setup commands."
+      )) do %>
         <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
       <% end %>
     </div>
