@@ -506,7 +506,7 @@ GEM
     ruby-vips (2.2.2)
       ffi (~> 1.12)
       logger
-    rubyzip (2.3.2)
+    rubyzip (2.4.1)
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
     sassc (2.4.0)
@@ -674,7 +674,7 @@ DEPENDENCIES
   rqrcode (~> 2.2)
   rspec-rails (~> 7.1)
   rubocop-rails-omakase
-  rubyzip (~> 2.3)
+  rubyzip (~> 2.4)
   sassc-rails (~> 2.1)
   selenium-webdriver
   sentry-rails (~> 5.23)
