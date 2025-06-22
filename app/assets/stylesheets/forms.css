@@ -8,3 +8,6 @@
 .form-group label {
   @apply block;
 }
+.label-text {
+  font-size: 1rem !important;
+}

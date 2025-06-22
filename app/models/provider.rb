@@ -102,6 +102,6 @@ class Provider < ApplicationRecord
   end
 
   def friendly_name
-    "#{provider} (#{username})"
+    "#{provider.titleize} (#{username})"
   end
 end

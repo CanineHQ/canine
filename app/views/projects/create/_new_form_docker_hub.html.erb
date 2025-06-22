@@ -10,52 +10,40 @@
 
     <%= render "shared/error_messages", resource: form.object %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Name</span>
-      </label>
-      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    </div>
+    <div class="space-y-4">
+      <%= render(FormFieldComponent.new(label: "Name")) do %>
+        <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+        <label class="label">
+          <span class="label-text-alt">* Required</span>
+        </label>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Cluster</span>
-      </label>
-      <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered" } %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    </div>
+      <%= render(FormFieldComponent.new(label: "Cluster")) do %>
+        <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
+        <label class="label">
+          <span class="label-text-alt">* Required</span>
+        </label>
+      <% end %>
 
-    <%= render "projects/create/select_credentials", form:, selectable_providers: %>
+      <%= render(FormFieldComponent.new(label: "Git Credentials")) do %>
+        <%= render "projects/create/select_credentials", form:, selectable_providers: %>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Docker Hub Repository</span>
-      </label>
+      <%= render(FormFieldComponent.new(label: "Docker Hub Repository")) do %>
+        <%= form.text_field(
+          :repository_url,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          placeholder: "accountname/repo",
+        ) %>
+      <% end %>
 
-      <%= form.text_field(
-        :repository_url,
-        class: "input input-bordered w-full focus:outline-offset-0",
-        placeholder: "accountname/repo",
-      ) %>
-    </div>
+      <%= render(FormFieldComponent.new(label: "Docker command")) do %>
+        <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Docker command</span>
-      </label>
-      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-    </div>
-
-    <div class="form-control my-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Predeploy command</span>
-      </label>
-      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
+        <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <% end %>
     </div>
 
     <div class="form-footer">
