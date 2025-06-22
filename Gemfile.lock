@@ -119,7 +119,7 @@ GEM
     bindex (0.8.1)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
-    brakeman (6.2.2)
+    brakeman (7.0.2)
       racc
     builder (3.3.0)
     capybara (3.40.0)
@@ -136,6 +136,9 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     cron2english (0.1.7)
     cssbundling-rails (1.4.1)
@@ -357,6 +360,9 @@ GEM
     omniauth-github (2.0.1)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8)
+    omniauth-gitlab (4.1.0)
+      omniauth (~> 2.0)
+      omniauth-oauth2 (~> 1.8.0)
     omniauth-oauth2 (1.8.0)
       oauth2 (>= 1.4, < 3)
       omniauth (~> 2.0)
@@ -365,7 +371,7 @@ GEM
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
     ostruct (0.6.1)
-    pagy (9.3.3)
+    pagy (9.3.4)
     parallel (1.26.3)
     parser (3.3.5.0)
       ast (~> 2.4.1)
@@ -378,7 +384,7 @@ GEM
     prettyprint (0.2.0)
     prop_initializer (0.2.0)
       zeitwerk (>= 2.6.18)
-    pry (0.14.2)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     psych (5.2.3)
@@ -436,7 +442,7 @@ GEM
     rdoc (6.12.0)
       psych (>= 4.0.0)
     recursive-open-struct (1.1.3)
-    redcarpet (3.6.0)
+    redcarpet (3.6.1)
     redis (4.8.1)
     regexp_parser (2.9.2)
     reline (0.6.0)
@@ -500,7 +506,7 @@ GEM
     ruby-vips (2.2.2)
       ffi (~> 1.12)
       logger
-    rubyzip (2.3.2)
+    rubyzip (2.4.1)
     rufus-scheduler (3.9.2)
       fugit (~> 1.1, >= 1.11.1)
     sassc (2.4.0)
@@ -603,6 +609,10 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
+    webmock (3.25.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.9.1)
     websocket (1.2.11)
     websocket-driver (0.7.6)
@@ -654,11 +664,12 @@ DEPENDENCIES
   omniauth (~> 2.1)
   omniauth-digitalocean (~> 0.3.2)
   omniauth-github (~> 2.0)
+  omniauth-gitlab (~> 4.1)
   omniauth-rails_csrf_protection (~> 1.0)
   pagy (~> 9.3)
   pg (~> 1.1)
   pretender (~> 0.3.4)
-  pry (~> 0.14.2)
+  pry (~> 0.15.2)
   puma (>= 5.0)
   pundit (~> 2.1)
   rack (~> 2.2)
@@ -669,7 +680,7 @@ DEPENDENCIES
   rqrcode (~> 2.2)
   rspec-rails (~> 7.1)
   rubocop-rails-omakase
-  rubyzip (~> 2.3)
+  rubyzip (~> 2.4)
   sassc-rails (~> 2.1)
   selenium-webdriver
   sentry-rails (~> 5.23)
@@ -687,6 +698,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  webmock
   whenever
 
 BUNDLED WITH

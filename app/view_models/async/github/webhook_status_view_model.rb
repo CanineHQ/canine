@@ -2,7 +2,7 @@ class Async::Github::WebhookStatusViewModel < Async::BaseViewModel
   expects :project_id
 
   def client
-    @client ||= Github::Client.from_project(project)
+    @client ||= Git::Client.from_project(project)
   end
 
   def project

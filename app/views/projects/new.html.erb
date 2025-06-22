@@ -1,6 +1,6 @@
 <%= content_for :title, t("scaffold.new.title", model: "Project") %>
 
-<div class="">
+<div>
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-medium">
       <%= link_to "Projects", projects_path, class: "text-black dark:text-white" %>
@@ -12,7 +12,13 @@
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
       <%= turbo_frame_tag "new-project" do %>
-        <%= render "new_form", project: @project, provider: @provider %>
+        <%= render(
+          "new_form",
+          project: @project,
+          provider: @provider,
+          selected_provider_type: @selected_provider_type,
+          selectable_providers: @selectable_providers,
+        ) %>
       <% end %>
     </div>
   </div>

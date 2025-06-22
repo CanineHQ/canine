@@ -1,0 +1,65 @@
+<%= form_with(model: project) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+  <div class="space-y-4">
+    <%= render(FormFieldComponent.new(label: "Repository path")) do %>
+      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+      <div class="form-control mt-1 w-full">
+        <div class="card bg-base-300 shadow-xl">
+          <div class="card-body">
+            <%= render "providers/provider", provider: project.project_credential_provider.provider %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Branch")) do %>
+      <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Autodeploy")) do %>
+      <%= form.check_box :autodeploy, class: "checkbox" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>
+      <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Docker build context directory")) do %>
+      <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Docker command")) do %>
+      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <label class="label">
+        <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
+      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Container registry URL")) do %>
+      <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: form.object.attributes["container_registry_url"] %>
+      <label class="label">
+        <span class="label-text-alt">If this is left blank, <%= project.github? ? "Github" : "Gitlab" %> Container Registry will be used</span>
+      </label>
+    <% end %>
+  </div>
+
+  <div class="form-footer">
+    <%= form.button "Submit", class: "btn btn-primary" %>
+
+    <% if form.object.new_record? %>
+      <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>
+    <% else %>
+      <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary" %>
+    <% end %>
+  </div>
+<% end %>

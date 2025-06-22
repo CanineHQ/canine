@@ -1,10 +1,13 @@
 .form-footer {
   margin-top: 1rem;
-  @apply mt-4;
+  @apply mt-8;
 }
 .form-group {
   @apply mb-4;
 }
 .form-group label {
   @apply block;
+}
+.label-text {
+  font-size: 1rem !important;
 }

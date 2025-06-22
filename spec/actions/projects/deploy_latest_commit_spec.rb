@@ -5,7 +5,7 @@ class MockCommit < Struct.new(:sha, :commit)
 end
 
 class MockGithub
-  def commits
+  def commits(branch)
     [ MockCommit.new(sha: "1234", commit: { message: "initial commit" }) ]
   end
 end
@@ -14,7 +14,7 @@ RSpec.describe Projects::DeployLatestCommit do
   let(:project) { create(:project) }
 
   before do
-    allow(Github::Client).to receive(:new).and_return(MockGithub.new)
+    allow(Git::Client).to receive(:from_project).and_return(MockGithub.new)
   end
 
   context 'github project' do

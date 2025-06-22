@@ -38,9 +38,10 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   gem "simplecov", require: false
-  gem "pry", "~> 0.14.2"
+  gem "pry", "~> 0.15.2"
   gem "rspec-rails", "~> 7.1"
   gem "factory_bot_rails"
+  gem "webmock"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
@@ -100,7 +101,7 @@ gem "httparty", "~> 0.22.0"
 
 gem "redcarpet", "~> 3.6"
 
-gem "rubyzip", "~> 2.3"
+gem "rubyzip", "~> 2.4"
 
 gem "sassc-rails", "~> 2.1"
 
@@ -116,3 +117,4 @@ gem "sentry-rails", "~> 5.23"
 gem "sys-proctable", "~> 1.3"
 
 gem "solid_errors", "~> 0.7.0"
+gem "omniauth-gitlab", "~> 4.1"

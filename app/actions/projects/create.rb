@@ -43,15 +43,15 @@ module Projects
 
     def self.create_steps(provider)
       steps = []
-      if provider.github?
-        steps << Projects::ValidateGithubRepository
+      if provider.git?
+        steps << Projects::ValidateGitRepository
       end
 
       steps << Projects::Save
 
       # Only register webhook in non-local mode
-      if !Rails.application.config.local_mode && provider.github?
-        steps << Projects::RegisterGithubWebhook
+      if !Rails.application.config.local_mode && provider.git?
+        steps << Projects::RegisterGitWebhook
       end
       steps
     end
