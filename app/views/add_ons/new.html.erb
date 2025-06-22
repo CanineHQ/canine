@@ -12,14 +12,20 @@
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
       <%= form_with(model: @add_on) do |form| %>
-        <%= render(FormFieldComponent.new(label: "Name")) do %>
+        <%= render(FormFieldComponent.new(
+          label: "Name",
+          description: "A unique name for your add on, only lowercase letters, numbers, and hyphens are allowed."
+        )) do %>
           <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
           <label class="label">
             <span class="label-text-alt">* Required</span>
           </label>
         <% end %>
 
-        <%= render(FormFieldComponent.new(label: "Cluster")) do %>
+        <%= render(FormFieldComponent.new(
+          label: "Cluster",
+          description: "The cluster to deploy your add on to."
+        )) do %>
           <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, {}, { class: "select select-bordered w-full" } %>
           <label class="label">
             <span class="label-text-alt">* Required</span>
