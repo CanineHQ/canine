@@ -15,5 +15,4 @@
 - [ ] Button to kill a build
 - [ ] Deployments API
 - [ ] Pull request preview apps
-- [ ] Gitlab support
 - [ ] Update vocabulary on landing page

@@ -1,8 +1,8 @@
 <%= content_for :title, t("scaffold.new.title", model: "Add On") %>
 
-<div class="container px-4 mx-auto my-8">
+<div>
   <div class="flex items-center justify-between mb-4">
-    <h1 class="h3">
+    <h1 class="text-lg font-medium">
       <%= link_to "Add Ons", add_ons_path, class: "text-black dark:text-white" %>
       <span class="text-gray-400 font-light mx-2">\</span>
       <%= t("scaffold.new.title", model: "Add On") %>
@@ -12,15 +12,19 @@
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
       <%= form_with(model: @add_on) do |form| %>
-        <div class="form-group">
-          <%= form.label :name %>
-          <%= form.text_field :name, class: "input input-bordered", autofocus: true, required: true %>
-        </div>
+        <%= render(FormFieldComponent.new(label: "Name")) do %>
+          <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+          <label class="label">
+            <span class="label-text-alt">* Required</span>
+          </label>
+        <% end %>
 
-        <div class="form-group">
-          <%= form.label :cluster_id %>
-          <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, {}, { class: "select select-bordered" } %>
-        </div>
+        <%= render(FormFieldComponent.new(label: "Cluster")) do %>
+          <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, {}, { class: "select select-bordered w-full" } %>
+          <label class="label">
+            <span class="label-text-alt">* Required</span>
+          </label>
+        <% end %>
 
         <div data-controller="card-select">
           <div class="form-group">

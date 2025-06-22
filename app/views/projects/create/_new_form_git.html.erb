@@ -10,124 +10,107 @@
 
     <%= render "shared/error_messages", resource: form.object %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Name</span>
-      </label>
-      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    </div>
-
-    <%= render "projects/create/select_credentials", form:, selectable_providers: %>
-
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Cluster</span>
-      </label>
-      <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered" } %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    </div>
-
-    <div data-new-project-target="gitRepository" class="hidden">
-      <div class="form-control mt-1 w-full max-w-sm">
-        <div data-controller="github-select-repository">
-          <label class="label">
-            <span class="label-text"><span data-new-project-target="gitProviderLabel">Github</span> Repository</span>
-          </label>
-
-          <%= form.text_field(
-            :repository_url,
-            class: "input input-bordered w-full focus:outline-offset-0",
-            placeholder: "accountname/repo",
-            data: {
-              "github-select-repository-target": "repository",
-            }
-          ) %>
-          <div class="flex justify-between mt-2">
-            <label class="label">
-              <span class="label-text-alt">* Required</span>
-            </label>
-            <button
-              class="btn btn-sm btn-outline"
-              type="button"
-              data-action="github-select-repository#connectToGithub"
-              data-github-select-repository-target="button"
-              data-disable-with="Loading..."
-              data-new-project-target="githubConnectButton"
-            >
-              Connect with Github <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
-            </button>
-          </div>
-          <%= render "integrations/github/repositories/modal" %>
-        </div>
-      </div>
-
-      <div class="form-control mt-1 w-full max-w-sm">
-        <label class="label">
-          <span class="label-text">Branch</span>
-        </label>
-        <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
+    <div class="space-y-4">
+      <%= render(FormFieldComponent.new(label: "Name")) do %>
+        <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
         <label class="label">
           <span class="label-text-alt">* Required</span>
         </label>
-      </div>
+      <% end %>
 
-      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+      <%= render(FormFieldComponent.new(label: "Cluster")) do %>
+        <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
         <label class="label">
-          <span class="label-text">Container registry URL</span>
+          <span class="label-text-alt">* Required</span>
         </label>
-        <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: "" %>
-        <label class="label">
-          <span class="label-text-alt">If this is left blank, <span data-new-project-target="gitProviderLabel">Github</span> Container Registry will be used</span>
-        </label>
-      </div>
-    </div>
+      <% end %>
 
-    <% unless Rails.application.config.local_mode %>
-      <div class="form-control w-full max-w-sm rounded-lg bg-base-200 p-2 px-4">
-        <label class="label mt-1">
-          <span class="label-text cursor-pointer">Autodeploy</span>
+      <%= render(FormFieldComponent.new(label: "Git Credentials")) do %>
+        <%= render "projects/create/select_credentials", form:, selectable_providers: %>
+
+        <div data-new-project-target="gitRepository" class="hidden">
+          <div class="form-control mt-1 w-full max-w-sm">
+            <div data-controller="github-select-repository">
+              <label class="label">
+                <span class="label-text"><span data-new-project-target="gitProviderLabel">Github</span> Repository</span>
+              </label>
+
+              <%= form.text_field(
+                :repository_url,
+                class: "input input-bordered w-full focus:outline-offset-0",
+                placeholder: "accountname/repo",
+                data: {
+                  "github-select-repository-target": "repository",
+                }
+              ) %>
+              <div class="flex justify-between mt-2">
+                <label class="label">
+                  <span class="label-text-alt">* Required</span>
+                </label>
+                <button
+                  class="btn btn-sm btn-outline"
+                  type="button"
+                  data-action="github-select-repository#connectToGithub"
+                  data-github-select-repository-target="button"
+                  data-disable-with="Loading..."
+                  data-new-project-target="githubConnectButton"
+                >
+                  Connect with Github <iconify-icon icon="mdi:github" width="24" height="24"></iconify-icon>
+                </button>
+              </div>
+              <%= render "integrations/github/repositories/modal" %>
+            </div>
+          </div>
+
+          <div class="form-control mt-1 w-full max-w-sm">
+            <label class="label">
+              <span class="label-text">Branch</span>
+            </label>
+            <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
+            <label class="label">
+              <span class="label-text-alt">* Required</span>
+            </label>
+          </div>
+
+          <div class="form-control mt-1 mb-2 w-full max-w-sm">
+            <label class="label">
+              <span class="label-text">Container registry URL</span>
+            </label>
+            <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: "" %>
+            <label class="label">
+              <span class="label-text-alt">If this is left blank, <span data-new-project-target="gitProviderLabel">Github</span> Container Registry will be used</span>
+            </label>
+          </div>
+        </div>
+      <% end %>
+
+      <% unless Rails.application.config.local_mode %>
+        <%= render(FormFieldComponent.new(label: "Autodeploy")) do %>
           <%= form.check_box :autodeploy, class: "checkbox" %>
+        <% end %>
+      <% end %>
+
+      <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>
+        <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
+        <label class="label">
+          <span class="label-text-alt">* Required</span>
         </label>
-      </div>
-    <% end %>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Dockerfile path</span>
-      </label>
-      <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    </div>
+      <%= render(FormFieldComponent.new(label: "Docker build context directory")) do %>
+        <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Docker build context directory</span>
-      </label>
-      <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
-    </div>
+      <%= render(FormFieldComponent.new(label: "Docker command")) do %>
+        <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+        <label class="label">
+          <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
+        </label>
+      <% end %>
 
-    <div class="form-control mt-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Docker command</span>
-      </label>
-      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
-      </label>
-    </div>
-
-    <div class="form-control my-1 w-full max-w-sm">
-      <label class="label">
-        <span class="label-text">Predeploy command</span>
-      </label>
-      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
+        <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <% end %>
     </div>
 
     <div class="form-footer">
