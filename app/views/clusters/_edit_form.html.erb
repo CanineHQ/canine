@@ -1,9 +1,11 @@
 <div>
   <%= form_with(model: cluster) do |form| %>
-    <div class="form-group">
-      <%= form.label :name, "Name" %>
-      <%= form.text_field :name, class: "input input-bordered" %>
-    </div>
+    <%= render(FormFieldComponent.new(label: "Name")) do %>
+      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary" %>
     </div>

@@ -21,10 +21,15 @@
     </div>
   </div>
 
-  <div class="form-group">
-    <%= form.label :kubeconfig_file %>
+  <%= render(FormFieldComponent.new(
+    label: "Kubeconfig File",
+    description: "The kubeconfig file for your cluster. Only YAML files are accepted."
+  )) do %>
     <%= form.file_field :kubeconfig_file, class: "file-input w-full", accept: ".yaml,.yml" %>
-  </div>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  <% end %>
 
   <div class="form-footer">
     <%= form.button "Submit", class: "btn btn-primary" %>

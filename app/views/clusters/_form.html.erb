@@ -1,30 +1,38 @@
 <%= form_with(model: cluster) do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
 
-  <div class="form-group">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "input input-bordered", autofocus: true, required: true %>
-  </div>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(
+      label: "Name",
+      description: "A unique name for your cluster, only lowercase letters, numbers, and hyphens are allowed."
+    )) do %>
+      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
 
-  <div data-controller="card-select">
-    <label class="mb-4 inline-block">Which managed Kubernetes provider are you using?</label>
-    <div class="form-group">
-      <div class="flex gap-4">
-        <%= form.collection_select :cluster_type, 
-          Cluster.cluster_types.keys, 
-          :to_s,
-          :titleize,
-          { },
-          { class: "select select-bordered hidden", data: { "card-select-target": "input" } } 
-        %>
-        <%= render "clusters/cluster_types/cards/k8s" %>
-        <%= render "clusters/cluster_types/cards/k3s" %>
+    <div data-controller="card-select">
+      <label class="mb-4 inline-block">Which managed Kubernetes provider are you using?</label>
+      <div class="form-group">
+        <div class="flex gap-4">
+          <%= form.collection_select :cluster_type, 
+            Cluster.cluster_types.keys, 
+            :to_s,
+            :titleize,
+            { },
+            { class: "select select-bordered hidden", data: { "card-select-target": "input" } } 
+          %>
+          <%= render "clusters/cluster_types/cards/k8s" %>
+          <%= render "clusters/cluster_types/cards/k3s" %>
+        </div>
+      </div>
+
+      <div class="my-10 has-styled-links">
+        <%= render "clusters/cluster_types/instructions/k8s", form: form %>
+        <%= render "clusters/cluster_types/instructions/k3s", form: form %>
       </div>
     </div>
-
-    <div class="my-10 has-styled-links">
-      <%= render "clusters/cluster_types/instructions/k8s", form: form %>
-      <%= render "clusters/cluster_types/instructions/k3s", form: form %>
-    </div>
   </div>
+
 <% end %>
