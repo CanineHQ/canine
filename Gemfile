@@ -72,7 +72,7 @@ gem "name_of_person", github: "basecamp/name_of_person"
 gem "noticed", "~> 2.6"
 gem "omniauth-github", "~> 2.0"
 gem "pretender", "~> 0.3.4"
-gem "pundit", "~> 2.1"
+gem "pundit", "~> 2.5"
 gem "sidekiq", "~> 6.2"
 gem "sitemap_generator", "~> 6.1"
 gem "whenever", require: false
