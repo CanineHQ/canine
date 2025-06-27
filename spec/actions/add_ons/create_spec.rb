@@ -10,6 +10,16 @@ RSpec.describe AddOns::Create do
     )
   end
 
+  describe 'errors' do
+    context 'there is a project with the same name in the same cluster' do
+      let!(:project) { create(:project, name: add_on.name, cluster: add_on.cluster) }
+      it 'raises an error' do
+        result = described_class.execute(add_on:)
+        expect(result.failure?).to be_truthy
+      end
+    end
+  end
+
   describe '#execute' do
     it 'applies template and fetches package details' do
       expect(add_on).to receive(:save)

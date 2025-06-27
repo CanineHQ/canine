@@ -91,7 +91,9 @@ Rails.application.routes.draw do
   authenticate :user, lambda { |u| u.admin? } do
     namespace :admin do
       mount Sidekiq::Web => "/sidekiq"
-      mount SolidErrors::Engine, at: "/solid_errors"
+      if Rails.env.production?
+        mount SolidErrors::Engine, at: "/solid_errors"
+      end
     end
   end
 
