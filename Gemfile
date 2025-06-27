@@ -64,6 +64,11 @@ group :test do
   gem 'faker', '~> 3.5.1'
   gem 'shoulda-matchers', '~> 6.0'
 end
+
+group :production do
+  gem "solid_errors", "~> 0.7.0"
+end
+
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
 gem "friendly_id", "~> 5.4"
@@ -72,7 +77,7 @@ gem "name_of_person", github: "basecamp/name_of_person"
 gem "noticed", "~> 2.6"
 gem "omniauth-github", "~> 2.0"
 gem "pretender", "~> 0.3.4"
-gem "pundit", "~> 2.1"
+gem "pundit", "~> 2.5"
 gem "sidekiq", "~> 6.2"
 gem "sitemap_generator", "~> 6.1"
 gem "whenever", require: false
@@ -116,5 +121,4 @@ gem "sentry-rails", "~> 5.23"
 
 gem "sys-proctable", "~> 1.3"
 
-gem "solid_errors", "~> 0.7.0"
 gem "omniauth-gitlab", "~> 4.1"
