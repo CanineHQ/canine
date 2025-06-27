@@ -1,0 +1,15 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Project") %>
+
+<%= project_layout(@project) do %>
+  <div>
+    <h2 class="text-2xl font-bold">Preview Apps</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+  </div>
+  <% @prs.each do |pr| %>
+    <%= render "projects/preview_projects/show", pr: %>
+  <% end %>
+
+  <% @created_projects.each do |pr| %>
+    <%= render "projects/preview_projects/show", pr: %>
+  <% end %>
+<% end %>

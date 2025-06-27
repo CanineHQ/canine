@@ -40,6 +40,10 @@ class Project < ApplicationRecord
   has_many :volumes, dependent: :destroy
 
   has_one :project_credential_provider, dependent: :destroy
+
+  has_one :preview_project, dependent: :destroy
+  has_many :previews, class_name: "Project"
+
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :repository_url, presence: true,

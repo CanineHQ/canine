@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_25_164120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -212,6 +212,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "preview_projects", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "external_id"
+    t.text "clean_up_command"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_preview_projects_on_project_id"
+  end
+
   create_table "project_add_ons", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.bigint "add_on_id", null: false
@@ -321,6 +330,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "preview_projects", "projects"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"
