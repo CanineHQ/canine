@@ -11,11 +11,13 @@
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
 #  predeploy_command              :string
+#  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
@@ -24,6 +26,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 FactoryBot.define do
   factory :project do

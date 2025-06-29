@@ -11,11 +11,13 @@
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
 #  predeploy_command              :string
+#  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
@@ -24,6 +26,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
   broadcasts_refreshes
@@ -41,11 +44,12 @@ class Project < ApplicationRecord
 
   has_one :project_credential_provider, dependent: :destroy
 
-  has_one :preview_project, dependent: :destroy
-  has_many :previews, class_name: "Project"
+  has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id
+  has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+  validates :branch, presence: true
   validates :repository_url, presence: true,
                             format: {
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
@@ -67,6 +71,10 @@ class Project < ApplicationRecord
     deployed: 1,
     destroying: 2
   }
+  enum project_fork_status: {
+    disabled: 0,
+    manually_create: 1
+  }, _prefix: :forks
   delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :docker_hub?, to: :project_credential_provider
 
@@ -135,5 +143,26 @@ class Project < ApplicationRecord
     else
       "docker.io/#{container_registry}:latest"
     end
+  end
+
+  # Forks
+  def parent_project
+    if child_fork.present?
+      child_fork.parent_project
+    else
+      raise "Project is not a forked project"
+    end
+  end
+
+  def show_fork_options?
+    !preview? && git?
+  end
+
+  def can_fork?
+    show_fork_options? && !forks_disabled?
+  end
+
+  def preview?
+    child_fork.present?
   end
 end

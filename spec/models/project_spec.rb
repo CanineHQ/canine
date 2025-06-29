@@ -11,11 +11,13 @@
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
 #  predeploy_command              :string
+#  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
@@ -24,6 +26,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 require 'rails_helper'
 
@@ -106,6 +109,25 @@ RSpec.describe Project, type: :model do
     it 'returns false if no services are updated or pending' do
       create(:service, project: project, status: :healthy)
       expect(project.has_updates?).to be false
+    end
+  end
+
+  describe 'forks' do
+    let(:base_project) { create(:project) }
+    let!(:project_fork) { create(:project_fork, base_project:, new_project: project) }
+
+    it 'can determine if a project can fork' do
+      expect(base_project.can_fork?).to be_falsey
+      expect(project.can_fork?).to be_falsey
+
+      base_project.project_fork_status = :manually_create
+      base_project.save!
+      expect(base_project.can_fork?).to be_truthy
+    end
+
+    it 'can tell if a project is a preview project' do
+      expect(base_project.preview?).to be_falsey
+      expect(project.preview?).to be_truthy
     end
   end
 end

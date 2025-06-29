@@ -1,0 +1,49 @@
+<div class="card bg-base-100 shadow-lg border border-base-300 mb-6 hover:shadow-xl transition-shadow">
+  <div class="card-body p-6">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        <%= link_to project_path(project_fork.child_project), class: "hover:underline" do %>
+          <div class="flex flex-row gap-2 items-center mb-3">
+            <h3 class="card-title text-xl font-bold text-base-content">
+              <%= project_fork.title %>
+            </h3>
+            <%= render "projects/status", project: project_fork.child_project %>
+          </div>
+        <% end %>
+        
+        <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-base-content/60">
+          <div class="flex items-center gap-2 badge badge-outline badge-primary">
+            <iconify-icon icon="lucide:git-pull-request" class="w-4 h-4"></iconify-icon>
+            <span>PR #<%= project_fork.number %></span>
+          </div>
+          
+          <div class="flex items-center gap-2 badge badge-outline badge-info">
+            <iconify-icon icon="lucide:user" class="w-4 h-4"></iconify-icon>
+            <span><%= project_fork.user %></span>
+          </div>
+          
+          <div class="flex items-center gap-2 badge badge-outline badge-accent">
+            <iconify-icon icon="lucide:calendar" class="w-4 h-4"></iconify-icon>
+            <span><%= time_ago_in_words(project_fork.created_at) %> ago</span>
+          </div>
+        </div>
+        
+        <div class="space-y-2">
+          <% project_fork.child_project.services.web_service.each do |service| %>
+            <div class="flex items-center gap-4">
+              <a href="<%= service.internal_url %>" target="_blank" class="text-sm font-medium hover:underline">
+                View <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= service.name %></code> service →
+              </a>
+            </div>
+          <% end %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:github"></iconify-icon>
+            <a href="<%= project_fork.url %>" target="_blank" class="text-sm font-medium hover:underline">
+              View Pull Request
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

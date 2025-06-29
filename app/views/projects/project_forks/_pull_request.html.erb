@@ -1,0 +1,39 @@
+<div class="card bg-base-100 shadow-lg border border-base-300 mb-6 hover:shadow-xl transition-shadow">
+  <div class="card-body p-6">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        <h3 class="card-title text-xl font-bold text-base-content mb-3">
+          <%= pull_request.title %>
+        </h3>
+        
+        <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-base-content/60">
+          <div class="flex items-center gap-2 badge badge-outline badge-primary">
+            <iconify-icon icon="lucide:git-pull-request" class="w-4 h-4"></iconify-icon>
+            <span>PR #<%= pull_request.number %></span>
+          </div>
+          
+          <div class="flex items-center gap-2 badge badge-outline badge-info">
+            <iconify-icon icon="lucide:user" class="w-4 h-4"></iconify-icon>
+            <span><%= pull_request.user %></span>
+          </div>
+          <div class="flex items-center gap-2 badge badge-outline badge-info">
+            <iconify-icon icon="lucide:git-branch" class="w-4 h-4"></iconify-icon>
+            <span><%= pull_request.branch %></span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <iconify-icon icon="lucide:github"></iconify-icon>
+          <a href="<%= pull_request.url %>" target="_blank" class="text-sm font-medium hover:underline">
+            View Pull Request
+          </a>
+        </div>
+      </div>
+      <div>
+        <%= button_to project_project_forks_path(pull_request_id: pull_request.id), class: "btn btn-primary" do %>
+          <iconify-icon icon="lucide:git-fork" class="w-4 h-4"></iconify-icon>
+          Create Preview App
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

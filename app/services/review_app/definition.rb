@@ -9,13 +9,13 @@ class ReviewApp::Definition
     else
       File.read(yaml_path)
     end
-    
+
     @definition = YAML.load(content)
   end
 
   def to_yaml
     {
-      name: @project.name,
+      name: @project.name
     }
   end
 end

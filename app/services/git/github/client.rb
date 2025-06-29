@@ -68,6 +68,19 @@ class Git::Github::Client < Git::Client
     client.hooks(repository_url)
   end
 
+  def pull_requests
+    client.pull_requests(repository_url).map do |pr|
+      Git::Common::PullRequest.new(
+        id: pr.id,
+        title: pr.title,
+        branch: pr.head.ref,
+        number: pr.number,
+        user: pr.user.login,
+        url: pr.html_url,
+      )
+    end
+  end
+
   private
 
   def webhook_secret
