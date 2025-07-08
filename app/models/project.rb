@@ -46,6 +46,7 @@ class Project < ApplicationRecord
 
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id
+  has_one :project_fork_cluster, class_name: "Cluster", foreign_key: :id, primary_key: :project_fork_cluster_id
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
@@ -56,6 +57,7 @@ class Project < ApplicationRecord
                               message: "must be in the format 'owner/repository'"
                             }
   validates :project_credential_provider, presence: true
+  validate :project_fork_cluster_id_is_owned_by_account
 
   validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
@@ -77,6 +79,12 @@ class Project < ApplicationRecord
   }, _prefix: :forks
   delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :docker_hub?, to: :project_credential_provider
+
+  def project_fork_cluster_id_is_owned_by_account
+    if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)
+      errors.add(:project_fork_cluster_id, "must be owned by the account")
+    end
+  end
 
   def name_is_unique_to_cluster
     if cluster.namespaces.include?(name)
@@ -108,13 +116,21 @@ class Project < ApplicationRecord
     repository_url.split("/").last
   end
 
-  def full_repository_url
-    if github?
-      "https://github.com/#{repository_url}"
-    elsif gitlab?
-      "https://gitlab.com/#{repository_url}"
+  def link_to_view
+    if forked?
+      if github?
+        "https://github.com/#{repository_url}/pull/#{child_fork.number}"
+      elsif gitlab?
+        "https://gitlab.com/#{repository_url}/merge_requests/#{child_fork.number}"
+      end
     else
-      "https://hub.docker.com/r/#{repository_url}"
+      if github?
+        "https://github.com/#{repository_url}"
+      elsif gitlab?
+        "https://gitlab.com/#{repository_url}"
+      else
+        "https://hub.docker.com/r/#{repository_url}"
+      end
     end
   end
 
@@ -134,14 +150,22 @@ class Project < ApplicationRecord
     services.each(&:updated!)
   end
 
+  def container_tag
+    if forked?
+      branch.gsub("/", "-")
+    else
+      "latest"
+    end
+  end
+
   def container_registry_url
     container_registry = self.attributes["container_registry_url"].presence || repository_url
     if github?
-      "ghcr.io/#{container_registry}:latest"
+      "ghcr.io/#{container_registry}:#{container_tag}"
     elsif gitlab?
-      "registry.gitlab.com/#{container_registry}:latest"
+      "registry.gitlab.com/#{container_registry}:#{container_tag}"
     else
-      "docker.io/#{container_registry}:latest"
+      "docker.io/#{container_registry}:#{container_tag}"
     end
   end
 
@@ -155,14 +179,14 @@ class Project < ApplicationRecord
   end
 
   def show_fork_options?
-    !preview? && git?
+    !forked? && git?
   end
 
   def can_fork?
     show_fork_options? && !forks_disabled?
   end
 
-  def preview?
+  def forked?
     child_fork.present?
   end
 end

@@ -82,10 +82,10 @@ RSpec.describe Project, type: :model do
     end
   end
 
-  describe '#full_repository_url' do
+  describe '#link_to_view' do
     it 'returns the full GitHub URL' do
       project.repository_url = 'owner/repository-name'
-      expect(project.full_repository_url).to eq('https://github.com/owner/repository-name')
+      expect(project.link_to_view).to eq('https://github.com/owner/repository-name')
     end
   end
 

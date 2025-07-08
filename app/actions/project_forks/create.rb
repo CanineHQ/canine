@@ -10,6 +10,7 @@ class ProjectForks::Create
     child_project = parent_project.dup
     child_project.branch = pull_request.branch
     child_project.name = "#{parent_project.name}-#{pull_request.number}"
+    child_project.cluster_id = parent_project.project_fork_cluster_id
     # Duplicate the project_credential_provider
     child_project_credential_provider = parent_project.project_credential_provider.dup
     child_project_credential_provider.project = child_project
