@@ -65,10 +65,6 @@ group :test do
   gem 'shoulda-matchers', '~> 6.0'
 end
 
-group :production do
-  gem "solid_errors", "~> 0.7.0"
-end
-
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
 gem "friendly_id", "~> 5.4"
