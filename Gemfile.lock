@@ -556,12 +556,6 @@ GEM
     snaky_hash (2.0.1)
       hashie
       version_gem (~> 1.1, >= 1.1.1)
-    solid_errors (0.7.0)
-      actionpack (>= 7.0)
-      actionview (>= 7.0)
-      activerecord (>= 7.0)
-      activesupport (>= 7.0)
-      railties (>= 7.0)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -693,7 +687,6 @@ DEPENDENCIES
   sidekiq-scheduler (~> 5.0)
   simplecov
   sitemap_generator (~> 6.1)
-  solid_errors (~> 0.7.0)
   sprockets-rails
   stimulus-rails
   sys-proctable (~> 1.3)
