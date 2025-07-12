@@ -1,7 +1,7 @@
 <% flash.each do |msg_type, message| %>
   <div>
     <div class="!rounded-none alert <%= msg_type == 'notice' ? 'alert-success' : 'alert-error' %> alert-dismissible fade show" role="alert">
-      <%= message %>
+      <%= message.html_safe %>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   </div>

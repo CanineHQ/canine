@@ -31,7 +31,8 @@ class Build < ApplicationRecord
   enum :status, {
     in_progress: 0,
     completed: 1,
-    failed: 2
+    failed: 2,
+    killed: 3
   }
 
   after_update_commit do
