@@ -1,8 +1,25 @@
 class CanineConfig::Definition
   attr_reader :definition
 
-  def initialize(yaml_path, base_project, pull_request)
-    context = {
+  def self.parse(yaml_content, base_project, pull_request)
+    context = build_context(base_project, pull_request)
+
+    parsed_content = if yaml_content.include?('<%')
+      erb = ERB.new(yaml_content)
+      context_binding = binding
+      context.each do |key, value|
+        context_binding.local_variable_set(key, value)
+      end
+      erb.result(context_binding)
+    else
+      yaml_content
+    end
+
+    new(YAML.safe_load(parsed_content))
+  end
+
+  def self.build_context(base_project, pull_request)
+    {
       "cluster_id": base_project.project_fork_cluster_id,
       "cluster_name": base_project.project_fork_cluster.name,
       "project_name": "#{base_project.name}-#{pull_request.number}",
@@ -11,19 +28,10 @@ class CanineConfig::Definition
       "branch_name": pull_request.branch,
       "username": pull_request.user
     }
+  end
 
-    content = if yaml_path.to_s.end_with?('.erb')
-      erb = ERB.new(File.read(yaml_path))
-      context_binding = binding
-      context.each do |key, value|
-        context_binding.local_variable_set(key, value)
-      end
-      erb.result(context_binding)
-    else
-      File.read(yaml_path)
-    end
-
-    @definition = YAML.load(content)
+  def initialize(definition)
+    @definition = definition
   end
 
   def services
@@ -37,5 +45,9 @@ class CanineConfig::Definition
     definition['environment_variables'].map do |env|
       EnvironmentVariable.new(name: env['name'], value: env['value'])
     end
+  end
+
+  def to_hash
+    @definition
   end
 end

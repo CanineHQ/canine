@@ -1,0 +1,7 @@
+services:
+  - name: web
+    container_port: 6379
+    service_type: web_service
+environment_variables:
+  - name: DATABASE_URL
+    value: postgres://localhost/test

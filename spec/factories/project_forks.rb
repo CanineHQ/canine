@@ -3,6 +3,7 @@
 # Table name: project_forks
 #
 #  id                :bigint           not null, primary key
+#  canine_config     :jsonb
 #  clean_up_command  :text
 #  number            :string           not null
 #  title             :string           not null

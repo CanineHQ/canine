@@ -113,21 +113,21 @@ RSpec.describe Project, type: :model do
   end
 
   describe 'forks' do
-    let(:base_project) { create(:project) }
-    let!(:project_fork) { create(:project_fork, base_project:, new_project: project) }
+    let(:parent_project) { create(:project) }
+    let!(:project_fork) { create(:project_fork, parent_project:, child_project: project) }
 
     it 'can determine if a project can fork' do
-      expect(base_project.can_fork?).to be_falsey
+      expect(parent_project.can_fork?).to be_falsey
       expect(project.can_fork?).to be_falsey
 
-      base_project.project_fork_status = :manually_create
-      base_project.save!
-      expect(base_project.can_fork?).to be_truthy
+      parent_project.project_fork_status = :manually_create
+      parent_project.save!
+      expect(parent_project.can_fork?).to be_truthy
     end
 
     it 'can tell if a project is a preview project' do
-      expect(base_project.preview?).to be_falsey
-      expect(project.preview?).to be_truthy
+      expect(parent_project.forked?).to be_falsey
+      expect(project.forked?).to be_truthy
     end
   end
 end

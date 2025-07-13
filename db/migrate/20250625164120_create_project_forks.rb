@@ -9,6 +9,7 @@ class CreateProjectForks < ActiveRecord::Migration[7.2]
       t.string :title, null: false
       t.string :url, null: false
       t.string :user, null: false
+      t.jsonb :canine_config, default: {}
 
       t.text :clean_up_command
 

@@ -109,4 +109,12 @@ class Git::Gitlab::Client < Git::Client
       )
     end
   end
+
+  def get_file(file_path, branch)
+    response = HTTParty.get(
+      "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
+      headers: { "Authorization" => "Bearer #{access_token}" }
+    )
+    response.success? ? response.body : nil
+  end
 end

@@ -81,6 +81,15 @@ class Git::Github::Client < Git::Client
     end
   end
 
+  def get_file(file_path, branch)
+    contents = client.contents(repository_url, path: file_path, ref: branch)
+    return nil if contents.nil?
+
+    Git::Common::File.new(file_path, Base64.decode64(contents.content), branch)
+  rescue Octokit::NotFound
+    nil
+  end
+
   private
 
   def webhook_secret

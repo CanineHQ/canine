@@ -239,6 +239,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
     t.string "title", null: false
     t.string "url", null: false
     t.string "user", null: false
+    t.jsonb "canine_config", default: {}
     t.text "clean_up_command"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
