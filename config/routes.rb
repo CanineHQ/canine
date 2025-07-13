@@ -49,7 +49,7 @@ Rails.application.routes.draw do
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
-    resources :project_forks, only: %i[index edit create update], module: :projects
+    resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update], module: :projects do

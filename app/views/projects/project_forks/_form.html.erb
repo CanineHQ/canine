@@ -19,7 +19,7 @@
       label: "Cluster",
       description: "The cluster to deploy the preview apps to."
     )) do %>
-      <%= form.collection_select :cluster_id, current_account.clusters, :id, :name, { include_blank: "Select a cluster" }, { class: "select select-bordered w-full" } %>
+      <%= form.collection_select :project_fork_cluster_id, current_account.clusters, :id, :name, { include_blank: "Select a cluster" }, { class: "select select-bordered w-full" } %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>

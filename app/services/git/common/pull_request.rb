@@ -4,6 +4,8 @@ class Git::Common::PullRequest < Struct.new(
   :number,
   :user,
   :url,
-  :branch
+  :branch,
+  :created_at,
+  :updated_at,
 )
 end

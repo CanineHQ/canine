@@ -77,6 +77,8 @@ class Git::Github::Client < Git::Client
         number: pr.number,
         user: pr.user.login,
         url: pr.html_url,
+        created_at: pr.created_at,
+        updated_at: pr.updated_at,
       )
     end
   end

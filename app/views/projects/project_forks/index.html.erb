@@ -3,14 +3,18 @@
 <%= project_layout(@project) do %>
   <div class="mb-6">
     <h2 class="text-2xl font-bold text-base-content mb-2">Preview Apps</h2>
-    <p class="text-base-content/60">Review apps created from pull requests</p>
+    <p class="text-base-content/60">You can create preview apps by creating a pull request in the project's repository.</p>
     <div class="divider"></div>
   </div>
   
-  <% if @project_forks.any? %>
+  <% if @preview_apps.any? %>
     <div class="space-y-6">
-      <% @project_forks.each do |project_fork| %>
-        <%= render "projects/project_forks/show", project_fork: %>
+      <% @preview_apps.each do |preview_app| %>
+        <% if preview_app[:type] == :project_fork %>
+          <%= render "projects/project_forks/preview_app", preview_app: %>
+        <% else %>
+          <%= render "projects/project_forks/pull_request_item", preview_app: %>
+        <% end %>
       <% end %>
     </div>
   <% else %>
@@ -24,15 +28,4 @@
       </div>
     </div>
   <% end %>
-  
-  <div class="mb-6 mt-12">
-    <h2 class="text-2xl font-bold text-base-content mb-2">Pull Requests</h2>
-    <p class="text-base-content/60">Create preview apps from pull requests</p>
-    <div class="divider"></div>
-  </div>
-  <div class="space-y-6">
-    <% @pull_requests.each do |pull_request| %>
-      <%= render "projects/project_forks/pull_request", pull_request: %>
-    <% end %>
-  </div>
 <% end %>

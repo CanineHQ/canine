@@ -28,17 +28,24 @@ class ProjectForks::ForkProject
       )
       child_project.save!
       child_project_credential_provider.save!
-      context.project_fork.save!
 
       # Fetch and store canine config if it exists
       client = Git::Client.from_project(child_project)
       file = client.get_file('.canine.yml', pull_request.branch)
+      if file.nil?
+        file = client.get_file('.canine.yml.erb', pull_request.branch)
+      end
 
       if file.present?
         # Parse and store the config
         canine_config = CanineConfig::Definition.parse(file.content, parent_project, pull_request)
-        context.project_fork.update!(canine_config: canine_config.to_hash)
+        child_project.canine_config = canine_config.to_hash
+        child_project.predeploy_script = canine_config.predeploy_script
+        child_project.postdeploy_script = canine_config.postdeploy_script
+        child_project.predestroy_script = canine_config.predestroy_script
+        child_project.postdestroy_script = canine_config.postdestroy_script
       end
+      context.project_fork.save!
     end
   rescue StandardError => e
     context.fail_and_return!("Failed to create project fork: #{e.message}")

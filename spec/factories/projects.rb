@@ -5,12 +5,17 @@
 #  id                             :bigint           not null, primary key
 #  autodeploy                     :boolean          default(TRUE), not null
 #  branch                         :string           default("main"), not null
+#  canine_config                  :jsonb
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  docker_command                 :string
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
+#  postdeploy_script              :text
+#  postdestroy_script             :text
 #  predeploy_command              :string
+#  predeploy_script               :text
+#  predestroy_script              :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null

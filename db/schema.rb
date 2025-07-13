@@ -239,8 +239,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
     t.string "title", null: false
     t.string "url", null: false
     t.string "user", null: false
-    t.jsonb "canine_config", default: {}
-    t.text "clean_up_command"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["child_project_id"], name: "index_project_forks_on_child_project_id", unique: true
@@ -261,6 +259,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "container_registry_url"
+    t.jsonb "canine_config", default: {}
+    t.text "predeploy_script"
+    t.text "postdeploy_script"
+    t.text "predestroy_script"
+    t.text "postdestroy_script"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"

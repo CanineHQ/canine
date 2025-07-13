@@ -4,6 +4,8 @@ RSpec.describe ProjectForks::Create do
   let(:account) { create(:account) }
   let(:fork_cluster) { create(:cluster, account:) }
   let(:parent_project) { create(:project, project_fork_cluster_id: fork_cluster.id, account:) }
+  let(:provider) { create(:provider, :github, user: account.owner) }
+  let!(:project_credential_provider) { create(:project_credential_provider, project: parent_project, provider:) }
   let!(:service_1) { create(:service, project: parent_project) }
   let!(:service_2) { create(:service, project: parent_project) }
   let(:pull_request) do

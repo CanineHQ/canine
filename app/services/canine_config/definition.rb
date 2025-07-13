@@ -34,6 +34,22 @@ class CanineConfig::Definition
     @definition = definition
   end
 
+  def predeploy_script
+    definition.dig('scripts', 'predeploy')
+  end
+
+  def postdeploy_script
+    definition.dig('scripts', 'postdeploy')
+  end
+
+  def predestroy_script
+    definition.dig('scripts', 'predestroy')
+  end
+
+  def postdestroy_script
+    definition.dig('scripts', 'postdestroy')
+  end
+
   def services
     definition['services'].map do |service|
       params = Service.permitted_params(ActionController::Parameters.new(service:))

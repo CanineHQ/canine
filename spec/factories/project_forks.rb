@@ -3,8 +3,6 @@
 # Table name: project_forks
 #
 #  id                :bigint           not null, primary key
-#  canine_config     :jsonb
-#  clean_up_command  :text
 #  number            :string           not null
 #  title             :string           not null
 #  url               :string           not null
@@ -30,7 +28,6 @@ FactoryBot.define do
     child_project { create(:project) }
     parent_project { create(:project) }
     external_id { Faker::Alphanumeric.alphanumeric(number: 10) }
-    clean_up_command { "echo 'clean up'" }
     number { Faker::Alphanumeric.alphanumeric(number: 10) }
     title { Faker::Lorem.sentence }
     url { Faker::Internet.url }

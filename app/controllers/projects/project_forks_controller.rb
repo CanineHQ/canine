@@ -5,10 +5,44 @@ class Projects::ProjectForksController < Projects::BaseController
   def index
     client = Git::Client.from_project(@project)
     @project_forks = @project.forks.includes(:child_project, :parent_project)
-    @pull_requests = client.pull_requests.reject do |pr|
-      @project_forks.any? { |fork| fork.external_id == pr.id }
+    pull_requests = client.pull_requests.select do |pr|
+      @project_forks.none? { |fork| fork.external_id == pr.id.to_s }
     end
-    # There can be PR's without forks, forks without an open PR, and a PR that has been forked
+    
+    # Merge both data sources into a unified list
+    @preview_apps = []
+    
+    # Add existing project forks
+    @project_forks.each do |fork|
+      @preview_apps << {
+        type: :project_fork,
+        object: fork,
+        id: fork.external_id,
+        title: fork.title,
+        number: fork.number,
+        user: fork.user,
+        url: fork.url,
+        created_at: fork.created_at
+      }
+    end
+    
+    # Add pull requests that don't have forks yet
+    pull_requests.each do |pr|
+      @preview_apps << {
+        type: :pull_request,
+        object: pr,
+        id: pr.id.to_s,
+        title: pr.title,
+        number: pr.number,
+        user: pr.user,
+        url: pr.url,
+        branch: pr.branch,
+        created_at: nil
+      }
+    end
+    
+    # Sort by PR number (descending)
+    @preview_apps.sort! { |a, b| b[:number].to_i <=> a[:number].to_i }
   end
 
   def create
@@ -18,23 +52,24 @@ class Projects::ProjectForksController < Projects::BaseController
       redirect_to project_project_forks_path(@project), alert: "Pull request not found"
       return
     end
+    unless @project.can_fork?
+      redirect_to project_project_forks_path(@project), alert: "This project cannot be forked. Only projects with a git repository can be forked."
+    end
 
-    result = ProjectForks::Create.execute(
+    result = ProjectForks::Create.call(
       parent_project: @project,
       pull_request:
     )
     if result.success?
+      Projects::BuildJob.perform_later(result.project_fork.child_project)
       child_project = result.project_fork.child_project
       redirect_to project_path(child_project), notice: "Preview app created"
     else
-      redirect_to project_project_forks_path(@project), alert: "Failed to create preview app"
+      redirect_to project_project_forks_path(@project), alert: "Failed to create preview app: #{result.message}"
     end
   end
 
   def edit
-  end
-
-  def update
   end
 
   private

@@ -5,12 +5,17 @@
 #  id                             :bigint           not null, primary key
 #  autodeploy                     :boolean          default(TRUE), not null
 #  branch                         :string           default("main"), not null
+#  canine_config                  :jsonb
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  docker_command                 :string
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
+#  postdeploy_script              :text
+#  postdestroy_script             :text
 #  predeploy_command              :string
+#  predeploy_script               :text
+#  predestroy_script              :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null
@@ -44,8 +49,8 @@ class Project < ApplicationRecord
 
   has_one :project_credential_provider, dependent: :destroy
 
-  has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id
-  has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id
+  has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
+  has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
   has_one :project_fork_cluster, class_name: "Cluster", foreign_key: :id, primary_key: :project_fork_cluster_id
 
   validates :name, presence: true,
@@ -57,6 +62,7 @@ class Project < ApplicationRecord
                               message: "must be in the format 'owner/repository'"
                             }
   validates :project_credential_provider, presence: true
+  validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
 
   validate :name_is_unique_to_cluster, on: :create
@@ -73,10 +79,10 @@ class Project < ApplicationRecord
     deployed: 1,
     destroying: 2
   }
-  enum project_fork_status: {
+  enum :project_fork_status, {
     disabled: 0,
     manually_create: 1
-  }, _prefix: :forks
+  }, prefix: :forks
   delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :docker_hub?, to: :project_credential_provider
 

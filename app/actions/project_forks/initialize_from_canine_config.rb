@@ -4,9 +4,9 @@ class ProjectForks::InitializeFromCanineConfig
 
   executed do |context|
     # Skip this action if no canine_config is stored
-    next if context.project_fork.canine_config.blank?
+    next if context.project_fork.child_project.canine_config.blank?
 
-    config_data = context.project_fork.canine_config
+    config_data = context.project_fork.child_project.canine_config
 
     # Create services from the stored config
     config_data['services']&.each do |service_config|

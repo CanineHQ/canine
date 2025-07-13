@@ -22,6 +22,7 @@ RSpec.describe ProjectForks::ForkProject do
     # Mock Git client for all tests to avoid authentication issues
     allow(Git::Client).to receive(:from_project).and_return(git_client)
     allow(git_client).to receive(:get_file).with('.canine.yml', 'feature/test').and_return(nil)
+    allow(git_client).to receive(:get_file).with('.canine.yml.erb', 'feature/test').and_return(nil)
   end
 
   describe '#execute' do
@@ -85,13 +86,17 @@ RSpec.describe ProjectForks::ForkProject do
         result = described_class.execute(parent_project:, pull_request:)
 
         expect(result).to be_success
-        project_fork = result.project_fork
+        child_project = result.project_fork.child_project
 
-        expect(project_fork.canine_config).to be_present
-        expect(project_fork.canine_config['services']).to be_an(Array)
-        expect(project_fork.canine_config['services'].first['name']).to eq('web')
-        expect(project_fork.canine_config['environment_variables']).to be_an(Array)
-        expect(project_fork.canine_config['environment_variables'].first['name']).to eq('DATABASE_URL')
+        expect(child_project.canine_config).to be_present
+        expect(child_project.canine_config['services']).to be_an(Array)
+        expect(child_project.canine_config['services'].first['name']).to eq('web')
+        expect(child_project.canine_config['environment_variables']).to be_an(Array)
+        expect(child_project.canine_config['environment_variables'].first['name']).to eq('DATABASE_URL')
+        expect(child_project.predeploy_script).to eq('echo "Pre deploy script"')
+        expect(child_project.postdeploy_script).to eq('echo "Post deploy script"')
+        expect(child_project.predestroy_script).to eq('echo "Pre destroy script"')
+        expect(child_project.postdestroy_script).to eq('echo "Post destroy script"')
       end
     end
 
@@ -102,7 +107,7 @@ RSpec.describe ProjectForks::ForkProject do
         result = described_class.execute(parent_project:, pull_request:)
 
         expect(result).to be_success
-        expect(result.project_fork.canine_config).to eq({})
+        expect(result.project_fork.child_project.canine_config).to eq({})
       end
     end
 

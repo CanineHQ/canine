@@ -105,7 +105,9 @@ class Git::Gitlab::Client < Git::Client
         number: row["iid"],
         user: row["author"]["username"],
         url: row["web_url"],
-        branch: row["source_branch"]
+        branch: row["source_branch"],
+        created_at: DateTime.parse(row["created_at"]),
+        updated_at: DateTime.parse(row["updated_at"])
       )
     end
   end
@@ -115,6 +117,6 @@ class Git::Gitlab::Client < Git::Client
       "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
-    response.success? ? response.body : nil
+    response.success? ? Git::Common::File.new(file_path, response.body, branch) : nil
   end
 end

@@ -9,11 +9,14 @@ class CreateProjectForks < ActiveRecord::Migration[7.2]
       t.string :title, null: false
       t.string :url, null: false
       t.string :user, null: false
-      t.jsonb :canine_config, default: {}
-
-      t.text :clean_up_command
 
       t.timestamps
     end
+
+    add_column :projects, :canine_config, :jsonb, default: {}
+    add_column :projects, :predeploy_script, :text
+    add_column :projects, :postdeploy_script, :text
+    add_column :projects, :predestroy_script, :text
+    add_column :projects, :postdestroy_script, :text
   end
 end

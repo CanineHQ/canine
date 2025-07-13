@@ -37,7 +37,7 @@ RSpec.describe ProjectForks::InitializeFromCanineConfig do
       end
 
       before do
-        project_fork.update!(canine_config:)
+        child_project.update!(canine_config:)
       end
 
       it 'creates services from the config' do
@@ -78,7 +78,7 @@ RSpec.describe ProjectForks::InitializeFromCanineConfig do
 
     context 'when project fork has empty canine config' do
       before do
-        project_fork.update!(canine_config: {})
+        child_project.update!(canine_config: {})
       end
 
       it 'skips and returns success' do
@@ -92,7 +92,7 @@ RSpec.describe ProjectForks::InitializeFromCanineConfig do
 
     context 'when project fork has no canine config' do
       before do
-        project_fork.update!(canine_config: nil)
+        child_project.update!(canine_config: nil)
       end
 
       it 'skips and returns success' do
