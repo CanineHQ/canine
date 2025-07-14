@@ -37,7 +37,7 @@ require 'rails_helper'
 
 RSpec.describe Project, type: :model do
   let(:cluster) { create(:cluster) }
-  let(:project) { build(:project, cluster: cluster) }
+  let(:project) { build(:project, cluster: cluster, account: cluster.account) }
 
   describe 'validations' do
     context 'when name is not unique to the cluster' do
@@ -118,8 +118,18 @@ RSpec.describe Project, type: :model do
   end
 
   describe 'forks' do
-    let(:parent_project) { create(:project) }
-    let!(:project_fork) { create(:project_fork, parent_project:, child_project: project) }
+    let(:parent_project) do
+      create(
+        :project,
+        cluster: cluster,
+        account: cluster.account,
+        project_fork_cluster_id: cluster.id
+      )
+    end
+
+    let!(:project_fork) do
+      create(:project_fork, parent_project:, child_project: project)
+    end
 
     it 'can determine if a project can fork' do
       expect(parent_project.can_fork?).to be_falsey
