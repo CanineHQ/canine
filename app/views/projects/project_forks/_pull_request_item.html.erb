@@ -26,6 +26,13 @@
             <span><%= preview_app[:branch] %></span>
           </div>
         </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-4 text-sm">
+          <div class="flex items-center gap-2 ">
+            <iconify-icon icon="lucide:calendar" class="w-4 h-4"></iconify-icon>
+            <span>Updated <%= time_ago_in_words(preview_app[:updated_at]) %> ago</span>
+          </div>
+        </div>
       </div>
       
       <div>

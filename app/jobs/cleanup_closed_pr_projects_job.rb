@@ -6,9 +6,9 @@ class CleanupClosedPrProjectsJob < ApplicationJob
       begin
         parent_project = project_fork.parent_project
         client = Git::Client.from_project(parent_project)
-        
+
         pr_status = client.pull_request_status(project_fork.number.to_i)
-        
+
         if pr_status == 'closed' || pr_status == 'merged' || pr_status == 'not_found'
           Rails.logger.info "Deleting child project #{project_fork.child_project.id} for closed PR ##{project_fork.number}"
           project_fork.child_project.destroy

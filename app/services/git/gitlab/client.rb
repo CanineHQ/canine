@@ -118,7 +118,7 @@ class Git::Gitlab::Client < Git::Client
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     return 'not_found' unless response.success?
-    
+
     response.parsed_response["state"]
   end
 

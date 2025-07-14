@@ -3,7 +3,7 @@
     <div class="flex items-start justify-between gap-4">
       <div class="flex-1 min-w-0">
         <div class="flex flex-row gap-2 items-center mb-3">
-          <%= link_to project_path(preview_app[:object].child_project), class: "hover:underline" do %>
+          <%= link_to project_path(preview_app[:object].child_project), class: "hover:underline font-bold" do %>
             <%= preview_app[:object].child_project.name %>
           <% end %>
           <%= render "projects/status", project: preview_app[:object].child_project %>
@@ -32,7 +32,13 @@
             <span><%= preview_app[:object].child_project.branch %></span>
           </div>
         </div>
-        
+
+        <div class="mt-2 flex flex-wrap items-center gap-4 text-sm">
+          <div class="flex items-center gap-2 ">
+            <iconify-icon icon="lucide:calendar" class="w-4 h-4"></iconify-icon>
+            <span>Updated <%= time_ago_in_words(preview_app[:updated_at]) %> ago</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

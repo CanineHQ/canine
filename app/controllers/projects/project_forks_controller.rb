@@ -8,10 +8,10 @@ class Projects::ProjectForksController < Projects::BaseController
     pull_requests = client.pull_requests.select do |pr|
       @project_forks.none? { |fork| fork.external_id == pr.id.to_s }
     end
-    
+
     # Merge both data sources into a unified list
     @preview_apps = []
-    
+
     # Add existing project forks
     @project_forks.each do |fork|
       @preview_apps << {
@@ -22,10 +22,11 @@ class Projects::ProjectForksController < Projects::BaseController
         number: fork.number,
         user: fork.user,
         url: fork.url,
-        created_at: fork.created_at
+        created_at: fork.created_at,
+        updated_at: fork.updated_at
       }
     end
-    
+
     # Add pull requests that don't have forks yet
     pull_requests.each do |pr|
       @preview_apps << {
@@ -37,10 +38,11 @@ class Projects::ProjectForksController < Projects::BaseController
         user: pr.user,
         url: pr.url,
         branch: pr.branch,
-        created_at: nil
+        created_at: pr.created_at,
+        updated_at: pr.updated_at
       }
     end
-    
+
     # Sort by PR number (descending)
     @preview_apps.sort! { |a, b| b[:number].to_i <=> a[:number].to_i }
   end
@@ -61,9 +63,8 @@ class Projects::ProjectForksController < Projects::BaseController
       pull_request:
     )
     if result.success?
-      Projects::BuildJob.perform_later(result.project_fork.child_project)
-      child_project = result.project_fork.child_project
-      redirect_to project_path(child_project), notice: "Preview app created"
+      Projects::DeployLatestCommit.execute(project: result.project_fork.child_project, current_user:)
+      redirect_to project_path(result.project_fork.child_project), notice: "Preview app created"
     else
       redirect_to project_project_forks_path(@project), alert: "Failed to create preview app: #{result.message}"
     end
