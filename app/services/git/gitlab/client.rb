@@ -112,6 +112,16 @@ class Git::Gitlab::Client < Git::Client
     end
   end
 
+  def pull_request_status(pr_number)
+    response = HTTParty.get(
+      "#{GITLAB_API_BASE}/projects/#{encoded_url}/merge_requests/#{pr_number}",
+      headers: { "Authorization" => "Bearer #{access_token}" }
+    )
+    return 'not_found' unless response.success?
+    
+    response.parsed_response["state"]
+  end
+
   def get_file(file_path, branch)
     response = HTTParty.get(
       "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",

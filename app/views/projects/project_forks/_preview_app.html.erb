@@ -33,16 +33,16 @@
           </div>
         </div>
         
-        <div class="space-y-2">
-          <% preview_app[:object].child_project.services.web_service.each do |service| %>
-            <div class="flex items-center gap-4">
-              <iconify-icon icon="lucide:copy" data-controller="clipboard" data-clipboard-text="<%= service.internal_url %>"></iconify-icon>
-              <a href="<%= service.internal_url %>" target="_blank" class="text-sm font-medium hover:underline">
-                View <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= service.name %></code> service →
-              </a>
-            </div>
-          <% end %>
-        </div>
+      </div>
+      <div class="space-y-2">
+        <% preview_app[:object].child_project.services.web_service.each do |service| %>
+          <div class="flex items-center gap-4">
+            <iconify-icon icon="lucide:copy" data-controller="clipboard" data-clipboard-text="<%= service.internal_url %>"></iconify-icon>
+            <a href="<%= service.internal_url %>" target="_blank" class="text-sm font-medium hover:underline">
+              View <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= service.name %></code> service →
+            </a>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

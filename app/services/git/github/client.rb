@@ -83,6 +83,13 @@ class Git::Github::Client < Git::Client
     end
   end
 
+  def pull_request_status(pr_number)
+    pr = client.pull_request(repository_url, pr_number)
+    pr.state
+  rescue Octokit::NotFound
+    'not_found'
+  end
+
   def get_file(file_path, branch)
     contents = client.contents(repository_url, path: file_path, ref: branch)
     return nil if contents.nil?

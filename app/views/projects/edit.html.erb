@@ -16,7 +16,7 @@
     <% else %>
       <div>
         Preview apps cannot be created from preview apps.
-        Please use the <%= link_to "base project", project_path(@project.parent_project), class: "link link-primary" %> to create a preview app.
+        Please use the <%= link_to "base project", project_project_forks_path(@project.parent_project), class: "link link-primary" %> to create a preview app.
       </div>
     <% end %>
 
