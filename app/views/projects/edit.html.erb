@@ -7,6 +7,19 @@
       <%= render "edit_form", project: @project %>
     </div>
 
+    <h2 class="text-2xl font-bold">Pull Request Apps</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+    <% if @project.show_fork_options? %>
+      <div>
+        <%= render "projects/project_forks/form", project: @project %>
+      </div>
+    <% else %>
+      <div>
+        Preview apps cannot be created from preview apps.
+        Please use the <%= link_to "base project", project_project_forks_path(@project.parent_project), class: "link link-primary" %> to create a preview app.
+      </div>
+    <% end %>
+
     <div>
       <h2 class="text-2xl font-bold">Volumes</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />

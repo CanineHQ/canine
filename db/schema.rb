@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -231,6 +231,20 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
     t.index ["provider_id"], name: "index_project_credential_providers_on_provider_id"
   end
 
+  create_table "project_forks", force: :cascade do |t|
+    t.bigint "child_project_id", null: false
+    t.bigint "parent_project_id", null: false
+    t.string "external_id", null: false
+    t.string "number", null: false
+    t.string "title", null: false
+    t.string "url", null: false
+    t.string "user", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["child_project_id"], name: "index_project_forks_on_child_project_id", unique: true
+    t.index ["parent_project_id"], name: "index_project_forks_on_parent_project_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "name", null: false
     t.string "repository_url", null: false
@@ -245,6 +259,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "container_registry_url"
+    t.jsonb "canine_config", default: {}
+    t.text "predeploy_script"
+    t.text "postdeploy_script"
+    t.text "predestroy_script"
+    t.text "postdestroy_script"
+    t.bigint "project_fork_cluster_id"
+    t.integer "project_fork_status", default: 0
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
   end
 
@@ -325,7 +346,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_04_15_222407) do
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"
   add_foreign_key "project_credential_providers", "providers"
+  add_foreign_key "project_forks", "projects", column: "child_project_id"
+  add_foreign_key "project_forks", "projects", column: "parent_project_id"
   add_foreign_key "projects", "clusters"
+  add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
   add_foreign_key "volumes", "projects"

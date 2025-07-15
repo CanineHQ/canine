@@ -93,4 +93,40 @@ class Git::Gitlab::Client < Git::Client
       )
     end
   end
+
+  def pull_requests
+    HTTParty.get(
+      "#{GITLAB_API_BASE}/projects/#{encoded_url}/merge_requests",
+      headers: { "Authorization" => "Bearer #{access_token}" }
+    ).map do |row|
+      Git::Common::PullRequest.new(
+        id: row["id"],
+        title: row["title"],
+        number: row["iid"],
+        user: row["author"]["username"],
+        url: row["web_url"],
+        branch: row["source_branch"],
+        created_at: DateTime.parse(row["created_at"]),
+        updated_at: DateTime.parse(row["updated_at"])
+      )
+    end
+  end
+
+  def pull_request_status(pr_number)
+    response = HTTParty.get(
+      "#{GITLAB_API_BASE}/projects/#{encoded_url}/merge_requests/#{pr_number}",
+      headers: { "Authorization" => "Bearer #{access_token}" }
+    )
+    return 'not_found' unless response.success?
+
+    response.parsed_response["state"]
+  end
+
+  def get_file(file_path, branch)
+    response = HTTParty.get(
+      "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
+      headers: { "Authorization" => "Bearer #{access_token}" }
+    )
+    response.success? ? Git::Common::File.new(file_path, response.body, branch) : nil
+  end
 end

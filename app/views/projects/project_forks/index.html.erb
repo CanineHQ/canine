@@ -1,0 +1,31 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Project") %>
+
+<%= project_layout(@project) do %>
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-base-content mb-2">Preview Apps</h2>
+    <p class="text-base-content/60">You can create preview apps by creating a pull request in the project's repository.</p>
+    <div class="divider"></div>
+  </div>
+  
+  <% if @preview_apps.any? %>
+    <div class="space-y-6">
+      <% @preview_apps.each do |preview_app| %>
+        <% if preview_app[:type] == :project_fork %>
+          <%= render "projects/project_forks/preview_app", preview_app: %>
+        <% else %>
+          <%= render "projects/project_forks/pull_request_item", preview_app: %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="hero min-h-64 bg-base-200 rounded-lg">
+      <div class="hero-content text-center">
+        <div class="max-w-md">
+          <iconify-icon icon="lucide:git-pull-request" class="text-8xl text-base-content/20 mb-6"></iconify-icon>
+          <h3 class="text-2xl font-bold text-base-content mb-4">No Preview Apps</h3>
+          <p class="text-base-content/70 mb-6">You can create preview apps by creating a pull request in the project's repository.</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

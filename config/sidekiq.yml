@@ -12,3 +12,6 @@
     cancel_hanging_builds_job:
       every: '1h'
       class: Scheduled::CancelHangingBuildsJob
+    cleanup_closed_pr_projects_job:
+      every: '30m'
+      class: CleanupClosedPrProjectsJob

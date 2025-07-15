@@ -68,6 +68,37 @@ class Git::Github::Client < Git::Client
     client.hooks(repository_url)
   end
 
+  def pull_requests
+    client.pull_requests(repository_url).map do |pr|
+      Git::Common::PullRequest.new(
+        id: pr.id,
+        title: pr.title,
+        branch: pr.head.ref,
+        number: pr.number,
+        user: pr.user.login,
+        url: pr.html_url,
+        created_at: pr.created_at,
+        updated_at: pr.updated_at,
+      )
+    end
+  end
+
+  def pull_request_status(pr_number)
+    pr = client.pull_request(repository_url, pr_number)
+    pr.state
+  rescue Octokit::NotFound
+    'not_found'
+  end
+
+  def get_file(file_path, branch)
+    contents = client.contents(repository_url, path: file_path, ref: branch)
+    return nil if contents.nil?
+
+    Git::Common::File.new(file_path, Base64.decode64(contents.content), branch)
+  rescue Octokit::NotFound
+    nil
+  end
+
   private
 
   def webhook_secret
