@@ -39,7 +39,21 @@ FactoryBot.define do
 
     after(:build) do |project|
       provider = create(:provider, :github)
-      ProjectCredentialProvider.new(project: project, provider: provider)
+      project.project_credential_provider ||= build(:project_credential_provider, project: project, provider: provider)
+    end
+
+    trait :github do
+      after(:build) do |project|
+        provider = create(:provider, :github)
+        project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+      end
+    end
+
+    trait :docker_hub do
+      after(:build) do |project|
+        provider = create(:provider, :docker_hub)
+        project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+      end
     end
   end
 end
