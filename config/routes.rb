@@ -69,6 +69,7 @@ Rails.application.routes.draw do
       end
       member do
         post :redeploy
+        patch :kill
       end
     end
   end
@@ -92,9 +93,6 @@ Rails.application.routes.draw do
   authenticate :user, lambda { |u| u.admin? } do
     namespace :admin do
       mount Sidekiq::Web => "/sidekiq"
-      if Rails.env.production?
-        mount SolidErrors::Engine, at: "/solid_errors"
-      end
     end
   end
 

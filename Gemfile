@@ -65,16 +65,12 @@ group :test do
   gem 'shoulda-matchers', '~> 6.0'
 end
 
-group :production do
-  gem "solid_errors", "~> 0.7.0"
-end
-
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
 gem "friendly_id", "~> 5.4"
 gem "jsbundling-rails"
 gem "name_of_person", github: "basecamp/name_of_person"
-gem "noticed", "~> 2.6"
+gem "noticed", "~> 2.7"
 gem "omniauth-github", "~> 2.0"
 gem "pretender", "~> 0.3.4"
 gem "pundit", "~> 2.5"

@@ -5,5 +5,7 @@ class Services::Save
 
   executed do |context|
     context.service.save!
+  rescue StandardError => e
+    context.fail_and_return!(e.message)
   end
 end

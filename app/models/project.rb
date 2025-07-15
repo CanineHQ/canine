@@ -166,12 +166,14 @@ class Project < ApplicationRecord
 
   def container_registry_url
     container_registry = self.attributes["container_registry_url"].presence || repository_url
+    tag = docker_hub? ? 'latest' : branch.gsub('/', '-') # Docker Hub uses latest, others use branch name
+
     if github?
-      "ghcr.io/#{container_registry}:#{container_tag}"
+      "ghcr.io/#{container_registry}:#{tag}"
     elsif gitlab?
-      "registry.gitlab.com/#{container_registry}:#{container_tag}"
+      "registry.gitlab.com/#{container_registry}:#{tag}"
     else
-      "docker.io/#{container_registry}:#{container_tag}"
+      "docker.io/#{container_registry}:#{tag}"
     end
   end
 
