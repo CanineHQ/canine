@@ -17,3 +17,4 @@
 - [ ] Pull request preview apps
 - [ ] Update vocabulary on landing page
 - [ ] Metrics page needs to load even if the cluster is down so that memory outages can be tracked
+- [ ] Docker uploads to the same registry even for different branch builds. It probably needs to go to `image:branch`
