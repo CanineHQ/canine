@@ -3,9 +3,19 @@
 
 <%= project_layout(@project) do %>
   <div>
-    <div>
-      <%= @build.created_at.strftime("%B %d, %Y at %I:%M %p") %>
-      <%= render "projects/deployments/status", build: @build %>
+    <div class="flex items-center gap-3">
+      <div>
+        <%= @build.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+        <%= render "projects/deployments/status", build: @build %>
+      </div>
+      <% if @build.in_progress? %>
+        <%= button_to "Kill Build", 
+            kill_project_deployment_path(@project, @build), 
+            method: :patch,
+            class: "btn btn-sm btn-error",
+            confirm: "Are you sure you want to kill this build? This action cannot be undone.",
+            data: { turbo_method: :patch } %>
+      <% end %>
     </div>
     <div>
       <!-- link to github -->

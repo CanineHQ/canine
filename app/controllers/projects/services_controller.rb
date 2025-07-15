@@ -15,7 +15,7 @@ class Projects::ServicesController < Projects::BaseController
     if result.success?
       redirect_to project_services_path(@project), notice: "Service will be created on the next deploy."
     else
-      redirect_to project_services_path(@project), alert: "Service could not be created."
+      redirect_to project_services_path(@project), alert: "Service could not be created. #{result.message.to_s.humanize}"
     end
   end
 

@@ -4,7 +4,7 @@ class Projects::DeployLatestCommit
   expects :project
   expects :current_user, default: nil
   expects :skip_build, default: false
-  promises :project
+  promises :project, :build
 
   executed do |context|
     # Fetch the latest commit from the default branch
@@ -27,6 +27,7 @@ class Projects::DeployLatestCommit
       )
     end
 
+    context.build = build
     if context.skip_build
       build.info("Skipping build...", color: :yellow)
       build.update!(status: :completed)
