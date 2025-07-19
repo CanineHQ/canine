@@ -93,10 +93,10 @@ RSpec.describe ProjectForks::ForkProject do
         expect(child_project.canine_config['services'].first['name']).to eq('web')
         expect(child_project.canine_config['environment_variables']).to be_an(Array)
         expect(child_project.canine_config['environment_variables'].first['name']).to eq('DATABASE_URL')
-        expect(child_project.predeploy_script).to eq('echo "Pre deploy script"')
-        expect(child_project.postdeploy_script).to eq('echo "Post deploy script"')
-        expect(child_project.predestroy_script).to eq('echo "Pre destroy script"')
-        expect(child_project.postdestroy_script).to eq('echo "Post destroy script"')
+        expect(child_project.predeploy_command).to eq('echo "Pre deploy script"')
+        expect(child_project.postdeploy_command).to eq('echo "Post deploy script"')
+        expect(child_project.predestroy_command).to eq('echo "Pre destroy script"')
+        expect(child_project.postdestroy_command).to eq('echo "Post destroy script"')
       end
     end
 

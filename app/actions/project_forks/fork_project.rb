@@ -40,10 +40,10 @@ class ProjectForks::ForkProject
         # Parse and store the config
         canine_config = CanineConfig::Definition.parse(file.content, parent_project, pull_request)
         child_project.canine_config = canine_config.to_hash
-        child_project.predeploy_script = canine_config.predeploy_script
-        child_project.postdeploy_script = canine_config.postdeploy_script
-        child_project.predestroy_script = canine_config.predestroy_script
-        child_project.postdestroy_script = canine_config.postdestroy_script
+        child_project.predeploy_command = canine_config.predeploy_command
+        child_project.postdeploy_command = canine_config.postdeploy_command
+        child_project.predestroy_command = canine_config.predestroy_command
+        child_project.postdestroy_command = canine_config.postdestroy_command
       end
       context.project_fork.save!
     end

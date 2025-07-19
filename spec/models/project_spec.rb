@@ -11,11 +11,10 @@
 #  docker_command                 :string
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
-#  postdeploy_script              :text
-#  postdestroy_script             :text
-#  predeploy_command              :string
-#  predeploy_script               :text
-#  predestroy_script              :text
+#  postdeploy_command             :text
+#  postdestroy_command            :text
+#  predeploy_command              :text
+#  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
 #  status                         :integer          default("creating"), not null

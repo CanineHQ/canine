@@ -21,6 +21,9 @@ RSpec.describe CanineConfig::Definition do
             - name: "web"
               container_port: 3000
               service_type: "web_service"
+              domains:
+                - example.com
+                - www.example.com
           environment_variables:
             - name: "API_KEY"
               value: "test-key"
@@ -36,7 +39,8 @@ RSpec.describe CanineConfig::Definition do
             {
               'name' => 'web',
               'container_port' => 3000,
-              'service_type' => 'web_service'
+              'service_type' => 'web_service',
+              'domains' => [ 'example.com', 'www.example.com' ]
             }
           ],
           'environment_variables' => [
@@ -148,7 +152,8 @@ RSpec.describe CanineConfig::Definition do
             'name' => 'web',
             'container_port' => 3000,
             'service_type' => 'web_service',
-            'extra_field' => 'should_be_filtered'
+            'extra_field' => 'should_be_filtered',
+            'domains' => [ 'example.com', 'www.example.com' ]
           },
           {
             'name' => 'worker',

@@ -31,6 +31,7 @@ class Projects::DeploymentJob < ApplicationJob
 
     deployment.completed!
     project.deployed!
+    postdeploy(project, kubectl)
   rescue StandardError => e
     @logger.error("Deployment failed: #{e.message}")
     puts e.full_message
@@ -53,19 +54,27 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  def predeploy(project, kubectl)
-    return unless project.predeploy_command.present?
-
-    @logger.info("Running predeploy command: `#{project.predeploy_command}`...", color: :yellow)
-    command = K8::Stateless::Command.new(project)
+  def _run_command(command, kubectl, project, type)
+    @logger.info("Running command: `#{command}`...", color: :yellow)
+    command = K8::Stateless::Command.new(project, type, command)
     command_yaml = command.to_yaml
     command.delete_if_exists!
     kubectl.apply_yaml(command_yaml)
-
-    # Wait for the predeploy to finish
     command.wait_for_completion
+    # Get logs f
   end
 
+  def predeploy(project, kubectl)
+    return unless project.predeploy_command.present?
+
+    _run_command(project.predeploy_command, kubectl, project, 'predeploy')
+  end
+
+  def postdeploy(project, kubectl)
+    return unless project.postdeploy_command.present?
+
+    _run_command(project.postdeploy_command, kubectl, project, 'postdeploy')
+  end
 
   def create_kubectl(deployment, kubeconfig)
     runner = Cli::RunAndLog.new(deployment)
