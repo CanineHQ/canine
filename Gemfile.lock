@@ -161,7 +161,7 @@ GEM
     diff-lcs (1.5.1)
     docile (1.4.1)
     domain_name (0.6.20240107)
-    dotenv (3.1.4)
+    dotenv (3.1.8)
     drb (2.2.3)
     dry-configurable (1.2.0)
       dry-core (~> 1.0, < 2)
