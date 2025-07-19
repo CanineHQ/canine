@@ -17,4 +17,3 @@
 - [ ] Pull request preview apps
 - [ ] Update vocabulary on landing page
 - [ ] Metrics page needs to load even if the cluster is down so that memory outages can be tracked
-- [ ] Show pod start up logs in pod logs with `describe pod`.events
