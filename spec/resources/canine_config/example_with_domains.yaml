@@ -1,0 +1,26 @@
+scripts:
+  predeploy: echo "Pre deploy script"
+  postdeploy: echo "Post deploy script"
+  predestroy: echo "Pre destroy script"
+  postdestroy: echo "Post destroy script"
+services:
+  - name: web
+    container_port: 3000
+    service_type: web_service
+    domains:
+      - example.com
+      - www.example.com
+      - api.example.com
+  - name: backend
+    container_port: 8080
+    service_type: web_service
+    domains:
+      - backend.example.com
+  - name: worker
+    container_port: 6379
+    service_type: background_service
+environment_variables:
+  - name: DATABASE_URL
+    value: postgres://localhost/test
+  - name: REDIS_URL
+    value: redis://localhost:6379

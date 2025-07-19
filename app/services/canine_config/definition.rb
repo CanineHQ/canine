@@ -34,26 +34,38 @@ class CanineConfig::Definition
     @definition = definition
   end
 
-  def predeploy_script
+  def predeploy_command
     definition.dig('scripts', 'predeploy')
   end
 
-  def postdeploy_script
+  def postdeploy_command
     definition.dig('scripts', 'postdeploy')
   end
 
-  def predestroy_script
+  def predestroy_command
     definition.dig('scripts', 'predestroy')
   end
 
-  def postdestroy_script
+  def postdestroy_command
     definition.dig('scripts', 'postdestroy')
   end
 
   def services
     definition['services'].map do |service|
       params = Service.permitted_params(ActionController::Parameters.new(service:))
-      Service.new(params)
+      service_instance = Service.new(params)
+
+      # Handle domains if present and service is a web_service
+      if service['service_type'] == 'web_service' && service['domains'].present?
+        # Ensure allow_public_networking is true when domains are specified
+        service_instance.allow_public_networking = true
+
+        service['domains'].each do |domain_name|
+          service_instance.domains.build(domain_name: domain_name)
+        end
+      end
+
+      service_instance
     end
   end
 

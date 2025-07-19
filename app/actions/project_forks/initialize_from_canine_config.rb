@@ -7,19 +7,19 @@ class ProjectForks::InitializeFromCanineConfig
     next if context.project_fork.child_project.canine_config.blank?
 
     config_data = context.project_fork.child_project.canine_config
+    definition = CanineConfig::Definition.new(config_data)
 
-    # Create services from the stored config
-    config_data['services']&.each do |service_config|
-      params = Service.permitted_params(ActionController::Parameters.new(service: service_config))
-      service = context.project_fork.child_project.services.build(params)
+    # Create services from the definition
+    definition.services.each do |service|
+      service.project = context.project_fork.child_project
       service.save!
     end
 
-    # Create environment variables from the stored config
-    config_data['environment_variables']&.each do |env_var|
+    # Create environment variables from the definition
+    definition.environment_variables.each do |env_var|
       context.project_fork.child_project.environment_variables.create!(
-        name: env_var['name'],
-        value: env_var['value']
+        name: env_var.name,
+        value: env_var.value
       )
     end
   end

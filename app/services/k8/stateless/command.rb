@@ -1,20 +1,18 @@
 class K8::Stateless::Command < K8::Base
-  attr_accessor :project
+  attr_accessor :project, :type, :command
 
-  def initialize(project)
+  def initialize(project, type, command)
     @project = project
+    @type = type
+    @command = command
   end
 
   def kubectl
     @kubectl ||= K8::Kubectl.new(project.cluster.kubeconfig)
   end
 
-  def command
-    project.predeploy_command
-  end
-
   def name
-    "#{project.name}-predeployment"
+    "#{project.name}-#{type}"
   end
 
   def namespace

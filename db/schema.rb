@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_19_160150) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -254,16 +254,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_29_164951) do
     t.string "dockerfile_path", default: "./Dockerfile", null: false
     t.string "docker_build_context_directory", default: ".", null: false
     t.string "docker_command"
-    t.string "predeploy_command"
+    t.text "predeploy_command"
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "container_registry_url"
     t.jsonb "canine_config", default: {}
-    t.text "predeploy_script"
-    t.text "postdeploy_script"
-    t.text "predestroy_script"
-    t.text "postdestroy_script"
+    t.text "postdeploy_command"
+    t.text "predestroy_command"
+    t.text "postdestroy_command"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
