@@ -2,7 +2,7 @@ class AddOns::EndpointsController < AddOns::BaseController
   before_action :set_add_on
 
   def edit
-    @ip_address = K8::Stateless::Ingress.ip_address(K8::Client.new(@add_on.cluster.kubeconfig))
+    @ip_address = Networks::CheckDns.infer_public_ip_from_cluster(@add_on.cluster)
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
   end
