@@ -89,7 +89,14 @@
               <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
               <div class="collapse-title text-md font-medium">Advanced Settings</div>
               <div class="collapse-content">
-                <%= form.text_area :values_yaml, class: "code textarea textarea-bordered w-full", placeholder: "Paste your values.yaml here.", rows: 10 %>
+                <div data-controller="yaml-editor">
+                  <%= form.text_area :values_yaml, 
+                      class: "code textarea textarea-bordered w-full", 
+                      placeholder: "Paste your values.yaml here.", 
+                      rows: 10,
+                      data: { 'yaml-editor-target': 'textarea' } %>
+                  <div data-yaml-editor-target="editor"></div>
+                </div>
               </div>
             </div>
           </div>
