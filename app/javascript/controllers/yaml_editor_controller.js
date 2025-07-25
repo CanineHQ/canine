@@ -10,7 +10,6 @@ export default class extends Controller {
   static targets = ["textarea", "editor"]
 
   connect() {
-    console.log("YAML Editor Controller connected")
     this.setupEditor()
   }
 
