@@ -29,9 +29,9 @@ class Projects::DeploymentJob < ApplicationJob
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
 
+    postdeploy(project, kubectl)
     deployment.completed!
     project.deployed!
-    postdeploy(project, kubectl)
   rescue StandardError => e
     @logger.error("Deployment failed: #{e.message}")
     puts e.full_message
