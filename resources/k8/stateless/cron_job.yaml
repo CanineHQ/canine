@@ -9,6 +9,8 @@ metadata:
 spec:
   schedule: "<%= service.cron_schedule.schedule %>"
   concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       template:
