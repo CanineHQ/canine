@@ -97,8 +97,7 @@ RSpec.describe K8::Stateless::CronJob do
       expect(job_run.status).to eq(:succeeded)
       expect(job_run.started_at).to eq(Time.parse('2024-01-01T10:00:00Z'))
       expect(job_run.finished_at).to eq(Time.parse('2024-01-01T10:05:00Z'))
-      expect(job_run.succeeded).to eq(1)
-      expect(job_run.failed).to eq(0)
+      expect(job_run.duration).to eq(300)
     end
 
     context 'when job is running' do

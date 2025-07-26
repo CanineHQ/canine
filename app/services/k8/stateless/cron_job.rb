@@ -1,5 +1,5 @@
 class K8::Stateless::CronJob < K8::Base
-  JobRun = Struct.new(:name, :status, :started_at, :finished_at, :duration, :succeeded, :failed, keyword_init: true)
+  JobRun = Struct.new(:name, :status, :started_at, :finished_at, :duration, keyword_init: true)
 
   attr_accessor :service, :project
   delegate :name, to: :service
@@ -40,9 +40,7 @@ class K8::Stateless::CronJob < K8::Base
       status: determine_job_status(job),
       started_at: parse_time(job.status.startTime),
       finished_at: parse_time(job.status.completionTime),
-      duration: calculate_duration(job),
-      succeeded: job.status.succeeded || 0,
-      failed: job.status.failed || 0
+      duration: calculate_duration(job)
     )
   end
 
