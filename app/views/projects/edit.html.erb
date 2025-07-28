@@ -7,9 +7,9 @@
       <%= render "edit_form", project: @project %>
     </div>
 
-    <h2 class="text-2xl font-bold">Pull Request Apps</h2>
-    <hr class="mt-3 mb-4 border-t border-base-300" />
-    <% if @project.forked? %>
+    <% if @project.show_fork_options? %>
+      <h2 class="text-2xl font-bold">Pull Request Apps</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
       <div>
         <%= render "projects/project_forks/form", project: @project %>
       </div>
