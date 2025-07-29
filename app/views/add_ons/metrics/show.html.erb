@@ -1,6 +1,12 @@
 <%= add_on_layout(@add_on) do %>
   <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 5000 } do %>
-    <%= render "projects/metrics/live_metrics" %>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::AddOns::Metrics::ShowViewModel.new(
+        current_user,
+        add_on_id: @add_on.id
+      )
+    ) %>
   <% end %>
 
   <%= turbo_frame_tag "charts" do %>

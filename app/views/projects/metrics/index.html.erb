@@ -2,7 +2,13 @@
 
 <%= project_layout(@project) do %>
   <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 5000 } do %>
-    <%= render "projects/metrics/live_metrics" %>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::Projects::Metrics::IndexViewModel.new(
+        current_user,
+        project_id: @project.id
+      )
+    ) %>
   <% end %>
 
   <%= turbo_frame_tag "metrics-search" do %>
