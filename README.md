@@ -18,6 +18,7 @@ Power of Kubernetes, Simplicity of Heroku
 </div>
 
 [![Build Status](https://github.com/czhu12/canine/actions/workflows/ci.yml/badge.svg)](https://github.com/czhu12/canine/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://opensource.org/licenses/Apache)
 
 
 ![Deployment Screenshot](https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/public/images/deployment_styled.png)
