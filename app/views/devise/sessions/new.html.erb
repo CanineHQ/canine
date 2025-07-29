@@ -7,7 +7,12 @@
       </div>
 
       <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
-        <%= render "error_messages", resource: resource %>
+        <% if flash[:alert] %>
+          <div class="alert alert-error mb-4">
+            <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
+            <span><%= flash[:alert] %></span>
+          </div>
+        <% end %>
 
         <div class="form-control">
           <%= f.label :email, class: "label" do %>
