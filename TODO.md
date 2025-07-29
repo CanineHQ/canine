@@ -15,3 +15,4 @@
 - [ ] Deployments API
 - [ ] Pull request preview apps
 - [ ] Update vocabulary on landing page
+- [ ] Extend docker hub support to any arbitrary container registry
