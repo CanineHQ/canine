@@ -56,9 +56,9 @@ FactoryBot.define do
       end
     end
 
-    trait :docker_hub do
+    trait :container_registry do
       after(:build) do |project|
-        provider = create(:provider, :docker_hub)
+        provider = create(:provider, :container_registry)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
       end
     end

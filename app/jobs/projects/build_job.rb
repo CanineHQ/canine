@@ -9,7 +9,7 @@ class Projects::BuildJob < ApplicationJob
   def perform(build)
     project = build.project
     # If its a dockerhub deploy, we don't need to build the docker image
-    if project.docker_hub?
+    if project.container_registry?
       build.info("Skipping build for #{project.name} because it's a Docker Hub deploy")
     else
       project_credential_provider = project.project_credential_provider

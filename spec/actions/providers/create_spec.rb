@@ -5,7 +5,7 @@ RSpec.describe Providers::Create do
 
   describe '.call' do
     context 'when the provider is dockerhub' do
-      let(:provider) { build(:provider, :docker_hub) }
+      let(:provider) { build(:provider, :container_registry) }
       it 'creates the provider' do
         subject
         expect(subject).to be_success

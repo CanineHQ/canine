@@ -10,6 +10,7 @@
 #  last_used_at        :datetime
 #  provider            :string
 #  refresh_token       :string
+#  registry_url        :string
 #  uid                 :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -26,16 +27,16 @@
 class Provider < ApplicationRecord
   attr_accessor :username_param
   GITHUB_PROVIDER = "github"
-  DOCKER_HUB_PROVIDER = "docker_hub"
+  CUSTOM_REGISTRY_PROVIDER = "container_registry"
   GITLAB_PROVIDER = "gitlab"
   GIT_TYPE = "git"
-  DOCKER_TYPE = "docker"
+  REGISTRY_TYPE = "registry"
   PROVIDER_TYPES = {
     GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER ],
-    DOCKER_TYPE => [ DOCKER_HUB_PROVIDER ]
+    REGISTRY_TYPE => [ CUSTOM_REGISTRY_PROVIDER ]
   }
 
-  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, DOCKER_HUB_PROVIDER, GITLAB_PROVIDER ].freeze
+  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
 
   belongs_to :user
 
@@ -83,8 +84,8 @@ class Provider < ApplicationRecord
     end
   end
 
-  def docker_hub?
-    provider == DOCKER_HUB_PROVIDER
+  def container_registry?
+    provider == CUSTOM_REGISTRY_PROVIDER
   end
 
   def github?

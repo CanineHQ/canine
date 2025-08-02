@@ -38,7 +38,7 @@ RSpec.describe Projects::Create do
     end
 
     context 'for docker hub' do
-      let(:provider) { create(:provider, :docker_hub, user:) }
+      let(:provider) { create(:provider, :container_registry, user:) }
 
       it 'creates a project with project_credential_provider' do
         expect(subject).to be_success

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Providers::GenerateConfigJson do
-  let(:provider) { build(:provider, :docker_hub) }
+  let(:provider) { build(:provider, :container_registry) }
 
   subject(:context) { described_class.execute(provider: provider) }
 
