@@ -3,8 +3,9 @@
     <!-- head -->
     <thead>
       <tr>
-        <th>Provider</th>
+        <th>Credential Type</th>
         <th>Username</th>
+        <th>Access Token</th>
         <th>Last Used</th>
         <th>Used By</th>
         <th>Actions</th>
@@ -14,9 +15,20 @@
       <% current_user.providers.each do |provider| %>
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
-          <td><%= provider.provider %></td>
+          <td>
+          <%= provider.provider %>
+          <br />
+          <% if provider.container_registry? %>
+            <span class="text-gray-500">
+              <%= provider.registry_url %>
+            </span>
+          <% end %>
+          </td>
           <td>
             <%= render "providers/show", provider: %>
+          </td>
+          <td>
+            <%= provider.access_token.first(6) %><%= "*" * (provider.access_token.length - 12) %><%= provider.access_token.last(6) %>
           </td>
           <td>
             <%= (provider.last_used_at.strftime("%b %d, %Y") if provider.last_used_at) || "Never" %>

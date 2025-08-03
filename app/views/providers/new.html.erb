@@ -11,7 +11,7 @@
             Select your container registry provider or enter a custom URL.
           </div>
           <div class="mt-2">
-            Make sure you have the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private project.
+            Make sure you have the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private image.
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
           <%= link_to "Find your Github token →", "https://github.com/settings/tokens", target: "_blank", class: "text-sm text-gray-500 " %>

@@ -9,7 +9,7 @@ export default class extends Controller {
   
   connect() {
     this.registriesValue = {
-      dockerhub: "https://index.docker.io/v1/",
+      dockerhub: "docker.io",
       ghcr: "ghcr.io",
       gcr: "gcr.io",
       ecr: "ecr.amazonaws.com",
@@ -17,7 +17,6 @@ export default class extends Controller {
     }
     
     // Disable URL field by default
-    this.urlInputTarget.disabled = true
     this.urlInputTarget.classList.add('bg-base-200')
   }
   
@@ -26,12 +25,12 @@ export default class extends Controller {
     
     if (registry === "other") {
       this.urlInputTarget.value = ""
-      this.urlInputTarget.disabled = false
+      this.urlInputTarget.readOnly = false
       this.urlInputTarget.classList.remove('bg-base-200')
       this.urlInputTarget.focus()
     } else if (this.registriesValue[registry]) {
       this.urlInputTarget.value = this.registriesValue[registry]
-      this.urlInputTarget.disabled = true
+      this.urlInputTarget.readOnly = true
       this.urlInputTarget.classList.add('bg-base-200')
     }
     

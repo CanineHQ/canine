@@ -37,6 +37,7 @@ class Provider < ApplicationRecord
   }
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
+  validates :registry_url, presence: true, if: :container_registry?
 
   belongs_to :user
 
@@ -61,8 +62,10 @@ class Provider < ApplicationRecord
       "ghcr.io"
     elsif gitlab?
       "registry.gitlab.com"
+    elsif container_registry?
+      registry_url
     else
-      "https://index.docker.io/v1/"
+      raise "Unknown registry url"
     end
   end
 
@@ -103,6 +106,10 @@ class Provider < ApplicationRecord
   end
 
   def friendly_name
-    "#{provider.titleize} (#{username})"
+    if container_registry?
+      "#{registry_url} (#{username})"
+    else
+      "#{provider.titleize} (#{username})"
+    end
   end
 end

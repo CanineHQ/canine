@@ -171,8 +171,10 @@ class Project < ApplicationRecord
       "ghcr.io/#{container_registry}:#{tag}"
     elsif gitlab?
       "registry.gitlab.com/#{container_registry}:#{tag}"
+    elsif container_registry?
+      "#{provider.registry_url}/#{container_registry}:#{tag}"
     else
-      "docker.io/#{container_registry}:#{tag}"
+      raise "Unknown container registry url"
     end
   end
 

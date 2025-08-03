@@ -33,7 +33,13 @@
         <label class="label">
           <span class="label-text">Registry URL</span>
         </label>
-        <%= form.text_field :registry_url, class: "input input-bordered", required: true, data: { "registry-selector-target": "urlInput" } %>
+        <%= form.text_field(
+          :registry_url,
+          class: "input input-bordered",
+          required: true,
+          data: { "registry-selector-target": "urlInput" },
+          readonly: true
+        ) %>
       </div>
     </div>
 
