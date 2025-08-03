@@ -14,7 +14,7 @@ RSpec.describe Providers::GenerateConfigJson do
       # First level base64 decode
       result = Base64.strict_decode64(context.docker_config_json)
       JSON.parse(result)
-      auth = JSON.parse(result)['auths']['https://index.docker.io/v1/']['auth']
+      auth = JSON.parse(result)['auths']['docker.io']['auth']
       username, password = Base64.strict_decode64(auth).split(':')
       expect(username).to eq(provider.username)
       expect(password).to eq(provider.access_token)

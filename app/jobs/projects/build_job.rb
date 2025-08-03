@@ -8,7 +8,7 @@ class Projects::BuildJob < ApplicationJob
 
   def perform(build)
     project = build.project
-    # If its a dockerhub deploy, we don't need to build the docker image
+    # If its a container registry deploy, we don't need to build the docker image
     if project.container_registry?
       build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
     else
