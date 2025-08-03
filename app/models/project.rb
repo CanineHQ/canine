@@ -83,7 +83,7 @@ class Project < ApplicationRecord
     manually_create: 1
   }, prefix: :forks
   delegate :git?, :github?, :gitlab?, to: :project_credential_provider
-  delegate :docker_hub?, to: :project_credential_provider
+  delegate :container_registry?, to: :project_credential_provider
 
   def project_fork_cluster_id_is_owned_by_account
     if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)
@@ -165,14 +165,16 @@ class Project < ApplicationRecord
 
   def container_registry_url
     container_registry = self.attributes["container_registry_url"].presence || repository_url
-    tag = docker_hub? ? 'latest' : branch.gsub('/', '-') # Docker Hub uses latest, others use branch name
+    tag = container_registry? ? 'latest' : branch.gsub('/', '-') # Docker Hub uses latest, others use branch name
 
     if github?
       "ghcr.io/#{container_registry}:#{tag}"
     elsif gitlab?
       "registry.gitlab.com/#{container_registry}:#{tag}"
+    elsif container_registry?
+      "#{provider.registry_url}/#{container_registry}:#{tag}"
     else
-      "docker.io/#{container_registry}:#{tag}"
+      raise "Unknown container registry url"
     end
   end
 

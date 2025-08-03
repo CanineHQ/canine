@@ -156,7 +156,7 @@ RSpec.describe Project, type: :model do
     end
 
     it 'uses latest tag for Docker Hub' do
-      docker_project = create(:project, :docker_hub, repository_url: 'owner/repo', branch: 'feature/test')
+      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'feature/test')
       expect(docker_project.container_registry_url).to eq('docker.io/owner/repo:latest')
     end
   end
