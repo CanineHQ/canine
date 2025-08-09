@@ -99,6 +99,73 @@ RSpec.describe CanineConfig::Definition do
       end
     end
 
+    context 'with code execution attempts' do
+      let(:yaml_content) do
+        <<~YAML
+          services:
+            - name: "<%= system('echo pwned') %>"
+              container_port: 3000
+          environment_variables:
+            - name: "DANGEROUS"
+              value: "<%= File.read('/etc/passwd') %>"
+            - name: "MATH"
+              value: "<%= 1 + 1 %>"
+            - name: "METHOD_CALL"
+              value: "<%= cluster_name.upcase %>"
+        YAML
+      end
+
+      it 'does not execute code and preserves invalid placeholders as-is' do
+        definition = described_class.parse(yaml_content, base_project, pull_request)
+
+        expect(definition.to_hash).to include(
+          'services' => [
+            {
+              'name' => "<%= system('echo pwned') %>",  # Code not executed
+              'container_port' => 3000
+            }
+          ],
+          'environment_variables' => [
+            {
+              'name' => 'DANGEROUS',
+              'value' => "<%= File.read('/etc/passwd') %>"  # File not read
+            },
+            {
+              'name' => 'MATH',
+              'value' => '<%= 1 + 1 %>'  # Math not evaluated
+            },
+            {
+              'name' => 'METHOD_CALL',
+              'value' => '<%= cluster_name.upcase %>'  # Method not called
+            }
+          ]
+        )
+      end
+    end
+
+    context 'with missing variables' do
+      let(:yaml_content) do
+        <<~YAML
+          services:
+            - name: "<%= nonexistent_variable %>"
+              container_port: 3000
+        YAML
+      end
+
+      it 'preserves placeholders for missing variables' do
+        definition = described_class.parse(yaml_content, base_project, pull_request)
+
+        expect(definition.to_hash).to include(
+          'services' => [
+            {
+              'name' => '<%= nonexistent_variable %>',
+              'container_port' => 3000
+            }
+          ]
+        )
+      end
+    end
+
     context 'with invalid YAML' do
       let(:yaml_content) { "invalid: yaml: content:" }
 
