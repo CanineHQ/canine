@@ -89,12 +89,11 @@ helm:
       
     - name: prometheus
       logo: /images/helm/prometheus.png
-      repository: https://prometheus-community.github.io/helm-charts
+      chart_url: prometheus-community/prometheus
       
-    - name: supabase
-      logo: /images/helm/supabase.png
-      repository: https://github.com/supabase-community/supabase-kubernetes
-      coming_soon: true
+    - name: portainer
+      logo: /images/helm/portainer.png
+      chart_url: portainer/portainer
       
     - name: helm_chart
       friendly_name: "Helm Chart"
