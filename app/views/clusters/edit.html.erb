@@ -6,6 +6,51 @@
       <h2 class="text-2xl font-bold">General</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <%= render "edit_form", cluster: @cluster %>
+      
+      <div class="mt-6" data-controller="kubeconfig-editor">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold">Credentials</h2>
+          <hr class="mt-3 mb-4 border-t border-base-300" />
+          <button type="button" 
+                  class="btn btn-sm btn-outline"
+                  data-action="click->kubeconfig-editor#toggleEdit"
+                  data-kubeconfig-editor-target="editButton">
+            <iconify-icon icon="lucide:pen" height="16"></iconify-icon>
+            Edit
+          </button>
+        </div>
+        
+        <div data-kubeconfig-editor-target="placeholder" class="p-4 bg-base-200 rounded-lg">
+          <p class="text-sm text-gray-500">Kubeconfig is hidden for security. Click edit to view and modify.</p>
+        </div>
+        
+        <div data-kubeconfig-editor-target="editorContainer" class="hidden">
+          <%= form_with(model: @cluster, url: cluster_path(@cluster), method: :patch) do |form| %>
+            <%= form.hidden_field :kubeconfig_yaml_format, value: "true" %>
+            <div class="form-group" data-controller="yaml-editor">
+              <%= form.text_area(
+                :kubeconfig,
+                class: "code textarea textarea-bordered w-full",
+                rows: 5,
+                value: @cluster.kubeconfig.to_yaml,
+                data: { 'yaml-editor-target': 'textarea' }
+              ) %>
+              <div data-yaml-editor-target="editor" class="mt-2"></div>
+            </div>
+            <div class="form-footer flex gap-2">
+              <%= form.submit "Save", class: "btn btn-primary" %>
+              <button type="button" 
+                      class="btn btn-outline"
+                      data-action="click->kubeconfig-editor#cancelEdit">
+                Cancel
+              </button>
+            </div>
+          <% end %>
+          <div class="text-sm text-gray-500 mt-2">
+            Changes to the kubeconfig will update how Canine connects to your cluster.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div>
