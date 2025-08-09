@@ -4,18 +4,32 @@ class CanineConfig::Definition
   def self.parse(yaml_content, base_project, pull_request)
     context = build_context(base_project, pull_request)
 
+    # Use safe variable substitution instead of ERB to prevent code execution
     parsed_content = if yaml_content.include?('<%')
-      erb = ERB.new(yaml_content)
-      context_binding = binding
-      context.each do |key, value|
-        context_binding.local_variable_set(key, value)
-      end
-      erb.result(context_binding)
+      safe_template_replace(yaml_content, context)
     else
       yaml_content
     end
 
     new(YAML.safe_load(parsed_content))
+  end
+
+  def self.safe_template_replace(template, variables)
+    # Only allow simple variable substitution: <%= variable_name %>
+    # No code execution, method calls, or complex expressions
+    template.gsub(/<%=\s*(\w+)\s*%>/) do |match|
+      variable_name = $1
+      # Convert string keys to symbols if needed, or vice versa
+      value = variables[variable_name.to_sym] || variables[variable_name.to_s] || variables[variable_name]
+
+      if value.nil?
+        # Keep the original placeholder if variable not found
+        # This helps with debugging and makes missing variables obvious
+        match
+      else
+        value.to_s
+      end
+    end
   end
 
   def self.build_context(base_project, pull_request)
