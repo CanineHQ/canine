@@ -1,2 +1,2 @@
 web: bin/rails server
-worker: bundle exec sidekiq
+worker: bundle exec good_job start
