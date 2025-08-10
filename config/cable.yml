@@ -1,11 +1,11 @@
 development:
-  adapter: postgresql
+  adapter: enhanced_postgresql
   channel_prefix: canine_dev
 
 test:
   adapter: async
 
 production:
-  adapter: postgresql
+  adapter: enhanced_postgresql
   channel_prefix: canine_production
 

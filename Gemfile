@@ -109,3 +109,5 @@ gem "sentry-rails", "~> 5.23"
 gem "sys-proctable", "~> 1.3"
 
 gem "omniauth-gitlab", "~> 4.1"
+
+gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
