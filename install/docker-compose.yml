@@ -11,16 +11,10 @@ services:
     volumes:
       - "postgres:/var/lib/postgresql/data"
 
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-
   web:
     image: ghcr.io/czhu12/canine:latest
     depends_on:
       - postgres
-      - redis
     stdin_open: true
     tty: true
     ports:
@@ -28,7 +22,6 @@ services:
       - "3200:3200"
     environment:
       - DATABASE_URL=postgres://postgres:password@postgres:5432
-      - REDIS_URL=redis://redis:6379
       - PORT=${PORT:-3000}
       - CANINE_USERNAME=${CANINE_USERNAME}
       - CANINE_PASSWORD=${CANINE_PASSWORD}
