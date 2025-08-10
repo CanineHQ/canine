@@ -67,7 +67,7 @@ Rails.application.configure do
 
   # Use test adapter for job processing in tests
   config.active_job.queue_adapter = :test
-  
+
   # Disable GoodJob's preservation of job records in test
   config.good_job.preserve_job_records = false
 end
