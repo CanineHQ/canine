@@ -11,14 +11,16 @@
     <div>
       <h2 class="text-lg font-bold">Configuration</h2>
       <%= form_with(model: @add_on) do |form| %>
-        <div class="form-group">
+        <div class="form-group" data-controller="yaml-editor">
           <%= form.label :values_yaml, "Values YAML" %>
           <%= form.text_area(
             :values_yaml,
             class: "code textarea textarea-bordered w-full",
             rows: 5,
-            value: @service.values_yaml.to_yaml
+            value: @service.values_yaml.to_yaml,
+            data: { 'yaml-editor-target': 'textarea' }
           ) %>
+          <div data-yaml-editor-target="editor" class="mt-2"></div>
         </div>
         <div class="form-footer">
           <%= form.submit "Save", class: "btn btn-primary" %>

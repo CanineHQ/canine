@@ -20,5 +20,9 @@ module Loggable
     info(line, color: :green)
   end
 
+  def warn(line)
+    info(line, color: :orange)
+  end
+
   private
 end

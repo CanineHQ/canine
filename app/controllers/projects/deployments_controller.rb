@@ -1,6 +1,6 @@
 class Projects::DeploymentsController < Projects::BaseController
   before_action :set_project
-  before_action :set_build, only: %i[show redeploy]
+  before_action :set_build, only: %i[show redeploy kill]
 
   def index
     @pagy, @events = pagy(@project.events.includes(eventable: [ :user, :deployment ]).order(created_at: :desc))
@@ -28,9 +28,19 @@ class Projects::DeploymentsController < Projects::BaseController
       skip_build: params[:skip_build] == "true"
     )
     if result.success?
-      redirect_to @project, notice: "Deploying project..."
+      redirect_to @project, notice: "Deploying project #{@project.name}. <a class='underline' href='#{project_deployment_path(@project, result.build)}'>Follow deployment</a>".html_safe
     else
       redirect_to @project, alert: "Failed to deploy project"
+    end
+  end
+
+  def kill
+    if @build.in_progress?
+      @build.killed!
+      @build.error("Build was killed by #{current_user.email}")
+      redirect_to project_deployment_path(@project, @build), notice: "Build has been killed."
+    else
+      redirect_to project_deployment_path(@project, @build), alert: "Build cannot be killed (not in progress)."
     end
   end
 

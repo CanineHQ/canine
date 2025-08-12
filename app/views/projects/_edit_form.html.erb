@@ -1,5 +1,5 @@
-<% if project.docker_hub? %>
-  <%= render "projects/update/edit_form_docker_hub", project: %>
+<% if project.container_registry? %>
+  <%= render "projects/update/edit_form_container_registry", project: %>
 <% else %>
   <%= render "projects/update/edit_form_git", project: %>
 <% end %>

@@ -178,7 +178,10 @@ class ClustersController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def cluster_params
-    if params[:cluster][:cluster_type] == "k3s"
+    # Handle kubeconfig from YAML editor
+    if params[:cluster][:kubeconfig_yaml_format] == "true" && params[:cluster][:kubeconfig].present?
+      params[:cluster][:kubeconfig] = YAML.safe_load(params[:cluster][:kubeconfig])
+    elsif params[:cluster][:cluster_type] == "k3s"
       ip_address = params[:cluster][:ip_address]
       kubeconfig_output = params[:cluster][:kubeconfig_output]
       if ip_address.blank? || kubeconfig_output.blank?

@@ -82,19 +82,18 @@ helm:
       logo: /images/helm/airbyte.png
       repository: https://airbytehq.github.io/helm-charts
       
+    - name: minio
+      logo: /images/helm/minio.png
+      chart_url: bitnami/minio
+      friendly_name: MinIO
+      
     - name: prometheus
       logo: /images/helm/prometheus.png
-      repository: https://prometheus-community.github.io/helm-charts
+      chart_url: prometheus-community/prometheus
       
-    - name: supabase
-      logo: /images/helm/supabase.png
-      repository: https://github.com/supabase-community/supabase-kubernetes
-      coming_soon: true
-      
-    - name: grafana
-      logo: /images/helm/grafana.png
-      repository: https://grafana.github.io/helm-charts
-      coming_soon: true
+    - name: portainer
+      logo: /images/helm/portainer.png
+      chart_url: portainer/portainer
       
     - name: helm_chart
       friendly_name: "Helm Chart"

@@ -10,6 +10,7 @@
 #  last_used_at        :datetime
 #  provider            :string
 #  refresh_token       :string
+#  registry_url        :string
 #  uid                 :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -32,9 +33,10 @@ FactoryBot.define do
     last_used_at { nil }
     provider { "github" }
     uid { "sample_uid" }
-    trait :docker_hub do
-      provider { Provider::DOCKER_HUB_PROVIDER }
+    trait :container_registry do
+      provider { Provider::CUSTOM_REGISTRY_PROVIDER }
       auth { { "info" => { "username" => "test_user" } }.to_json }
+      registry_url { "docker.io" }
     end
 
     trait :github do

@@ -21,7 +21,7 @@
         url: registration_path(resource_name, invite: params[:invite]),
         html: { class: "space-y-4" },
       ) do |f| %>
-        <%= render "error_messages", resource: resource %>
+        <%= render "shared/error_messages", resource: resource %>
 
         <div class="form-control">
           <%= f.label :name, class: "label" do %>
@@ -45,7 +45,7 @@
         </div>
 
         <div class="form-control mt-6">
-          <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
+          <%= f.submit "Create Account", class: "btn btn-primary w-full" %>
         </div>
       <% end %>
 

@@ -8,9 +8,9 @@ class Projects::BuildJob < ApplicationJob
 
   def perform(build)
     project = build.project
-    # If its a dockerhub deploy, we don't need to build the docker image
-    if project.docker_hub?
-      build.info("Skipping build for #{project.name} because it's a Docker Hub deploy")
+    # If its a container registry deploy, we don't need to build the docker image
+    if project.container_registry?
+      build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
     else
       project_credential_provider = project.project_credential_provider
       project_credential_provider.used!
@@ -25,8 +25,11 @@ class Projects::BuildJob < ApplicationJob
     complete_build!(build)
     # TODO: Step 7: Optionally, add post-deploy tasks or slack notifications
   rescue StandardError => e
-    build.error(e.message)
-    build.failed!
+    # Don't overwrite status if it was already set to killed
+    unless build.killed?
+      build.error(e.message)
+      build.failed!
+    end
     raise e
   end
 
@@ -43,12 +46,11 @@ class Projects::BuildJob < ApplicationJob
     git_clone_command = %w[git clone --depth 1 --branch] +
                         [ project.branch, project_git(project), repository_path ]
 
-    # Execute the git clone command
-    _stdout, stderr, status = Open3.capture3(*git_clone_command)
-
-    raise BuildFailure, "Failed to clone repository: #{stderr}" unless status.success?
-
-    build.success("Repository cloned successfully to #{repository_path}.")
+    # Execute the git clone command with killable support
+    runner = Cli::RunAndLog.new(build, killable: build)
+    runner.call(git_clone_command.join(" "))
+  rescue Cli::CommandFailedError => e
+    raise BuildFailure, "Failed to clone repository: #{e.message}"
   end
 
   def build_docker_build_command(project, repository_path)
@@ -73,8 +75,8 @@ class Projects::BuildJob < ApplicationJob
   def execute_docker_build(project, build, repository_path)
     docker_build_command = build_docker_build_command(project, repository_path)
 
-    # Create a new instance of RunAndLog with the build object as the loggable
-    runner = Cli::RunAndLog.new(build)
+    # Create a new instance of RunAndLog with the build object as the loggable and killable
+    runner = Cli::RunAndLog.new(build, killable: build)
 
     # Call the runner with the command (joined as a string since RunAndLog expects a string)
     exit_status = runner.call(docker_build_command.join(" "))
@@ -101,11 +103,12 @@ class Projects::BuildJob < ApplicationJob
     docker_push_command = [ "docker", "push", project.container_registry_url ]
 
     build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
-    stdout, stderr, status = Open3.capture3(*docker_push_command)
 
-    raise BuildFailure, "Docker push failed for project #{project.name} with error:\n#{stderr}" unless status.success?
-
-    build.success("Docker image pushed to `#{project.container_registry_url}` successfully for project #{project.name}:\n#{stdout}")
+    # Execute docker push with killable support
+    runner = Cli::RunAndLog.new(build, killable: build)
+    runner.call(docker_push_command.join(" "))
+  rescue Cli::CommandFailedError => e
+    raise BuildFailure, "Docker push failed for project #{project.name}: #{e.message}"
   end
 
   def complete_build!(build)

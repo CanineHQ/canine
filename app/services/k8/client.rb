@@ -11,6 +11,7 @@ module K8
       :get_endpoints,
       :get_namespaces,
       :delete_namespace,
+      :get_events,
       to: :client
     )
 
@@ -42,7 +43,7 @@ module K8
     end
 
     def pods_for_namespace(namespace)
-      @client.get_pods(namespace: namespace)
+      @client.get_pods(namespace:)
     end
 
     def pods_for_service(service_name, namespace)
@@ -64,6 +65,13 @@ module K8
 
     def kubecontext
       @kubeconfig["current-context"]
+    end
+
+    def get_pod_events(pod_name, namespace)
+      get_events(
+        namespace: namespace,
+        field_selector: "involvedObject.name=#{pod_name},involvedObject.kind=Pod"
+      )
     end
 
     private

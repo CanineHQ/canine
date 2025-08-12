@@ -1,0 +1,11 @@
+services:
+  - name: "<%= project_name %>"
+    container_port: 3000
+    service_type: "web_service"
+environment_variables:
+  - name: "DATABASE_URL"
+    value: "redis://redis.<%= cluster_name %>.svc.local/<%= number %>"
+  - name: "BRANCH"
+    value: "<%= branch_name %>"
+  - name: "USER"
+    value: "<%= username %>"

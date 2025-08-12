@@ -85,4 +85,40 @@ RSpec.describe Git::Gitlab::Client do
       end
     end
   end
+
+  describe '#get_file' do
+    let(:file_path) { '.canine.yml' }
+    let(:branch) { 'main' }
+    let(:file_content) { 'name: test\nversion: 1.0' }
+    let(:success_response) { double('response', success?: true, body: file_content) }
+    let(:failure_response) { double('response', success?: false) }
+
+    context 'when file exists' do
+      before do
+        allow(HTTParty).to receive(:get).with(
+          "#{described_class::GITLAB_API_BASE}/projects/#{client.encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
+          headers: { "Authorization" => "Bearer #{access_token}" }
+        ).and_return(success_response)
+      end
+
+      it 'returns a Git::Common::File object' do
+        result = client.get_file(file_path, branch)
+        expect(result).to be_a(Git::Common::File)
+        expect(result.path).to eq(file_path)
+        expect(result.content).to eq(file_content)
+        expect(result.branch).to eq(branch)
+      end
+    end
+
+    context 'when file does not exist' do
+      before do
+        allow(HTTParty).to receive(:get).and_return(failure_response)
+      end
+
+      it 'returns nil' do
+        result = client.get_file(file_path, branch)
+        expect(result).to be_nil
+      end
+    end
+  end
 end

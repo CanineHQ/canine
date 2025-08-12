@@ -14,6 +14,8 @@ module Projects
         :dockerfile_path,
         :container_registry_url,
         :predeploy_command,
+        :project_fork_status,
+        :project_fork_cluster_id,
       )
     end
 

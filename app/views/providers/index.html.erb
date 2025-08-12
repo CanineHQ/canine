@@ -3,8 +3,8 @@
   <hr class="mt-3 mb-4 border-t border-base-300" />
   <%= turbo_frame_tag "provider" do %>
     <%= render "providers/index" %>
-    <%= link_to "+ Github Credentials", new_provider_path(provider_type: "github"), class: "btn btn-primary btn-sm" %>
-    <%= link_to "+ Dockerhub Credentials", new_provider_path(provider_type: "docker_hub"), class: "btn btn-primary btn-sm" %>
-    <%= link_to "+ Gitlab Credentials", new_provider_path(provider_type: "gitlab"), class: "btn btn-primary btn-sm" %>
+    <%= link_to "+ Github Credentials", new_provider_path(provider_type: Provider::GITHUB_PROVIDER), class: "btn btn-primary btn-sm" %>
+    <%= link_to "+ Gitlab Credentials", new_provider_path(provider_type: Provider::GITLAB_PROVIDER), class: "btn btn-primary btn-sm" %>
+    <%= link_to "+ Container Registry Credentials", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER), class: "btn btn-primary btn-sm" %>
   <% end %>
 <% end %>

@@ -1,4 +1,25 @@
-![alt text](https://github.com/czhu12/canine/blob/main/public/images/logo-full.png?raw=true)
+<br/>
+<div align="center">
+<a href="https://github.com/czhu12/canine">
+<img src="https://github.com/czhu12/canine/blob/main/public/images/logo-full.png?raw=true" alt="Logo" height="100">
+</a>
+<h3 align="center">Canine</h3>
+<p align="center">
+Power of Kubernetes, Simplicity of Heroku
+<br/>
+<br/>
+<a href="https://docs.canine.sh"><strong>Explore the docs »</strong></a>
+<br/>
+<br/>
+<a href="https://canine.sh">View Demo .</a>  
+<a href="https://github.com/czhu12/canine/issues/new?labels=bug">Report Bug .</a>
+<a href="https://github.com/czhu12/canine/issues/new?labels=enhancement">Request Feature</a>
+</p>
+</div>
+
+[![Build Status](https://github.com/czhu12/canine/actions/workflows/ci.yml/badge.svg)](https://github.com/czhu12/canine/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://opensource.org/licenses/Apache)
+
 
 ![Deployment Screenshot](https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/public/images/deployment_styled.png)
 
