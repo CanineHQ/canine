@@ -584,7 +584,7 @@ GEM
     thor (1.4.0)
     tilt (2.4.0)
     timeout (0.4.3)
-    turbo-rails (2.0.13)
+    turbo-rails (2.0.16)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
     turbo_power (0.7.0)
