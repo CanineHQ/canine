@@ -8,10 +8,6 @@ class K8::Stateless::CronJob < K8::Base
     @project = service.project
   end
 
-  def restart
-    K8::Kubectl.from_project(project).call("rollout restart cronjob/#{service.name} -n #{project.name}")
-  end
-
   def run_history
     jobs = fetch_jobs_for_cronjob
     jobs.map { |job| build_job_run(job) }
