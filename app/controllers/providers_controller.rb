@@ -26,6 +26,6 @@ class ProvidersController < ApplicationController
   end
   private
   def provider_params
-    params.require(:provider).permit(:provider, :username_param, :access_token)
+    params.require(:provider).permit(:provider, :username_param, :access_token, :registry_url)
   end
 end

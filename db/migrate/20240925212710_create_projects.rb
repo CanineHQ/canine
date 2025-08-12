@@ -11,6 +11,11 @@ class CreateProjects < ActiveRecord::Migration[7.2]
       t.string :docker_command
       t.string :predeploy_command
       t.integer :status, default: 0, null: false
+      t.jsonb :canine_config, default: {}
+      t.text :predeploy_script
+      t.text :postdeploy_script
+      t.text :predestroy_script
+      t.text :postdestroy_script
 
       t.timestamps
     end

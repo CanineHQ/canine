@@ -1,13 +1,11 @@
 development:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: streaming_logs_dev
+  adapter: enhanced_postgresql
+  channel_prefix: canine_dev
 
 test:
   adapter: async
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: streaming_logs_production
+  adapter: enhanced_postgresql
+  channel_prefix: canine_production
 

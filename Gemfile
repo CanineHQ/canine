@@ -16,11 +16,6 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
-# Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
-
-# Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
-# gem "kredis"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -64,18 +59,18 @@ group :test do
   gem 'faker', '~> 3.5.1'
   gem 'shoulda-matchers', '~> 6.0'
 end
+
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
 gem "friendly_id", "~> 5.4"
 gem "jsbundling-rails"
 gem "name_of_person", github: "basecamp/name_of_person"
-gem "noticed", "~> 2.6"
+gem "noticed", "~> 2.7"
 gem "omniauth-github", "~> 2.0"
 gem "pretender", "~> 0.3.4"
 gem "pundit", "~> 2.5"
-gem "sidekiq", "~> 6.2"
+gem "good_job", "~> 4.0"
 gem "sitemap_generator", "~> 6.1"
-gem "whenever", require: false
 gem "responders", github: "heartcombo/responders", branch: "main"
 gem "dotenv", "~> 3.1"
 gem "image_processing", "~> 1.13"
@@ -84,7 +79,6 @@ gem "kubeclient", "~> 4.12"
 gem "light-service", "~> 0.19.0"
 gem "octokit", "~> 9.2"
 gem "omniauth-digitalocean", "~> 0.3.2"
-gem "redis", "~> 4.8"
 gem "pagy", "~> 9.3"
 gem "rqrcode", "~> 2.2"
 gem "oj", "~> 3.16"
@@ -109,12 +103,11 @@ gem "cron2english", "~> 0.1.7"
 
 gem "avo", "~> 3.17"
 
-gem "sidekiq-scheduler", "~> 5.0"
-
 gem "sentry-ruby", "~> 5.23"
 gem "sentry-rails", "~> 5.23"
 
 gem "sys-proctable", "~> 1.3"
 
-gem "solid_errors", "~> 0.7.0"
 gem "omniauth-gitlab", "~> 4.1"
+
+gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"

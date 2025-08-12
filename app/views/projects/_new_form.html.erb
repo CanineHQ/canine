@@ -1,9 +1,9 @@
 <% if selected_provider_type == Provider::GIT_TYPE && selectable_providers.empty? %>
   <%= render "projects/create/missing_git_credentials", project: %>
-<% elsif selected_provider_type == Provider::DOCKER_TYPE && selectable_providers.empty? %>
-  <%= render "projects/create/missing_docker_hub_credentials", project: %>
-<% elsif selected_provider_type == Provider::DOCKER_TYPE %>
-  <%= render "projects/create/new_form_docker_hub", project:, provider:, selectable_providers: %>
+<% elsif selected_provider_type == Provider::REGISTRY_TYPE && selectable_providers.empty? %>
+  <%= render "projects/create/missing_container_registry_credentials", project: %>
+<% elsif selected_provider_type == Provider::REGISTRY_TYPE %>
+  <%= render "projects/create/new_form_container_registry", project:, provider:, selectable_providers: %>
 <% else %>
   <%= render "projects/create/new_form_git", project:, provider:, selectable_providers: %>
 <% end %>

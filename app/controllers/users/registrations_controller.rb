@@ -8,6 +8,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         AccountUser.create!(account:, user:)
       end
     end
+  rescue ActiveRecord::RecordInvalid => e
+    render :new, status: :unprocessable_entity
   end
 
   protected

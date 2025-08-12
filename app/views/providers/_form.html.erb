@@ -1,7 +1,48 @@
 <%= form_with model: provider do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
   <%= form.hidden_field :provider, value: params[:provider_type] %>
-  <% if params[:provider_type] == Provider::DOCKER_HUB_PROVIDER || form.object.provider == Provider::DOCKER_HUB_PROVIDER %>
+  <% if params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER || form.object.provider == Provider::CUSTOM_REGISTRY_PROVIDER %>
+    <div data-controller="registry-selector">
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Select Registry</span>
+        </label>
+        <div class="flex flex-wrap gap-2 mb-3" data-registry-selector-target="buttons">
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="dockerhub">
+            Docker Hub
+          </button>
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="ghcr">
+            GitHub (ghcr.io)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="gcr">
+            Google (gcr.io)
+          </button>
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="ecr">
+            AWS ECR
+          </button>
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="acr">
+            Azure ACR
+          </button>
+          <button type="button" class="btn btn-sm btn-outline" data-action="click->registry-selector#selectRegistry" data-registry="other">
+            Other
+          </button>
+        </div>
+      </div>
+      
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Registry URL</span>
+        </label>
+        <%= form.text_field(
+          :registry_url,
+          class: "input input-bordered",
+          required: true,
+          data: { "registry-selector-target": "urlInput" },
+          readonly: true
+        ) %>
+      </div>
+    </div>
+
     <div class="form-control mt-1 w-full max-w-sm">
       <label class="label">
         <span class="label-text">Username</span>

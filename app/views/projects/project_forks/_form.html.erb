@@ -1,0 +1,31 @@
+<%= form_with(model: project) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+  <div class="space-y-4">
+    <div class="text-base-content/50">
+      Pull Request Apps are a way to deploy preview apps from pull requests.
+    </div>
+    <%= render(FormFieldComponent.new(label: "Pull Request Apps")) do %>
+      <%= form.collection_select(
+        :project_fork_status,
+        Project.project_fork_statuses.keys,
+        :to_s,
+        :titleize,
+        { include_blank: "Select a status" },
+        { class: "select select-bordered w-full" },
+      ) %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Cluster",
+      description: "The cluster to deploy the preview apps to."
+    )) do %>
+      <%= form.collection_select :project_fork_cluster_id, current_account.clusters, :id, :name, { include_blank: "Select a cluster" }, { class: "select select-bordered w-full" } %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+  </div>
+  <div class="form-footer">
+    <%= form.submit "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>

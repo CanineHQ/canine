@@ -7,7 +7,9 @@ class AddOns::Create
     add_on = context.add_on
     apply_template_to_values(add_on)
     fetch_package_details(context, add_on)
-    add_on.save
+    unless add_on.save
+      context.fail_and_return!("Failed to create add on")
+    end
   end
 
   def self.fetch_package_details(context, add_on)
