@@ -101,12 +101,13 @@ GEM
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
     ast (2.4.2)
-    avo (3.17.6)
+    avo (3.23.0)
       actionview (>= 6.1)
       active_link_to
       activerecord (>= 6.1)
       activesupport (>= 6.1)
       addressable
+      avo-heroicons (>= 0.1.1)
       docile
       inline_svg
       meta-tags
@@ -116,6 +117,7 @@ GEM
       turbo_power (>= 0.6.0)
       view_component (>= 3.7.0)
       zeitwerk (>= 2.6.12)
+    avo-heroicons (0.1.1)
     base64 (0.3.0)
     bcrypt (3.1.20)
     benchmark (0.4.1)
@@ -401,7 +403,7 @@ GEM
     psych (5.2.6)
       date
       stringio
-    public_suffix (6.0.1)
+    public_suffix (6.0.2)
     puma (6.6.0)
       nio4r (~> 2.0)
     pundit (2.5.0)
@@ -593,10 +595,9 @@ GEM
     uri (0.13.1)
     useragent (0.16.11)
     version_gem (1.1.4)
-    view_component (3.21.0)
-      activesupport (>= 5.2.0, < 8.1)
-      concurrent-ruby (~> 1.0)
-      method_source (~> 1.0)
+    view_component (4.0.1)
+      activesupport (>= 7.1.0, < 8.1)
+      concurrent-ruby (~> 1)
     warden (1.2.9)
       rack (>= 2.0.9)
     web-console (4.2.1)
@@ -631,7 +632,7 @@ PLATFORMS
 DEPENDENCIES
   actioncable-enhanced-postgresql-adapter (~> 1.0)
   annotate (~> 3.2)
-  avo (~> 3.17)
+  avo (~> 3.23)
   bootsnap
   brakeman
   capybara
