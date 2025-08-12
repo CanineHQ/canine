@@ -1,0 +1,45 @@
+<div class="card bg-base-100 shadow-lg border border-base-300 mb-6 hover:shadow-xl transition-shadow">
+  <div class="card-body p-6">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex-1 min-w-0">
+        <div class="flex flex-row gap-2 items-center mb-3">
+          <%= link_to project_path(preview_app[:object].child_project), class: "hover:underline font-bold" do %>
+            <%= preview_app[:object].child_project.name %>
+          <% end %>
+          <%= render "projects/status", project: preview_app[:object].child_project %>
+        </div>
+
+        <div class="flex flex-row gap-2 items-center mb-3">
+          <%= link_to preview_app[:object].url, target: "_blank", class: "underline text-blue-500" do %>
+            PR #<%= preview_app[:object].number %>
+          <% end %>
+          <h3 class="card-title text-xl font-bold text-base-content">
+            <%= preview_app[:title] %>
+          </h3>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-4 text-sm text-base-content/60">
+          <div class="flex items-center gap-2 ">
+            <% if @project.github? %>
+              <img src="https://github.com/<%= preview_app[:user] %>.png" class="w-4 h-4 rounded-full">
+            <% else %>
+              <iconify-icon icon="lucide:user" class="w-4 h-4"></iconify-icon>
+            <% end %>
+            <span><%= preview_app[:user] %></span>
+          </div>
+          <div class="flex items-center gap-2 ">
+            <iconify-icon icon="lucide:git-branch" class="w-4 h-4"></iconify-icon>
+            <span><%= preview_app[:object].child_project.branch %></span>
+          </div>
+        </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-4 text-sm">
+          <div class="flex items-center gap-2 ">
+            <iconify-icon icon="lucide:calendar" class="w-4 h-4"></iconify-icon>
+            <span>Updated <%= time_ago_in_words(preview_app[:updated_at]) %> ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

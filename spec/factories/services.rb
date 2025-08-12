@@ -32,5 +32,13 @@ FactoryBot.define do
     container_port { 3000 }
     status { :pending }
     service_type { :web_service }
+
+    trait :cron_job do
+      service_type { :cron_job }
+      command { "rails runner 'puts \"Hello World\"'" }
+      after(:build) do |service|
+        service.cron_schedule ||= build(:cron_schedule, service: service)
+      end
+    end
   end
 end

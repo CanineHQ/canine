@@ -12,7 +12,7 @@
 - [ ] Failing to add webhooks to projects in different organizations.
 - [ ] Github filtering across organizations is not working
 - [ ] Explore allowing local PC's on DHCP to be a host
-- [ ] Button to kill a build
 - [ ] Deployments API
 - [ ] Pull request preview apps
 - [ ] Update vocabulary on landing page
+- [ ] Extend docker hub support to any arbitrary container registry

@@ -1,0 +1,10 @@
+name: "name"
+services:
+  - name: "service_1"
+    container_port: 8080
+    service_type: "web_service"
+environment_variables:
+  - name: "DATABASE_URL"
+    value: "redis://redis.cluster.svc.local/<%= number %>"
+scripts:
+  clean_up_command: ""

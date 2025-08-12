@@ -1,0 +1,36 @@
+<div>
+  <h3 class="text-sm font-medium mb-1">Recent Job Runs</h3>
+  <div class="flex flex-wrap gap-1">
+    <% cron_job = K8::Stateless::CronJob.new(service) %>
+    <% cron_job.run_history.take(20).each do |job_run| %>
+      <% 
+        status_color = case job_run.status
+        when :succeeded then 'bg-success'
+        when :failed then 'bg-error'
+        when :running then 'bg-info'
+        else 'bg-base-300'
+        end
+        
+        duration_text = if job_run.duration
+          if job_run.duration < 60
+            "#{job_run.duration}s"
+          elsif job_run.duration < 3600
+            "#{(job_run.duration / 60).round}m"
+          else
+            "#{(job_run.duration / 3600.0).round(1)}h"
+          end
+        else
+          "..."
+        end
+      %>
+      <div class="tooltip" data-tip="<%= job_run.name %>&#10;Status: <%= job_run.status %>&#10;Started: <%= job_run.started_at&.strftime('%Y-%m-%d %H:%M:%S') || 'N/A' %>&#10;Duration: <%= job_run.duration ? Time.at(job_run.duration).utc.strftime('%H:%M:%S') : 'In progress' %>">
+        <div class="<%= status_color %> text-xs font-medium rounded px-2 py-1 text-white min-w-[40px] text-center">
+          <%= duration_text %>
+        </div>
+      </div>
+    <% end %>
+    <% if cron_job.run_history.empty? %>
+      <p class="text-gray-500 text-md">This job has not been run yet.</p>
+    <% end %>
+  </div>
+</div>

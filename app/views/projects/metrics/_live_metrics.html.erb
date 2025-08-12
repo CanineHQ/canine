@@ -4,7 +4,7 @@
     Updated at: <%= Time.now.strftime("%H:%M:%S") %>
   </div>
 </div>
-<% if @pods.empty? %>
+<% if pods.empty? %>
   <div>
     <p class="text-gray-500">No metrics available</p>
   </div>
@@ -26,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @pods.each do |pod| %>
+      <% pods.each do |pod| %>
       <tr class="cursor-pointer hover:bg-base-200/40">
         <td>
           <div class="flex items-center space-x-3 truncate">

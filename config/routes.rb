@@ -1,5 +1,3 @@
-require "sidekiq/web"
-
 Rails.application.routes.draw do
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
@@ -49,6 +47,7 @@ Rails.application.routes.draw do
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
+    resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update], module: :projects do
@@ -68,6 +67,7 @@ Rails.application.routes.draw do
       end
       member do
         post :redeploy
+        patch :kill
       end
     end
   end
@@ -90,10 +90,7 @@ Rails.application.routes.draw do
 
   authenticate :user, lambda { |u| u.admin? } do
     namespace :admin do
-      mount Sidekiq::Web => "/sidekiq"
-      if Rails.env.production?
-        mount SolidErrors::Engine, at: "/solid_errors"
-      end
+      mount GoodJob::Engine => "/good_job"
     end
   end
 

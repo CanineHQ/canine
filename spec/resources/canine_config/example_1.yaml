@@ -1,0 +1,12 @@
+scripts:
+  predeploy: echo "Pre deploy script"
+  postdeploy: echo "Post deploy script"
+  predestroy: echo "Pre destroy script"
+  postdestroy: echo "Post destroy script"
+services:
+  - name: web
+    container_port: 6379
+    service_type: web_service
+environment_variables:
+  - name: DATABASE_URL
+    value: postgres://localhost/test

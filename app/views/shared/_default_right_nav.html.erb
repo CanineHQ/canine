@@ -15,7 +15,7 @@
     <% end %>
   </div>
   <div>
-    <%= link_to "https://canine.gitbook.io/canine.sh", target: "_blank" do %>
+    <%= link_to "https://docs.canine.sh/", target: "_blank" do %>
       <iconify-icon icon="lucide:book-open"></iconify-icon>
       <span>Documentation</span>
     <% end %>
@@ -32,22 +32,12 @@
   </li>
   <li>
     <div>
-      <%= link_to admin_sidekiq_web_path do %>
+      <%= link_to admin_good_job_path do %>
         <iconify-icon icon="lucide:server" height="16"></iconify-icon>
-        Sidekiq
+        Jobs
       <% end %>
     </div>
   </li>
-  <% if Rails.env.production? %>
-    <li>
-      <div>
-        <%= link_to admin_solid_errors_path do %>
-          <iconify-icon icon="lucide:bug" height="16"></iconify-icon>
-          Errors
-        <% end %>
-      </div>
-    </li>
-  <% end %>
 <% end %>
 <hr class="-mx-2 my-1 border-base-content/10">
 <li>

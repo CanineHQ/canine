@@ -6,10 +6,12 @@
     </div>
     <div>
       <div class="mt-2 mb-4">
-        <% if params[:provider_type] == Provider::DOCKER_HUB_PROVIDER %>
-          <%= link_to "Find your Docker Hub token →", "https://app.docker.com/settings/personal-access-tokens", target: "_blank", class: "text-sm text-gray-500 underline" %>
-          <div class=" mt-2">
-            Make sure you select the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private project.
+        <% if params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER %>
+          <div class="text-sm text-gray-500">
+            Select your container registry provider or enter a custom URL.
+          </div>
+          <div class="mt-2">
+            Make sure you have the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private image.
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
           <%= link_to "Find your Github token →", "https://github.com/settings/tokens", target: "_blank", class: "text-sm text-gray-500 " %>

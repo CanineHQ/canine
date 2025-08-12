@@ -11,4 +11,19 @@
       <pre class="text-sm font-mono whitespace-pre-wrap" id="logs"><%= ansi_to_tailwind(logs.force_encoding("UTF-8")).html_safe || "No logs yet..." %></pre>
     </div>
   </div>
+
+  <div class="flex space-x-2 items-center mt-8">
+    <h4 class="text-lg font-medium">Start Up Logs</h4>
+  </div>
+  <div class="bg-gray-900 text-gray-100 rounded-lg shadow-lg mt-4">
+    <div class="overflow-auto h-48 bg-gray-800 p-2 rounded">
+      <pre class="text-sm font-mono whitespace-pre-wrap" id="startup-logs"><%
+        event_logs = pod_events.map do |event|
+          timestamp_str = event.lastTimestamp || event.firstTimestamp || event.metadata.creationTimestamp
+          timestamp = Time.parse(timestamp_str)
+          "[#{timestamp.strftime('%Y-%m-%d %H:%M:%S')}] #{event.reason}: #{event.message}"
+        end.join("\n")
+        %><%= ansi_to_tailwind(event_logs.force_encoding("UTF-8")).html_safe %></pre>
+    </div>
+  </div>
 </div>

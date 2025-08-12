@@ -28,7 +28,7 @@ class ProjectCredentialProvider < ApplicationRecord
   delegate :username, to: :provider
   delegate :access_token, to: :provider
   delegate :github?, to: :provider
-  delegate :docker_hub?, to: :provider
+  delegate :container_registry?, to: :provider
   delegate :gitlab?, to: :provider
   delegate :git?, to: :provider
 

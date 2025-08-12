@@ -47,7 +47,7 @@
                     <ul>
                       <% current_account.projects.order(created_at: :desc).each do |project| %>
                         <li>
-                          <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if current_page?(root_projects_path(project))}" do %>
+                          <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?("/projects/#{project.id}")}" do %>
                             <div class="flex items-center gap-2">
                               <%= project.name %>
                             </div>

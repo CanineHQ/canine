@@ -101,17 +101,8 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
+  config.hosts << "0.0.0.0"
+  config.hosts << "localhost"
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-  # Configure Solid Errors
-  config.solid_errors.connects_to = { database: { writing: :errors } }
-  config.solid_errors.send_emails = true
-  config.solid_errors.email_from = ""
-  config.solid_errors.email_to = ""
-  config.solid_errors.username = Rails.application.credentials.dig(:solid_errors, :username)
-  config.solid_errors.password = Rails.application.credentials.dig(:solid_errors, :password)
 end

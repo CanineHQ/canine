@@ -5,15 +5,15 @@ module Providers
     extend LightService::Organizer
 
     def self.call(provider)
-      if provider.provider == Provider::GITHUB_PROVIDER
+      if provider.github?
         with(provider:).reduce(
           Providers::CreateGithubProvider,
         )
-      elsif provider.provider == Provider::DOCKER_HUB_PROVIDER
+      elsif provider.container_registry?
         with(provider:).reduce(
           Providers::CreateDockerImageProvider,
         )
-      elsif provider.provider == Provider::GITLAB_PROVIDER
+      elsif provider.gitlab?
         with(provider:).reduce(
           Providers::CreateGitlabProvider,
         )

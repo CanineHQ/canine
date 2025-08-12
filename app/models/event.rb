@@ -21,10 +21,10 @@ class Event < ApplicationRecord
   belongs_to :eventable, polymorphic: true
   belongs_to :user, optional: true
   belongs_to :project
-  enum event_action: {
+  enum :event_action, {
     create: 0,
     update: 1
-  }, _prefix: true
+  }, prefix: true
 
   after_create_commit do
     broadcast_prepend_to [ project, :events ], target: "events", partial: "projects/deployments/event_row", locals: { project:, event: self }

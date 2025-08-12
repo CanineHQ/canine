@@ -1,6 +1,6 @@
 <div data-controller="new-project">
   <%= form_with(model: project, data: { turbo: false }) do |form| %>
-    <h2 class="text-2xl font-bold">Create a new project from Docker Hub</h2>
+    <h2 class="text-2xl font-bold">Create a new project from a container registry</h2>
     <%= link_to(
       "Deploy from Git repository instead →",
       new_project_path(provider: Provider::GITHUB_PROVIDER),
@@ -32,15 +32,15 @@
       <% end %>
 
       <%= render(FormFieldComponent.new(
-        label: "Docker Hub Credentials",
-        description: "The credentials to use to connect to your Docker Hub repository"
+        label: "Container Registry Credentials",
+        description: "The credentials to use to connect to your container registry."
       )) do %>
         <%= render "projects/create/select_credentials", form:, selectable_providers: %>
       <% end %>
 
       <%= render(FormFieldComponent.new(
-        label: "Docker Hub Repository",
-        description: "The image to pull from Docker Hub."
+        label: "Container Registry Repository",
+        description: "The image to pull from your container registry."
       )) do %>
         <%= form.text_field(
           :repository_url,
@@ -50,12 +50,12 @@
       <% end %>
 
       <%= render(FormFieldComponent.new(
-        label: "Docker command",
+        label: "Container command",
         description: "The command to run to start the container."
       )) do %>
         <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
         <label class="label">
-          <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
+          <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used.</span>
         </label>
       <% end %>
 

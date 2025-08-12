@@ -91,12 +91,7 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
-  <% if ENV["SOLID_ERRORS_DATABASE_URL"] %>
-  errors:
-    <<: *primary_production
-    url: <%= ENV["SOLID_ERRORS_DATABASE_URL"] %>
-    migrations_paths: db/errors_migrate
-  <% end %>
+  <<: *default
+  database: canine_production
+  username: canine
+  password: <%= ENV["CANINE_DATABASE_PASSWORD"] %>

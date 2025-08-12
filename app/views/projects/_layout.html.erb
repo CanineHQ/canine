@@ -1,3 +1,8 @@
+<% if project.forked? %>
+  <div class="mb-2">
+    <%= link_to "← Back to original project", project_path(project.parent_project), class: "btn btn-ghost" %>
+  </div>
+<% end %>
 <div class="flex flex-col md:flex-row items-center justify-between mb-4">
   <div class="self-stretch">
     <div>
@@ -15,7 +20,7 @@
       </div>
     <% end %>
     <div class="text-sm">
-      <%= link_to project.full_repository_url, target: "_blank" do %>
+      <%= link_to project.link_to_view, target: "_blank" do %>
         <% if project.git? %>
           <% if project.github? %>
             <iconify-icon icon="lucide:github"></iconify-icon>
@@ -60,7 +65,7 @@
           </div>
         </div>
       <% else %>
-        <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary">
+        <div role="tooltip" data-tip="Please add a service to your project to deploy" class="tooltip tooltip-secondary tooltip-left">
           <%= button_to "#", class: "btn btn-primary m-1", disabled: true do %>
             Deploy
           <% end %>
