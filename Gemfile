@@ -56,7 +56,7 @@ group :test do
   gem "selenium-webdriver"
 
   gem "database_cleaner-active_record", '~> 2.2.0'
-  gem 'faker', '~> 3.5.1'
+  gem 'faker', '~> 3.5.2'
   gem 'shoulda-matchers', '~> 6.0'
 end
 
