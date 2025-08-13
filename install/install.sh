@@ -100,6 +100,7 @@ echo " [OK]"
 echo "Starting Canine on port $port..."
 
 # Start docker compose in the background
+docker compose build
 PORT=$port DOCKER_SOCKET="$DOCKER_SOCKET" docker compose up -d
 
 # Function to check if port is ready
