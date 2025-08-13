@@ -38,6 +38,8 @@ spec:
           env:
             - name: DATABASE_URL
               value: "postgres://{{ .Values.postgresql.auth.username }}:{{ .Values.postgresql.auth.password }}@{{ include "canine.fullname" . }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }}/{{ .Values.postgresql.auth.database }}"
+            - name: PORT
+              value: "{{ .Values.canine.port }}"
             - name: CANINE_USERNAME
               valueFrom:
                 secretKeyRef:
