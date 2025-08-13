@@ -101,8 +101,21 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  config.hosts << "0.0.0.0"
-  config.hosts << "localhost"
+  if ENV['ALLOWED_HOSTNAME'] == '*'
+    # Allow all hosts (useful for Kubernetes deployments with dynamic IPs)
+    config.hosts.clear
+  elsif ENV['ALLOWED_HOSTNAME'].present?
+    # Allow specific hostname(s)
+    config.hosts << "0.0.0.0"
+    config.hosts << "localhost"
+    ENV['ALLOWED_HOSTNAME'].split(',').each do |host|
+      config.hosts << host.strip
+    end
+  else
+    # Default: only allow localhost
+    config.hosts << "0.0.0.0"
+    config.hosts << "localhost"
+  end
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

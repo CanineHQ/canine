@@ -1,0 +1,74 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "canine.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "canine.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "canine.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.service.port }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+  
+  To access Canine locally, you have two options:
+
+  Option 1: Port Forwarding (Simple)
+  ------------------------------------
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "canine.fullname" . }} 3000:{{ .Values.service.port }}
+  
+  Then open: http://localhost:3000
+
+  Option 2: Telepresence (Recommended for Development)
+  ----------------------------------------------------
+  # Install telepresence if you haven't already:
+  # macOS: brew install telepresence
+  # Linux: https://www.telepresence.io/docs/latest/install/
+  
+  # Connect to your cluster
+  telepresence connect
+  
+  # Access the service directly
+  telepresence intercept {{ include "canine.fullname" . }} --namespace {{ .Release.Namespace }} --port 3000:{{ .Values.service.port }}
+  
+  Then open: http://localhost:3000
+{{- end }}
+
+2. Login Credentials:
+   -----------------
+   Username: {{ .Values.canine.auth.username }}
+   Password: {{ .Values.canine.auth.password }}
+
+   ⚠️  SECURITY WARNING: These are default credentials. Please change them immediately after first login!
+
+3. Check Application Status:
+   ------------------------
+   # Check if pods are running
+   kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "canine.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+   
+   # Check logs for the web application
+   kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "canine.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -c {{ .Chart.Name }}
+   
+   # Check logs for the background worker
+   kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "canine.name" . }},app.kubernetes.io/component=worker" -c {{ .Chart.Name }}-worker
+
+4. Database Access (if needed):
+   ---------------------------
+   kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "canine.fullname" . }}-postgresql 5432:5432
+   
+   Then connect with:
+   psql -h localhost -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }}
+   Password: {{ .Values.postgresql.auth.password }}
+
+5. Troubleshooting:
+   ---------------
+   # If pods are not starting, check events:
+   kubectl describe pod --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "canine.name" . }}"
+   
+   # If liveness probes are failing due to host authorization:
+   # Ensure ALLOWED_HOSTNAME is set to "*" in your values.yaml or deployment

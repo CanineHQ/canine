@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "canine.fullname" . }}
+  labels:
+    {{- include "canine.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.canine.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "canine.selectorLabels" . | nindent 4 }}
