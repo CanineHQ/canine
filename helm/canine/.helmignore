@@ -21,3 +21,6 @@
 .idea/
 *.tmproj
 .vscode/
+# Custom
+output.txt
+*.log
