@@ -1,0 +1,82 @@
+<%= turbo_frame_tag dom_id(cluster, "build_cloud") do %>
+  <% build_cloud = cluster.build_cloud %>
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title">Build Cloud Status</h3>
+      <% if build_cloud.installing? %>
+        <div class="flex justify-center items-center py-8">
+          <div class="flex flex-col items-center">
+            <span class="loading loading-spinner loading-lg"></span>
+            <p class="mt-4 text-gray-600">Installing build cloud...</p>
+          </div>
+        </div>
+      <% else %>
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="font-medium">Status:</span>
+            <%= render "clusters/build_clouds/status", build_cloud: build_cloud %>
+          </div>
+          <% if build_cloud.namespace.present? %>
+            <div class="flex justify-between">
+              <span class="font-medium">Namespace:</span>
+              <span><%= build_cloud.namespace %></span>
+            </div>
+          <% end %>
+          <% if build_cloud.driver_version.present? %>
+            <div class="flex justify-between">
+              <span class="font-medium">Driver Version:</span>
+              <span><%= build_cloud.driver_version %></span>
+            </div>
+          <% end %>
+          <% if build_cloud.installed_at.present? %>
+            <div class="flex justify-between">
+              <span class="font-medium">Installed:</span>
+              <span><%= build_cloud.installed_at.strftime("%B %d, %Y at %I:%M %p") %></span>
+            </div>
+          <% end %>
+          <% if build_cloud.failed? && build_cloud.error_message.present? %>
+            <div class="alert alert-error mt-4">
+              <iconify-icon icon="lucide:alert-circle" height="20"></iconify-icon>
+              <span><%= build_cloud.error_message %></span>
+            </div>
+          <% end %>
+        </div>
+        <% if build_cloud.active? %>
+          <div class="card-actions justify-end mt-4">
+            <%= button_to cluster_build_cloud_path(cluster), 
+                          method: :delete, 
+                          class: "btn btn-error btn-sm",
+                          data: { turbo_confirm: "This will remove BuildKit from your cluster. Are you sure?" } do %>
+              <iconify-icon icon="lucide:trash-2" height="16"></iconify-icon>
+              Remove Build Cloud
+            <% end %>
+          </div>
+        <% elsif build_cloud.uninstalling? %>
+          <div class="card-actions justify-end mt-4">
+            <button class="btn btn-error btn-sm" disabled>
+              <span class="loading loading-spinner loading-xs"></span>
+              Removing...
+            </button>
+          </div>
+        <% elsif build_cloud.uninstalled? %>
+          <div class="card-actions justify-end mt-4">
+            <%= button_to cluster_build_cloud_path(cluster), 
+                          method: :post, 
+                          class: "btn btn-primary btn-sm",
+                          data: { turbo_confirm: "This will reinstall BuildKit on your cluster. Continue?" } do %>
+              <iconify-icon icon="lucide:cloud" height="16"></iconify-icon>
+              Reinstall Build Cloud
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="collapse">
+        <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+        <div class="collapse-title p-0 underline m-0">Show logs</div>
+        <div class="collapse-content p-0 mt-2">
+          <%= render "log_outputs/logs", loggable: build_cloud %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

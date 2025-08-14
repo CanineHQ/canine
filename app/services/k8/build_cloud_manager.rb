@@ -1,0 +1,208 @@
+class K8::BuildCloudManager
+  include K8::Kubeconfig
+  BUILDKIT_BUILDER_NAME = 'canine-k8s-builder'
+
+  attr_reader :connection, :build_cloud
+
+  def self.get_buildkit_version(build_cloud_manager)
+    # Try to extract version from buildx inspect output
+    status = runner.call("docker buildx inspect #{K8::BuildCloudManager::BUILDKIT_BUILDER_NAME}")
+    if status.success?
+      $1
+    else
+      "unknown"
+    end
+  rescue StandardError
+    "unknown"
+  end
+
+  def self.install_to(cluster)
+    params = {
+      installation_metadata: {
+        started_at: Time.current,
+        builder_name: K8::BuildCloudManager::BUILDKIT_BUILDER_NAME
+      }
+    }
+    build_cloud = if cluster.build_cloud.present?
+      cluster.build_cloud.update!(params)
+      cluster.build_cloud
+    else
+      cluster.create_build_cloud!(params)
+    end
+
+    begin
+      # Initialize the K8::BuildCloud service with the build_cloud model
+      build_cloud_manager = K8::BuildCloudManager.new(cluster, build_cloud)
+
+      # Run the setup
+      build_cloud_manager.setup!
+
+      # Check if builder is ready
+      if build_cloud_manager.builder_ready?
+        # Update build cloud record with success
+        build_cloud.update!(
+          status: :active,
+          installed_at: Time.current,
+          driver_version: get_buildkit_version(build_cloud_manager),
+          installation_metadata: build_cloud.installation_metadata.merge(
+            completed_at: Time.current,
+            builder_ready: true
+          )
+        )
+
+        Rails.logger.info("Successfully installed build cloud on cluster #{cluster.name}")
+      else
+        raise "Builder was created but is not ready"
+      end
+
+    rescue StandardError => e
+      # Update build cloud record with failure
+      build_cloud.update!(
+        status: :failed,
+        error_message: e.message,
+        installation_metadata: build_cloud.installation_metadata.merge(
+          failed_at: Time.current,
+          error_details: {
+            message: e.message,
+            backtrace: e.backtrace&.first(5)
+          }
+        )
+      )
+
+      Rails.logger.error("Failed to install build cloud on cluster #{cluster.name}: #{e.message}")
+    end
+  end
+
+  def initialize(connection, build_cloud)
+    @connection = connection
+    @build_cloud = build_cloud
+  end
+
+  def namespace
+    build_cloud.namespace
+  end
+
+  # Set up the BuildKit builder in Kubernetes
+  def setup!
+    ensure_namespace!
+    create_or_update_builder!
+  end
+
+  # Remove the BuildKit builder
+  def teardown!
+    remove_builder! if builder_ready?
+  end
+
+  # Check if the builder is ready and running
+  def builder_ready?
+    status = runner.call("docker buildx ls --format json")
+    if status.success?
+      builder_names = runner.output.split("\n").map do |x| JSON.parse(x) end.map { |x| x["Name"] }
+      builder_names.include?(BUILDKIT_BUILDER_NAME)
+    else
+      false
+    end
+  rescue StandardError
+    false
+  end
+
+  # Build and push image using BuildKit in Kubernetes
+  # @param build [Build] The build object for logging
+  # @param repository_path [String] Path to the cloned repository
+  # @param project [Project] The project being built
+  def build_image(build, repository_path, project)
+    ensure_builder_active!
+
+    build_command = construct_buildx_command(project, repository_path)
+    execute_build(build_command, build)
+  end
+
+  def create_or_update_builder!
+    if builder_ready?
+      remove_builder!
+      create_builder!
+    else
+      create_builder!
+    end
+  end
+
+  def create_builder!
+    ensure_namespace!
+    # Write kubeconfig to temp file for docker buildx
+
+    # Create the buildx builder with kubernetes driver
+    # The --bootstrap flag will start the builder immediately
+    with_kube_config do |kubeconfig_file|
+      command = "docker buildx create "
+      command += "--bootstrap "
+      command += "--name #{BUILDKIT_BUILDER_NAME} "
+      command += "--driver kubernetes "
+      command += "--driver-opt namespace=#{namespace} "
+      command += "--driver-opt replicas=2 "
+      command += "--driver-opt requests.cpu=500m "
+      command += "--driver-opt requests.memory=512Mi "
+      command += "--driver-opt limits.cpu=2000m "
+      command += "--driver-opt limits.memory=4Gi "
+      command += "--use"
+      runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+    end
+
+    # Wait for builder to be ready
+    wait_for_builder_ready!
+  end
+
+  def wait_for_builder_ready!
+    max_attempts = 120
+    attempts = 0
+
+    while attempts < max_attempts
+      if builder_ready?
+        return true
+      end
+
+      sleep 5
+      attempts += 1
+    end
+
+    raise "BuildKit builder did not become ready in time"
+  end
+
+  def ensure_builder_active!
+    unless builder_ready?
+      raise "BuildKit builder is not ready. Run setup! first."
+    end
+
+    # Set the builder as active
+    runner.call("docker buildx use #{BUILDKIT_BUILDER_NAME}")
+  end
+
+  def ensure_namespace!
+    # Create namespace if it doesn't exist
+    with_kube_config do |kubeconfig_file|
+      command = "kubectl create namespace #{namespace} --dry-run=client -o yaml | kubectl apply -f -"
+      runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+    end
+  rescue StandardError => e
+    # Namespace might already exist, which is fine
+    Rails.logger.info("Namespace #{namespace} might already exist: #{e.message}")
+  end
+
+  def remove_builder!
+    # Delete locally, this also removes the builder from kubernetes
+    runner.call("docker buildx rm #{BUILDKIT_BUILDER_NAME}")
+    
+    # Also remove from kubernetes if possible
+    K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
+  rescue StandardError => e
+    Rails.logger.warn("Error removing builder: #{e.message}")
+  end
+
+  def runner
+    @runner ||= Cli::RunAndLog.new(build_cloud)
+  end
+
+  def kubeconfig
+    # This is necessary for the include K8::Kubeconfig module
+    connection.kubeconfig
+  end
+end

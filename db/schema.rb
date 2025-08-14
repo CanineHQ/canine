@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_09_185224) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_15_234047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,30 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_09_185224) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "build_clouds", force: :cascade do |t|
+    t.bigint "cluster_id", null: false
+    t.string "namespace", default: "canine-k8s-builder", null: false
+    t.integer "status", default: 0, null: false
+    t.string "driver_version"
+    t.string "webhook_url"
+    t.jsonb "installation_metadata", default: {}
+    t.datetime "installed_at"
+    t.text "error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id"], name: "index_build_clouds_on_cluster_id"
+  end
+
+  create_table "build_configurations", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "driver", null: false
+    t.bigint "build_cloud_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
+    t.index ["project_id"], name: "index_build_configurations_on_project_id"
   end
 
   create_table "builds", force: :cascade do |t|
@@ -427,6 +451,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_09_185224) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "build_clouds", "clusters"
+  add_foreign_key "build_configurations", "build_clouds"
+  add_foreign_key "build_configurations", "projects"
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"

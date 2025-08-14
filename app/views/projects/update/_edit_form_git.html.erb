@@ -51,6 +51,10 @@
         <span class="label-text-alt">If this is left blank, <%= project.github? ? "Github" : "Gitlab" %> Container Registry will be used</span>
       </label>
     <% end %>
+
+    <div class="mt-6">
+      <%= render "projects/build_configurations/form", form: form, project: project %>
+    </div>
   </div>
 
   <div class="form-footer">
