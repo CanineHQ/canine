@@ -1,4 +1,4 @@
-name: Docker Build Test
+name: Docker Build and Push
 
 on:
   push:
@@ -13,8 +13,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: docker build -t canine:test . 
+      - name: Login to Docker Hub
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          tags: chriszhu12/canine:latest 

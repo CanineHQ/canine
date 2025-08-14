@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "canine.fullname" . }}-worker
+  labels:
+    {{- include "canine.labels" . | nindent 4 }}
+    app.kubernetes.io/component: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "canine.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "canine.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: worker
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["bundle", "exec", "good_job", "start"]
+          env:
+            - name: DATABASE_URL
+              value: "postgres://{{ .Values.postgresql.auth.username }}:{{ .Values.postgresql.auth.password }}@{{ include "canine.fullname" . }}-postgresql:{{ .Values.postgresql.primary.service.ports.postgresql }}/{{ .Values.postgresql.auth.database }}"
+            - name: PORT
+              value: "{{ .Values.canine.port }}"
+            - name: CANINE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: canine-username
+            - name: CANINE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: canine-password
+            - name: LOCAL_MODE
+              value: "{{ .Values.canine.localMode }}"
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: secret-key-base
+            - name: ALLOWED_HOSTNAME
+              value: "{{ .Values.canine.allowedHostname }}"
+            - name: GOOD_JOB_MAX_THREADS
+              value: "{{ .Values.worker.maxThreads | default 5 }}"
+            - name: GOOD_JOB_QUEUES
+              value: "{{ .Values.worker.queues | default "*" }}"
+          resources:
+            {{- toYaml .Values.worker.resources | default .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

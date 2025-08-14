@@ -1,0 +1,77 @@
+apiVersion: v2
+name: canine
+description: The Helm chart for Canine - the easiest way to deploy apps to the cloud.
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.0.0"
+
+# Maintainers of the Helm chart
+maintainers:
+  - name: czhu12
+    email: czhu12@example.com
+    url: https://github.com/czhu12
+
+# Keywords that describe the application
+keywords:
+  - kubernetes
+  - deployment
+  - rails
+  - platform
+  - ci-cd
+  - gitops
+
+# The URL to the application's home page
+home: https://github.com/czhu12/canine
+
+# A list of URLs to source code for this project
+sources:
+  - https://github.com/czhu12/canine
+
+# The URL to an icon file for the application
+icon: https://raw.githubusercontent.com/czhu12/canine/main/app/assets/images/logo.png
+
+# Artifact Hub annotations
+annotations:
+  # Required: indicates the license of the chart
+  artifacthub.io/license: MIT
+  # Optional: indicates if the chart contains security updates
+  artifacthub.io/containsSecurityUpdates: "false"
+  # Optional: indicates if the chart is recommended
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/bitnami/postgresql
+  # Optional: links to additional documentation
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/czhu12/canine/tree/main/helm/canine
+    - name: Support
+      url: https://github.com/czhu12/canine/issues
+  # Optional: changes introduced in this version
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial release of Canine Helm chart
+  # Optional: indicates the maturity of the chart
+  artifacthub.io/prerelease: "false"
+
+dependencies:
+  - name: postgresql
+    version: 16.3.1
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

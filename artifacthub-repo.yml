@@ -1,0 +1,6 @@
+# Artifact Hub repository metadata
+# This file should be placed in the root of your Git repository
+repositoryID: canine
+owners:
+  - name: czhu12
+    email: czhu12@example.com

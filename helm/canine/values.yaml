@@ -1,0 +1,121 @@
+# Default values for canine.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: chriszhu12/canine
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Canine-specific configuration
+canine:
+  port: 3000
+  localMode: true
+  secretKeyBase: "a38fcb39d60f9d146d2a0053a25024b9"
+  auth:
+    username: "admin"
+    password: "changeme"
+  # Allowed hostnames for Rails host authorization
+  # Use "*" to allow all hosts (useful for Kubernetes with dynamic IPs)
+  # Use comma-separated list for specific hosts: "example.com,api.example.com"
+  # Leave empty to only allow localhost (default)
+  allowedHostname: "*"
+
+# Worker configuration for GoodJob background jobs
+worker:
+  enabled: true
+  replicaCount: 1
+  maxThreads: 5
+  queues: "*"
+  resources: {}
+    # limits:
+    #   cpu: 500m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 250m
+    #   memory: 256Mi
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 3000
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: canine.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: canine-tls
+  #    hosts:
+  #      - canine.local
+
+# Resource limits and requests
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 1024Mi
+  # requests:
+  #   cpu: 500m
+  #   memory: 512Mi
+
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Pod configuration
+podAnnotations: {}
+podLabels: {}
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# PostgreSQL configuration (Bitnami PostgreSQL chart)
+postgresql:
+  enabled: true
+  auth:
+    username: postgres
+    password: password
+    database: canine_production
+    # You can also create additional databases
+    postgresPassword: password
+  primary:
+    service:
+      ports:
+        postgresql: 5432
+    persistence:
+      enabled: true
+      size: 8Gi
+  # Additional PostgreSQL configuration
+  # See: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+  initdbScripts:
+    init.sql: |
+      CREATE DATABASE IF NOT EXISTS canine_development;
+      GRANT ALL PRIVILEGES ON DATABASE canine_development TO postgres;
+
