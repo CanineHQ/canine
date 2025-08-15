@@ -32,9 +32,9 @@ class Projects::DeployLatestCommit
       build.info("Skipping build...", color: :yellow)
       build.update!(status: :completed)
       deployment = Deployment.create!(build:)
-      Projects::DeploymentJob.perform_later(deployment)
+      Projects::DeploymentJob.perform_later(deployment, current_user)
     else
-      Projects::BuildJob.perform_later(build)
+      Projects::BuildJob.perform_later(build, current_user)
     end
   end
 end

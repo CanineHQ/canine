@@ -35,7 +35,7 @@ module InboundWebhooks
           commit_sha: body["commits"][0]["id"],
           commit_message: body["commits"][0]["title"]
         )
-        Projects::BuildJob.perform_later(build)
+        Projects::BuildJob.perform_later(build, current_user)
       end
     end
   end

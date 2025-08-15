@@ -1,6 +1,6 @@
 class Clusters::ValidateKubeConfig
   extend LightService::Action
-  expects :cluster
+  expects :cluster, :user
 
   executed do |context|
     # Validate structure first
@@ -11,14 +11,14 @@ class Clusters::ValidateKubeConfig
     end
 
     # Then check if we can connect
-    unless can_connect?(context.cluster)
+    unless can_connect?(context.cluster, context.user)
       context.cluster.errors.add(:kubeconfig, "appears to be valid, but we cannot connect to the cluster")
       context.fail_and_return!("Cannot connect to Kubernetes cluster")
     end
   end
 
-  def self.can_connect?(cluster)
-    client = K8::Client.new(cluster)
+  def self.can_connect?(cluster, user)
+    client = K8::Client.new(K8::Connection.new(cluster, user))
     client.can_connect?
   end
 

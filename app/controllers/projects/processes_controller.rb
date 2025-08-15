@@ -12,7 +12,7 @@ class Projects::ProcessesController < Projects::BaseController
   end
 
   def show
-    client = K8::Client.new(@project.cluster)
+    client = K8::Client.new(K8::Connection.new(@project.cluster, current_user))
     @logs = client.get_pod_log(params[:id], @project.name)
     @pod_events = client.get_pod_events(params[:id], @project.name)
 

@@ -1,11 +1,11 @@
 class Clusters::IsReady
   extend LightService::Action
 
-  expects :cluster
+  expects :cluster, :user
 
   executed do |context|
     cluster = context.cluster
-    client = K8::Client.new(cluster)
+    client = K8::Client.new(K8::Connection.new(cluster, context.user))
     if client.can_connect?
       cluster.installing!
       cluster.success("Cluster is ready")

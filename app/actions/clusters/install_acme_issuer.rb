@@ -1,13 +1,13 @@
 class Clusters::InstallAcmeIssuer
   extend LightService::Action
 
-  expects :cluster
+  expects :cluster, :user
 
   executed do |context|
     cluster = context.cluster
     cluster.info("Checking if acme issuer is already installed", color: :yellow)
     runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster, runner)
+    kubectl = K8::Kubectl.new(K8::Connection.new(cluster, context.user), runner)
     begin
       kubectl.("get clusterissuer letsencrypt -n #{Clusters::Install::DEFAULT_NAMESPACE}")
       cluster.success("Acme issuer is already installed")

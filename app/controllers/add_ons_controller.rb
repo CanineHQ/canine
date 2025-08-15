@@ -105,7 +105,7 @@ class AddOnsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
     @add_on = current_account.add_ons.find(params[:id])
-    @service = K8::Helm::Service.create_from_add_on(@add_on)
+    @service = K8::Helm::Service.create_from_add_on(@add_on, current_user)
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path
   end

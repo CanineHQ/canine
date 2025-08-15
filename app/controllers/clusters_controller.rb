@@ -56,12 +56,12 @@ class ClustersController < ApplicationController
   end
 
   def retry_install
-    Clusters::InstallJob.perform_later(@cluster)
+    Clusters::InstallJob.perform_later(@cluster, current_user)
     redirect_to @cluster, notice: "Retrying installation for cluster..."
   end
 
   def test_connection
-    client = K8::Client.new(@cluster)
+    client = K8::Client.new(K8::Connection.new(@cluster, current_user))
     if client.can_connect?
       render turbo_stream: turbo_stream.replace("test_connection_frame", partial: "clusters/connection_success")
     else
@@ -87,7 +87,9 @@ class ClustersController < ApplicationController
         # Create a directory for each project
         # Export services, deployments, ingress and cron jobs from a kubernetes namespace
         %w[services deployments ingress cronjobs].each do |resource|
-          yaml_content = K8::Kubectl.new(@cluster).call("get #{resource} -n #{project.name} -o yaml")
+          yaml_content = K8::Kubectl.new(
+            K8::Connection.new(@cluster, current_user)
+          ).call("get #{resource} -n #{project.name} -o yaml")
           export(@cluster.name, project.name, yaml_content, zio)
         end
       end

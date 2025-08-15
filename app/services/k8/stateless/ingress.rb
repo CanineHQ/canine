@@ -11,12 +11,12 @@ class K8::Stateless::Ingress < K8::Base
     "#{@service.name}-ingress"
   end
 
-  def certificate_status
+  def certificate_status(user)
     return nil unless @service.domains.any?
     return nil unless @service.allow_public_networking?
     return nil unless @service.allow_public_networking?
 
-    K8::Kubectl.new(@cluster).call("get certificate example-tls -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+    K8::Kubectl.new(K8::Connection.new(@cluster, user)).call("get certificate example-tls -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
   end
 
   def get_ingress

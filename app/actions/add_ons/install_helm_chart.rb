@@ -1,6 +1,6 @@
 class AddOns::InstallHelmChart
   extend LightService::Action
-  expects :add_on
+  expects :add_on, :user
 
   executed do |context|
     add_on = context.add_on

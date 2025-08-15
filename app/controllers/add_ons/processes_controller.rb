@@ -4,7 +4,7 @@ class AddOns::ProcessesController < AddOns::BaseController
   def index;end
 
   def show
-    client = K8::Client.new(@add_on.cluster)
+    client = K8::Client.new(K8::Connection.new(@add_on.cluster, current_user))
     @logs = client.get_pod_log(params[:id], @add_on.name)
     @pod_events = client.get_pod_events(params[:id], @add_on.name)
   rescue Kubeclient::ResourceNotFoundError
