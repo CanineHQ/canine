@@ -6,7 +6,7 @@ class Clusters::CreateNamespace
   executed do |context|
     cluster = context.cluster
     runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
+    kubectl = K8::Kubectl.new(cluster, runner)
     kubectl.apply_yaml(K8::Namespace.new(Struct.new(:name).new(Clusters::Install::DEFAULT_NAMESPACE)).to_yaml)
   end
 end

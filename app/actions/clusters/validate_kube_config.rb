@@ -11,14 +11,14 @@ class Clusters::ValidateKubeConfig
     end
 
     # Then check if we can connect
-    unless can_connect?(context.cluster.kubeconfig)
+    unless can_connect?(context.cluster)
       context.cluster.errors.add(:kubeconfig, "appears to be valid, but we cannot connect to the cluster")
       context.fail_and_return!("Cannot connect to Kubernetes cluster")
     end
   end
 
-  def self.can_connect?(kubeconfig)
-    client = K8::Client.new(kubeconfig)
+  def self.can_connect?(cluster)
+    client = K8::Client.new(cluster)
     client.can_connect?
   end
 

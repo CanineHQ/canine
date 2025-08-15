@@ -28,6 +28,11 @@ module Canine
     config.autoload_paths << Rails.root.join("lib")
     config.eager_load_paths << Rails.root.join("lib")
 
+    if ENV["PORTAINER_URL"].present?
+      config.kubernetes_provider = :portainer
+      config.kubernetes_provider_url = ENV["PORTAINER_URL"]
+    end
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

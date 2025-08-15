@@ -18,6 +18,6 @@ class K8::Base
   end
 
   def client
-    @client ||= K8::Client.new(cluster.kubeconfig)
+    @client ||= K8::Client.new(cluster)
   end
 end

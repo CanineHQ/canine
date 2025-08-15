@@ -61,7 +61,7 @@ class ClustersController < ApplicationController
   end
 
   def test_connection
-    client = K8::Client.new(@cluster.kubeconfig)
+    client = K8::Client.new(@cluster)
     if client.can_connect?
       render turbo_stream: turbo_stream.replace("test_connection_frame", partial: "clusters/connection_success")
     else
@@ -87,7 +87,7 @@ class ClustersController < ApplicationController
         # Create a directory for each project
         # Export services, deployments, ingress and cron jobs from a kubernetes namespace
         %w[services deployments ingress cronjobs].each do |resource|
-          yaml_content = K8::Kubectl.new(@cluster.kubeconfig).call("get #{resource} -n #{project.name} -o yaml")
+          yaml_content = K8::Kubectl.new(@cluster).call("get #{resource} -n #{project.name} -o yaml")
           export(@cluster.name, project.name, yaml_content, zio)
         end
       end

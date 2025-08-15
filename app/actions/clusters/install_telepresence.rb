@@ -5,7 +5,7 @@ class Clusters::InstallTelepresence
   executed do |context|
     cluster = context.cluster
     runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
+    kubectl = K8::Kubectl.new(cluster, runner)
     cluster.info("Checking if Telepresence is already installed...", color: :yellow)
 
     begin

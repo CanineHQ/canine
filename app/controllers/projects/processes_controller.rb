@@ -12,7 +12,7 @@ class Projects::ProcessesController < Projects::BaseController
   end
 
   def show
-    client = K8::Client.new(@project.cluster.kubeconfig)
+    client = K8::Client.new(@project.cluster)
     @logs = client.get_pod_log(params[:id], @project.name)
     @pod_events = client.get_pod_events(params[:id], @project.name)
 

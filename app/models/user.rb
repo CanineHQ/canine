@@ -53,4 +53,9 @@ class User < ApplicationRecord
   def downcase_email
     self.email = email.downcase
   end
+
+  def portainer_jwt
+    return @portainer_jwt if @portainer_jwt
+    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
+  end
 end

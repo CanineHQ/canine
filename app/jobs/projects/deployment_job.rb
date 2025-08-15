@@ -9,8 +9,7 @@ class Projects::DeploymentJob < ApplicationJob
     @logger = deployment
     @marked_resources = []
     project = deployment.project
-    kubeconfig = project.cluster.kubeconfig
-    kubectl = create_kubectl(deployment, kubeconfig)
+    kubectl = create_kubectl(deployment, project.cluster)
 
     # Create namespace
     apply_namespace(project, kubectl)
@@ -76,9 +75,9 @@ class Projects::DeploymentJob < ApplicationJob
     _run_command(project.postdeploy_command, kubectl, project, 'postdeploy')
   end
 
-  def create_kubectl(deployment, kubeconfig)
+  def create_kubectl(deployment, cluster)
     runner = Cli::RunAndLog.new(deployment)
-    K8::Kubectl.new(kubeconfig, runner)
+    K8::Kubectl.new(cluster, runner)
   end
 
   def deploy_services(project, kubectl)

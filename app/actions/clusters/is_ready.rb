@@ -5,7 +5,7 @@ class Clusters::IsReady
 
   executed do |context|
     cluster = context.cluster
-    client = K8::Client.new(cluster.kubeconfig)
+    client = K8::Client.new(cluster)
     if client.can_connect?
       cluster.installing!
       cluster.success("Cluster is ready")

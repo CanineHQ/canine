@@ -8,7 +8,7 @@ class K8::Stateless::Command < K8::Base
   end
 
   def kubectl
-    @kubectl ||= K8::Kubectl.new(project.cluster.kubeconfig)
+    @kubectl ||= K8::Kubectl.new(project.cluster)
   end
 
   def name

@@ -47,7 +47,7 @@ class AddOns::InstallHelmChart
   end
 
   def self.create_namespace(add_on)
-    kubectl = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
+    kubectl = K8::Kubectl.new(add_on.cluster, Cli::RunAndLog.new(add_on))
     namespace_yaml = K8::Namespace.new(add_on).to_yaml
     kubectl.apply_yaml(namespace_yaml)
   end

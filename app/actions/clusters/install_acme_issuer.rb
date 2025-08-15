@@ -7,7 +7,7 @@ class Clusters::InstallAcmeIssuer
     cluster = context.cluster
     cluster.info("Checking if acme issuer is already installed", color: :yellow)
     runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
+    kubectl = K8::Kubectl.new(cluster, runner)
     begin
       kubectl.("get clusterissuer letsencrypt -n #{Clusters::Install::DEFAULT_NAMESPACE}")
       cluster.success("Acme issuer is already installed")

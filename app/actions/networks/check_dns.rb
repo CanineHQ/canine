@@ -19,7 +19,7 @@ class Networks::CheckDns
     def infer_public_ip_from_cluster(cluster)
       # The ingress is reporting a private IP address, so we need to guess the public IP address
       # based on the cluster's domain name
-      server_name = K8::Client.new(cluster.kubeconfig).server
+      server_name = K8::Client.new(cluster).server
       # Parse the hostname from the server, with ruby's URI.parse
       hostname = URI.parse(server_name).hostname
       # If hostname is just an ip address, then we can return it

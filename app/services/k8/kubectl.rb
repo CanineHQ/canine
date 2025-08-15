@@ -4,8 +4,8 @@ class K8::Kubectl
   include K8::Kubeconfig
   attr_reader :kubeconfig, :runner
 
-  def initialize(kubeconfig, runner = Cli::RunAndReturnOutput.new)
-    @kubeconfig = kubeconfig
+  def initialize(connection, runner = Cli::RunAndReturnOutput.new)
+    @kubeconfig = connection.kubeconfig
     if @kubeconfig.nil?
       raise "Kubeconfig is required"
     end
@@ -13,11 +13,11 @@ class K8::Kubectl
   end
 
   def self.from_project(project)
-    new(project.cluster.kubeconfig)
+    new(project.cluster)
   end
 
   def self.from_add_on(add_on)
-    new(add_on.cluster.kubeconfig)
+    new(add_on.cluster)
   end
 
   def apply_yaml(yaml_content)

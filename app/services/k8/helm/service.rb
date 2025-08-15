@@ -15,7 +15,7 @@ class K8::Helm::Service
 
   def initialize(add_on)
     @add_on = add_on
-    @client = K8::Client.new(add_on.cluster.kubeconfig)
+    @client = K8::Client.new(add_on.cluster)
   end
 
   def friendly_name
@@ -82,7 +82,7 @@ class K8::Helm::Service
   end
 
   def get_volume_usage(pod_name, mount_path)
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
+    output = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
     lines = output.strip.split("\n")
     return nil if lines.size < 2
 
@@ -95,12 +95,12 @@ class K8::Helm::Service
   end
 
   def get_persistent_volume
-    pv = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("get pv #{service_name} -o json")
+    pv = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("get pv #{service_name} -o json")
     JSON.parse(pv)
   end
 
   def exec_df_command
-    output = K8::Kubectl.new(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).call("exec #{service_name} -- df -h /data")
+    output = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("exec #{service_name} -- df -h /data")
     output.strip
   end
 end

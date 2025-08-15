@@ -3,7 +3,7 @@ module K8::Metrics::Api
     extend StorageHelper
     def self.ls(cluster, with_namespaces: true)
       # Here, run kubectl top nodes
-      kubectl = K8::Kubectl.new(cluster.kubeconfig)
+      kubectl = K8::Kubectl.new(cluster)
       response = kubectl.call("top nodes")
       parsed_data = parse_output(response)
       #  get --raw /apis/metrics.k8s.io/v1beta1/nodes/#{node}
@@ -101,7 +101,7 @@ module K8::Metrics::Api
     extend StorageHelper
 
     def self.fetch(cluster, namespace)
-      kubectl = K8::Kubectl.new(cluster.kubeconfig)
+      kubectl = K8::Kubectl.new(cluster)
       response = kubectl.call("top pods -n #{namespace}")
       parsed_data = parse_output(response)
       parsed_data.map do |data|

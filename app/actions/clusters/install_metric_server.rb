@@ -6,7 +6,7 @@ class Clusters::InstallMetricServer
   executed do |context|
     cluster = context.cluster
     runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
+    kubectl = K8::Kubectl.new(cluster, runner)
     cluster.info("Checking if metric server is already installed...", color: :yellow)
 
     begin
