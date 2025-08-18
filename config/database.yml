@@ -17,12 +17,13 @@ default: &default
   encoding: unicode
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # https://island94.org/2024/09/secret-to-rails-database-connection-pool-size
+  pool: <%= ENV.fetch("DB_POOL_SIZE", 100).to_i %>
 
 docker: &docker
   adapter: postgresql
   encoding: unicode
-  pool: 5
+  pool: <%= ENV.fetch("DB_POOL_SIZE", 100).to_i %>
   username: postgres
   password: password
   host: postgres

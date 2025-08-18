@@ -1,5 +1,5 @@
 <%= content_for :title, "Add Ons" %>
-<%= turbo_stream_from :add_ons %>
+<%= turbo_stream_from [:add_ons, current_account] %>
 
 <div>
   <div class="flex items-center justify-between">
