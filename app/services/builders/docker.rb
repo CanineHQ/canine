@@ -12,7 +12,7 @@ module Builders
     private
 
     def execute_docker_build(repository_path)
-      docker_build_command = build_docker_build_command(repository_path)
+      docker_build_command = construct_buildx_command(repository_path)
 
       # Create a new instance of RunAndLog with the build object as the loggable and killable
       runner = Cli::RunAndLog.new(build, killable: build)
@@ -23,7 +23,7 @@ module Builders
       raise "Docker build failed: #{e.message}"
     end
 
-    def build_docker_build_command(repository_path)
+    def construct_buildx_command(repository_path)
       docker_build_command = [
         "docker",
         "--context", "default",

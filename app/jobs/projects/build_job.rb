@@ -29,9 +29,6 @@ class Projects::BuildJob < ApplicationJob
 
       # Clone repository and build
       clone_repository_and_build_image(project, build, image_builder)
-
-      # Push the image
-      image_builder.push_image
     end
 
     complete_build!(build)

@@ -25,17 +25,4 @@ class Builders::Base
       raise "Docker login failed: #{stderr}"
     end
   end
-
-  # Push the built image to the registry
-  def push_image
-    docker_push_command = [ "docker", "push", project.container_registry_url ]
-
-    build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
-
-    # Execute docker push with killable support
-    runner = Cli::RunAndLog.new(build, killable: build)
-    runner.call(docker_push_command.join(" "))
-  rescue Cli::CommandFailedError => e
-    raise "Docker push failed for project #{project.name}: #{e.message}"
-  end
 end

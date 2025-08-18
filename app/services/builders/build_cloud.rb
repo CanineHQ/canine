@@ -42,9 +42,5 @@ module Builders
 
       command
     end
-
-    def push_image
-      puts "already pushed"
-    end
   end
 end
