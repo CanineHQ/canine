@@ -12,7 +12,7 @@ class CreateFlipperTables < ActiveRecord::Migration[7.2]
       t.text :value
       t.timestamps null: false
     end
-    add_index :flipper_gates, [:feature_key, :key, :value], unique: true, length: { value: 255 }
+    add_index :flipper_gates, [ :feature_key, :key, :value ], unique: true, length: { value: 255 }
   end
 
   def down
