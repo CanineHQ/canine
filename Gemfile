@@ -111,3 +111,7 @@ gem "sys-proctable", "~> 1.3"
 gem "omniauth-gitlab", "~> 4.1"
 
 gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
+
+gem 'flipper', '~> 1.2.2'
+gem 'flipper-active_record', '~> 1.2.2'
+gem 'flipper-ui', '~> 1.2.2'
