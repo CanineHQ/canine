@@ -52,9 +52,9 @@
       </label>
     <% end %>
 
-    <div class="mt-6">
+    <%= render(FormFieldComponent.new(label: "Build configuration")) do %>
       <%= render "projects/build_configurations/form", form: form, project: project %>
-    </div>
+    <% end %>
   </div>
 
   <div class="form-footer">

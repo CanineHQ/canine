@@ -52,7 +52,7 @@ module Projects
       BuildConfiguration.new(
         project:,
         driver: build_config_params[:driver],
-        cluster_id: build_config_params[:cluster_id]
+        build_cloud_id: build_config_params[:build_cloud_id]
       )
     end
 

@@ -11,7 +11,7 @@ class Clusters::BuildCloudsController < Clusters::BaseController
 
   def destroy
     @build_cloud = @cluster.build_cloud
-    
+
     if @build_cloud.blank?
       redirect_to edit_cluster_path(@cluster), alert: "No build cloud found for this cluster"
       return

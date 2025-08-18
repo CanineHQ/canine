@@ -24,7 +24,7 @@
 #
 class BuildCloud < ApplicationRecord
   include Loggable
-  
+
   belongs_to :cluster
 
   validates :cluster_id, uniqueness: true
@@ -43,6 +43,10 @@ class BuildCloud < ApplicationRecord
   # Broadcast updates when the build cloud changes
   after_commit :broadcast_update
 
+  def friendly_name
+    "#{cluster.name} - #{namespace}"
+  end
+
   def installation_details
     {
       namespace: namespace,
@@ -56,7 +60,7 @@ class BuildCloud < ApplicationRecord
 
   def broadcast_update
     broadcast_replace_later_to(
-      [cluster, :build_cloud],
+      [ cluster, :build_cloud ],
       target: ActionView::RecordIdentifier.dom_id(cluster, "build_cloud"),
       partial: "clusters/build_clouds/show",
       locals: { cluster: cluster }

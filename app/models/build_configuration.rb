@@ -21,10 +21,11 @@
 #
 class BuildConfiguration < ApplicationRecord
   belongs_to :project
-  belongs_to :cluster, optional: true
+  belongs_to :build_cloud, optional: true
 
   enum :driver, {
     docker: 0,
     k8s: 1
   }
+  validates_presence_of :build_cloud, if: -> { driver == 'k8s' }
 end

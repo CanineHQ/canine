@@ -25,7 +25,10 @@ module Builders
 
     def build_docker_build_command(repository_path)
       docker_build_command = [
-        "docker", "build",
+        "docker",
+        "--context", "default",
+        "buildx",
+        "build",
         "--progress=plain",
         "--platform", "linux/amd64",
         "-t", project.container_registry_url,
@@ -36,6 +39,8 @@ module Builders
       project.environment_variables.each do |envar|
         docker_build_command.push("--build-arg", "#{envar.name}=\"#{envar.value}\"")
       end
+
+      docker_build_command.push("--push")
 
       # Add the build context directory at the end
       docker_build_command.push(File.join(repository_path, project.docker_build_context_directory))

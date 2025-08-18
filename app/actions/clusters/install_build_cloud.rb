@@ -24,6 +24,5 @@ module Clusters
     end
 
     private
-
   end
 end

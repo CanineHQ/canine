@@ -17,8 +17,10 @@ class Projects::BuildJob < ApplicationJob
 
       # Initialize the Docker builder
       image_builder = if project.build_configuration&.k8s?
+        build.info("Driver: Kubernetes (#{project.build_configuration.build_cloud.friendly_name})", color: :green)
         Builders::BuildCloud.new(build)
       else
+        build.info("Driver: Docker", color: :green)
         Builders::Docker.new(build)
       end
 

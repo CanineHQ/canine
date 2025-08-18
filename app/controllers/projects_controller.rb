@@ -60,18 +60,10 @@ class ProjectsController < ApplicationController
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    respond_to do |format|
-      if @project.update(project_params)
-        # Handle build configuration update
-        if params[:project][:build_configuration].present?
-          build_config_params = params[:project][:build_configuration]
-          build_config = @project.build_configuration || @project.build_build_configuration
-          build_config.update(
-            driver: build_config_params[:driver],
-            cluster_id: build_config_params[:cluster_id]
-          )
-        end
+    result = Projects::Update.call(@project, params)
 
+    respond_to do |format|
+      if result.success?
         format.html { redirect_to @project, notice: "Project is successfully updated." }
         format.json { render :show, status: :ok, location: @project }
       else

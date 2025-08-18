@@ -15,10 +15,10 @@ module Clusters
 
         # Initialize the build cloud manager
         build_cloud_manager = K8::BuildCloudManager.new(cluster, build_cloud)
-        
+
         # Teardown the builder
         build_cloud_manager.teardown!
-        
+
         # Mark the build cloud as uninstalled (keep the record for logs)
         build_cloud.update!(
           status: :uninstalled,
@@ -26,17 +26,17 @@ module Clusters
             uninstalled_at: Time.current
           )
         )
-        
+
         Rails.logger.info("Successfully removed build cloud from cluster #{cluster.name}")
       rescue StandardError => e
         Rails.logger.error("Failed to remove build cloud from cluster #{cluster.name}: #{e.message}")
-        
+
         # Update the build cloud status to failed
         build_cloud.update!(
           status: :failed,
           error_message: "Failed to remove: #{e.message}"
         )
-        
+
         raise e
       end
     end

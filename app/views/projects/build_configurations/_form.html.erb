@@ -1,81 +1,27 @@
-<div class=" rounded-lg p-4">
-  <div data-controller="build-configuration card-select">
+<div>
+  <div>
     <% build_configuration = project.build_configuration || BuildConfiguration.new(driver: 'docker') %>
     <%= form.fields_for :build_configuration, build_configuration do |bc_form| %>
-      <div class="form-control">
-        <label class="label">
-          <span class="label-text">Build Environment</span>
-        </label>
-        
-        <%= bc_form.select :driver, 
-          options_for_select([
-            ['Local Docker', 'docker'],
-            ['Kubernetes Build Cloud', 'k8s']
-          ], build_configuration.driver || 'docker'),
-          {},
+      <div class="form-control mt-4">
+        <%= render "shared/partials/radio_selector", selected: build_configuration.driver, options: [
           {
-            class: "select select-bordered hidden",
-            data: {
-              "card-select-target": "input",
-              "build-configuration-target": "driver",
-              action: "change->build-configuration#toggleClusterSelect"
-            }
+            icon: "skill-icons:docker",
+            name: "project[build_configuration][driver]",
+            label: "Local Docker",
+            value: "docker",
+            description: "Build images using Docker on the deployment server. Simple setup, suitable for smaller projects."
+          },
+          {
+            icon: "skill-icons:kubernetes",
+            name: "project[build_configuration][driver]",
+            label: "Kubernetes Build Cloud",
+            description: "Build images in your Kubernetes cluster. Scalable, distributed builds with better resource utilization.",
+            value: "k8s",
+            partial: "projects/build_configurations/k8s_build_cloud",
+            locals: { current_account:, bc_form:, build_configuration: }
           }
-        %>
+        ] %>
         
-        <div class="flex gap-4">
-          <div class="card bg-base-100 shadow-sm cursor-pointer transition-all hover:shadow-md flex-1" data-action="click->card-select#selectCard" data-value="docker">
-            <div class="card-body p-4">
-              <div class="flex items-start gap-3">
-                <div class="text-3xl">🐳</div>
-                <div class="flex-1">
-                  <h4 class="font-semibold">Local Docker</h4>
-                  <p class="text-sm text-gray-600 mt-1">Build images using Docker on the deployment server. Simple setup, suitable for smaller projects.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="card bg-base-100 shadow-sm cursor-pointer transition-all hover:shadow-md flex-1" data-action="click->card-select#selectCard" data-value="k8s">
-            <div class="card-body p-4">
-              <div class="flex items-start gap-3">
-                <div class="text-3xl">☸️</div>
-                <div class="flex-1">
-                  <h4 class="font-semibold">Kubernetes Build Cloud</h4>
-                  <p class="text-sm text-gray-600 mt-1">Build images in your Kubernetes cluster. Scalable, distributed builds with better resource utilization.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-control mt-4 hidden" data-build-configuration-target="clusterSelect">
-        <label class="label">
-          <span class="label-text">Build Cluster</span>
-        </label>
-        <% build_clouds = current_account.build_clouds %>
-        <% if build_clouds.any? %>
-          <%= bc_form.collection_select :build_cloud_id, 
-            build_clouds,
-            :id, 
-            :name,
-            { include_blank: "Select a build cloud...", selected: build_configuration.build_cloud&.id },
-            { 
-              class: "select select-bordered w-full",
-              data: { "build-configuration-target": "clusterInput" }
-            }
-          %>
-          <label class="label">
-            <span class="label-text-alt">Select a Kubernetes cluster configured for container builds</span>
-          </label>
-        <% else %>
-          <div class="alert alert-warning">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-            <span>No clusters are configured for container builds. Please enable container builds on at least one cluster in the cluster settings.</span>
-          </div>
-          <%= bc_form.hidden_field :cluster_id, value: nil %>
-        <% end %>
       </div>
     <% end %>
   </div>

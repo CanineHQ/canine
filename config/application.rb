@@ -10,6 +10,7 @@ module Canine
   class Application < Rails::Application
     config.assets.css_compressor = nil
     config.local_mode = ENV["LOCAL_MODE"] == "true"
+    config.available_drivers = ENV.fetch("AVAILABLE_DRIVERS", "docker,k8s").split(",")
     config.active_job.queue_adapter = :good_job
     config.application_name = Rails.application.class.module_parent_name
     # Initialize configuration defaults for originally generated Rails version.

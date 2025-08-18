@@ -190,7 +190,7 @@ class K8::BuildCloudManager
   def remove_builder!
     # Delete locally, this also removes the builder from kubernetes
     runner.call("docker buildx rm #{BUILDKIT_BUILDER_NAME}")
-    
+
     # Also remove from kubernetes if possible
     K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
   rescue StandardError => e
