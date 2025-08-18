@@ -90,6 +90,7 @@ Rails.application.routes.draw do
 
   authenticate :user, lambda { |u| u.admin? } do
     namespace :admin do
+      mount Flipper::UI.app(Flipper) => '/flipper', as: :flipper
       mount GoodJob::Engine => "/good_job"
     end
   end
