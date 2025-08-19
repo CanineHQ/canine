@@ -3,11 +3,16 @@
 # Table name: build_clouds
 #
 #  id                    :bigint           not null, primary key
+#  cpu_limits            :bigint           default(2000)
+#  cpu_requests          :bigint           default(500)
 #  driver_version        :string
 #  error_message         :text
 #  installation_metadata :jsonb
 #  installed_at          :datetime
+#  memory_limits         :bigint           default(4294967296)
+#  memory_requests       :bigint           default(536870912)
 #  namespace             :string           default("canine-k8s-builder"), not null
+#  replicas              :integer          default(2)
 #  status                :integer          default("pending"), not null
 #  webhook_url           :string
 #  created_at            :datetime         not null
@@ -37,7 +42,8 @@ class BuildCloud < ApplicationRecord
     active: 2,
     failed: 3,
     uninstalling: 4,
-    uninstalled: 5
+    uninstalled: 5,
+    updating: 6
   }
 
   # Broadcast updates when the build cloud changes

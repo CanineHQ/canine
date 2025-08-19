@@ -23,6 +23,5 @@ FactoryBot.define do
   factory :build_configuration do
     project { nil }
     driver { 1 }
-    cluster { nil }
   end
 end

@@ -91,6 +91,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_18_215548) do
     t.jsonb "installation_metadata", default: {}
     t.datetime "installed_at"
     t.text "error_message"
+    t.integer "replicas", default: 2
+    t.bigint "cpu_requests", default: 500
+    t.bigint "cpu_limits", default: 2000
+    t.bigint "memory_requests", default: 536870912
+    t.bigint "memory_limits", default: 4294967296
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_build_clouds_on_cluster_id"

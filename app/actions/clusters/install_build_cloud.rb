@@ -4,22 +4,23 @@ module Clusters
   class InstallBuildCloud
     extend LightService::Action
 
-    expects :cluster
+    expects :build_cloud
     promises :build_cloud
 
     executed do |context|
-      cluster = context.cluster
-
+      build_cloud = context.build_cloud
       # Check if build cloud is already installed
-      if cluster.build_cloud.present? && !cluster.build_cloud.uninstalled?
-        context.fail_and_return!("Build cloud is already installed on this cluster")
+      if build_cloud.pending? || build_cloud.failed?
+        build_cloud.installing!
+      else
+        build_cloud.updating!
       end
-      if cluster.build_cloud.uninstalled?
-        cluster.build_cloud.update(error_message: nil, status: :installing)
+      if build_cloud.uninstalled?
+        build_cloud.update(error_message: nil, status: :installing)
       end
 
       # Create BuildCloud record (namespace will use default from migration)
-      build_cloud = K8::BuildCloudManager.install_to(cluster)
+      build_cloud = K8::BuildCloudManager.install(build_cloud)
       context.build_cloud = build_cloud
     end
 

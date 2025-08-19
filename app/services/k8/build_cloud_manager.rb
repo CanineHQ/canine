@@ -1,38 +1,21 @@
 class K8::BuildCloudManager
   include K8::Kubeconfig
+  include StorageHelper
   BUILDKIT_BUILDER_NAME = 'canine-k8s-builder'
 
   attr_reader :connection, :build_cloud
 
-  def self.get_buildkit_version(build_cloud_manager)
-    # Try to extract version from buildx inspect output
-    status = runner.call("docker buildx inspect #{K8::BuildCloudManager::BUILDKIT_BUILDER_NAME}")
-    if status.success?
-      $1
-    else
-      "unknown"
-    end
-  rescue StandardError
-    "unknown"
-  end
-
-  def self.install_to(cluster)
+  def self.install(build_cloud)
     params = {
       installation_metadata: {
         started_at: Time.current,
         builder_name: K8::BuildCloudManager::BUILDKIT_BUILDER_NAME
       }
     }
-    build_cloud = if cluster.build_cloud.present?
-      cluster.build_cloud.update!(params)
-      cluster.build_cloud
-    else
-      cluster.create_build_cloud!(params)
-    end
 
     begin
       # Initialize the K8::BuildCloud service with the build_cloud model
-      build_cloud_manager = K8::BuildCloudManager.new(cluster, build_cloud)
+      build_cloud_manager = K8::BuildCloudManager.new(build_cloud.cluster, build_cloud)
 
       # Run the setup
       build_cloud_manager.setup!
@@ -43,14 +26,14 @@ class K8::BuildCloudManager
         build_cloud.update!(
           status: :active,
           installed_at: Time.current,
-          driver_version: get_buildkit_version(build_cloud_manager),
+          driver_version: build_cloud_manager.get_buildkit_version,
           installation_metadata: build_cloud.installation_metadata.merge(
             completed_at: Time.current,
             builder_ready: true
           )
         )
 
-        Rails.logger.info("Successfully installed build cloud on cluster #{cluster.name}")
+        Rails.logger.info("Successfully installed build cloud on cluster #{build_cloud.cluster.name}")
       else
         raise "Builder was created but is not ready"
       end
@@ -76,6 +59,19 @@ class K8::BuildCloudManager
   def initialize(connection, build_cloud)
     @connection = connection
     @build_cloud = build_cloud
+  end
+
+  def get_buildkit_version
+    local_runner = Cli::RunAndReturnOutput.new
+    output = local_runner.call("docker buildx inspect #{K8::BuildCloudManager::BUILDKIT_BUILDER_NAME}")
+    if output
+      result = parse_inspect_output(output)
+      result[:version]
+    else
+      "unknown"
+    end
+  rescue StandardError
+    "unknown"
   end
 
   def namespace
@@ -138,11 +134,11 @@ class K8::BuildCloudManager
       command += "--name #{BUILDKIT_BUILDER_NAME} "
       command += "--driver kubernetes "
       command += "--driver-opt namespace=#{namespace} "
-      command += "--driver-opt replicas=2 "
-      command += "--driver-opt requests.cpu=500m "
-      command += "--driver-opt requests.memory=512Mi "
-      command += "--driver-opt limits.cpu=2000m "
-      command += "--driver-opt limits.memory=4Gi "
+      command += "--driver-opt replicas=#{build_cloud.replicas} "
+      command += "--driver-opt requests.cpu=#{integer_to_compute(build_cloud.cpu_requests)} "
+      command += "--driver-opt requests.memory=#{integer_to_memory(build_cloud.memory_requests)} "
+      command += "--driver-opt limits.cpu=#{integer_to_compute(build_cloud.cpu_limits)} "
+      command += "--driver-opt limits.memory=#{integer_to_memory(build_cloud.memory_limits)} "
       command += "--use"
       runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
@@ -204,5 +200,18 @@ class K8::BuildCloudManager
   def kubeconfig
     # This is necessary for the include K8::Kubeconfig module
     connection.kubeconfig
+  end
+
+  def parse_inspect_output(text)
+    version = nil
+
+    text.each_line do |line|
+      if line.start_with?("BuildKit version:")
+        version = line.split(":", 2)[1].strip
+        break
+      end
+    end
+
+    { "version" => version }.with_indifferent_access
   end
 end

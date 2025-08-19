@@ -5,7 +5,18 @@
   <hr class="mt-3 mb-4 border-t border-base-300" />
   <div class="mt-6">
       <% if cluster.build_cloud.present? %>
-        <%= render "clusters/build_clouds/show", cluster: cluster %>
+        <%= turbo_frame_tag dom_id(cluster, "build_cloud"), src: cluster_build_cloud_path(cluster), loading: "lazy" do %>
+          <div class="card bg-base-200">
+            <div class="card-body">
+              <div class="flex justify-center items-center py-8">
+                <div class="flex flex-col items-center">
+                  <span class="loading loading-spinner loading-lg"></span>
+                  <p class="mt-4 text-gray-600">Loading build cloud status...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
       <% else %>
         <%= render "clusters/build_clouds/install", cluster: cluster %>
       <% end %>

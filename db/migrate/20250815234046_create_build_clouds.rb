@@ -9,6 +9,11 @@ class CreateBuildClouds < ActiveRecord::Migration[7.2]
       t.jsonb :installation_metadata, default: {}
       t.datetime :installed_at
       t.text :error_message
+      t.integer :replicas, default: 2
+      t.bigint :cpu_requests, default: 500
+      t.bigint :cpu_limits, default: 2000
+      t.bigint :memory_requests, default: 536870912 # 512Mi in bytes
+      t.bigint :memory_limits, default: 4294967296 # 4Gi in bytes
 
       t.timestamps
     end
