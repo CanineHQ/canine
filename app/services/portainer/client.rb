@@ -9,6 +9,8 @@ module Portainer
     base_uri Rails.application.config.kubernetes_provider_url
     default_options.update(verify: false)
 
+    class UnauthorizedError < StandardError; end
+
     def initialize(jwt)
       @jwt = jwt
     end
@@ -20,6 +22,10 @@ module Portainer
           'Authorization' => "Bearer #{@jwt}"
         }
       )
+
+      if response.code == 401
+        raise UnauthorizedError, "Unauthorized to access Portainer"
+      end
 
       response.parsed_response if response.success?
     end
