@@ -78,6 +78,9 @@ Rails.application.routes.draw do
       get :download_yaml
       get :logs
     end
+    collection do
+      get :sync
+    end
     resource :metrics, only: [ :show ], module: :clusters
     member do
       post :test_connection

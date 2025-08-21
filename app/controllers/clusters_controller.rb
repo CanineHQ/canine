@@ -33,6 +33,11 @@ class ClustersController < ApplicationController
   def logs
   end
 
+  def sync
+    Clusters::SyncClustersJob.perform_later(current_user, current_account)
+    redirect_to clusters_path, notice: "Clusters sync started"
+  end
+
   def check_k3s_ip_address
     # Check if the IP address is reachable at port 6443
     ip_address = params[:ip_address]

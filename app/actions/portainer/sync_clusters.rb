@@ -1,7 +1,7 @@
-class Portainer::Clusters
+class Portainer::SyncClusters
   extend LightService::Action
 
-  expects :cluster, :current_user, :current_account
+  expects :current_user, :current_account
   promises :clusters
 
   executed do |context|
