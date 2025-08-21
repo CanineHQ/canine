@@ -102,6 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_19_200812) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "cluster_type", default: 0
+    t.string "external_id"
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
