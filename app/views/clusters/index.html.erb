@@ -1,5 +1,5 @@
 <%= content_for :title, "Clusters" %>
-<%= turbo_stream_from :clusters %>
+<%= turbo_stream_from [:clusters, current_account] %>
 
 <div>
   <div class="flex items-center justify-between">

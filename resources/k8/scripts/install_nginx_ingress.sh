@@ -11,6 +11,7 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.config.proxy-body-size=0 \
   --set controller.config.proxy-buffer-size=16k \
   --set controller.config.proxy-buffers-number=8 \
+  --set controller.config.proxy-busy-buffers-size=32k \
   --set controller.config.proxy-read-timeout=3600 \
   --set controller.config.proxy-send-timeout=3600 \
   --set controller.config.h2-backend=true \

@@ -1,5 +1,5 @@
 <%= content_for :title, "Users" %>
-<%= turbo_stream_from :account_users %>
+<%= turbo_stream_from [:account_users, current_account] %>
 
 <div>
   <div>
