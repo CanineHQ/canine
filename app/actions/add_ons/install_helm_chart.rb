@@ -6,7 +6,7 @@ class AddOns::InstallHelmChart
     add_on = context.add_on
 
     add_on.update_install_stage!(0)
-    create_namespace(add_on)
+    create_namespace(add_on, context.user)
 
     if add_on.installed?
       add_on.updating!
@@ -46,8 +46,9 @@ class AddOns::InstallHelmChart
     raise e
   end
 
-  def self.create_namespace(add_on)
-    kubectl = K8::Kubectl.new(add_on.cluster, Cli::RunAndLog.new(add_on))
+  def self.create_namespace(add_on, user)
+    runner = Cli::RunAndLog.new(add_on)
+    kubectl = K8::Kubectl.new(K8::Connection.new(add_on.cluster, user), runner)
     namespace_yaml = K8::Namespace.new(add_on).to_yaml
     kubectl.apply_yaml(namespace_yaml)
   end
