@@ -46,17 +46,17 @@ class User < ApplicationRecord
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
 
   def github_provider
-  providers.find_by(provider: "github")
+    providers.find_by(provider: "github")
+  end
+
+  def portainer_jwt
+    return @portainer_jwt if @portainer_jwt
+    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
   end
 
   private
 
   def downcase_email
     self.email = email.downcase
-  end
-
-  def portainer_jwt
-    return @portainer_jwt if @portainer_jwt
-    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
   end
 end

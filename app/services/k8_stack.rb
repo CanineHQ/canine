@@ -1,4 +1,4 @@
-class Stack
+class K8Stack
   # The stack class is just to make sure that we don't hard couple to portainer
   def self.fetch_kubeconfig(cluster, user)
     if Rails.configuration.kubernetes_provider == :portainer

@@ -26,7 +26,7 @@ module K8
     def initialize(connection)
       @connection = connection
       @_kubeconfig = connection.kubeconfig
-      @kubeconfig = kubeconfig.is_a?(String) ? JSON.parse(kubeconfig) : kubeconfig
+      @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
       @client = build_client
     end
 

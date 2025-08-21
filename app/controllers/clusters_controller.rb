@@ -123,7 +123,7 @@ class ClustersController < ApplicationController
     respond_to do |format|
       if result.success?
         # Kick off cluster job
-        Clusters::InstallJob.perform_later(@cluster)
+        Clusters::InstallJob.perform_later(@cluster, current_user)
         format.html { redirect_to @cluster, notice: "Cluster was successfully created." }
         format.json { render :show, status: :created, location: @cluster }
       else

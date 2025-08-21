@@ -96,7 +96,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_19_200812) do
 
   create_table "clusters", force: :cascade do |t|
     t.string "name", null: false
-    t.jsonb "kubeconfig", default: {}, null: false
+    t.jsonb "kubeconfig", default: {}
     t.bigint "account_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false

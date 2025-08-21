@@ -4,7 +4,7 @@
 #
 #  id           :bigint           not null, primary key
 #  cluster_type :integer          default("k8s")
-#  kubeconfig   :jsonb            not null
+#  kubeconfig   :jsonb
 #  name         :string           not null
 #  status       :integer          default("initializing"), not null
 #  created_at   :datetime         not null

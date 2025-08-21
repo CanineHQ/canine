@@ -46,7 +46,7 @@ class AddOnsController < ApplicationController
 
     respond_to do |format|
       if result.success?
-        AddOns::InstallJob.perform_later(@add_on)
+        AddOns::InstallJob.perform_later(@add_on, current_user)
         format.html { redirect_to @add_on, notice: "Add on was successfully created." }
         format.json { render :show, status: :created, location: @add_on }
       else
@@ -63,7 +63,7 @@ class AddOnsController < ApplicationController
 
     respond_to do |format|
       if result.success?
-        AddOns::InstallJob.perform_later(@add_on)
+        AddOns::InstallJob.perform_later(@add_on, current_user)
         format.html { redirect_to @add_on, notice: "Add on #{@add_on.name} is updating..." }
         format.json { render :show, status: :ok, location: @add_on }
       else
