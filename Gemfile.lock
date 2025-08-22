@@ -149,9 +149,9 @@ GEM
     cssbundling-rails (1.4.1)
       railties (>= 6.0.0)
     csv (3.3.0)
-    database_cleaner-active_record (2.2.0)
+    database_cleaner-active_record (2.2.2)
       activerecord (>= 5.a)
-      database_cleaner-core (~> 2.0.0)
+      database_cleaner-core (~> 2.0)
     database_cleaner-core (2.0.1)
     date (3.4.1)
     debug (1.10.0)
@@ -653,7 +653,7 @@ DEPENDENCIES
   capybara
   cron2english (~> 0.1.7)
   cssbundling-rails
-  database_cleaner-active_record (~> 2.2.0)
+  database_cleaner-active_record (~> 2.2.2)
   debug
   devise (~> 4.9)
   dotenv (~> 3.1)
