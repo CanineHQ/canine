@@ -11,7 +11,7 @@ class Builders::Base
 
   # Login to the Docker registry
   def login_to_registry(project_credential_provider)
-    base_url = project_credential_provider.provider.github? ? "ghcr.io" : "registry.gitlab.com"
+    base_url = project_credential_provider.provider.registry_base_url
     docker_login_command = [ "docker", "login", base_url, "--username" ] +
                             [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
 

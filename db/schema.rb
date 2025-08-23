@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_18_215548) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -107,8 +107,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_18_215548) do
     t.bigint "build_cloud_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "provider_id", null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
+    t.index ["provider_id"], name: "index_build_configurations_on_provider_id"
   end
 
   create_table "builds", force: :cascade do |t|
@@ -475,6 +477,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_18_215548) do
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
   add_foreign_key "build_configurations", "projects"
+  add_foreign_key "build_configurations", "providers"
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
