@@ -52,8 +52,10 @@
       </label>
     <% end %>
 
-    <%= render(FormFieldComponent.new(label: "Build configuration")) do %>
-      <%= render "projects/build_configurations/form", form: form, project: project %>
+    <% if Flipper.enabled?(:build_configuration, current_account) %>
+      <%= render(FormFieldComponent.new(label: "Build configuration")) do %>
+        <%= render "projects/build_configurations/form", form: form, project: project %>
+      <% end %>
     <% end %>
   </div>
 

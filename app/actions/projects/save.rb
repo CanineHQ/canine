@@ -2,7 +2,7 @@ class Projects::Save
   extend LightService::Action
 
   expects :project, :project_credential_provider
-  optional :build_configuration
+  expects :build_configuration, default: nil
   promises :project
 
   executed do |context|
