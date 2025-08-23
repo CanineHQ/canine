@@ -15,11 +15,20 @@ class Projects::BuildJob < ApplicationJob
       project_credential_provider = project.project_credential_provider
       project_credential_provider.used!
 
-      clone_repository_and_build_docker(project, build)
+      # Initialize the Docker builder
+      image_builder = if project.build_configuration&.k8s?
+        build.info("Driver: Kubernetes (#{project.build_configuration.build_cloud.friendly_name})", color: :green)
+        Builders::BuildCloud.new(build)
+      else
+        build.info("Driver: Docker", color: :green)
+        Builders::Docker.new(build)
+      end
 
-      login_to_docker(project_credential_provider, build)
+      # Login to registry
+      image_builder.login_to_registry(project_credential_provider)
 
-      push_to_github_container_registry(project, build)
+      # Clone repository and build
+      clone_repository_and_build_image(project, build, image_builder)
     end
 
     complete_build!(build)
@@ -53,63 +62,6 @@ class Projects::BuildJob < ApplicationJob
     raise BuildFailure, "Failed to clone repository: #{e.message}"
   end
 
-  def build_docker_build_command(project, repository_path)
-    docker_build_command = [
-      "docker", "build",
-      "--progress=plain",
-      "--platform", "linux/amd64",
-      "-t", project.container_registry_url,
-      "-f", File.join(repository_path, project.dockerfile_path)
-    ]
-
-    # Add environment variables to the build command
-    project.environment_variables.each do |envar|
-      docker_build_command.push("--build-arg", "#{envar.name}=\"#{envar.value}\"")
-    end
-
-    # Add the build context directory at the end
-    docker_build_command.push(File.join(repository_path, project.docker_build_context_directory))
-    docker_build_command
-  end
-
-  def execute_docker_build(project, build, repository_path)
-    docker_build_command = build_docker_build_command(project, repository_path)
-
-    # Create a new instance of RunAndLog with the build object as the loggable and killable
-    runner = Cli::RunAndLog.new(build, killable: build)
-
-    # Call the runner with the command (joined as a string since RunAndLog expects a string)
-    exit_status = runner.call(docker_build_command.join(" "))
-  rescue Cli::CommandFailedError => e
-    raise BuildFailure, e.message
-  end
-
-  def login_to_docker(project_credential_provider, build)
-    base_url = project_credential_provider.provider.github? ? "ghcr.io" : "registry.gitlab.com"
-    docker_login_command = [ "docker", "login", base_url, "--username" ] +
-                           [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
-
-    build.info("Logging into #{base_url} as #{project_credential_provider.username}", color: :yellow)
-    _stdout, stderr, status = Open3.capture3(*docker_login_command)
-
-    if status.success?
-      build.success("Logged in to #{base_url} successfully.")
-    else
-      build.error("#{base_url} login failed with error:\n#{stderr}")
-    end
-  end
-
-  def push_to_github_container_registry(project, build)
-    docker_push_command = [ "docker", "push", project.container_registry_url ]
-
-    build.info("Pushing Docker image to #{docker_push_command.last}", color: :yellow)
-
-    # Execute docker push with killable support
-    runner = Cli::RunAndLog.new(build, killable: build)
-    runner.call(docker_push_command.join(" "))
-  rescue Cli::CommandFailedError => e
-    raise BuildFailure, "Docker push failed for project #{project.name}: #{e.message}"
-  end
 
   def complete_build!(build)
     build.completed!
@@ -117,13 +69,14 @@ class Projects::BuildJob < ApplicationJob
     Projects::DeploymentJob.perform_later(deployment)
   end
 
-  def clone_repository_and_build_docker(project, build)
+  def clone_repository_and_build_image(project, build, image_builder)
     Dir.mktmpdir do |repository_path|
       build.info("Cloning repository: #{project.repository_url} to #{repository_path}", color: :yellow)
 
       git_clone(project, build, repository_path)
 
-      execute_docker_build(project, build, repository_path)
+      # Use the Docker builder to build the image
+      image_builder.build_image(repository_path)
     end
   end
 end

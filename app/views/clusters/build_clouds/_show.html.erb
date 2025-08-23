@@ -1,0 +1,129 @@
+<%= turbo_frame_tag dom_id(cluster, "build_cloud") do %>
+  <% build_cloud = cluster.build_cloud %>
+  <div class="card bg-base-200 border border-base-300 shadow-sm">
+    <div class="card-body">
+      <!-- Header with status badge -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <iconify-icon icon="lucide:cloud" height="24" class="text-primary"></iconify-icon>
+          <h3 class="card-title text-lg">Build Cloud</h3>
+        </div>
+        <%= render "clusters/build_clouds/status", build_cloud: build_cloud %>
+      </div>
+
+      <% if build_cloud.installing? %>
+        <div class="flex justify-center items-center py-6">
+          <div class="flex flex-col items-center">
+            <span class="loading loading-spinner loading-lg text-primary"></span>
+            <p class="mt-3 text-sm text-base-content/70">Installing build cloud...</p>
+          </div>
+        </div>
+      <% else %>
+        <!-- Main info grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+          <!-- Left column - Basic info -->
+          <div class="space-y-2">
+            <% if build_cloud.namespace.present? %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:box" height="16" class="text-base-content/60"></iconify-icon>
+                <span class="text-base-content/70">Namespace:</span>
+                <code class="text-sm bg-base-100 px-2 py-1 rounded"><%= build_cloud.namespace %></code>
+              </div>
+            <% end %>
+            <% if build_cloud.driver_version.present? %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:git-branch" height="16" class="text-base-content/60"></iconify-icon>
+                <span class="text-base-content/70">Version:</span>
+                <span class="font-mono text-sm"><%= build_cloud.driver_version %></span>
+              </div>
+            <% end %>
+            <% if build_cloud.installed_at.present? %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:calendar" height="16" class="text-base-content/60"></iconify-icon>
+                <span class="text-base-content/70">Installed:</span>
+                <span class="text-sm"><%= time_ago_in_words(build_cloud.installed_at) %> ago</span>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Right column - Resource configuration -->
+          <div class="bg-base-100/50 rounded-lg p-3">
+            <div class="flex items-center gap-2 mb-3">
+              <iconify-icon icon="lucide:settings" height="16" class="text-base-content/60"></iconify-icon>
+              <span class="font-medium">Configuration</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="flex justify-between">
+                <span class="text-base-content/70">Replicas:</span>
+                <span class="font-mono"><%= build_cloud.replicas %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-base-content/70">CPU:</span>
+                <span class="font-mono"><%= integer_to_compute(build_cloud.cpu_requests) %>/<%= integer_to_compute(build_cloud.cpu_limits) %></span>
+              </div>
+              <div class="flex justify-between col-span-2">
+                <span class="text-base-content/70">Memory:</span>
+                <span class="font-mono"><%= integer_to_memory(build_cloud.memory_requests) %>/<%= integer_to_memory(build_cloud.memory_limits) %></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error message (if any) -->
+        <% if build_cloud.failed? && build_cloud.error_message.present? %>
+          <div class="alert alert-error mb-4">
+            <iconify-icon icon="lucide:alert-circle" height="16"></iconify-icon>
+            <span><%= build_cloud.error_message %></span>
+          </div>
+        <% end %>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-between">
+          <!-- Action buttons -->
+          <div class="flex gap-2">
+            <% if build_cloud.active? %>
+              <%= link_to edit_cluster_build_cloud_path(cluster), 
+                          class: "btn btn-outline btn-sm",
+                          data: { turbo_frame: dom_id(cluster, "build_cloud") } do %>
+                <iconify-icon icon="lucide:settings" height="16"></iconify-icon>
+                Edit
+              <% end %>
+              <%= button_to cluster_build_cloud_path(cluster), 
+                            method: :delete, 
+                            class: "btn btn-error btn-sm",
+                            data: { turbo_confirm: "Remove BuildKit from your cluster?" } do %>
+                <iconify-icon icon="lucide:trash-2" height="16"></iconify-icon>
+                Remove
+              <% end %>
+            <% elsif build_cloud.uninstalling? %>
+              <button class="btn btn-error btn-sm" disabled>
+                <span class="loading loading-spinner loading-xs"></span>
+                Removing...
+              </button>
+            <% elsif build_cloud.uninstalled? || build_cloud.failed? %>
+              <%= button_to cluster_build_cloud_path(cluster), 
+                            method: :post, 
+                            class: "btn btn-primary btn-sm",
+                            data: { turbo_confirm: "Reinstall BuildKit on your cluster?" } do %>
+                <iconify-icon icon="lucide:refresh-cw" height="16"></iconify-icon>
+                <%= build_cloud.failed? ? "Retry" : "Reinstall" %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Logs section -->
+        <div class="collapse mt-4">
+          <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
+          <div class="collapse-title p-0 m-0 font-medium py-2 px-0">
+            <iconify-icon icon="lucide:file-text" height="16"></iconify-icon>
+            <span class="ml-2">View Logs</span>
+          </div>
+          <div class="collapse-content p-0 mt-2">
+            <%= render "log_outputs/logs", loggable: build_cloud %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

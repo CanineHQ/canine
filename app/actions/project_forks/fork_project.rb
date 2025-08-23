@@ -35,6 +35,11 @@ class ProjectForks::ForkProject
       if file.nil?
         file = client.get_file('.canine.yml.erb', pull_request.branch)
       end
+      if parent_project.build_configuration.present?
+        new_build_configuration = parent_project.build_configuration.dup
+        new_build_configuration.project = child_project
+        new_build_configuration.save!
+      end
 
       if file.present?
         # Parse and store the config

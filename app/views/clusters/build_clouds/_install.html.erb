@@ -1,0 +1,18 @@
+<%= turbo_frame_tag dom_id(cluster, "build_cloud") do %>
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title">Enable Build Cloud</h3>
+      <p class="text-sm text-gray-500 mb-4">
+        Build Cloud allows you to build Docker images directly on your Kubernetes cluster using BuildKit.
+        This enables multi-platform builds and better caching performance.
+      </p>
+      <%= button_to cluster_build_cloud_path(cluster), 
+                    method: :post, 
+                    class: "btn btn-primary",
+                    data: { turbo_confirm: "This will install BuildKit on your cluster. Continue?" } do %>
+        <iconify-icon icon="lucide:cloud" height="20"></iconify-icon>
+        Install Build Cloud
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -26,11 +26,13 @@ module Projects
       project = Project.new(create_params(params))
       provider = find_provider(user, params)
       project_credential_provider = create_project_credential_provider(project, provider)
+      build_configuration = create_build_configuration(project, params)
 
       steps = create_steps(provider)
       with(
         project:,
         project_credential_provider:,
+        build_configuration:,
         params:,
         user:
       ).reduce(*steps)
@@ -40,6 +42,17 @@ module Projects
       ProjectCredentialProvider.new(
         project:,
         provider:,
+      )
+    end
+
+    def self.create_build_configuration(project, params)
+      build_config_params = params[:project][:build_configuration]
+      return nil unless build_config_params
+
+      BuildConfiguration.new(
+        project:,
+        driver: build_config_params[:driver],
+        build_cloud_id: build_config_params[:build_cloud_id]
       )
     end
 

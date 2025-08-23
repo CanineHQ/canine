@@ -22,6 +22,7 @@ class Account < ApplicationRecord
   has_many :users, through: :account_users
 
   has_many :clusters, dependent: :destroy
+  has_many :build_clouds, through: :clusters
   has_many :projects, through: :clusters
   has_many :add_ons, through: :clusters
   has_many :services, through: :projects

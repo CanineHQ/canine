@@ -29,6 +29,7 @@ class Cluster < ApplicationRecord
   has_many :domains, through: :projects
   has_many :metrics, dependent: :destroy
   has_many :users, through: :account
+  has_one :build_cloud, dependent: :destroy
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
@@ -55,5 +56,18 @@ class Cluster < ApplicationRecord
 
   def namespaces
     RESERVED_NAMESPACES + projects.pluck(:name) + add_ons.pluck(:name)
+  end
+
+  def create_build_cloud!(attributes = {})
+    build_cloud&.destroy if build_cloud.present?
+    create_build_cloud_record!(attributes)
+  end
+
+  private
+
+  def create_build_cloud_record!(attributes)
+    build_cloud = BuildCloud.new(attributes.merge(cluster: self))
+    build_cloud.save!
+    build_cloud
   end
 end

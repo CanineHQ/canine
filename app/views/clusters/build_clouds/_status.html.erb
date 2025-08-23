@@ -1,0 +1,26 @@
+<%
+  badge_color = case build_cloud.status
+  when "pending"
+    "warning"
+  when "installing"
+    "warning"
+  when "active"
+    "success"
+  when "uninstalling"
+    "warning"
+  when "uninstalled"
+    "secondary"
+  when "failed"
+    "error"
+  when "updating"
+    "warning"
+  end
+%>
+<div class="text-right">
+  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+    <%= build_cloud.status.humanize %>
+    <% if build_cloud.updating? || build_cloud.installing? %>
+      <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+    <% end %>
+  </div>
+</div>

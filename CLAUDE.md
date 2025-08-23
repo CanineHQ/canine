@@ -136,6 +136,7 @@ rails console
 3. **Background Jobs**: Test async operations with `perform_now` in specs
 4. **Kubernetes Resources**: Update templates in `resources/k8/` for deployment changes
 5. **Migrations**: Use strong migrations practices for zero-downtime deployments
+6. **Linting**: Always run `rubocop -A` at the end of every development cycle
 
 ## Important Patterns
 
