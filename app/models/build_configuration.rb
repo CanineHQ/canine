@@ -25,6 +25,7 @@
 class BuildConfiguration < ApplicationRecord
   belongs_to :project
   belongs_to :build_cloud, optional: true
+  belongs_to :provider
 
   enum :driver, {
     docker: 0,
