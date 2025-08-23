@@ -112,4 +112,16 @@ class Provider < ApplicationRecord
       "#{provider.titleize} (#{username})"
     end
   end
+
+  def registry_base_url
+    if github?
+      "ghcr.io"
+    elsif gitlab?
+      "registry.gitlab.com"
+    elsif container_registry?
+      registry_url
+    else
+      raise "Unknown registry url"
+    end
+  end
 end
