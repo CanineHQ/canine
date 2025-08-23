@@ -6,6 +6,12 @@ class K8::BuildCloudManager
   attr_reader :connection, :build_cloud
 
   def self.install(build_cloud)
+    if build_cloud.pending? || build_cloud.failed?
+      build_cloud.update(error_message: nil, status: :installing)
+    else
+      build_cloud.update(error_message: nil, status: :updating)
+    end
+
     params = {
       installation_metadata: {
         started_at: Time.current,
@@ -18,7 +24,7 @@ class K8::BuildCloudManager
       build_cloud_manager = K8::BuildCloudManager.new(build_cloud.cluster, build_cloud)
 
       # Run the setup
-      build_cloud_manager.setup!
+      build_cloud_manager.create_or_update_builder!
 
       # Check if builder is ready
       if build_cloud_manager.builder_ready?
@@ -78,12 +84,6 @@ class K8::BuildCloudManager
     build_cloud.namespace
   end
 
-  # Set up the BuildKit builder in Kubernetes
-  def setup!
-    ensure_namespace!
-    create_or_update_builder!
-  end
-
   # Remove the BuildKit builder
   def teardown!
     remove_builder! if builder_ready?
@@ -115,6 +115,7 @@ class K8::BuildCloudManager
 
   def create_or_update_builder!
     if builder_ready?
+      build_cloud.info("Existing builder found, removing...")
       remove_builder!
       create_builder!
     else
@@ -175,12 +176,12 @@ class K8::BuildCloudManager
   def ensure_namespace!
     # Create namespace if it doesn't exist
     with_kube_config do |kubeconfig_file|
-      command = "kubectl create namespace #{namespace} --dry-run=client -o yaml | kubectl apply -f -"
+      command = "kubectl create namespace #{namespace}"
       runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
   rescue StandardError => e
     # Namespace might already exist, which is fine
-    Rails.logger.info("Namespace #{namespace} might already exist: #{e.message}")
+    build_cloud.info("Namespace #{namespace} might already exist: #{e.message}")
   end
 
   def remove_builder!
