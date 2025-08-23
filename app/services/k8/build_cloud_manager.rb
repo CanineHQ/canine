@@ -52,7 +52,7 @@ class K8::BuildCloudManager
         )
       )
 
-      Rails.logger.error("Failed to install build cloud on cluster #{cluster.name}: #{e.message}")
+      Rails.logger.error("Failed to install build cloud on cluster #{build_cloud.cluster.name}: #{e.message}")
     end
   end
 
