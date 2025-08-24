@@ -4,7 +4,6 @@ class Clusters::MetricsController < Clusters::BaseController
   before_action :set_cluster
 
   def show
-    @nodes = K8::Metrics::Api::Node.ls(@cluster)
     @time_range = params[:time_range] || "2h"
     start_time = parse_time_range(@time_range)
     end_time = Time.now
