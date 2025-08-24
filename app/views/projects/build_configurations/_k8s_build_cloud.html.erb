@@ -8,7 +8,7 @@
       build_clouds,
       :id, 
       :friendly_name,
-      { include_blank: "Select a build cloud...", selected: build_configuration.build_cloud&.id },
+      { include_blank: "Select a build cloud...", selected: build_configuration.build_cloud_id },
       { 
         class: "select select-bordered w-full",
         data: { "build-configuration-target": "clusterInput" }
