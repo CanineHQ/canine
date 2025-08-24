@@ -63,6 +63,7 @@ module Projects
         steps << Projects::ValidateGitRepository
       end
 
+      steps << Projects::ValidateNamespaceAvailability
       steps << Projects::Save
 
       # Only register webhook in non-local mode
