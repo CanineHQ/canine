@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @nodes.each do |node| %>
+        <% nodes.each do |node| %>
         <tr class="cursor-pointer hover:bg-base-200/40">
           <td>
             <div class="flex items-center space-x-3 truncate">
@@ -86,7 +86,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @nodes.each do |node| %>
+        <% nodes.each do |node| %>
           <% node.namespaces.each do |namespace, pods| %>
             <% pods.each do |pod| %>
               <tr class="cursor-pointer hover:bg-base-200/40">

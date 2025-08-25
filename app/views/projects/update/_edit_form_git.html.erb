@@ -51,6 +51,12 @@
         <span class="label-text-alt">If this is left blank, <%= project.github? ? "Github" : "Gitlab" %> Container Registry will be used</span>
       </label>
     <% end %>
+
+    <% if Flipper.enabled?(:build_configuration, current_account) %>
+      <%= render(FormFieldComponent.new(label: "Build configuration")) do %>
+        <%= render "projects/build_configurations/form", form: form, project: project %>
+      <% end %>
+    <% end %>
   </div>
 
   <div class="form-footer">

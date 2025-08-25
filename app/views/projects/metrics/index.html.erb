@@ -1,7 +1,7 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 
 <%= project_layout(@project) do %>
-  <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 5000 } do %>
+  <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 30000 } do %>
     <%= render(
       "shared/partials/async_renderer",
       view_model: Async::Projects::Metrics::IndexViewModel.new(

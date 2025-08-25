@@ -26,11 +26,13 @@ module Projects
       project = Project.new(create_params(params))
       provider = find_provider(user, params)
       project_credential_provider = create_project_credential_provider(project, provider)
+      build_configuration = create_build_configuration(project, params)
 
       steps = create_steps(provider)
       with(
         project:,
         project_credential_provider:,
+        build_configuration:,
         params:,
         user:
       ).reduce(*steps)
@@ -43,12 +45,25 @@ module Projects
       )
     end
 
+    def self.create_build_configuration(project, params)
+      build_config_params = params[:project][:build_configuration]
+      return nil unless build_config_params
+
+      BuildConfiguration.new(
+        project:,
+        driver: build_config_params[:driver],
+        build_cloud_id: build_config_params[:build_cloud_id],
+        provider_id: build_config_params[:provider_id] || project.project_credential_provider.provider_id
+      )
+    end
+
     def self.create_steps(provider)
       steps = []
       if provider.git?
         steps << Projects::ValidateGitRepository
       end
 
+      steps << Projects::ValidateNamespaceAvailability
       steps << Projects::Save
 
       # Only register webhook in non-local mode

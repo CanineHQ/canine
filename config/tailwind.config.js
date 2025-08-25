@@ -18,6 +18,7 @@ module.exports = {
   content: [
     './app/javascript/**/*.js',
     './app/views/**/*.erb',
+    './app/components/**/*.{erb,rb}',
     './public/*.html',
   ],
   theme: {
