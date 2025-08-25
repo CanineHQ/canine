@@ -23,7 +23,7 @@ module K8
       new(cluster)
     end
 
-    def initialize(connection)
+    def initialize(connection, user = nil)
       @connection = connection
       @_kubeconfig = connection.kubeconfig
       @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
@@ -81,6 +81,16 @@ module K8
       YAML.safe_load(kubeconfig_string)
     rescue Psych::SyntaxError => e
       raise "Invalid YAML in kubeconfig: #{e.message}"
+    end
+
+    def build_kubeconfig(kubeconfig_string)
+      if kubeconfig_string.is_a?(String)
+        load_kubeconfig(kubeconfig_string)
+      elsif kubeconfig_string.nil?
+        K8Stack.fetch_kubeconfig(@connection.cluster, @connection.user)
+      else
+        kubeconfig_string
+      end
     end
 
     def build_client

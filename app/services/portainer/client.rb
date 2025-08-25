@@ -27,13 +27,13 @@ module Portainer
       end
     end
 
-    def self.authenticate(user, auth_code)
-      response = if user.username.present?
+    def self.authenticate(auth_code, username: nil)
+      response = if username.present?
         post(
           '/api/auth',
           headers: { 'Content-Type' => 'application/json' },
           body: {
-            username: user.username,
+            username: username,
             password: auth_code
           }.to_json
         )
