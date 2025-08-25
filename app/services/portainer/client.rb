@@ -12,11 +12,10 @@ class Portainer::Client
         "Authorization" => "Bearer #{@portainer_token}"
       }
     )
-    
+
     raise "Failed to fetch registries from Portainer" unless response.success?
-    
+
     registries_data = JSON.parse(response.body)
-    debugger
     registries_data.map do |registry_data|
       Portainer::Data::Registry.new(
         id: registry_data["Id"],
@@ -25,6 +24,26 @@ class Portainer::Client
         username: registry_data["Username"],
         password: registry_data["Password"],
         authentication: registry_data["Authentication"]
+      )
+    end
+  end
+
+  def endpoints
+    response = self.class.get(
+      "#{@portainer_url}/api/endpoints",
+      headers: {
+        "Authorization" => "Bearer #{@portainer_token}"
+      }
+    )
+
+    raise "Failed to fetch endpoints from Portainer" unless response.success?
+
+    endpoints_data = JSON.parse(response.body)
+    endpoints_data.map do |endpoint_data|
+      Portainer::Data::Endpoint.new(
+        id: endpoint_data["Id"],
+        name: endpoint_data["Name"],
+        url: endpoint_data["URL"]
       )
     end
   end
