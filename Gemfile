@@ -91,7 +91,7 @@ gem "rack", "~> 2.2"
 
 gem "tailwindcss-rails", "~> 2.7"
 
-gem "httparty", "~> 0.22.0"
+gem "httparty", "~> 0.23.1"
 
 gem "redcarpet", "~> 3.6"
 
