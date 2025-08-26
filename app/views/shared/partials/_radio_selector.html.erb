@@ -1,0 +1,30 @@
+<div data-controller="radio-selector">
+  <div class="flex gap-x-4">
+    <% options.each do |option| %>
+      <%= render(RadioSelectCardComponent.new(
+        name: option[:name],
+        value: option[:value],
+        checked: selected == option[:value]
+      )) do %>
+        <div class="shadow-sm cursor-pointer transition-all hover:shadow-md flex-1">
+          <div class="flex items-start gap-3">
+            <div class="text-3xl"><iconify-icon icon="<%= option[:icon] %>" height="48"></iconify-icon></div>
+            <div class="flex-1">
+              <h4 class="font-semibold"><%= option[:label] %></h4>
+              <p class="text-sm text-gray-400 mt-1"><%= option[:description] %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="mt-4">
+    <% options.each do |option| %>
+      <% if option[:partial].present? %>
+        <div data-radio-selector-target="partial" data-value="<%= option[:value] %>" class="hidden">
+          <%= render option[:partial], **option[:locals] %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

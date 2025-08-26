@@ -1,0 +1,90 @@
+<%= turbo_frame_tag dom_id(cluster, "build_cloud") do %>
+  <div class="card bg-base-200">
+    <div class="card-body">
+      <h3 class="card-title">Edit Build Cloud Configuration</h3>
+      
+      <%= form_with model: build_cloud, url: cluster_build_cloud_path(cluster), method: :patch do |form| %>
+        <div class="space-y-4">
+          <div class="form-control">
+            <%= form.label :replicas, class: "label" do %>
+              <span class="label-text font-medium">Replicas</span>
+            <% end %>
+            <%= form.number_field :replicas, 
+                class: "input input-bordered w-full", 
+                min: 1, max: 10,
+                placeholder: "2" %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">Number of builder replicas (1-10)</span>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :cpu_requests, class: "label" do %>
+              <span class="label-text font-medium">CPU Requests (millicores)</span>
+            <% end %>
+            <%= form.number_field :cpu_requests, 
+                class: "input input-bordered w-full", 
+                min: 100, step: 100,
+                placeholder: "500" %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">Current: <%= integer_to_compute(build_cloud.cpu_requests) %></span>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :cpu_limits, class: "label" do %>
+              <span class="label-text font-medium">CPU Limits (millicores)</span>
+            <% end %>
+            <%= form.number_field :cpu_limits, 
+                class: "input input-bordered w-full", 
+                min: 100, step: 100,
+                placeholder: "2000" %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">Current: <%= integer_to_compute(build_cloud.cpu_limits) %></span>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :memory_requests, class: "label" do %>
+              <span class="label-text font-medium">Memory Requests (bytes)</span>
+            <% end %>
+            <%= form.number_field :memory_requests, 
+                class: "input input-bordered w-full", 
+                min: 134217728, step: 134217728,
+                placeholder: "536870912" %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">Current: <%= integer_to_memory(build_cloud.memory_requests) %> (536870912 = 512Mi)</span>
+            </div>
+          </div>
+
+          <div class="form-control">
+            <%= form.label :memory_limits, class: "label" do %>
+              <span class="label-text font-medium">Memory Limits (bytes)</span>
+            <% end %>
+            <%= form.number_field :memory_limits, 
+                class: "input input-bordered w-full", 
+                min: 134217728, step: 134217728,
+                placeholder: "4294967296" %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">Current: <%= integer_to_memory(build_cloud.memory_limits) %> (4294967296 = 4Gi)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-actions justify-end mt-6">
+          <%= link_to cluster_build_cloud_path(cluster), 
+                      class: "btn btn-ghost",
+                      data: { turbo_frame: dom_id(cluster, "build_cloud") } do %>
+            Cancel
+          <% end %>
+          <%= form.submit "Save Configuration", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="alert alert-warning mt-4">
+        <iconify-icon icon="lucide:alert-triangle" height="20"></iconify-icon>
+        <span>Changes will require reinstalling the build cloud to take effect.</span>
+      </div>
+    </div>
+  </div>
+<% end %>

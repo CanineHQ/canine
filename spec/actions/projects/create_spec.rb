@@ -25,6 +25,7 @@ RSpec.describe Projects::Create do
 
   before do
     allow(Projects::ValidateGitRepository).to receive(:execute)
+    allow(Projects::ValidateNamespaceAvailability).to receive(:execute)
     allow(Projects::RegisterGitWebhook).to receive(:execute)
   end
 
@@ -57,6 +58,7 @@ RSpec.describe Projects::Create do
       it 'validates with github and registers webhooks' do
         expect(subject).to eq([
           Projects::ValidateGitRepository,
+          Projects::ValidateNamespaceAvailability,
           Projects::Save,
           Projects::RegisterGitWebhook
         ])
@@ -68,9 +70,10 @@ RSpec.describe Projects::Create do
         allow(Rails.application.config).to receive(:local_mode).and_return(true)
       end
 
-      it 'validates with github and registers webhooks' do
+      it 'validates with github and does not register webhooks' do
         expect(subject).to eq([
           Projects::ValidateGitRepository,
+          Projects::ValidateNamespaceAvailability,
           Projects::Save
         ])
       end

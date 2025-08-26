@@ -10,14 +10,19 @@ module Cli
   end
 
   class RunAndLog
+    attr_reader :output
     def initialize(loggable, killable: nil)
       @loggable = loggable
       @killable = killable
       @process = nil
       @monitor_thread = nil
+      @output = ""
     end
 
-    def call(command, envs: {})
+    def call(command, envs: {}, clear_output: true)
+      if clear_output
+        @output = ""
+      end
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
 
       # Start monitoring thread if killable is provided
@@ -29,11 +34,17 @@ module Cli
 
         # Create threads to read stdout and stderr
         stdout_thread = Thread.new do
-          stdout.each_line { |line| @loggable.info(line.chomp) }
+          stdout.each_line do |line|
+            @loggable.info(line.chomp)
+            @output += line
+          end
         end
 
         stderr_thread = Thread.new do
-          stderr.each_line { |line| @loggable.info(line.chomp) }
+          stderr.each_line do |line|
+            @loggable.info(line.chomp)
+            @output += line
+          end
         end
 
         # Wait for process to complete or be killed

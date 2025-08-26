@@ -1,6 +1,12 @@
 <%= cluster_layout(@cluster) do %>
-  <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 5000 } do %>
-    <%= render "clusters/metrics/live_metrics" %>
+  <%= turbo_frame_tag "metrics", data: { controller: "refresh-turbo-frame", "refresh-turbo-frame-frequency-value": 30000 } do %>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::Clusters::Metrics::ShowViewModel.new(
+        current_user,
+        cluster_id: @cluster.id
+      )
+    ) %>
   <% end %>
 
   <%= turbo_frame_tag "charts" do %>

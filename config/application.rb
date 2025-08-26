@@ -5,11 +5,21 @@ require "rails/all"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+BOOT_MODES = %w[local cloud cluster]
 
 module Canine
   class Application < Rails::Application
+    config.boot_mode = ENV.fetch("BOOT_MODE", "cloud")
+    if !BOOT_MODES.include?(config.boot_mode)
+      raise "Invalid boot mode: #{config.boot_mode}"
+    end
+
+    config.local_mode = config.boot_mode == "local"
+    config.cloud_mode = config.boot_mode == "cloud"
+    config.cluster_mode = config.boot_mode == "cluster"
+
     config.assets.css_compressor = nil
-    config.local_mode = ENV["LOCAL_MODE"] == "true"
+
     config.active_job.queue_adapter = :good_job
     config.application_name = Rails.application.class.module_parent_name
     # Initialize configuration defaults for originally generated Rails version.

@@ -16,3 +16,4 @@
 - [ ] Pull request preview apps
 - [ ] Update vocabulary on landing page
 - [ ] Clear our historical logs
+- [ ] log drain from application

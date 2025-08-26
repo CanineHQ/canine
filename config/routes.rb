@@ -82,6 +82,7 @@ Rails.application.routes.draw do
       get :sync
     end
     resource :metrics, only: [ :show ], module: :clusters
+    resource :build_cloud, only: [ :show, :edit, :update, :create, :destroy ], module: :clusters
     member do
       post :test_connection
       post :retry_install

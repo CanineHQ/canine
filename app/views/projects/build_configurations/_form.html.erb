@@ -1,0 +1,28 @@
+<div>
+  <div>
+    <% build_configuration = project.build_configuration || BuildConfiguration.new(driver: 'docker') %>
+    <%= form.fields_for :build_configuration, build_configuration do |bc_form| %>
+      <div class="form-control mt-4">
+        <%= render "shared/partials/radio_selector", selected: build_configuration.driver, options: [
+          {
+            icon: "skill-icons:docker",
+            name: "project[build_configuration][driver]",
+            label: "Local Docker",
+            value: "docker",
+            description: "Build images using Docker on the deployment server. Simple setup, suitable for smaller projects."
+          },
+          {
+            icon: "skill-icons:kubernetes",
+            name: "project[build_configuration][driver]",
+            label: "Kubernetes Build Cloud",
+            description: "Build images in your Kubernetes cluster. Scalable, distributed builds with better resource utilization.",
+            value: "k8s",
+            partial: "projects/build_configurations/k8s_build_cloud",
+            locals: { current_account:, bc_form:, build_configuration: }
+          }
+        ] %>
+        
+      </div>
+    <% end %>
+  </div>
+</div>

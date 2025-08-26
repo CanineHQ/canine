@@ -55,7 +55,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 
-  gem "database_cleaner-active_record", '~> 2.2.0'
+  gem "database_cleaner-active_record", '~> 2.2.2'
   gem 'faker', '~> 3.5.2'
   gem 'shoulda-matchers', '~> 6.0'
 end
@@ -104,7 +104,7 @@ gem "cron2english", "~> 0.1.7"
 gem "avo", "~> 3.23"
 
 gem "sentry-ruby", "~> 5.23"
-gem "sentry-rails", "~> 5.23"
+gem "sentry-rails", "~> 5.26"
 
 gem "sys-proctable", "~> 1.3"
 

@@ -69,6 +69,37 @@ RSpec.describe ProjectForks::ForkProject do
       end
     end
 
+    context 'with build configuration' do
+      let!(:build_configuration) do
+        create(:build_configuration,
+               project: parent_project,
+               driver: :docker)
+      end
+
+      it 'duplicates the build configuration for the child project' do
+        result = described_class.execute(parent_project:, pull_request:)
+
+        expect(result).to be_success
+        child_project = result.project_fork.child_project
+        child_build_config = child_project.build_configuration
+
+        expect(child_build_config).to be_present
+        expect(child_build_config.driver).to eq(build_configuration.driver)
+        expect(child_build_config.project).to eq(child_project)
+        expect(child_build_config.id).not_to eq(build_configuration.id)
+      end
+    end
+
+    context 'without build configuration' do
+      it 'does not create a build configuration for the child project' do
+        result = described_class.execute(parent_project:, pull_request:)
+
+        expect(result).to be_success
+        child_project = result.project_fork.child_project
+        expect(child_project.build_configuration).to be_nil
+      end
+    end
+
     context 'with canine config file' do
       let(:canine_config_content) do
         Git::Common::File.new(

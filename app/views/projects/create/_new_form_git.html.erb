@@ -135,6 +135,15 @@
       )) do %>
         <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
       <% end %>
+
+      <% if Flipper.enabled?(:build_configuration, current_account) %>
+        <%= render(FormFieldComponent.new(
+          label: "Build settings",
+          description: "Configure where your container images will be built. You can use Kubernetes-based build clouds for faster, scalable builds, or use local Docker for simpler setups."
+        )) do %>
+          <%= render "projects/build_configurations/form", form: form, project: project %>
+        <% end %>
+      <% end %>
     </div>
 
     <div class="form-footer">
