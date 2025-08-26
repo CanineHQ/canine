@@ -26,9 +26,9 @@ module Builders
     def construct_buildx_command(repository_path)
       docker_build_command = [
         "docker",
-        "--context", "default",
         "buildx",
         "build",
+        "--builder", "default",
         "--progress=plain",
         "--platform", "linux/amd64",
         "-t", project.container_registry_url,
