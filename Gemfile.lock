@@ -148,7 +148,7 @@ GEM
     cron2english (0.1.7)
     cssbundling-rails (1.4.1)
       railties (>= 6.0.0)
-    csv (3.3.0)
+    csv (3.3.5)
     database_cleaner-active_record (2.2.2)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0)
@@ -255,7 +255,7 @@ GEM
     http-cookie (1.0.7)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    httparty (0.22.0)
+    httparty (0.23.1)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
@@ -332,7 +332,7 @@ GEM
     minitest (5.25.5)
     msgpack (1.8.0)
     multi_json (1.15.0)
-    multi_xml (0.7.1)
+    multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     net-http (0.6.0)
       uri
@@ -668,7 +668,7 @@ DEPENDENCIES
   flipper-ui (~> 1.2.2)
   friendly_id (~> 5.4)
   good_job (~> 4.0)
-  httparty (~> 0.22.0)
+  httparty (~> 0.23.1)
   image_processing (~> 1.13)
   importmap-rails
   jbuilder
