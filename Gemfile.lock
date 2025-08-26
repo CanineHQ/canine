@@ -101,7 +101,7 @@ GEM
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
     ast (2.4.3)
-    avo (3.23.0)
+    avo (3.23.1)
       actionview (>= 6.1)
       active_link_to
       activerecord (>= 6.1)
@@ -614,7 +614,7 @@ GEM
     uri (1.0.3)
     useragent (0.16.11)
     version_gem (1.1.4)
-    view_component (4.0.1)
+    view_component (4.0.2)
       activesupport (>= 7.1.0, < 8.1)
       concurrent-ruby (~> 1)
     warden (1.2.9)
