@@ -20,4 +20,10 @@ class K8::Base
   def client
     @client ||= K8::Client.new(cluster.kubeconfig)
   end
+
+  def setup
+  end
+
+  def cleanup
+  end
 end

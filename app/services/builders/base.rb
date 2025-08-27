@@ -25,4 +25,10 @@ class Builders::Base
       raise "Docker login failed: #{stderr}"
     end
   end
+
+  def setup
+  end
+
+  def cleanup
+  end
 end

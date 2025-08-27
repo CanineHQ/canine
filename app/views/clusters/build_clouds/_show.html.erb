@@ -8,7 +8,13 @@
           <iconify-icon icon="lucide:cloud" height="24" class="text-primary"></iconify-icon>
           <h3 class="card-title text-lg">Build Cloud</h3>
         </div>
-        <%= render "clusters/build_clouds/status", build_cloud: build_cloud %>
+        <%= render(
+          "shared/partials/async_renderer",
+          view_model: Async::Clusters::BuildClouds::StatusViewModel.new(
+            current_user,
+            build_cloud_id: build_cloud.id
+          )
+        ) %>
       </div>
 
       <% if build_cloud.installing? %>
@@ -106,7 +112,7 @@
                             class: "btn btn-primary btn-sm",
                             data: { turbo_confirm: "Reinstall BuildKit on your cluster?" } do %>
                 <iconify-icon icon="lucide:refresh-cw" height="16"></iconify-icon>
-                <%= build_cloud.failed? ? "Retry" : "Reinstall" %>
+                Reinstall
               <% end %>
             <% end %>
           </div>
