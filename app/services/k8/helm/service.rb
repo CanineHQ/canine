@@ -1,5 +1,5 @@
 class K8::Helm::Service
-  attr_reader :add_on, :client, :user
+  attr_reader :add_on, :client, :user, :kubectl
 
   def self.create_from_add_on(add_on, user)
     if add_on.chart_type == "redis"
@@ -17,6 +17,7 @@ class K8::Helm::Service
     @add_on = add_on
     @user = user
     @client = K8::Client.new(K8::Connection.new(add_on.cluster, user))
+    @kubectl = K8::Kubectl.new(K8::Connection.new(add_on.cluster, user), Cli::RunAndReturnOutput.new)
   end
 
   def friendly_name
@@ -24,7 +25,6 @@ class K8::Helm::Service
   end
 
   def restart
-    kubectl = K8::Kubectl.new(K8::Connection.new(add_on.cluster, user))
     kubectl.call("rollout restart deployment -n #{add_on.name}")
   end
 
@@ -37,7 +37,8 @@ class K8::Helm::Service
   end
 
   def values_yaml
-    helm_client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new)
+    kubeconfig = K8::Connection.new(add_on.cluster, user).kubeconfig
+    helm_client = K8::Helm::Client.connect(kubeconfig, Cli::RunAndReturnOutput.new)
     helm_client.get_values_yaml(add_on.name, namespace: add_on.name)
   rescue StandardError => e
     Rails.logger.error("Error getting values.yaml for #{add_on.name}: #{e.message}")
@@ -68,7 +69,8 @@ class K8::Helm::Service
   end
 
   def version
-    services = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndReturnOutput.new).ls
+    kubeconfig = K8::Connection.new(add_on.cluster, user).kubeconfig
+    services = K8::Helm::Client.connect(kubeconfig, Cli::RunAndReturnOutput.new).ls
     chart = services.find { |service| service['name'] == add_on.name }['chart']
     chart.match(/\d+\.\d+\.\d+/)&.to_s
   end
@@ -83,7 +85,7 @@ class K8::Helm::Service
   end
 
   def get_volume_usage(pod_name, mount_path)
-    output = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
+    output = kubectl.call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
     lines = output.strip.split("\n")
     return nil if lines.size < 2
 
@@ -96,12 +98,12 @@ class K8::Helm::Service
   end
 
   def get_persistent_volume
-    pv = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("get pv #{service_name} -o json")
+    pv = kubectl.call("get pv #{service_name} -o json")
     JSON.parse(pv)
   end
 
   def exec_df_command
-    output = K8::Kubectl.new(add_on.cluster, Cli::RunAndReturnOutput.new).call("exec #{service_name} -- df -h /data")
+    output = kubectl.call("exec #{service_name} -- df -h /data")
     output.strip
   end
 end

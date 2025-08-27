@@ -17,7 +17,8 @@ class AddOns::InstallHelmChart
     charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
 
-    client = K8::Helm::Client.connect(add_on.cluster.kubeconfig, Cli::RunAndLog.new(add_on))
+    kubeconfig = K8::Connection.new(add_on.cluster, context.user).kubeconfig
+    client = K8::Helm::Client.connect(kubeconfig, Cli::RunAndLog.new(add_on))
 
     chart_url = add_on.chart_url
 

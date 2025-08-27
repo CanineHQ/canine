@@ -23,7 +23,7 @@ class Projects::DeploymentJob < ApplicationJob
     # For each of the projects services
     deploy_services(project, kubectl)
 
-    sweep_unused_resources(project)
+    sweep_unused_resources(project, kubectl)
 
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
@@ -113,9 +113,8 @@ class Projects::DeploymentJob < ApplicationJob
     kubectl.apply_yaml(namespace_yaml)
   end
 
-  def sweep_unused_resources(project)
+  def sweep_unused_resources(project, kubectl)
     # Check deployments that need to be deleted
-    kubectl = K8::Kubectl.from_project(project)
     # Exclude Persistent Volumes
     resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ 'Pv' ].include?(r) }
 

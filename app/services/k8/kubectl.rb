@@ -13,14 +13,6 @@ class K8::Kubectl
     @runner = runner
   end
 
-  def self.from_project(project)
-    new(project.cluster)
-  end
-
-  def self.from_add_on(add_on)
-    new(add_on.cluster)
-  end
-
   def apply_yaml(yaml_content)
     with_kube_config do |kubeconfig_file|
       # Create a temporary file for the YAML content

@@ -5,7 +5,7 @@ class Projects::ProcessesController < Projects::BaseController
   end
 
   def create
-    kubectl = K8::Kubectl.from_project(@project)
+    kubectl = K8::Kubectl.new(K8::Connection.new(@project.cluster, current_user))
     pod = K8::Stateless::Pod.new(@project)
     kubectl.apply_yaml(pod.to_yaml)
     redirect_to project_processes_path(@project), notice: "One off pod #{pod.name} created"

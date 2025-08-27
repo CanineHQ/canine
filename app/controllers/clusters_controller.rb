@@ -115,7 +115,7 @@ class ClustersController < ApplicationController
   # POST /clusters or /clusters.json
   def create
     @cluster = current_account.clusters.new(cluster_params)
-    result = Clusters::Create.call(@cluster)
+    result = Clusters::Create.call(@cluster, current_user)
 
     # Uncomment to authorize with Pundit
     # authorize @cluster

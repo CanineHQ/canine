@@ -15,14 +15,6 @@ module K8
       to: :client
     )
 
-    def self.from_project(project)
-      new(project.cluster)
-    end
-
-    def self.from_cluster(cluster)
-      new(cluster)
-    end
-
     def initialize(connection)
       @connection = connection
       @_kubeconfig = connection.kubeconfig

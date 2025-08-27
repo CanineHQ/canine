@@ -21,7 +21,7 @@ class K8::Stateless::Ingress < K8::Base
   end
 
   def get_ingress
-    result = K8::Kubectl.new(@cluster).call('get ingresses -o yaml')
+    result = K8::Kubectl.new(K8::Connection.new(@cluster, user)).call('get ingresses -o yaml')
     results = YAML.safe_load(result)
     results['items'].find { |r| r['metadata']['name'] == "#{@service.project.name}-ingress" }
   end
