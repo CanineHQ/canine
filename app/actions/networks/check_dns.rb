@@ -1,13 +1,13 @@
 class Networks::CheckDns
   extend LightService::Action
-  expects :ingress
+  expects :ingress, :user
 
   class << self
-    def infer_expected_ip(ingress)
+    def infer_expected_ip(ingress, user)
       ip = ingress.ip_address
       if is_private_ip?(ip)
         cluster = ingress.service.project.cluster
-        ip = infer_public_ip_from_cluster(cluster)
+        ip = infer_public_ip_from_cluster(cluster), user
       end
       ip
     end
@@ -16,10 +16,10 @@ class Networks::CheckDns
       ip.starts_with?("10.") || ip.starts_with?("172.") || ip.starts_with?("192.")
     end
 
-    def infer_public_ip_from_cluster(cluster)
+    def infer_public_ip_from_cluster(cluster, user)
       # The ingress is reporting a private IP address, so we need to guess the public IP address
       # based on the cluster's domain name
-      server_name = K8::Client.new(cluster).server
+      server_name = K8::Client.new(K8::Connection.new(cluster, user)).server
       # Parse the hostname from the server, with ruby's URI.parse
       hostname = URI.parse(server_name).hostname
       # If hostname is just an ip address, then we can return it
@@ -38,7 +38,7 @@ class Networks::CheckDns
 
   executed do |context|
     # TODO
-    expected_ip = infer_expected_ip(context.ingress)
+    expected_ip = infer_expected_ip(context.ingress, context.user)
     context.ingress.service.domains.each do |domain|
       ip_addresses = Resolv::DNS.open do |dns|
         dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|

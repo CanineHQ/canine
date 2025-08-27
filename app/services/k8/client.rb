@@ -23,7 +23,7 @@ module K8
       new(cluster)
     end
 
-    def initialize(connection, user = nil)
+    def initialize(connection)
       @connection = connection
       @_kubeconfig = connection.kubeconfig
       @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig

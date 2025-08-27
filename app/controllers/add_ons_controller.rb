@@ -94,7 +94,7 @@ class AddOnsController < ApplicationController
   def destroy
     @add_on.uninstalling!
     respond_to do |format|
-      AddOns::UninstallJob.perform_later(@add_on)
+      AddOns::UninstallJob.perform_later(@add_on, current_user.id)
       format.html { redirect_to add_ons_url, notice: "Uninstalling add on #{@add_on.name}" }
       format.json { head :no_content }
     end

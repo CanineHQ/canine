@@ -1,6 +1,6 @@
 class AddOns::UninstallHelmChart
   extend LightService::Action
-  expects :add_on
+  expects :add_on, :user
 
   executed do |context|
     add_on = context.add_on
@@ -10,7 +10,7 @@ class AddOns::UninstallHelmChart
       client.uninstall(add_on.name, namespace: add_on.name)
     end
 
-    client = K8::Client.from_cluster(add_on.cluster)
+    client = K8::Client.new(K8::Connection.new(add_on.cluster, context.user))
     if (namespace = client.get_namespaces.find { |n| n.metadata.name == add_on.name }).present?
       client.delete_namespace(namespace.metadata.name)
     end

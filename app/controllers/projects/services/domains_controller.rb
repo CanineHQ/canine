@@ -12,7 +12,7 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
   end
 
   def check_dns
-    Networks::CheckDns.execute(ingress: K8::Stateless::Ingress.new(@service))
+    Networks::CheckDns.execute(ingress: K8::Stateless::Ingress.new(@service), user: current_user)
     render partial: "projects/services/domains/index", locals: { service: @service, refreshed: true }
   end
 

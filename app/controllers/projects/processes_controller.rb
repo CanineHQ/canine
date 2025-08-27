@@ -26,7 +26,7 @@ class Projects::ProcessesController < Projects::BaseController
   end
 
   def destroy
-    client = K8::Client.from_project(@project)
+    client = K8::Client.new(K8::Connection.new(@project.cluster, current_user))
     client.delete_pod(params[:id], @project.name)
     redirect_to project_processes_path(@project), notice: "Pod #{params[:id]} terminating..."
   end

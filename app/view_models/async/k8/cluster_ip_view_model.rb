@@ -11,7 +11,7 @@ class Async::K8::ClusterIpViewModel < Async::BaseViewModel
 
   def async_render
     ingress = K8::Stateless::Ingress.new(service)
-    ip = Networks::CheckDns.infer_expected_ip(ingress)
+    ip = Networks::CheckDns.infer_expected_ip(ingress, current_user)
     "<pre class='cursor-pointer' data-controller='clipboard' data-clipboard-text='#{ip}'>#{ip}</pre>"
   end
 end

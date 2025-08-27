@@ -75,7 +75,7 @@ class ProjectsController < ApplicationController
 
   # DELETE /projects/1 or /projects/1.json
   def destroy
-    Projects::DestroyJob.perform_later(@project)
+    Projects::DestroyJob.perform_later(@project, current_user)
     respond_to do |format|
       format.html { redirect_to projects_url, status: :see_other, notice: "Project is being destroyed..." }
       format.json { head :no_content }
