@@ -29,6 +29,13 @@ module K8
       @client = build_client
     end
 
+    def get_raw_secret_value(secret_name, namespace, key)
+      result = K8::Kubectl.new(@_kubeconfig).call("get secret #{secret_name} -n #{namespace} -o json")
+      data = JSON.parse(result, object_class: OpenStruct).data
+      Base64.decode64(data.to_h[key.to_sym])
+      # Base64.decode64(JSON.parse(r)['auths']['registry.gitlab.com']['auth'])
+    end
+
     def get_ingresses(namespace:)
       result = K8::Kubectl.new(@_kubeconfig).call("get ingresses -n #{namespace} -o json")
       JSON.parse(result, object_class: OpenStruct).items

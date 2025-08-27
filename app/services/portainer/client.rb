@@ -47,4 +47,22 @@ class Portainer::Client
       )
     end
   end
+
+  def get_registry_secret(project, registry_id)
+    # curl 'https://demo.portainer.io/api/endpoints/4/registries/4' \
+    # -X PUT \
+    # --data-raw '{"namespaces":["ingress","sk-ns"]}'
+
+    response = self.class.put(
+      "#{@portainer_url}/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
+      headers: {
+        "Authorization" => "Bearer #{@portainer_token}"
+      },
+      body: { namespaces: [project.name] }
+    )
+
+    raise "Failed to put registry secret to cluster" unless response.success?
+
+    JSON.parse(response.body)
+  end
 end
