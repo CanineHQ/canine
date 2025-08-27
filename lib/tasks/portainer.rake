@@ -9,37 +9,20 @@ PORTAINER_URL = "https://portainer.portainer.svc.cluster.local:9443"
 namespace :portainer do
   desc 'Run Portainer task'
   task run: :environment do
-    response = HTTParty.post(
-      "#{PORTAINER_URL}/api/auth",
-      body: {
-        username: 'admin',
-        password: ENV['PORTAINER_PASSWORD']
-      }.to_json,
-      headers: {
-        'Content-Type' => 'application/json'
-      },
-      verify: false
+    jwt = Portainer::Client.authenticate(
+      provider_url: PORTAINER_URL,
+      username: 'admin',
+      auth_code: ENV['PORTAINER_PASSWORD']
     )
 
-    if response.code == 200
-      jwt = JSON.parse(response.body)['jwt']
+    if jwt.present?
       puts "JWT: #{jwt}"
 
       # Get Kubernetes config
-      config_response = HTTParty.get(
-        "#{PORTAINER_URL}/api/kubernetes/config",
-        headers: {
-          'Authorization' => "Bearer #{jwt}"
-        },
-        verify: false
-      )
+      config_response = Portainer::Client.new(PORTAINER_URL, jwt).get_kubernetes_config
 
-      puts "Kubernetes Config Response: #{config_response.code}"
-
-      if config_response.code == 200
-        # Parse JSON and convert to YAML
-        config_json = JSON.parse(config_response.body)
-        config_yaml = config_json.to_yaml
+      if config_response.present?
+        config_yaml = config_response.to_yaml
 
         # Save to temp file
         temp_file = Tempfile.new([ 'kubeconfig', '.yaml' ])
