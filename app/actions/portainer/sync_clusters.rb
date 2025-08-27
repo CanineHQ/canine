@@ -5,7 +5,8 @@ class Portainer::SyncClusters
   promises :clusters
 
   executed do |context|
-    portainer_client = Portainer::Client.new(context.user.portainer_jwt)
+    portainer_url = context.account.stack_manager.provider_url
+    portainer_client = Portainer::Client.new(portainer_url, context.user.portainer_jwt)
     response = portainer_client.get("/api/endpoints")
     clusters = []
     response.each do |cluster|

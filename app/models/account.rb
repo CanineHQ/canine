@@ -20,6 +20,7 @@ class Account < ApplicationRecord
   belongs_to :owner, class_name: "User"
   has_many :account_users, dependent: :destroy
   has_many :users, through: :account_users
+  has_one :stack_manager, dependent: :destroy
 
   has_many :clusters, dependent: :destroy
   has_many :build_clouds, through: :clusters

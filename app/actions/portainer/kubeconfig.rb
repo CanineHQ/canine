@@ -5,7 +5,8 @@ class Portainer::Kubeconfig
   promises :kubeconfig
 
   executed do |context|
-    portainer_client = Portainer::Client.new(context.user.portainer_jwt)
+    portainer_url = context.user.accounts.first.stack_manager.provider_url
+    portainer_client = Portainer::Client.new(portainer_url, context.user.portainer_jwt)
     context.kubeconfig = portainer_client.get("/api/kubernetes/config?ids[]=#{context.cluster.external_id}")
   rescue Portainer::Client::UnauthorizedError
     context.fail_and_return!("Current user is unauthorized: #{context.user.email}")

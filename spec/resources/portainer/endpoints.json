@@ -1,0 +1,259 @@
+[
+  {
+    "Id": 1,
+    "Name": "local",
+    "Type": 5,
+    "ContainerEngine": "",
+    "URL": "https://kubernetes.default.svc",
+    "GroupId": 1,
+    "PublicURL": "",
+    "Gpus": [],
+    "TLSConfig": {
+      "TLS": true,
+      "TLSSkipVerify": true
+    },
+    "AzureCredentials": {
+      "ApplicationID": "",
+      "TenantID": "",
+      "AuthenticationKey": ""
+    },
+    "TagIds": [],
+    "Status": 1,
+    "Snapshots": [],
+    "UserAccessPolicies": {
+      "2": {
+        "RoleId": 4
+      }
+    },
+    "TeamAccessPolicies": {},
+    "EdgeKey": "",
+    "ComposeSyntaxMaxVersion": "3.9",
+    "SecuritySettings": {
+      "allowBindMountsForRegularUsers": true,
+      "allowPrivilegedModeForRegularUsers": true,
+      "allowVolumeBrowserForRegularUsers": false,
+      "allowHostNamespaceForRegularUsers": true,
+      "allowDeviceMappingForRegularUsers": true,
+      "allowStackManagementForRegularUsers": true,
+      "allowContainerCapabilitiesForRegularUsers": true,
+      "allowSysctlSettingForRegularUsers": true,
+      "enableHostManagementFeatures": false
+    },
+    "LastCheckInDate": 0,
+    "QueryDate": 0,
+    "Heartbeat": false,
+    "Edge": {
+      "AsyncMode": false,
+      "PingInterval": 0,
+      "SnapshotInterval": 0,
+      "CommandInterval": 0
+    },
+    "AuthorizedUsers": null,
+    "AuthorizedTeams": null,
+    "Tags": null,
+    "StatusMessage": {
+      "summary": "",
+      "detail": "",
+      "operation": "",
+      "operationStatus": "",
+      "warnings": null
+    },
+    "CloudProvider": null,
+    "Kubernetes": {
+      "Snapshots": [
+        {
+          "Time": 1756319913,
+          "KubernetesVersion": "v1.31.1",
+          "NodeCount": 2,
+          "TotalCPU": 4,
+          "TotalMemory": 8210763776,
+          "DiagnosticsData": null,
+          "PerformanceMetrics": {
+            "CPUUsage": 17,
+            "MemoryUsage": 133,
+            "NetworkUsage": 133383
+          }
+        }
+      ],
+      "Configuration": {
+        "UseLoadBalancer": false,
+        "UseServerMetrics": true,
+        "EnableResourceOverCommit": true,
+        "ResourceOverCommitPercentage": 0,
+        "StorageClasses": [
+          {
+            "Name": "do-block-storage",
+            "AccessModes": ["RWO"],
+            "Provisioner": "dobs.csi.digitalocean.com",
+            "AllowVolumeExpansion": true
+          }
+        ],
+        "IngressClasses": [
+          {
+            "Name": "nginx",
+            "Type": "nginx",
+            "Blocked": false,
+            "BlockedNamespaces": null
+          }
+        ],
+        "RestrictDefaultNamespace": false,
+        "IngressAvailabilityPerNamespace": false,
+        "AllowNoneIngressClass": false,
+        "RestrictSecrets": false,
+        "RestrictStandardUserIngressW": false
+      },
+      "Flags": {
+        "IsServerMetricsDetected": true,
+        "IsServerIngressClassDetected": true,
+        "IsServerStorageDetected": true
+      }
+    },
+    "PostInitMigrations": {
+      "MigrateIngresses": false,
+      "MigrateGPUs": false,
+      "MigrateGateKeeper": false,
+      "MigrateSecretOwners": false
+    },
+    "EdgeCheckinInterval": 5,
+    "Agent": {},
+    "LocalTimeZone": "",
+    "ChangeWindow": {
+      "Enabled": false,
+      "StartTime": "",
+      "EndTime": ""
+    },
+    "DeploymentOptions": null,
+    "EnableImageNotification": false,
+    "EnableGPUManagement": false
+  },
+  {
+    "Id": 2,
+    "Name": "testing-production",
+    "Type": 6,
+    "ContainerEngine": "",
+    "URL": "137.184",
+    "GroupId": 1,
+    "PublicURL": "",
+    "Gpus": null,
+    "TLSConfig": {
+      "TLS": true,
+      "TLSSkipVerify": true
+    },
+    "AzureCredentials": {
+      "ApplicationID": "",
+      "TenantID": "",
+      "AuthenticationKey": ""
+    },
+    "TagIds": [],
+    "Status": 1,
+    "Snapshots": [],
+    "UserAccessPolicies": {},
+    "TeamAccessPolicies": {},
+    "EdgeKey": "",
+    "ComposeSyntaxMaxVersion": "3.9",
+    "SecuritySettings": {
+      "allowBindMountsForRegularUsers": true,
+      "allowPrivilegedModeForRegularUsers": true,
+      "allowVolumeBrowserForRegularUsers": false,
+      "allowHostNamespaceForRegularUsers": true,
+      "allowDeviceMappingForRegularUsers": true,
+      "allowStackManagementForRegularUsers": true,
+      "allowContainerCapabilitiesForRegularUsers": true,
+      "allowSysctlSettingForRegularUsers": true,
+      "enableHostManagementFeatures": false
+    },
+    "LastCheckInDate": 0,
+    "QueryDate": 0,
+    "Heartbeat": false,
+    "Edge": {
+      "AsyncMode": false,
+      "PingInterval": 0,
+      "SnapshotInterval": 0,
+      "CommandInterval": 0
+    },
+    "AuthorizedUsers": null,
+    "AuthorizedTeams": null,
+    "Tags": null,
+    "StatusMessage": {
+      "summary": "",
+      "detail": "",
+      "operation": "",
+      "operationStatus": "",
+      "warnings": null
+    },
+    "CloudProvider": {
+      "Provider": "kubeconfig",
+      "Name": "KubeConfig",
+      "URL": "",
+      "Region": "",
+      "Size": null,
+      "NodeCount": 0,
+      "CPU": null,
+      "RAM": null,
+      "HDD": null,
+      "NetworkID": null,
+      "CredentialID": 1,
+      "ResourceGroup": "",
+      "Tier": "",
+      "PoolName": "",
+      "DNSPrefix": "",
+      "KubernetesVersion": "",
+      "AmiType": null,
+      "InstanceType": null,
+      "NodeVolumeSize": null,
+      "AddonWithArgs": null,
+      "NodeIPs": null,
+      "OfflineInstall": false
+    },
+    "Kubernetes": {
+      "Snapshots": [
+        {
+          "Time": 1756319913,
+          "KubernetesVersion": "",
+          "NodeCount": 0,
+          "TotalCPU": 0,
+          "TotalMemory": 0,
+          "DiagnosticsData": null,
+          "PerformanceMetrics": null
+        }
+      ],
+      "Configuration": {
+        "UseLoadBalancer": false,
+        "UseServerMetrics": false,
+        "EnableResourceOverCommit": true,
+        "ResourceOverCommitPercentage": 20,
+        "StorageClasses": [],
+        "IngressClasses": [],
+        "RestrictDefaultNamespace": false,
+        "IngressAvailabilityPerNamespace": false,
+        "AllowNoneIngressClass": false,
+        "RestrictSecrets": false,
+        "RestrictStandardUserIngressW": false
+      },
+      "Flags": {
+        "IsServerMetricsDetected": true,
+        "IsServerIngressClassDetected": true,
+        "IsServerStorageDetected": true
+      }
+    },
+    "PostInitMigrations": {
+      "MigrateIngresses": false,
+      "MigrateGPUs": false,
+      "MigrateGateKeeper": false,
+      "MigrateSecretOwners": false
+    },
+    "EdgeCheckinInterval": 5,
+    "Agent": {
+      "Version": "2.27.9"
+    },
+    "LocalTimeZone": "",
+    "ChangeWindow": {
+      "Enabled": false,
+      "StartTime": "",
+      "EndTime": ""
+    },
+    "DeploymentOptions": null,
+    "EnableImageNotification": false,
+    "EnableGPUManagement": false
+  }
+]

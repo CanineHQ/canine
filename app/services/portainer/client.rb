@@ -4,33 +4,33 @@ require 'httparty'
 
 module Portainer
   class Client
-    attr_reader :jwt
+    attr_reader :jwt, :provider_url
 
     include HTTParty
 
-    base_uri Rails.application.config.kubernetes_provider_url
     default_options.update(verify: false)
 
     class UnauthorizedError < StandardError; end
     class PermissionDeniedError < StandardError; end
 
-    def initialize(jwt)
+    def initialize(provider_url, jwt)
       @jwt = jwt
+      @provider_url = provider_url
     end
 
     def get_kubernetes_config
       fetch_wrapper do
         self.class.get(
-          '/api/kubernetes/config',
+          "#{provider_url}/api/kubernetes/config",
           headers: headers
         )
       end
     end
 
-    def self.authenticate(auth_code, username: nil)
+    def self.authenticate(auth_code:, username: nil, provider_url:)
       response = if username.present?
         post(
-          '/api/auth',
+          "#{provider_url}/api/auth",
           headers: { 'Content-Type' => 'application/json' },
           body: {
             username: username,
@@ -39,7 +39,7 @@ module Portainer
         )
       else
         post(
-          '/api/auth/oauth/validate',
+          "#{provider_url}/api/auth/oauth/validate",
           headers: { 'Content-Type' => 'application/json' },
           body: { code: auth_code }.to_json
         )
@@ -50,7 +50,7 @@ module Portainer
 
     def get(path)
      fetch_wrapper do
-        self.class.get(path, headers:)
+        self.class.get("#{provider_url}#{path}", headers:)
       end
     end
 
