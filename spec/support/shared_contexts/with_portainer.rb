@@ -1,20 +1,18 @@
 require 'rails_helper'
-RSpec.shared_context 'with stubbed portainer' do
+RSpec.shared_context 'with portainer' do
   before do
-    user = User.first || create(:user)
-    if Cluster.count.zero?
-      create(:cluster, kubeconfig: nil)
-    else
-      Cluster.last.update(kubeconfig: nil)
-    end
-    create(:provider, provider: 'portainer', access_token: 'jwt', user:)
-    account = if user.accounts.count.zero?
-      create(:account, owner: user)
-    else
-      user.accounts.first
-    end
-    create(:stack_manager, account:)
-
-    allow(Portainer::Client).to receive(:new).and_return(double(get_kubernetes_config: 'kubeconfig'))
+    headers = { 'Content-Type' => 'application/json' }
+    WebMock.stub_request(:any, %r{/api/kubernetes/config}).to_return(
+      status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer kubeconfig.json])), headers:
+    )
+    WebMock.stub_request(:any, %r{/api/endpoints}).to_return(
+      status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer endpoints.json])), headers:
+    )
+    WebMock.stub_request(:any, %r{/api/auth/oauth/validate}).to_return(
+      status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer authenticate.json])), headers:
+    )
+    WebMock.stub_request(:any, %r{/api/auth}).to_return(
+      status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer authenticate.json])), headers:
+    )
   end
 end

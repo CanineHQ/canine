@@ -37,17 +37,26 @@ class Local::PagesController < ApplicationController
   def update_portainer_configuration
     stack_manager = current_account.stack_manager || current_account.build_stack_manager
     stack_manager.update!(provider_url: params[:provider_url])
-    jwt = Portainer::Client.authenticate(auth_code: params[:password], username: params[:username], provider_url: params[:provider_url])
-    current_user.providers.find_or_initialize_by(provider: "portainer").update!(access_token: jwt)
-    flash[:notice] = "The Portainer configuration has been updated"
+    result = Portainer::Authenticate.execute(stack_manager:, user: current_user, auth_code: params[:password], username: params[:username])
+    if result.success?
+      flash[:notice] = "The Portainer configuration has been updated"
+    else
+      flash[:error] = result.message
+    end
     redirect_to root_path
   end
 
   def github_oauth
-    stack_manager = current_account.stack_manager
-    jwt = Portainer::Client.authenticate(auth_code: params[:code], provider_url: stack_manager.provider_url)
-    current_user.providers.find_or_initialize_by(provider: "portainer").update!(access_token: jwt)
-    flash[:notice] = "The Portainer configuration has been updated"
+    result = Portainer::Authenticate.execute(
+      stack_manager: current_account.stack_manager,
+      user: current_user,
+      auth_code: params[:code]
+    )
+    if result.success?
+      flash[:notice] = "The Portainer configuration has been updated"
+    else
+      flash[:error] = result.message
+    end
     redirect_to root_path
   end
 end
