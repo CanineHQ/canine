@@ -92,11 +92,6 @@ class K8::BuildCloudManager
     build_cloud.namespace
   end
 
-  # Remove the BuildKit builder
-  def teardown!
-    remove_builder! if builder_ready?
-  end
-
   # Check if the builder is ready and running
   def builder_ready?
     status = runner.call("docker buildx ls --format json")
@@ -219,11 +214,10 @@ class K8::BuildCloudManager
   end
 
   def remove_builder!
+    K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
+
     # Delete locally, this also removes the builder from kubernetes
     runner.call("docker buildx rm #{build_cloud.name}")
-
-    # Also remove from kubernetes if possible
-    K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
   rescue StandardError => e
     Rails.logger.warn("Error removing builder: #{e.message}")
   end
