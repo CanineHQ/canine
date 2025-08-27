@@ -3,7 +3,7 @@
 require 'open3'
 
 module Builders
-  class Docker < Base
+  class Docker < Builders::Base
     # Build and push the Docker image
     def build_image(repository_path)
       execute_docker_build(repository_path)
