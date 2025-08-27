@@ -20,5 +20,17 @@
 require 'rails_helper'
 
 RSpec.describe StackManager, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:account) }
+    it { is_expected.to validate_presence_of(:provider_url) }
+    it { is_expected.to validate_presence_of(:stack_manager_type) }
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to(:account) }
+  end
+
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:stack_manager_type).with_values(portainer: 0) }
+  end
 end
