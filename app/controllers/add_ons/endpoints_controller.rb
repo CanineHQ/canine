@@ -24,7 +24,8 @@ class AddOns::EndpointsController < AddOns::BaseController
         @add_on,
         @endpoint,
         params[:port].to_i,
-        domains
+        domains,
+        current_user
       ).to_yaml
     )
     if @errors.empty?

@@ -1,17 +1,18 @@
 class K8::Stateless::Ingress < K8::Base
   attr_accessor :service, :project, :domains, :cluster
 
-  def initialize(service)
+  def initialize(service, user)
     @service = service
     @project = service.project
     @cluster = @project.cluster
+    super(user)
   end
 
   def name
     "#{@service.name}-ingress"
   end
 
-  def certificate_status(user)
+  def certificate_status
     return nil unless @service.domains.any?
     return nil unless @service.allow_public_networking?
     return nil unless @service.allow_public_networking?

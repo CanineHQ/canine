@@ -5,7 +5,8 @@ class K8::Kubectl
   attr_reader :kubeconfig, :runner
 
   def initialize(connection, runner = Cli::RunAndReturnOutput.new)
-    @kubeconfig = connection.kubeconfig
+    @_kubeconfig = connection.kubeconfig
+    @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
     if @kubeconfig.nil?
       raise "Kubeconfig is required"
     end

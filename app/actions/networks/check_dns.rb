@@ -1,6 +1,6 @@
 class Networks::CheckDns
   extend LightService::Action
-  expects :ingress, :user
+  expects :ingress
 
   class << self
     def infer_expected_ip(ingress, user)
@@ -38,7 +38,7 @@ class Networks::CheckDns
 
   executed do |context|
     # TODO
-    expected_ip = infer_expected_ip(context.ingress, context.user)
+    expected_ip = infer_expected_ip(context.ingress, context.ingress.user)
     context.ingress.service.domains.each do |domain|
       ip_addresses = Resolv::DNS.open do |dns|
         dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|

@@ -3,9 +3,10 @@ class K8::Stateless::CronJob < K8::Base
 
   attr_accessor :service, :project
   delegate :name, to: :service
-  def initialize(service)
+  def initialize(service, user)
     @service = service
     @project = service.project
+    super(user)
   end
 
   def run_history
@@ -18,7 +19,7 @@ class K8::Stateless::CronJob < K8::Base
   private
 
   def fetch_jobs_for_cronjob
-    kubectl = K8::Kubectl.from_project(project)
+    kubectl = K8::Kubectl.new(K8::Connection.new(project.cluster, user))
     result = kubectl.call("get jobs -n #{project.name} -o json")
     all_jobs = JSON.parse(result, object_class: OpenStruct).items
 

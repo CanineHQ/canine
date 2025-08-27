@@ -19,7 +19,7 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
-    predeploy(project, kubectl)
+    predeploy(project, kubectl, user)
     # For each of the projects services
     deploy_services(project, kubectl)
 
@@ -28,7 +28,7 @@ class Projects::DeploymentJob < ApplicationJob
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
 
-    postdeploy(project, kubectl)
+    postdeploy(project, kubectl, user)
     deployment.completed!
     project.deployed!
   rescue StandardError => e
@@ -53,9 +53,9 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  def _run_command(command, kubectl, project, type)
+  def _run_command(command, kubectl, project, type, user)
     @logger.info("Running command: `#{command}`...", color: :yellow)
-    command = K8::Stateless::Command.new(project, type, command)
+    command = K8::Stateless::Command.new(project, type, command, user)
     command_yaml = command.to_yaml
     command.delete_if_exists!
     kubectl.apply_yaml(command_yaml)
@@ -63,16 +63,16 @@ class Projects::DeploymentJob < ApplicationJob
     # Get logs f
   end
 
-  def predeploy(project, kubectl)
+  def predeploy(project, kubectl, user)
     return unless project.predeploy_command.present?
 
-    _run_command(project.predeploy_command, kubectl, project, 'predeploy')
+    _run_command(project.predeploy_command, kubectl, project, 'predeploy', user)
   end
 
-  def postdeploy(project, kubectl)
+  def postdeploy(project, kubectl, user)
     return unless project.postdeploy_command.present?
 
-    _run_command(project.postdeploy_command, kubectl, project, 'postdeploy')
+    _run_command(project.postdeploy_command, kubectl, project, 'postdeploy', user)
   end
 
   def create_kubectl(deployment, connection)

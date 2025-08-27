@@ -14,7 +14,7 @@ class Async::K8::CertificateStatusViewModel < Async::BaseViewModel
     template = <<-HTML
       <div>
         Certificate Status:
-        <% if K8::Stateless::Ingress.new(service).certificate_status %>
+        <% if K8::Stateless::Ingress.new(service, current_user).certificate_status %>
           <span class="text-success ml-2 font-semibold">Issued</span>
         <% else %>
           <span class="text-warning ml-2 font-semibold">Issuing</span>

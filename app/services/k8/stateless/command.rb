@@ -1,14 +1,15 @@
 class K8::Stateless::Command < K8::Base
   attr_accessor :project, :type, :command
 
-  def initialize(project, type, command)
+  def initialize(project, type, command, user)
     @project = project
     @type = type
     @command = command
+    super(user)
   end
 
   def kubectl
-    @kubectl ||= K8::Kubectl.new(project.cluster)
+    @kubectl ||= K8::Kubectl.new(K8::Connection.new(project.cluster, user))
   end
 
   def name

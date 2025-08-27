@@ -5,7 +5,7 @@ RSpec.describe Networks::CheckDns do
   let(:user) { create(:user) }
   let(:project) { create(:project, cluster: cluster) }
   let(:service) { create(:service, project: project) }
-  let(:ingress) { K8::Stateless::Ingress.new(service) }
+  let(:ingress) { K8::Stateless::Ingress.new(service, user) }
 
   describe '.infer_expected_ip' do
     context 'when ingress returns public IP' do
