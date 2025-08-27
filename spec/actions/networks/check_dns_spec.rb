@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Networks::CheckDns do
   let(:cluster) { create(:cluster) }
+  let(:user) { create(:user) }
   let(:project) { create(:project, cluster: cluster) }
   let(:service) { create(:service, project: project) }
   let(:ingress) { K8::Stateless::Ingress.new(service) }
@@ -13,7 +14,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the IP' do
-        expect(described_class.infer_expected_ip(ingress)).to eq('8.8.8.8')
+        expect(described_class.infer_expected_ip(ingress, user)).to eq('8.8.8.8')
       end
     end
 
@@ -24,7 +25,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'resolves and returns public IP' do
-        expect(described_class.infer_expected_ip(ingress)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress, user)).to eq('1.2.3.4')
       end
     end
 
@@ -47,7 +48,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the hostname IP' do
-        expect(described_class.infer_expected_ip(ingress)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress, user)).to eq('1.2.3.4')
       end
     end
   end

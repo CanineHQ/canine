@@ -3,11 +3,11 @@ require 'rails_helper'
 RSpec.describe Projects::ValidateNamespaceAvailability do
   let(:cluster) { create(:cluster) }
   let(:project) { build(:project, name: 'test-app', cluster: cluster) }
-  let(:context) { LightService::Context.make(project: project) }
+  let(:user) { create(:user) }
   let(:k8_client) { instance_double(K8::Client) }
 
   before do
-    allow(K8::Client).to receive(:from_cluster).with(cluster).and_return(k8_client)
+    allow(K8::Client).to receive(:new).and_return(k8_client)
   end
 
   describe '.execute' do
@@ -17,8 +17,7 @@ RSpec.describe Projects::ValidateNamespaceAvailability do
       end
 
       it 'succeeds' do
-        described_class.execute(context)
-        expect(context).to be_success
+        expect(described_class.execute(project: project, user: user)).to be_success
       end
     end
 
@@ -32,9 +31,9 @@ RSpec.describe Projects::ValidateNamespaceAvailability do
       end
 
       it 'fails with error message' do
-        described_class.execute(context)
-        expect(context).to be_failure
-        expect(context.message).to include("already exists")
+        result = described_class.execute(project: project, user: user)
+        expect(result).to be_failure
+        expect(result.message).to include("already exists")
       end
     end
   end

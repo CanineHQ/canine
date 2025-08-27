@@ -7,7 +7,7 @@ class Networks::CheckDns
       ip = ingress.ip_address
       if is_private_ip?(ip)
         cluster = ingress.service.project.cluster
-        ip = infer_public_ip_from_cluster(cluster), user
+        ip = infer_public_ip_from_cluster(cluster, user)
       end
       ip
     end
