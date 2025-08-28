@@ -3,7 +3,6 @@ class Clusters::Install
   extend LightService::Organizer
 
   def self.call(cluster, user)
-    cluster.installing!
     result = with(cluster:, user:).reduce(
       Clusters::IsReady,
       Clusters::CreateNamespace,

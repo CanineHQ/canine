@@ -1,12 +1,11 @@
 class Clusters::InstallNginxIngress
   extend LightService::Action
 
-  expects :cluster, :user
+  expects :kubectl, :cluster
 
   executed do |context|
     cluster = context.cluster
-    runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(K8::Connection.new(cluster, context.user), runner)
+    kubectl = context.kubectl
     cluster.info("Checking if Nginx ingress controller is already installed...", color: :yellow)
 
     begin
