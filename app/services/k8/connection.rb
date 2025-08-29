@@ -6,6 +6,11 @@ class K8::Connection
   end
 
   def kubeconfig
-    cluster.kubeconfig
+    # If the cluster has a kubeconfig, use it.
+    if cluster.kubeconfig.present?
+      cluster.kubeconfig
+    else
+      K8Stack.fetch_kubeconfig(cluster, user)
+    end
   end
 end

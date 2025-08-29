@@ -118,6 +118,8 @@ Rails.application.routes.draw do
   if Rails.application.config.local_mode
     get "/github_token", to: "local/pages#github_token"
     put "/github_token", to: "local/pages#update_github_token"
+    get "/portainer_configuration", to: "local/pages#portainer_configuration"
+    put "/portainer_configuration", to: "local/pages#update_portainer_configuration"
     get "/github_oauth", to: "local/pages#github_oauth"
     root to: "projects#index"
   else
