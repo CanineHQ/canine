@@ -16,14 +16,6 @@
               <span class="hidden sm:inline">New Cluster</span>
             </button>
           <% end %>
-          <% if current_account.stack_manager&.portainer? %>
-            <%= link_to sync_clusters_path do %>
-              <button class="btn btn-outline btn-sm">
-                <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
-                <span class="hidden sm:inline">Sync Clusters</span>
-              </button>
-            <% end %>
-          <% end %>
         </div>
         <%= tag.div id: ("clusters" if @pagy.pages == 1) do %>
 

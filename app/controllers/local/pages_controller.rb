@@ -30,33 +30,4 @@ class Local::PagesController < ApplicationController
     flash[:error] = "Invalid personal access token"
     redirect_to github_token_path
   end
-
-  def portainer_configuration
-  end
-
-  def update_portainer_configuration
-    stack_manager = current_account.stack_manager || current_account.build_stack_manager
-    stack_manager.update!(provider_url: params[:provider_url])
-    result = Portainer::Authenticate.execute(stack_manager:, user: current_user, auth_code: params[:password], username: params[:username])
-    if result.success?
-      flash[:notice] = "The Portainer configuration has been updated"
-    else
-      flash[:error] = result.message
-    end
-    redirect_to root_path
-  end
-
-  def github_oauth
-    result = Portainer::Authenticate.execute(
-      stack_manager: current_account.stack_manager,
-      user: current_user,
-      auth_code: params[:code]
-    )
-    if result.success?
-      flash[:notice] = "The Portainer configuration has been updated"
-    else
-      flash[:error] = result.message
-    end
-    redirect_to root_path
-  end
 end

@@ -48,11 +48,6 @@ class User < ApplicationRecord
     providers.find_by(provider: "github")
   end
 
-  def portainer_jwt
-    return @portainer_jwt if @portainer_jwt
-    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
-  end
-
   private
 
   def downcase_email

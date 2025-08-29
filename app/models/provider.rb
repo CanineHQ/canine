@@ -29,7 +29,6 @@ class Provider < ApplicationRecord
   GITHUB_PROVIDER = "github"
   CUSTOM_REGISTRY_PROVIDER = "container_registry"
   GITLAB_PROVIDER = "gitlab"
-  PORTAINER_PROVIDER = "portainer"
   GIT_TYPE = "git"
   REGISTRY_TYPE = "registry"
   PROVIDER_TYPES = {
