@@ -36,13 +36,17 @@ class Local::PagesController < ApplicationController
 
   def update_portainer_configuration
     stack_manager = current_account.stack_manager || current_account.build_stack_manager
-    stack_manager.update!(provider_url: params[:provider_url])
-    result = Portainer::Authenticate.execute(stack_manager:, user: current_user, auth_code: params[:password], username: params[:username])
-    if result.success?
-      flash[:notice] = "The Portainer configuration has been updated"
-    else
-      flash[:error] = result.message
+    stack_manager.update!(provider_url: params[:stack_manager][:provider_url])
+    # TODO: clean this up - celina
+    if params[:password].present? && params[:username].present?
+      result = Portainer::Authenticate.execute(stack_manager:, user: current_user, auth_code: params[:password], username: params[:username])
+      if result.success?
+        flash[:notice] = "The Portainer configuration has been updated"
+      else
+        flash[:error] = result.message
+      end
     end
+    flash[:notice] = "The Portainer configuration has been updated"
     redirect_to root_path
   end
 

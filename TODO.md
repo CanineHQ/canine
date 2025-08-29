@@ -17,3 +17,5 @@
 - [ ] Update vocabulary on landing page
 - [ ] Clear our historical logs
 - [ ] log drain from application
+- [ ]  clean this up - celina - app/controllers/local/pages_controller.rb
+
