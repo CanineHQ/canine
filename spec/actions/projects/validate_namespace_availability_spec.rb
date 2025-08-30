@@ -23,18 +23,31 @@ RSpec.describe Projects::ValidateNamespaceAvailability do
     end
 
     context 'when namespace already exists' do
-      let(:existing_namespace) do
-        OpenStruct.new(metadata: OpenStruct.new(name: 'test-app'))
-      end
-
       before do
         allow(k8_client).to receive(:get_namespaces).and_return([ existing_namespace ])
       end
 
-      it 'fails with error message' do
-        described_class.execute(context)
-        expect(context).to be_failure
-        expect(context.message).to include("already exists")
+      context 'when namespace is not managed by Canine' do
+        let(:existing_namespace) do
+          OpenStruct.new(metadata: OpenStruct.new(name: 'test-app'))
+        end
+
+        it 'fails with error message' do
+          described_class.execute(context)
+          expect(context).to be_failure
+          expect(context.message).to include("already exists")
+        end
+      end
+
+      context 'when namespace is managed by Canine' do
+        let(:existing_namespace) do
+          OpenStruct.new(metadata: OpenStruct.new(name: 'test-app', labels: OpenStruct.new(caninemanaged: "true")))
+        end
+
+        it 'succeeds' do
+          described_class.execute(context)
+          expect(context).to be_success
+        end
       end
     end
   end
