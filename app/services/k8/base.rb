@@ -26,4 +26,10 @@ class K8::Base
   def client
     @client ||= K8::Client.new(K8::Connection.new(cluster, user))
   end
+
+  def setup
+  end
+
+  def cleanup
+  end
 end

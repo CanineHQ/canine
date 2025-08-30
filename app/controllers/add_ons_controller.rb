@@ -80,13 +80,11 @@ class AddOnsController < ApplicationController
 
   def default_values
     # Render a partial with the default values
-    @default_values = K8::Helm::Client
-      .new(Cli::RunAndReturnOutput.new)
-      .get_default_values_yaml(
-        repository_name: params[:repository_name],
-        repository_url: params[:repository_url],
-        chart_name: params[:chart_name]
-      )
+    @default_values = K8::Helm::Client.get_default_values_yaml(
+      repository_name: params[:repository_name],
+      repository_url: params[:repository_url],
+      chart_name: params[:chart_name]
+    )
     render partial: "add_ons/helm/default_values", locals: { default_values: @default_values }
   end
 

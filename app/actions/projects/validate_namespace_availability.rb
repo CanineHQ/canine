@@ -14,7 +14,7 @@ module Projects
 
         # Check if namespace already exists in Kubernetes
         namespace_exists = existing_namespaces.any? do |ns|
-          ns.metadata.name == project.name
+          ns.metadata.name == project.name && ns.metadata&.labels&.caninemanaged != "true"
         end
 
         if namespace_exists

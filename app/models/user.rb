@@ -36,6 +36,7 @@ class User < ApplicationRecord
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
+  has_many :build_clouds, through: :clusters
   has_many :projects, through: :accounts
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts

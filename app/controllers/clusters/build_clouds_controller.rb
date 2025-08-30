@@ -45,8 +45,14 @@ class Clusters::BuildCloudsController < Clusters::BaseController
       return
     end
 
-    build_cloud = @cluster.create_build_cloud!
+    build_cloud = if @cluster.build_cloud.nil?
+      @cluster.create_build_cloud!
+    else
+      @cluster.build_cloud
+    end
+
     Clusters::InstallBuildCloudJob.perform_later(build_cloud)
+
     redirect_to edit_cluster_path(@cluster), notice: "Build cloud installation started. This may take a few minutes..."
   end
 

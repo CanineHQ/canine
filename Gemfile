@@ -57,7 +57,7 @@ group :test do
 
   gem "database_cleaner-active_record", '~> 2.2.2'
   gem 'faker', '~> 3.5.2'
-  gem 'shoulda-matchers', '~> 6.0'
+  gem 'shoulda-matchers', '~> 6.5'
 end
 
 gem "cssbundling-rails"
@@ -79,7 +79,7 @@ gem "kubeclient", "~> 4.12"
 gem "light-service", "~> 0.20.0"
 gem "octokit", "~> 10.0"
 gem "omniauth-digitalocean", "~> 0.3.2"
-gem "pagy", "~> 9.3"
+gem "pagy", "~> 9.4"
 gem "rqrcode", "~> 2.2"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
@@ -91,7 +91,7 @@ gem "rack", "~> 2.2"
 
 gem "tailwindcss-rails", "~> 2.7"
 
-gem "httparty", "~> 0.22.0"
+gem "httparty", "~> 0.23.1"
 
 gem "redcarpet", "~> 3.6"
 

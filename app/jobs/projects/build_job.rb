@@ -8,6 +8,7 @@ class Projects::BuildJob < ApplicationJob
 
   def perform(build, user)
     project = build.project
+    build.in_progress!
     # If its a container registry deploy, we don't need to build the docker image
     if project.container_registry?
       build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
@@ -18,17 +19,19 @@ class Projects::BuildJob < ApplicationJob
       # Initialize the Docker builder
       image_builder = if project.build_configuration&.k8s?
         build.info("Driver: Kubernetes (#{project.build_configuration.build_cloud.friendly_name})", color: :green)
-        Builders::BuildCloud.new(build)
+        Builders::BuildCloud.new(build, project.build_configuration.build_cloud)
       else
         build.info("Driver: Docker", color: :green)
         Builders::Docker.new(build)
       end
 
+      image_builder.setup
       # Login to registry
       image_builder.login_to_registry(project_credential_provider)
 
       # Clone repository and build
       clone_repository_and_build_image(project, build, image_builder)
+      image_builder.cleanup
     end
 
     complete_build!(build, user)
