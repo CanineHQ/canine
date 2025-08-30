@@ -5,7 +5,8 @@ RSpec.describe Networks::CheckDns do
   let(:user) { create(:user) }
   let(:project) { create(:project, cluster: cluster) }
   let(:service) { create(:service, project: project) }
-  let(:ingress) { K8::Stateless::Ingress.new(service, user) }
+  let(:connection) { K8::Connection.new(cluster, user) }
+  let(:ingress) { K8::Stateless::Ingress.new(service).connect(connection) }
 
   describe '.infer_expected_ip' do
     context 'when ingress returns public IP' do
@@ -14,7 +15,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the IP' do
-        expect(described_class.infer_expected_ip(ingress, user)).to eq('8.8.8.8')
+        expect(described_class.infer_expected_ip(ingress, connection)).to eq('8.8.8.8')
       end
     end
 
@@ -25,7 +26,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'resolves and returns public IP' do
-        expect(described_class.infer_expected_ip(ingress, user)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress, connection)).to eq('1.2.3.4')
       end
     end
 
@@ -48,7 +49,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the hostname IP' do
-        expect(described_class.infer_expected_ip(ingress, user)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_ip(ingress, connection)).to eq('1.2.3.4')
       end
     end
   end

@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 class K8::Base
-  attr_reader :user
+  attr_reader :connection
 
-  def initialize(user)
-    @user = user
+  def connect(connection)
+    self.connection = connection
+    self
+  end
+
+  def connected?
+    connection.present?
   end
 
   def template_path
@@ -24,12 +29,12 @@ class K8::Base
   end
 
   def client
-    @client ||= K8::Client.new(K8::Connection.new(cluster, user))
+    raise "Client not connected" unless connected?
+    @client ||= K8::Client.new(connection)
   end
 
-  def setup
-  end
-
-  def cleanup
+  def kubectl
+    raise "Kubectl not connected" unless connected?
+    @kubectl ||= K8::Kubectl.new(connection)
   end
 end

@@ -1,11 +1,10 @@
 class K8::Stateless::Ingress < K8::Base
   attr_accessor :service, :project, :domains, :cluster
 
-  def initialize(service, user)
+  def initialize(service)
     @service = service
     @project = service.project
     @cluster = @project.cluster
-    super(user)
   end
 
   def name
@@ -17,11 +16,11 @@ class K8::Stateless::Ingress < K8::Base
     return nil unless @service.allow_public_networking?
     return nil unless @service.allow_public_networking?
 
-    K8::Kubectl.new(K8::Connection.new(@cluster, user)).call("get certificate example-tls -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+    kubectl.call("get certificate example-tls -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
   end
 
   def get_ingress
-    result = K8::Kubectl.new(K8::Connection.new(@cluster, user)).call('get ingresses -o yaml')
+    result = kubectl.call('get ingresses -o yaml')
     results = YAML.safe_load(result)
     results['items'].find { |r| r['metadata']['name'] == "#{@service.project.name}-ingress" }
   end

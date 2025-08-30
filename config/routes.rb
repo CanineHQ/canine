@@ -78,9 +78,6 @@ Rails.application.routes.draw do
       get :download_yaml
       get :logs
     end
-    collection do
-      get :sync
-    end
     resource :metrics, only: [ :show ], module: :clusters
     resource :build_cloud, only: [ :show, :edit, :update, :create, :destroy ], module: :clusters
     member do
@@ -118,7 +115,6 @@ Rails.application.routes.draw do
   if Rails.application.config.local_mode
     get "/github_token", to: "local/pages#github_token"
     put "/github_token", to: "local/pages#update_github_token"
-    get "/github_oauth", to: "local/pages#github_oauth"
     root to: "projects#index"
   else
     root to: "static#index"

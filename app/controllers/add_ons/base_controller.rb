@@ -11,6 +11,10 @@ class AddOns::BaseController < ApplicationController
     end
   end
 
+  def active_connection
+    @_active_connection ||= K8::Connection.new(@add_on.cluster, current_user)
+  end
+
   private
 
   def set_add_on
