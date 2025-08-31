@@ -30,5 +30,17 @@
 require 'rails_helper'
 
 RSpec.describe BuildCloud, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:cluster) }
+    it { is_expected.to validate_presence_of(:namespace) }
+    it { is_expected.to validate_presence_of(:status) }
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to(:cluster) }
+  end
+
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:status).with_values(pending: 0, installing: 1, active: 2, failed: 3, uninstalling: 4, uninstalled: 5, updating: 6) }
+  end
 end

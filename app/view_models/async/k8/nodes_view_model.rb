@@ -8,7 +8,7 @@ class Async::K8::NodesViewModel < Async::BaseViewModel
   end
 
   def nodes
-    @nodes ||= K8::Metrics::Api::Node.ls(cluster)
+    @nodes ||= K8::Metrics::Api::Node.ls(K8::Connection.new(cluster, current_user))
   end
 
   def initial_render

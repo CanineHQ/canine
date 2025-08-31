@@ -25,5 +25,17 @@
 require 'rails_helper'
 
 RSpec.describe BuildConfiguration, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:project) }
+    it { is_expected.to validate_presence_of(:provider) }
+    it { is_expected.to validate_presence_of(:driver) }
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to(:project) }
+  end
+
+  describe 'enums' do
+    it { is_expected.to define_enum_for(:driver).with_values(docker: 0, k8s: 1) }
+  end
 end

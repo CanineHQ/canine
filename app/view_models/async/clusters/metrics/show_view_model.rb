@@ -13,7 +13,7 @@ class Async::Clusters::Metrics::ShowViewModel < Async::BaseViewModel
   end
 
   def async_render
-    nodes = K8::Metrics::Api::Node.ls(cluster)
+    nodes = K8::Metrics::Api::Node.ls(K8::Connection.new(cluster, current_user))
     render "clusters/metrics/live_metrics", locals: {
       nodes: nodes
     }

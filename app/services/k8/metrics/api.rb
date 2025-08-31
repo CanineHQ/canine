@@ -1,9 +1,10 @@
 module K8::Metrics::Api
   class Node
     extend StorageHelper
-    def self.ls(cluster, with_namespaces: true)
+    def self.ls(connection, with_namespaces: true)
+      cluster = connection.cluster
       # Here, run kubectl top nodes
-      kubectl = K8::Kubectl.new(cluster.kubeconfig)
+      kubectl = K8::Kubectl.new(connection)
       response = kubectl.call("top nodes")
       parsed_data = parse_output(response)
       #  get --raw /apis/metrics.k8s.io/v1beta1/nodes/#{node}
@@ -27,14 +28,14 @@ module K8::Metrics::Api
         if with_namespaces
           cluster.projects.each do |project|
             begin
-              node.namespaces[project.name] = K8::Metrics::Api::Pod.fetch(cluster, project.name)
+              node.namespaces[project.name] = K8::Metrics::Api::Pod.fetch(connection, project.name)
             rescue StandardError => e
               Rails.logger.error("Failed to fetch pod metrics for project #{project.name}: #{e.message}")
             end
           end
           cluster.add_ons.each do |add_on|
             begin
-              node.namespaces[add_on.name] = K8::Metrics::Api::Pod.fetch(cluster, add_on.name)
+              node.namespaces[add_on.name] = K8::Metrics::Api::Pod.fetch(connection, add_on.name)
             rescue StandardError => e
               Rails.logger.error("Failed to fetch pod metrics for add-on #{add_on.name}: #{e.message}")
             end
@@ -100,8 +101,8 @@ module K8::Metrics::Api
   class Pod
     extend StorageHelper
 
-    def self.fetch(cluster, namespace)
-      kubectl = K8::Kubectl.new(cluster.kubeconfig)
+    def self.fetch(connection, namespace)
+      kubectl = K8::Kubectl.new(connection)
       response = kubectl.call("top pods -n #{namespace}")
       parsed_data = parse_output(response)
       parsed_data.map do |data|

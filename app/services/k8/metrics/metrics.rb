@@ -2,8 +2,8 @@
 include StorageHelper
 
 class K8::Metrics::Metrics
-  def self.call(cluster)
-    nodes = K8::Metrics::Api::Node.ls(cluster)
+  def self.call(connection)
+    nodes = K8::Metrics::Api::Node.ls(connection)
     metrics = []
     nodes.each do |node|
       tags = [ "node:#{node.name}" ]
@@ -34,6 +34,7 @@ class K8::Metrics::Metrics
         end
       end
     end
+    cluster = connection.cluster
     metrics.each do |metric|
       cluster.metrics.create(**metric)
     end

@@ -7,7 +7,7 @@ class Async::Helm::StorageViewModel < Async::BaseViewModel
   end
 
   def service
-    @service ||= K8::Helm::Service.new(add_on)
+    @service ||= K8::Helm::Service.new(K8::Connection.new(add_on, current_user))
   end
 
   def initial_render
@@ -19,22 +19,6 @@ class Async::Helm::StorageViewModel < Async::BaseViewModel
   end
 
   def async_render
-    template = <<-HTML
-      <div class="mb-4">
-        <% if service.storage_metrics.any? %>
-          <% service.storage_metrics.each do |metric| %>
-            <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
-            <% if metric[:usage] %>
-              <div><strong><%= metric[:usage][:use_percentage] %>%</strong> used out of <strong><%= standardize_size(metric[:usage][:available]) %>B</strong></div>
-              <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
-            <% end %>
-          <% end %>
-        <% else %>
-          <div class="text-gray-500">No storage volumes found</div>
-        <% end %>
-      </div>
-    HTML
-
-    ERB.new(template).result(binding)
+    render "helm/storage", locals: { storage_metrics: service.storage_metrics }
   end
 end

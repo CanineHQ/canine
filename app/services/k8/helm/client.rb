@@ -8,13 +8,15 @@ class K8::Helm::Client
     @runner = runner
   end
 
-  def self.connect(kubeconfig, runner)
+  def self.connect(connection, runner)
     client = new(runner)
-    client.connect(kubeconfig)
+    client.connect(connection)
+    client
   end
 
-  def connect(kubeconfig)
-    @kubeconfig = kubeconfig
+  def connect(connection)
+    @connection = connection
+    @kubeconfig = connection.kubeconfig.is_a?(String) ? JSON.parse(connection.kubeconfig) : connection.kubeconfig
     self
   end
 
@@ -58,9 +60,13 @@ class K8::Helm::Client
     runner.(command)
   end
 
-  def add_repo(name, url)
-    add_repo_command = "helm repo add #{name} #{url}"
+  def self.add_repo(repository_name, repository_url, runner)
+    add_repo_command = "helm repo add #{repository_name} #{repository_url}"
     runner.(add_repo_command)
+  end
+
+  def add_repo(repository_name, repository_url)
+    self.class.add_repo(repository_name, repository_url, runner)
   end
 
   def install(name, chart_url, values: {}, namespace: 'default')
@@ -92,12 +98,13 @@ class K8::Helm::Client
     end
   end
 
-  def get_default_values_yaml(
+  def self.get_default_values_yaml(
     repository_name:,
     repository_url:,
     chart_name:
   )
-    add_repo(repository_name, repository_url)
+    runner = Cli::RunAndReturnOutput.new
+    add_repo(repository_name, repository_url, runner)
     command = "helm show values #{repository_name}/#{chart_name}"
     output = runner.(command)
     output

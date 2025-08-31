@@ -5,6 +5,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
     YAML.safe_load(File.read(Rails.root.join('spec/resources/k8/kubeconfig.yml')))
   end
   let(:cluster) { create(:cluster, kubeconfig: valid_kubeconfig) }
+  let(:user) { create(:user) }
 
   describe '.valid_kubeconfig_structure?' do
     let(:subject) { described_class.valid_kubeconfig_structure?(valid_kubeconfig) }
@@ -73,7 +74,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
       end
 
       it 'returns true when connection is successful' do
-        expect(described_class.execute(cluster:)).to be_success
+        expect(described_class.execute(cluster:, user:)).to be_success
       end
     end
 
@@ -83,7 +84,7 @@ RSpec.describe Clusters::ValidateKubeConfig do
       end
 
       it 'returns false when connection fails' do
-        expect(described_class.execute(cluster:)).to be_failure
+        expect(described_class.execute(cluster:, user:)).to be_failure
       end
     end
   end

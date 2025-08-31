@@ -46,7 +46,7 @@ class User < ApplicationRecord
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
 
   def github_provider
-  providers.find_by(provider: "github")
+    providers.find_by(provider: "github")
   end
 
   private

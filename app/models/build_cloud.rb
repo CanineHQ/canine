@@ -32,7 +32,7 @@ class BuildCloud < ApplicationRecord
 
   belongs_to :cluster
 
-  validates :cluster_id, uniqueness: true
+  validates :cluster, uniqueness: true, presence: true
   validates :namespace, presence: true
   validates :status, presence: true
 

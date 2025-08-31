@@ -3,7 +3,8 @@ module NamespaceMetricsHelper
   include MetricsHelper
 
   def configure(nameable)
-    @pods = K8::Metrics::Api::Pod.fetch(nameable.cluster, nameable.name)
+    connection = K8::Connection.new(nameable.cluster, current_user)
+    @pods = K8::Metrics::Api::Pod.fetch(connection, nameable.name)
     @time_range = params[:time_range] || "2h"
     start_time = parse_time_range(@time_range)
     end_time = Time.now
