@@ -38,8 +38,7 @@ class K8::Helm::Service
   end
 
   def values_yaml
-    kubeconfig = K8::Connection.new(add_on.cluster, user).kubeconfig
-    helm_client = K8::Helm::Client.connect(kubeconfig, Cli::RunAndReturnOutput.new)
+    helm_client = K8::Helm::Client.connect(connection, Cli::RunAndReturnOutput.new)
     helm_client.get_values_yaml(add_on.name, namespace: add_on.name)
   rescue StandardError => e
     Rails.logger.error("Error getting values.yaml for #{add_on.name}: #{e.message}")
