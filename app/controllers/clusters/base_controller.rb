@@ -4,6 +4,7 @@ class Clusters::BaseController < ApplicationController
   def active_connection
     @_active_connection ||= K8::Connection.new(@cluster, current_user)
   end
+  helper_method :active_connection
 
   private
 

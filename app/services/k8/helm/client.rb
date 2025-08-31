@@ -11,11 +11,12 @@ class K8::Helm::Client
   def self.connect(connection, runner)
     client = new(runner)
     client.connect(connection)
+    client
   end
 
   def connect(connection)
-    @connection = connection.kubeconfig
-    @kubeconfig = kubeconfig.is_a?(String) ? JSON.parse(kubeconfig) : kubeconfig
+    @connection = connection
+    @kubeconfig = connection.kubeconfig.is_a?(String) ? JSON.parse(connection.kubeconfig) : connection.kubeconfig
     self
   end
 

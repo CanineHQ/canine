@@ -5,7 +5,7 @@ class AddOns::InstallJob < ApplicationJob
     AddOns::InstallHelmChart.execute(connection:)
 
     if needs_restart
-      service = K8::Helm::Service.create_from_add_on(add_on)
+      service = K8::Helm::Service.create_from_add_on(connection)
       service.restart
     end
   end

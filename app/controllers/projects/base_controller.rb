@@ -5,6 +5,7 @@ class Projects::BaseController < ApplicationController
   def active_connection
     @_active_connection ||= K8::Connection.new(@project, current_user)
   end
+  helper_method :active_connection
 
   private
   def set_project

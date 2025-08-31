@@ -9,7 +9,7 @@ class Networks::CheckDns
 
       if is_private_ip?(ip)
         cluster = ingress.service.project.cluster
-        ip = infer_public_ip_from_cluster(cluster, connection)
+        ip = infer_public_ip_from_cluster(connection)
       end
       ip
     end
@@ -18,7 +18,7 @@ class Networks::CheckDns
       ip.starts_with?("10.") || ip.starts_with?("172.") || ip.starts_with?("192.")
     end
 
-    def infer_public_ip_from_cluster(cluster, connection)
+    def infer_public_ip_from_cluster(connection)
       # The ingress is reporting a private IP address, so we need to guess the public IP address
       # based on the cluster's domain name
       server_name = K8::Client.new(connection).server
