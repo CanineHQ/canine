@@ -7,7 +7,7 @@ class Async::Helm::StorageViewModel < Async::BaseViewModel
   end
 
   def service
-    @service ||= K8::Helm::Service.new(add_on)
+    @service ||= K8::Helm::Service.new(K8::Connection.new(add_on, current_user))
   end
 
   def initial_render

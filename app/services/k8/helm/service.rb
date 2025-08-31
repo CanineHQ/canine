@@ -58,7 +58,7 @@ class K8::Helm::Service
     ).flatten
 
     pvcs.map do |pvc|
-      pod = pods.find { |p| p.spec.volumes.any? { |vol| vol.persistentVolumeClaim&.claimName == pvc.metadata.name } }
+      pod = pods.find { |p| p.spec.volumes&.any? { |vol| vol.persistentVolumeClaim&.claimName == pvc.metadata.name } }
       mount_path = get_mount_path(pod, pvc.metadata.name) if pod
       usage = mount_path ? get_volume_usage(pod.metadata.name, mount_path) : nil
 

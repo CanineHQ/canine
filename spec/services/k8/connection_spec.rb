@@ -14,11 +14,11 @@ RSpec.describe K8::Connection do
     end
   end
 
-  describe '#cluster method behavior' do
+  describe '#cluster' do
     context 'when clusterable is a Cluster' do
       let(:connection) { described_class.new(cluster, user) }
 
-      it 'returns the cluster via the dynamic method' do
+      it 'returns the cluster itself' do
         expect(connection.cluster).to eq(cluster)
       end
     end
@@ -26,24 +26,24 @@ RSpec.describe K8::Connection do
     context 'when clusterable is a Project' do
       let(:connection) { described_class.new(project, user) }
 
-      it 'raises an error due to dynamic method override' do
-        expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster')
+      it 'returns the project cluster' do
+        expect(connection.cluster).to eq(cluster)
       end
     end
 
     context 'when clusterable is an AddOn' do
       let(:connection) { described_class.new(add_on, user) }
 
-      it 'raises an error due to dynamic method override' do
-        expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster')
+      it 'returns the add_on cluster' do
+        expect(connection.cluster).to eq(cluster)
       end
     end
 
     context 'when clusterable is an unsupported type' do
       let(:connection) { described_class.new(user, user) }
 
-      it 'raises an error due to dynamic method' do
-        expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster')
+      it 'raises an error' do
+        expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster, Project, or AddOn')
       end
     end
   end
@@ -60,16 +60,16 @@ RSpec.describe K8::Connection do
     context 'when clusterable is a Project' do
       let(:connection) { described_class.new(project, user) }
 
-      it 'raises NoMethodError since Project does not have kubeconfig' do
-        expect { connection.kubeconfig }.to raise_error(NoMethodError, /undefined method `kubeconfig'/)
+      it 'returns the kubeconfig from the project cluster' do
+        expect(connection.kubeconfig).to eq(cluster.kubeconfig)
       end
     end
 
     context 'when clusterable is an AddOn' do
       let(:connection) { described_class.new(add_on, user) }
 
-      it 'raises NoMethodError since AddOn does not have kubeconfig' do
-        expect { connection.kubeconfig }.to raise_error(NoMethodError, /undefined method `kubeconfig'/)
+      it 'returns the kubeconfig from the add_on cluster' do
+        expect(connection.kubeconfig).to eq(cluster.kubeconfig)
       end
     end
   end
@@ -126,24 +126,6 @@ RSpec.describe K8::Connection do
         end
       end
     end
-
-    describe '#cluster' do
-      context 'when clusterable is a Cluster' do
-        let(:connection) { described_class.new(cluster, user) }
-
-        it 'returns the cluster through the dynamic method' do
-          expect(connection.cluster).to eq(cluster)
-        end
-      end
-
-      context 'when clusterable is not a Cluster' do
-        let(:connection) { described_class.new(project, user) }
-
-        it 'raises an error because dynamic method overrides instance method' do
-          expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster')
-        end
-      end
-    end
   end
 
   describe 'attribute readers' do
@@ -166,8 +148,11 @@ RSpec.describe K8::Connection do
         expect(connection.clusterable).to be_nil
       end
 
+      it 'raises error when accessing cluster' do
+        expect { connection.cluster }.to raise_error(RuntimeError, '`clusterable` is not a Cluster, Project, or AddOn')
+      end
+
       it 'raises error when accessing dynamic methods' do
-        expect { connection.cluster }.to raise_error(RuntimeError)
         expect { connection.project }.to raise_error(RuntimeError)
         expect { connection.add_on }.to raise_error(RuntimeError)
       end
