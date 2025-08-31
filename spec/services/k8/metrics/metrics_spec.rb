@@ -4,6 +4,7 @@ RSpec.describe K8::Metrics::Metrics do
   describe '.call' do
     let(:cluster) { create(:cluster) }
     let(:user) { create(:user) }
+    let(:connection) { K8::Connection.new(cluster, user) }
     let(:pod) do
       double('Pod', name: 'pod1', cpu: 1, memory: 512)
     end
@@ -25,10 +26,10 @@ RSpec.describe K8::Metrics::Metrics do
     end
 
     before do
-      allow(K8::Metrics::Api::Node).to receive(:ls).with(cluster, user).and_return([ node ])
+      allow(K8::Metrics::Api::Node).to receive(:ls).with(connection).and_return([ node ])
     end
 
-    subject { K8::Metrics::Metrics.call(cluster, user) }
+    subject { K8::Metrics::Metrics.call(connection) }
 
     it 'creates metrics for nodes' do
       expect { subject }.to change { cluster.metrics.count }.by(4)

@@ -1,0 +1,18 @@
+<div class="mb-4">
+  <% if storage_metrics.any? %>
+    <% storage_metrics.each do |metric| %>
+      <% next unless metric[:usage] %>
+      <div>Volume: <pre class="inline"><%= metric[:name] %></pre></div>
+      <% if metric[:usage] %>
+        <div>
+          <strong><%= metric[:usage][:use_percentage] %>%</strong>
+          used out of
+          <strong><%= standardize_size(metric[:usage][:available]) %>B</strong>
+        </div>
+        <progress class="progress w-56" value="<%= metric[:usage][:use_percentage] %>" max="100"></progress>
+      <% end %>
+    <% end %>
+  <% else %>
+    <div class="text-gray-500">No storage volumes found</div>
+  <% end %>
+</div>

@@ -6,11 +6,12 @@ class K8::Connection
   end
 
   def cluster
-    if clusterable.is_a?(Cluster)
+    klass = clusterable.class.name
+    if klass == "Cluster"
       clusterable
-    elsif clusterable.is_a?(Project)
+    elsif klass == "Project"
       clusterable.cluster
-    elsif clusterable.is_a?(AddOn)
+    elsif klass == "AddOn"
       clusterable.cluster
     else
       raise "`clusterable` is not a Cluster, Project, or AddOn"
