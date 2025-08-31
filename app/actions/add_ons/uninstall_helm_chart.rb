@@ -1,10 +1,10 @@
 class AddOns::UninstallHelmChart
   extend LightService::Action
-  expects :add_on, :user
+  expects :connection
 
   executed do |context|
-    add_on = context.add_on
-    connection = K8::Connection.new(add_on.cluster, context.user)
+    connection = context.connection
+    add_on = connection.add_on
     client = K8::Helm::Client.connect(connection, Cli::RunAndLog.new(add_on))
     charts = client.ls
     if charts.any? { |chart| chart['name'] == add_on.name }

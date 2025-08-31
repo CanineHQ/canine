@@ -4,7 +4,7 @@ class Networks::CheckDns
 
   class << self
     def infer_expected_ip(ingress, connection)
-      context.ingress.connect(context.connection)
+      ingress.connect(connection)
       ip = ingress.ip_address
 
       if is_private_ip?(ip)

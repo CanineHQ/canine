@@ -4,7 +4,7 @@ class K8::Base
   attr_reader :connection
 
   def connect(connection)
-    self.connection = connection
+    @connection = connection
     self
   end
 

@@ -3,7 +3,7 @@ class Projects::BaseController < ApplicationController
   before_action :set_project
 
   def active_connection
-    @_active_connection ||= K8::Connection.new(@project.cluster, current_user)
+    @_active_connection ||= K8::Connection.new(@project, current_user)
   end
 
   private

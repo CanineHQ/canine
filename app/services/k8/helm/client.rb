@@ -14,7 +14,7 @@ class K8::Helm::Client
   end
 
   def connect(connection)
-    kubeconfig = connection.kubeconfig
+    @connection = connection.kubeconfig
     @kubeconfig = kubeconfig.is_a?(String) ? JSON.parse(kubeconfig) : kubeconfig
     self
   end

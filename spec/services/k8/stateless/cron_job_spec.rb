@@ -4,7 +4,8 @@ RSpec.describe K8::Stateless::CronJob do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
   let(:service) { create(:service, :cron_job, project: project) }
-  let(:cron_job) { described_class.new(service, user) }
+  let(:connection) { K8::Connection.new(project, user) }
+  let(:cron_job) { described_class.new(service).connect(connection) }
 
   describe '#run_history' do
     let(:job_response) do
