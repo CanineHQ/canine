@@ -37,7 +37,7 @@ module Builders
       command += [ "--platform", "linux/amd64,linux/arm64" ]
       command += [ "--push" ]  # Push directly to registry
       command += [ "--progress", "plain" ]
-      command += [ "-t", project.container_registry_url ]
+      command += [ "-t", project.container_image_reference ]
       command += [ "-f", File.join(repository_path, project.dockerfile_path) ]
 
       # Add build arguments

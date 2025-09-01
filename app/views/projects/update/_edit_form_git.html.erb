@@ -46,7 +46,11 @@
     <% end %>
 
     <%= render(FormFieldComponent.new(label: "Container registry URL")) do %>
-      <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: form.object.attributes["container_registry_url"] %>
+      <%= form.text_field(
+        :container_registry_url,
+        class: "input input-bordered w-full focus:outline-offset-0",
+        value: form.object.attributes["container_registry_url"],
+      ) %>
       <label class="label">
         <span class="label-text-alt">If this is left blank, <%= project.github? ? "Github" : "Gitlab" %> Container Registry will be used</span>
       </label>

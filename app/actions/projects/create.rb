@@ -25,8 +25,8 @@ module Projects
     )
       project = Project.new(create_params(params))
       provider = find_provider(user, params)
-      project_credential_provider = create_project_credential_provider(project, provider)
-      build_configuration = create_build_configuration(project, params)
+      project_credential_provider = build_project_credential_provider(project, provider)
+      build_configuration = build_build_configuration(project, params)
 
       steps = create_steps(provider)
       with(
@@ -38,23 +38,28 @@ module Projects
       ).reduce(*steps)
     end
 
-    def self.create_project_credential_provider(project, provider)
+    def self.build_project_credential_provider(project, provider)
       ProjectCredentialProvider.new(
         project:,
         provider:,
       )
     end
 
-    def self.create_build_configuration(project, params)
-      build_config_params = params[:project][:build_configuration]
-      return nil unless build_config_params
+    def self.build_build_configuration(project, params)
+      return unless project.git?
+      build_config_params = params[:project][:build_configuration] || ActionController::Parameters.new
+      default_params = build_default_build_configuration(project)
+      merged_params = default_params.merge(BuildConfiguration.permit_params(build_config_params).compact_blank)
+      build_configuration = project.build_build_configuration(merged_params)
+      build_configuration
+    end
 
-      BuildConfiguration.new(
-        project:,
-        driver: build_config_params[:driver],
-        build_cloud_id: build_config_params[:build_cloud_id],
-        provider_id: build_config_params[:provider_id] || project.project_credential_provider.provider_id
-      )
+    def self.build_default_build_configuration(project)
+      {
+        provider: project.project_credential_provider.provider,
+        driver: 'docker',
+        image_repository: project.repository_url
+      }
     end
 
     def self.create_steps(provider)
@@ -70,6 +75,7 @@ module Projects
       if !Rails.application.config.local_mode && provider.git?
         steps << Projects::RegisterGitWebhook
       end
+
       steps
     end
 

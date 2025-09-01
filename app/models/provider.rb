@@ -38,7 +38,7 @@ class Provider < ApplicationRecord
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
-  scope :has_container_registry, -> { where(provider: [GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER]) }
+  scope :has_container_registry, -> { where(provider: [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ]) }
 
   belongs_to :user
 
@@ -58,18 +58,6 @@ class Provider < ApplicationRecord
     github? || gitlab?
   end
 
-  def registry
-    if github?
-      "ghcr.io"
-    elsif gitlab?
-      "registry.gitlab.com"
-    elsif container_registry?
-      registry_url
-    else
-      raise "Unknown registry url"
-    end
-  end
-
   def expired?
     expires_at? && expires_at <= Time.zone.now
   end
@@ -77,15 +65,6 @@ class Provider < ApplicationRecord
   def access_token
     send("#{provider}_refresh_token!", super) if expired?
     super
-  end
-
-  def twitter_client
-    Twitter::REST::Client.new do |config|
-      config.consumer_key        = Rails.application.secrets.twitter_app_id
-      config.consumer_secret     = Rails.application.secrets.twitter_app_secret
-      config.access_token        = access_token
-      config.access_token_secret = access_token_secret
-    end
   end
 
   def container_registry?

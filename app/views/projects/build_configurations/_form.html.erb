@@ -23,7 +23,10 @@
         ] %>
         
       </div>
-      <div>
+      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Credentials</span>
+        </label>
         <%= bc_form.select(
           :provider_id,
           current_user.providers.has_container_registry.map { |provider| [ provider.friendly_name, provider.id ] },
@@ -33,6 +36,19 @@
         <label class="label">
           <span class="label-text-alt">Select a provider with a container registry</span>
         </label>
+      </div>
+      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Image repository</span>
+        </label>
+        <%= bc_form.text_field(
+          :image_repository,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          value: build_configuration.image_repository,
+          placeholder: "namespace/repo",
+          pattern: "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]/[a-zA-Z0-9._-]+",
+          title: "Must be in the format 'namespace/repo'"
+        ) %>
       </div>
     <% end %>
   </div>
