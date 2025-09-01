@@ -23,6 +23,17 @@
         ] %>
         
       </div>
+      <div>
+        <%= bc_form.select(
+          :provider_id,
+          current_user.providers.has_container_registry.map { |provider| [ provider.friendly_name, provider.id ] },
+          { include_blank: "Select a provider..." },
+          { class: "select select-bordered w-full" }
+        ) %>
+        <label class="label">
+          <span class="label-text-alt">Select a provider with a container registry</span>
+        </label>
+      </div>
     <% end %>
   </div>
 </div>

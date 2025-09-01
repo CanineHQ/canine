@@ -38,6 +38,7 @@ class Provider < ApplicationRecord
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
+  scope :has_container_registry, -> { where(provider: [GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER]) }
 
   belongs_to :user
 
