@@ -13,7 +13,6 @@ RSpec.describe Projects::Update do
       repository_url: 'original/repo',
       docker_command: 'rails s',
       dockerfile_path: 'Dockerfile',
-      container_registry_url: 'registry.example.com'
     )
   end
 
@@ -28,8 +27,7 @@ RSpec.describe Projects::Update do
             docker_build_context_directory: './app',
             repository_url: 'updated/repo',
             docker_command: 'bundle exec rails s',
-            dockerfile_path: 'docker/Dockerfile',
-            container_registry_url: 'new-registry.example.com'
+            dockerfile_path: 'docker/Dockerfile'
           }
         })
       end
@@ -45,8 +43,6 @@ RSpec.describe Projects::Update do
         expect(result.project.repository_url).to eq('updated/repo')
         expect(result.project.docker_command).to eq('bundle exec rails s')
         expect(result.project.dockerfile_path).to eq('docker/Dockerfile')
-        # container_registry_url is processed by the model, so check the raw attribute
-        expect(result.project.attributes['container_registry_url']).to eq('new-registry.example.com')
       end
 
       it 'strips and downcases repository_url' do
@@ -67,7 +63,8 @@ RSpec.describe Projects::Update do
             build_configuration: {
               driver: 'k8s',
               build_cloud_id: build_cloud.id,
-              provider_id: build_provider.id
+              provider_id: build_provider.id,
+              image_repository: 'updated/repo'
             }
           }
         })
@@ -115,7 +112,8 @@ RSpec.describe Projects::Update do
               name: 'updated-name',
               build_configuration: {
                 driver: 'k8s',
-                build_cloud_id: build_cloud.id
+                build_cloud_id: build_cloud.id,
+                image_repository: 'updated/repo'
               }
             }
           })

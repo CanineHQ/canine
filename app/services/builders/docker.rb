@@ -31,7 +31,7 @@ module Builders
         "build",
         "--progress=plain",
         "--platform", "linux/amd64",
-        "-t", project.container_registry_url,
+        "-t", project.container_image_reference,
         "-f", File.join(repository_path, project.dockerfile_path)
       ]
 

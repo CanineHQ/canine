@@ -4,13 +4,12 @@
 #
 #  id           :bigint           not null, primary key
 #  cluster_type :integer          default("k8s")
-#  kubeconfig   :jsonb
+#  kubeconfig   :jsonb            not null
 #  name         :string           not null
 #  status       :integer          default("initializing"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  account_id   :bigint           not null
-#  external_id  :string
 #
 # Indexes
 #

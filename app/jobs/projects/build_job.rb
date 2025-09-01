@@ -27,7 +27,7 @@ class Projects::BuildJob < ApplicationJob
 
       image_builder.setup
       # Login to registry
-      image_builder.login_to_registry(project_credential_provider)
+      image_builder.login_to_registry
 
       # Clone repository and build
       clone_repository_and_build_image(project, build, image_builder)

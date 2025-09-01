@@ -152,12 +152,12 @@ RSpec.describe Project, type: :model do
   describe '#container_registry_url' do
     it 'uses branch name as tag for GitHub' do
       github_project = create(:project, :github, repository_url: 'owner/repo', branch: 'feature/test')
-      expect(github_project.container_registry_url).to eq('ghcr.io/owner/repo:feature-test')
+      expect(github_project.container_image_reference).to eq('ghcr.io/owner/repo:feature-test')
     end
 
     it 'uses latest tag for Docker Hub' do
       docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'feature/test')
-      expect(docker_project.container_registry_url).to eq('docker.io/owner/repo:latest')
+      expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest')
     end
   end
 end

@@ -152,9 +152,10 @@ class Projects::DeploymentJob < ApplicationJob
 
   def upload_registry_secrets(kubectl, deployment)
     project = deployment.project
-    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
+    @logger.info("Creating registry secret for #{project.container_image_reference}", color: :yellow)
+    provider = project.build_provider
     result = Providers::GenerateConfigJson.execute(
-      provider: project.project_credential_provider.provider,
+      provider:,
     )
     raise StandardError, result.message if result.failure?
 
