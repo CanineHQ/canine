@@ -146,7 +146,7 @@ GEM
       rexml
     crass (1.0.6)
     cron2english (0.1.7)
-    cssbundling-rails (1.4.1)
+    cssbundling-rails (1.4.3)
       railties (>= 6.0.0)
     csv (3.3.5)
     database_cleaner-active_record (2.2.2)
