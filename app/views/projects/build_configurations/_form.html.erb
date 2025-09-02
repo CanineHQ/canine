@@ -12,6 +12,13 @@
             description: "Build images using Docker on the deployment server. Simple setup, suitable for smaller projects."
           },
           {
+            icon: "/images/logo-compact.png",
+            name: "project[build_configuration][driver]",
+            label: "Canine Cloud",
+            value: "cloud",
+            description: "We'll build the images for you on our servers, for free."
+          },
+          {
             icon: "skill-icons:kubernetes",
             name: "project[build_configuration][driver]",
             label: "Kubernetes Build Cloud",
@@ -20,7 +27,7 @@
             partial: "projects/build_configurations/k8s_build_cloud",
             locals: { current_account:, bc_form:, build_configuration: }
           }
-        ] %>
+        ].select { |option| BuildConfiguration::BUILDER_OPTIONS.include?(option[:value].to_sym) } %>
         
       </div>
       <div class="form-control mt-1 mb-2 w-full max-w-sm">

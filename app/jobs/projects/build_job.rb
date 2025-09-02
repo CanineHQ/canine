@@ -20,9 +20,12 @@ class Projects::BuildJob < ApplicationJob
       image_builder = if project.build_configuration&.k8s?
         build.info("Driver: Kubernetes (#{project.build_configuration.build_cloud.friendly_name})", color: :green)
         Builders::BuildCloud.new(build, project.build_configuration.build_cloud)
-      else
+      elsif project.build_configuration.docker?
         build.info("Driver: Docker", color: :green)
         Builders::Docker.new(build)
+      else
+        build.info("Driver: Canine Cloud", color: :green)
+        Builders::Cloud.new(build)
       end
 
       image_builder.setup
