@@ -1,6 +1,6 @@
-<div class="relative flex flex-1 items-center justify-center rounded-xl bg-base-200 px-4 py-3 font-medium">
+<div class="relative flex flex-1 items-center rounded-xl bg-base-200 px-4 py-3 font-medium">
   <input class="peer hidden" type="radio" name="<%= @name %>" id="<%= @value %>" data-radio-selector-target="radio" data-action="change->radio-selector#toggle" value="<%= @value %>" <%= "checked" if @checked %> />
-  <label class="peer-checked:ring peer-checked:ring-primary absolute top-0 h-full w-full cursor-pointer rounded-xl" for="<%= @value %>"> </label>
+  <label class="left-0 peer-checked:ring peer-checked:ring-primary absolute top-0 h-full w-full cursor-pointer rounded-xl" for="<%= @value %>"> </label>
   <div class="peer-checked:border-transparent peer-checked:bg-primary peer-checked:ring-2 absolute left-4 h-4 w-4 rounded-full border-2 border-gray-500 bg-gray-600 ring-primary ring-offset-2 ring-offset-base-100"></div>
   <span class="pointer-events-none z-10 pl-10 py-2">
     <%= content %>
