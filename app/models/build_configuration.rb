@@ -25,6 +25,14 @@
 #  fk_rails_...  (provider_id => providers.id)
 #
 class BuildConfiguration < ApplicationRecord
+  DEFAULT_BUILDER = Rails.application.config.cloud_mode ? :cloud : :docker
+  BUILDER_OPTIONS = if Rails.application.config.local_mode
+    [ :docker, :k8s ]
+  elsif Rails.application.config.cloud_mode
+    [ :cloud, :k8s ]
+  elsif Rails.application.config.cluster_mode
+    [ :k8s ]
+  end
   belongs_to :project
   belongs_to :build_cloud, optional: true
   belongs_to :provider
@@ -41,8 +49,9 @@ class BuildConfiguration < ApplicationRecord
   end
 
   enum :driver, {
-    docker: 0,
-    k8s: 1
+    cloud: 0,
+    docker: 1,
+    k8s: 2
   }
   validates_presence_of :build_cloud, if: -> { driver == 'k8s' }
 

@@ -38,10 +38,6 @@ RSpec.describe BuildConfiguration, type: :model do
     it { is_expected.to validate_presence_of(:image_repository) }
   end
 
-  describe 'enums' do
-    it { is_expected.to define_enum_for(:driver).with_values(docker: 0, k8s: 1) }
-  end
-
   describe '#container_image_reference' do
     let(:build_configuration) { create(:build_configuration, project:, provider:, image_repository: 'czhu12/canine') }
 

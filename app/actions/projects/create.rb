@@ -57,7 +57,7 @@ module Projects
     def self.build_default_build_configuration(project)
       {
         provider: project.project_credential_provider.provider,
-        driver: 'docker',
+        driver: BuildConfiguration::DEFAULT_BUILDER,
         image_repository: project.repository_url
       }
     end
