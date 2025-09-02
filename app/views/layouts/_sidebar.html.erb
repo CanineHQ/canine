@@ -7,9 +7,9 @@
 
   <% unless Rails.application.config.local_mode %>
   <div class="flex items-center justify-center">
-    <div class="mx-auto dropdown">
-      <button type="button" class="btn w-full"><%= current_account.name %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></button>
-      <ul tabindex="0" class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow" role="menu">
+    <details class="mx-auto dropdown">
+      <summary class="btn m-1"><%= current_account.name %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
+      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow">
         <% current_user.accounts.each do |account| %>
           <li>
             <%= link_to account.name, switch_account_path(account) %>
@@ -22,7 +22,7 @@
             </button>
           </li>
       </ul>
-    </div>
+    </details>
   </div>
 
   <% end %>

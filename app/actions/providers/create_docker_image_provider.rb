@@ -10,7 +10,7 @@ class Providers::CreateDockerImageProvider
     # Test the container registry credentials
     begin
       DockerCli.with_registry_auth(
-        registry_url: provider.registry,
+        registry_url: provider.registry_base_url,
         username: provider.username_param,
         password: provider.access_token
       ) do

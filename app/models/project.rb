@@ -64,6 +64,7 @@ class Project < ApplicationRecord
   validates :project_credential_provider, presence: true
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
+  validates_presence_of :build_configuration, if: :git?
 
   validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
@@ -156,27 +157,10 @@ class Project < ApplicationRecord
     services.each(&:updated!)
   end
 
-  def container_tag
-    if forked?
-      branch.gsub("/", "-")
-    else
-      "latest"
-    end
-  end
-
-  def container_registry_url
-    container_registry = self.attributes["container_registry_url"].presence || repository_url
-    tag = container_registry? ? 'latest' : branch.gsub('/', '-') # Docker Hub uses latest, others use branch name
-
-    if github?
-      "ghcr.io/#{container_registry}:#{tag}"
-    elsif gitlab?
-      "registry.gitlab.com/#{container_registry}:#{tag}"
-    elsif container_registry?
-      "#{provider.registry_url}/#{container_registry}:#{tag}"
-    else
-      raise "Unknown container registry url"
-    end
+  def container_image_reference
+    result = Projects::DetermineContainerImageReference.execute(project: self)
+    raise result.message if result.failure?
+    result.container_image_reference
   end
 
   # Forks
@@ -198,5 +182,13 @@ class Project < ApplicationRecord
 
   def forked?
     child_fork.present?
+  end
+
+  def build_provider
+    if build_configuration.present?
+      build_configuration.provider
+    else
+      project_credential_provider.provider
+    end
   end
 end

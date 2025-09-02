@@ -10,12 +10,13 @@ class Builders::Base
   end
 
   # Login to the Docker registry
-  def login_to_registry(project_credential_provider)
-    base_url = project_credential_provider.provider.registry_base_url
+  def login_to_registry
+    provider = project.build_provider
+    base_url = provider.registry_base_url
     docker_login_command = [ "docker", "login", base_url, "--username" ] +
-                            [ project_credential_provider.username, "--password", project_credential_provider.access_token ]
+                            [ provider.username, "--password", provider.access_token ]
 
-    build.info("Logging into #{base_url} as #{project_credential_provider.username}", color: :yellow)
+    build.info("Logging into #{base_url} as #{provider.username}", color: :yellow)
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?
@@ -24,5 +25,11 @@ class Builders::Base
       build.error("#{base_url} login failed with error:\n#{stderr}")
       raise "Docker login failed: #{stderr}"
     end
+  end
+
+  def setup
+  end
+
+  def cleanup
   end
 end

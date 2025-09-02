@@ -53,6 +53,10 @@ class BuildCloud < ApplicationRecord
     "#{cluster.name} - #{namespace}"
   end
 
+  def name
+    "build-cloud-#{cluster.name}-#{id}"
+  end
+
   def installation_details
     {
       namespace: namespace,

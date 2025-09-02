@@ -3,7 +3,7 @@
 require 'open3'
 
 module Builders
-  class Docker < Base
+  class Docker < Builders::Base
     # Build and push the Docker image
     def build_image(repository_path)
       execute_docker_build(repository_path)
@@ -26,12 +26,12 @@ module Builders
     def construct_buildx_command(repository_path)
       docker_build_command = [
         "docker",
+        "--context=default",
         "buildx",
         "build",
-        "--builder", "default",
         "--progress=plain",
         "--platform", "linux/amd64",
-        "-t", project.container_registry_url,
+        "-t", project.container_image_reference,
         "-f", File.join(repository_path, project.dockerfile_path)
       ]
 
@@ -44,6 +44,7 @@ module Builders
 
       # Add the build context directory at the end
       docker_build_command.push(File.join(repository_path, project.docker_build_context_directory))
+      Rails.logger.info("Docker build command: `#{docker_build_command.join(" ")}`")
       docker_build_command
     end
   end

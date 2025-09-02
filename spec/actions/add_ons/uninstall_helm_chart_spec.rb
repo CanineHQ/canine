@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe AddOns::UninstallHelmChart do
   let(:add_on) { create(:add_on) }
   let(:user) { create(:user) }
+  let(:connection) { K8::Connection.new(add_on, user) }
   let(:kubectl) { instance_double(K8::Kubectl) }
   let(:helm_client) { instance_double(K8::Helm::Client) }
   let(:client) { instance_double(K8::Client) }
@@ -21,7 +22,7 @@ RSpec.describe AddOns::UninstallHelmChart do
       expect(add_on).to receive(:uninstalled!)
       expect(add_on).to receive(:destroy!)
 
-      described_class.execute(add_on:, user:)
+      described_class.execute(connection:)
     end
   end
 end

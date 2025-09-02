@@ -9,7 +9,8 @@ class Projects::DeploymentJob < ApplicationJob
     @logger = deployment
     @marked_resources = []
     project = deployment.project
-    kubectl = create_kubectl(deployment, K8::Connection.new(project.cluster, user))
+    connection = K8::Connection.new(project, user)
+    kubectl = create_kubectl(deployment, connection)
 
     # Create namespace
     apply_namespace(project, kubectl)
@@ -19,7 +20,7 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
-    predeploy(project, kubectl, user)
+    predeploy(project, kubectl, connection)
     # For each of the projects services
     deploy_services(project, kubectl)
 
@@ -28,7 +29,7 @@ class Projects::DeploymentJob < ApplicationJob
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
 
-    postdeploy(project, kubectl, user)
+    postdeploy(project, kubectl, connection)
     deployment.completed!
     project.deployed!
   rescue StandardError => e
@@ -53,9 +54,9 @@ class Projects::DeploymentJob < ApplicationJob
     end
   end
 
-  def _run_command(command, kubectl, project, type, user)
+  def _run_command(command, kubectl, project, type, connection)
     @logger.info("Running command: `#{command}`...", color: :yellow)
-    command = K8::Stateless::Command.new(project, type, command, user)
+    command = K8::Stateless::Command.new(project, type, command).connect(connection)
     command_yaml = command.to_yaml
     command.delete_if_exists!
     kubectl.apply_yaml(command_yaml)
@@ -63,16 +64,16 @@ class Projects::DeploymentJob < ApplicationJob
     # Get logs f
   end
 
-  def predeploy(project, kubectl, user)
+  def predeploy(project, kubectl, connection)
     return unless project.predeploy_command.present?
 
-    _run_command(project.predeploy_command, kubectl, project, 'predeploy', user)
+    _run_command(project.predeploy_command, kubectl, project, 'predeploy', connection)
   end
 
-  def postdeploy(project, kubectl, user)
+  def postdeploy(project, kubectl, connection)
     return unless project.postdeploy_command.present?
 
-    _run_command(project.postdeploy_command, kubectl, project, 'postdeploy', user)
+    _run_command(project.postdeploy_command, kubectl, project, 'postdeploy', connection)
   end
 
   def create_kubectl(deployment, connection)
@@ -113,15 +114,20 @@ class Projects::DeploymentJob < ApplicationJob
     kubectl.apply_yaml(namespace_yaml)
   end
 
-  def sweep_unused_resources(project, kubectl)
+  def sweep_unused_resources(project, user)
     # Check deployments that need to be deleted
     # Exclude Persistent Volumes
     resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ 'Pv' ].include?(r) }
+    kubectl = K8::Kubectl.new(K8::Connection.new(project, user))
 
     resources_to_sweep.each do |resource_type|
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
       results['items'].each do |resource|
-        if @marked_resources.select { |r| r.is_a?(K8::Stateless.const_get(resource_type)) }.none? { |applied_resource| applied_resource.name == resource['metadata']['name'] } && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
+        if @marked_resources.select do |r|
+          r.is_a?(K8::Stateless.const_get(resource_type))
+        end.none? do |applied_resource|
+          applied_resource.name == resource['metadata']['name']
+        end && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
           @logger.info("Deleting #{resource_type}: #{resource['metadata']['name']}", color: :yellow)
           kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
         end
@@ -146,9 +152,10 @@ class Projects::DeploymentJob < ApplicationJob
 
   def upload_registry_secrets(kubectl, deployment)
     project = deployment.project
-    @logger.info("Creating registry secret for #{project.container_registry_url}", color: :yellow)
+    @logger.info("Creating registry secret for #{project.container_image_reference}", color: :yellow)
+    provider = project.build_provider
     result = Providers::GenerateConfigJson.execute(
-      provider: project.project_credential_provider.provider,
+      provider:,
     )
     raise StandardError, result.message if result.failure?
 

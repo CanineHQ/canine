@@ -4,14 +4,28 @@ require 'tempfile'
 require 'ostruct'
 
 module Builders
-  class BuildCloud < Base
+  class BuildCloud < Builders::Base
+    attr_reader :build_cloud, :build_cloud_manager
+
     # @param connection [Object] An object that responds to #kubeconfig
     # @param build_cloud [BuildCloud] Optional BuildCloud model to use for namespace
-    def initialize(build)
+    def initialize(build, build_cloud)
       super(build)
+      @build_cloud = build_cloud
+      @build_cloud_manager = K8::BuildCloudManager.new(build_cloud.cluster, build_cloud)
+    end
+
+    def setup
+      @build_cloud_manager.create_local_builder!
+    end
+
+    def cleanup
+      @build_cloud_manager.remove_local_builder!
     end
 
     def build_image(repository_path)
+      @build_cloud_manager.create_local_builder!
+
       command = construct_buildx_command(project, repository_path)
       runner = Cli::RunAndLog.new(build, killable: build)
       runner.call(command.join(" "))
@@ -19,11 +33,11 @@ module Builders
 
     def construct_buildx_command(project, repository_path)
       command = [ "docker", "buildx", "build" ]
-      command += [ "--builder", K8::BuildCloudManager::BUILDKIT_BUILDER_NAME ]
+      command += [ "--builder", build_cloud.name ]
       command += [ "--platform", "linux/amd64,linux/arm64" ]
       command += [ "--push" ]  # Push directly to registry
       command += [ "--progress", "plain" ]
-      command += [ "-t", project.container_registry_url ]
+      command += [ "-t", project.container_image_reference ]
       command += [ "-f", File.join(repository_path, project.dockerfile_path) ]
 
       # Add build arguments

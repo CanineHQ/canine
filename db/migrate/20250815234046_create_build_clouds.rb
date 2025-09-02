@@ -2,7 +2,7 @@ class CreateBuildClouds < ActiveRecord::Migration[7.2]
   def change
     create_table :build_clouds do |t|
       t.references :cluster, null: false, foreign_key: true
-      t.string :namespace, null: false, default: K8::BuildCloudManager::BUILDKIT_BUILDER_NAME
+      t.string :namespace, null: false, default: K8::BuildCloudManager::BUILDKIT_BUILDER_DEFAULT_NAMESPACE
       t.integer :status, null: false, default: 0
       t.string :driver_version
       t.string :webhook_url

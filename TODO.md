@@ -19,3 +19,6 @@
 - [ ] log drain from application
 - [ ]  clean this up - celina - app/controllers/local/pages_controller.rb
 
+
+- [ ]  Check the pods in the namespace and ensure they are running. - app/services/k8/build_cloud_manager.rb
+

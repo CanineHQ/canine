@@ -2,7 +2,7 @@ class AddOns::EndpointsController < AddOns::BaseController
   before_action :set_add_on
 
   def edit
-    @ip_address = Networks::CheckDns.infer_public_ip_from_cluster(@add_on.cluster, current_user)
+    @ip_address = Networks::CheckDns.infer_public_ip_from_cluster(active_connection)
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
   end
@@ -19,14 +19,13 @@ class AddOns::EndpointsController < AddOns::BaseController
     @errors = []
     @errors << 'Invalid domain format' unless domains.all? { |domain| valid_domain?(domain) }
     @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
-    kubectl = K8::Kubectl.new(K8::Connection.new(@add_on.cluster, current_user))
+    kubectl = K8::Kubectl.new(active_connection)
     kubectl.apply_yaml(
       K8::AddOns::Ingress.new(
         @add_on,
         @endpoint,
         params[:port].to_i,
         domains,
-        current_user
       ).to_yaml
     )
     if @errors.empty?

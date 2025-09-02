@@ -4,7 +4,7 @@ class Providers::GenerateConfigJson
   promises :docker_config_json
 
   executed do |context|
-    registry = context.provider.registry
+    registry = context.provider.registry_base_url
     context.docker_config_json = create_docker_json_structure(
       context.provider.username,
       context.provider.access_token,

@@ -10,7 +10,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: <%= project.name %>
-    image: <%= project.container_registry_url %>
+    image: <%= project.container_image_reference %>
     command:
       - sleep
       - "3600"

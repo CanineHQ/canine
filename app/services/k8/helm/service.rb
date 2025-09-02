@@ -1,23 +1,24 @@
 class K8::Helm::Service
-  attr_reader :add_on, :client, :user, :kubectl
+  attr_reader :add_on, :client, :connection, :user, :kubectl
 
-  def self.create_from_add_on(add_on, user)
+  def self.create_from_add_on(connection)
+    add_on = connection.add_on
     if add_on.chart_type == "redis"
-      K8::Helm::Redis.new(add_on, user)
+      K8::Helm::Redis.new(connection)
     elsif add_on.chart_type == "postgresql"
-      K8::Helm::Postgresql.new(add_on, user)
+      K8::Helm::Postgresql.new(connection)
     elsif add_on.chart_type == "clickhouse"
-      K8::Helm::Clickhouse.new(add_on, user)
+      K8::Helm::Clickhouse.new(connection)
     else
-      K8::Helm::Service.new(add_on, user)
+      K8::Helm::Service.new(connection)
     end
   end
 
-  def initialize(add_on, user)
-    @add_on = add_on
-    @user = user
-    @client = K8::Client.new(K8::Connection.new(add_on.cluster, user))
-    @kubectl = K8::Kubectl.new(K8::Connection.new(add_on.cluster, user), Cli::RunAndReturnOutput.new)
+  def initialize(connection)
+    @connection = connection
+    @add_on = connection.add_on
+    @client = K8::Client.new(connection)
+    @kubectl = K8::Kubectl.new(connection, Cli::RunAndReturnOutput.new)
   end
 
   def friendly_name
@@ -37,8 +38,7 @@ class K8::Helm::Service
   end
 
   def values_yaml
-    kubeconfig = K8::Connection.new(add_on.cluster, user).kubeconfig
-    helm_client = K8::Helm::Client.connect(kubeconfig, Cli::RunAndReturnOutput.new)
+    helm_client = K8::Helm::Client.connect(connection, Cli::RunAndReturnOutput.new)
     helm_client.get_values_yaml(add_on.name, namespace: add_on.name)
   rescue StandardError => e
     Rails.logger.error("Error getting values.yaml for #{add_on.name}: #{e.message}")
@@ -57,7 +57,7 @@ class K8::Helm::Service
     ).flatten
 
     pvcs.map do |pvc|
-      pod = pods.find { |p| p.spec.volumes.any? { |vol| vol.persistentVolumeClaim&.claimName == pvc.metadata.name } }
+      pod = pods.find { |p| p.spec.volumes&.any? { |vol| vol.persistentVolumeClaim&.claimName == pvc.metadata.name } }
       mount_path = get_mount_path(pod, pvc.metadata.name) if pod
       usage = mount_path ? get_volume_usage(pod.metadata.name, mount_path) : nil
 
@@ -69,8 +69,7 @@ class K8::Helm::Service
   end
 
   def version
-    kubeconfig = K8::Connection.new(add_on.cluster, user).kubeconfig
-    services = K8::Helm::Client.connect(kubeconfig, Cli::RunAndReturnOutput.new).ls
+    services = K8::Helm::Client.connect(connection, Cli::RunAndReturnOutput.new).ls
     chart = services.find { |service| service['name'] == add_on.name }['chart']
     chart.match(/\d+\.\d+\.\d+/)&.to_s
   end

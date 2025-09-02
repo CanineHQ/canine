@@ -1,7 +1,7 @@
 class Clusters::InstallNginxIngress
   extend LightService::Action
 
-  expects :kubectl, :cluster
+  expects :cluster, :kubectl
 
   executed do |context|
     cluster = context.cluster

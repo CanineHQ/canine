@@ -3,7 +3,9 @@ class Clusters::Install
   extend LightService::Organizer
 
   def self.call(cluster, user)
-    result = with(cluster:, user:).reduce(
+    connection = K8::Connection.new(cluster, user)
+    kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
+    result = with(cluster:, user:, kubectl:, connection:).reduce(
       Clusters::IsReady,
       Clusters::CreateNamespace,
       Clusters::InstallNginxIngress,

@@ -1,7 +1,8 @@
 class K8::BuildCloudManager
   include K8::Kubeconfig
   include StorageHelper
-  BUILDKIT_BUILDER_NAME = 'canine-k8s-builder'
+  # Only referenced in the migration for now.
+  BUILDKIT_BUILDER_DEFAULT_NAMESPACE = 'canine-k8s-builder'
 
   attr_reader :connection, :build_cloud
 
@@ -15,7 +16,7 @@ class K8::BuildCloudManager
     params = {
       installation_metadata: {
         started_at: Time.current,
-        builder_name: K8::BuildCloudManager::BUILDKIT_BUILDER_NAME
+        builder_name: build_cloud.name
       }
     }
 
@@ -67,9 +68,16 @@ class K8::BuildCloudManager
     @build_cloud = build_cloud
   end
 
+  def ensure_active!
+    # TODO: Check the pods in the namespace and ensure they are running.
+    K8::Client.from_cluster(build_cloud.cluster).pods_for_namespace(build_cloud.namespace).any?
+  rescue StandardError
+    false
+  end
+
   def get_buildkit_version
     local_runner = Cli::RunAndReturnOutput.new
-    output = local_runner.call("docker buildx inspect #{K8::BuildCloudManager::BUILDKIT_BUILDER_NAME}")
+    output = local_runner.call("docker buildx inspect #{build_cloud.name}")
     if output
       result = parse_inspect_output(output)
       result[:version]
@@ -84,17 +92,12 @@ class K8::BuildCloudManager
     build_cloud.namespace
   end
 
-  # Remove the BuildKit builder
-  def teardown!
-    remove_builder! if builder_ready?
-  end
-
   # Check if the builder is ready and running
   def builder_ready?
     status = runner.call("docker buildx ls --format json")
     if status.success?
       builder_names = runner.output.split("\n").map do |x| JSON.parse(x) end.map { |x| x["Name"] }
-      builder_names.include?(BUILDKIT_BUILDER_NAME)
+      builder_names.include?(build_cloud.name)
     else
       false
     end
@@ -123,7 +126,33 @@ class K8::BuildCloudManager
     end
   end
 
+  def create_local_builder!
+    if ensure_active!
+      create_builder!
+    else
+      raise "Remote builder is not active, please enable the build cloud first."
+    end
+  end
+
+  def remove_local_builder!
+    if ensure_active!
+      `docker buildx rm --keep-daemon #{build_cloud.name}`
+    else
+      raise "Remote builder is not active, please enable the build cloud first."
+    end
+  end
+
+  def local_builder_exists?
+    local_runner = Cli::RunAndReturnOutput.new
+    local_runner.call("docker buildx inspect #{build_cloud.name}")
+    true
+  rescue StandardError
+    false
+  end
+
   def create_builder!
+    return if local_builder_exists?
+
     ensure_namespace!
     # Write kubeconfig to temp file for docker buildx
 
@@ -132,15 +161,15 @@ class K8::BuildCloudManager
     with_kube_config do |kubeconfig_file|
       command = "docker buildx create "
       command += "--bootstrap "
-      command += "--name #{BUILDKIT_BUILDER_NAME} "
+      command += "--name #{build_cloud.name} "
       command += "--driver kubernetes "
-      command += "--driver-opt namespace=#{namespace} "
+      command += "--driver-opt namespace=#{build_cloud.namespace} "
       command += "--driver-opt replicas=#{build_cloud.replicas} "
       command += "--driver-opt requests.cpu=#{integer_to_compute(build_cloud.cpu_requests)} "
       command += "--driver-opt requests.memory=#{integer_to_memory(build_cloud.memory_requests)} "
       command += "--driver-opt limits.cpu=#{integer_to_compute(build_cloud.cpu_limits)} "
       command += "--driver-opt limits.memory=#{integer_to_memory(build_cloud.memory_limits)} "
-      command += "--use"
+
       runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
 
@@ -170,7 +199,7 @@ class K8::BuildCloudManager
     end
 
     # Set the builder as active
-    runner.call("docker buildx use #{BUILDKIT_BUILDER_NAME}")
+    runner.call("docker buildx use #{build_cloud.name}")
   end
 
   def ensure_namespace!
@@ -185,11 +214,10 @@ class K8::BuildCloudManager
   end
 
   def remove_builder!
-    # Delete locally, this also removes the builder from kubernetes
-    runner.call("docker buildx rm #{BUILDKIT_BUILDER_NAME}")
-
-    # Also remove from kubernetes if possible
     K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
+
+    # Delete locally, this also removes the builder from kubernetes
+    runner.call("docker buildx rm #{build_cloud.name}")
   rescue StandardError => e
     Rails.logger.warn("Error removing builder: #{e.message}")
   end
