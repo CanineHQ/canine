@@ -1,4 +1,5 @@
 # Todos
+
 - [ ] Need an onboarding flow
 - [ ] Automatic DNS mapping for canineapp.run
 - [ ] Show ingress logs at the cluster level -- parse NGINX logs
@@ -17,3 +18,4 @@
 - [ ] Update vocabulary on landing page
 - [ ] Clear our historical logs
 - [ ] log drain from application
+- [ ] Check the pods in the namespace and ensure they are running. - app/services/k8/build_cloud_manager.rb

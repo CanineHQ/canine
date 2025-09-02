@@ -115,6 +115,14 @@ Rails.application.routes.draw do
   if Rails.application.config.local_mode
     get "/github_token", to: "local/pages#github_token"
     put "/github_token", to: "local/pages#update_github_token"
+    namespace :local do
+      resources :onboarding, only: [ :index ]
+      resource :portainer, only: [ :show, :update ] do
+        collection do
+          get :github_oauth
+        end
+      end
+    end
     root to: "projects#index"
   else
     root to: "static#index"
