@@ -336,7 +336,7 @@ GEM
       bigdecimal (~> 3.1)
     net-http (0.6.0)
       uri
-    net-imap (0.5.9)
+    net-imap (0.5.10)
       date
       net-protocol
     net-pop (0.1.2)
@@ -360,7 +360,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.9-x86_64-linux-gnu)
       racc (~> 1.4)
-    noticed (2.7.1)
+    noticed (2.8.0)
       rails (>= 6.1.0)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
@@ -677,7 +677,7 @@ DEPENDENCIES
   kubeclient (~> 4.12)
   light-service (~> 0.20.0)
   name_of_person!
-  noticed (~> 2.7)
+  noticed (~> 2.8)
   octokit (~> 10.0)
   oj (~> 3.16)
   omniauth (~> 2.1)
