@@ -51,7 +51,7 @@ class BuildConfiguration < ApplicationRecord
   enum :driver, {
     cloud: 0,
     docker: 1,
-    k8s: 2,
+    k8s: 2
   }
   validates_presence_of :build_cloud, if: -> { driver == 'k8s' }
 
