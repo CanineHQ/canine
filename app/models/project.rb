@@ -64,6 +64,7 @@ class Project < ApplicationRecord
   validates :project_credential_provider, presence: true
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
+  validates_presence_of :build_configuration, if: :git?
 
   validate :name_is_unique_to_cluster, on: :create
   after_save_commit do

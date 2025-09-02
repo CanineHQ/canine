@@ -26,8 +26,6 @@ class ProjectForks::ForkProject
         url: pull_request.url,
         user: pull_request.user,
       )
-      child_project.save!
-      child_project_credential_provider.save!
 
       # Fetch and store canine config if it exists
       client = Git::Client.from_project(child_project)
@@ -37,8 +35,7 @@ class ProjectForks::ForkProject
       end
       if parent_project.build_configuration.present?
         new_build_configuration = parent_project.build_configuration.dup
-        new_build_configuration.project = child_project
-        new_build_configuration.save!
+        child_project.build_configuration = new_build_configuration
       end
 
       if file.present?
@@ -50,6 +47,9 @@ class ProjectForks::ForkProject
         child_project.predestroy_command = canine_config.predestroy_command
         child_project.postdestroy_command = canine_config.postdestroy_command
       end
+
+      child_project.save!
+      child_project_credential_provider.save!
       context.project_fork.save!
     end
   rescue StandardError => e

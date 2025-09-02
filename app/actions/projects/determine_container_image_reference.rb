@@ -7,7 +7,7 @@ class Projects::DetermineContainerImageReference
     project = context.project
     provider = project.build_provider
 
-    context.container_image_reference = if project.build_configuration.present?
+    context.container_image_reference = if project.build_configuration.present? && project.git?
       project.build_configuration.container_image_reference
     else
       tag = project.git? ? project.branch.gsub('/', '-') : 'latest'

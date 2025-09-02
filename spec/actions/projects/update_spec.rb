@@ -190,7 +190,6 @@ RSpec.describe Projects::Update do
 
         expect(result).to be_failure
         expect(project.reload.name).to eq(original_name)
-        expect(project.build_configuration).to be_nil
       end
     end
   end
