@@ -46,12 +46,14 @@ FactoryBot.define do
 
     after(:build) do |project|
       provider = create(:provider, :github)
+      project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
       project.project_credential_provider ||= build(:project_credential_provider, project: project, provider: provider)
     end
 
     trait :github do
       after(:build) do |project|
         provider = create(:provider, :github)
+        project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
       end
     end
@@ -59,6 +61,7 @@ FactoryBot.define do
     trait :container_registry do
       after(:build) do |project|
         provider = create(:provider, :container_registry)
+        project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
       end
     end
