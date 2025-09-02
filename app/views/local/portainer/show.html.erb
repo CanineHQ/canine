@@ -1,7 +1,7 @@
 <div class="space-y-4">
   <h4 class="text-lg font-bold">Enter your Portainer URL below.</h4>
 
-  <%= form_with url: portainer_configuration_path, model: current_account.stack_manager, method: :put do |form| %>
+  <%= form_with url: local_portainer_path, model: current_account.stack_manager, method: :put do |form| %>
     <div class="form-group">
       <%= form.label :provider_url, "Portainer URL" %>
       <%= form.text_field :provider_url, class: "input input-bordered w-full max-w-xs", placeholder: "http://portainer.portainer.svc.cluster.local:9000" %>

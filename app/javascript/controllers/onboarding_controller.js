@@ -1,21 +1,37 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "stepHeader", "portainerUrlForm", "githubForm", "step"]
+  static targets = [ "stepHeader", "portainerUrlForm", "githubForm", "step", "selectedConfigurationOption", "stepHeaderParent" ]
   static values = {
-    currentStep: Number
+    currentStep: Number,
+    selectedConfigurationOption: String
   }
 
 
   connect() {
     this.currentStepValue = 0 
-    this.activeClass = "step-primary"
+    this.selectedConfigurationOptionValue = 'local'
   }
 
   disconnect() {
   }
 
+  selectConfigurationOption(event) {
+    event.preventDefault()
+    this.selectedConfigurationOptionValue = event.currentTarget.dataset.value
+    this.selectedConfigurationOptionTargets.forEach(option => option.classList.remove('border-green-500'))
+    this.selectedConfigurationOptionTargets.forEach(option => option.querySelector('.checkIcon').classList.add('hidden'))
+    event.currentTarget.classList.add('border-green-500')
+    event.currentTarget.querySelector('.checkIcon').classList.remove('hidden')
+  }
+
   next() {
+    if (this.selectedConfigurationOptionValue == 'local') {
+      window.location.href = "/"
+      return
+    } else {
+      this.stepHeaderParentTarget.classList.remove('hidden')
+    }
     if (this.currentStepValue == 1) {
       this.submit(this.portainerUrlFormTarget)
     }
@@ -24,8 +40,7 @@ export default class extends Controller {
     }
     if (this.currentStepValue < 2) {
       this.currentStepValue++
-      this.stepHeaderTargets.forEach(step => step.classList.remove(this.activeClass))
-      this.stepHeaderTargets[this.currentStepValue].classList.add(this.activeClass)
+      this.stepHeaderTargets[this.currentStepValue].classList.add("step-primary")
       this.stepTargets.forEach(step => step.classList.add("hidden"))
       this.stepTargets[this.currentStepValue].classList.remove("hidden")
     }

@@ -1,8 +1,7 @@
 class Git::Github::UrlHelper
   HOST = Rails.application.routes.default_url_options[:host]
 
-  def self.authorize_url
-    redirect_uri = Rails.application.routes.url_helpers.github_oauth_url(host: HOST, protocol: "https")
+  def self.authorize_url(redirect_uri)
     params = {
       response_type: "code",
       client_id: ENV["OMNIAUTH_GITHUB_PUBLIC_KEY"],

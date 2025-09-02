@@ -113,14 +113,16 @@ Rails.application.routes.draw do
   get "/calculator", to: "static#calculator"
   # Public marketing homepage
   if Rails.application.config.local_mode
-    namespace :local do
-      resources :onboarding, only: [ :index ]
-    end
     get "/github_token", to: "local/pages#github_token"
     put "/github_token", to: "local/pages#update_github_token"
-    get "/portainer_configuration", to: "local/pages#portainer_configuration"
-    put "/portainer_configuration", to: "local/pages#update_portainer_configuration"
-    get "/github_oauth", to: "local/pages#github_oauth"
+    namespace :local do
+      resources :onboarding, only: [ :index ]
+      resource :portainer, only: [ :show, :update ] do
+        collection do
+          get :github_oauth
+        end
+      end
+    end
     root to: "projects#index"
   else
     root to: "static#index"
