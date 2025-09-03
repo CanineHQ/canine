@@ -6,8 +6,10 @@ class Local::PortainersController < ApplicationController
 
   def update
     stack_manager = current_account.stack_manager || current_account.build_stack_manager
-    stack_manager.update!(provider_url: params[:provider_url])
-    authenticate(auth_code: params[:password], username: params[:username])
+    stack_manager.update!(provider_url: params[:provider_url]) if params[:provider_url].present?
+    if params[:stack_manager].present?
+      authenticate(auth_code: params[:stack_manager][:password], username: params[:stack_manager][:username])
+    end
     redirect_to root_path
   end
 
