@@ -52,7 +52,8 @@ class Provider < ApplicationRecord
   end
 
   def username
-    JSON.parse(auth)["info"]["nickname"] || JSON.parse(auth)["info"]["username"]
+    return unless auth
+    JSON.parse(auth).dig("info", "nickname") || JSON.parse(auth).dig("info", "username")
   end
 
   def git?
