@@ -32,7 +32,7 @@ class BuildCloud < ApplicationRecord
 
   belongs_to :cluster
 
-  validates :cluster_id, uniqueness: true
+  validates :cluster, uniqueness: true, presence: true
   validates :namespace, presence: true
   validates :status, presence: true
 
@@ -51,6 +51,10 @@ class BuildCloud < ApplicationRecord
 
   def friendly_name
     "#{cluster.name} - #{namespace}"
+  end
+
+  def name
+    "build-cloud-#{cluster.name}-#{id}"
   end
 
   def installation_details

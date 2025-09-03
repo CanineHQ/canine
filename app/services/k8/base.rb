@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
 class K8::Base
+  attr_reader :connection
+
+  def connect(connection)
+    @connection = connection
+    self
+  end
+
+  def connected?
+    connection.present?
+  end
+
   def template_path
     class_path_parts = self.class.name.split('::').map(&:underscore)
 
@@ -18,6 +29,12 @@ class K8::Base
   end
 
   def client
-    @client ||= K8::Client.new(cluster.kubeconfig)
+    raise "Client not connected" unless connected?
+    @client ||= K8::Client.new(connection)
+  end
+
+  def kubectl
+    raise "Kubectl not connected" unless connected?
+    @kubectl ||= K8::Kubectl.new(connection)
   end
 end

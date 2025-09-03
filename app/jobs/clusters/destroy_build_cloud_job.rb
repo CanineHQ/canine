@@ -17,7 +17,7 @@ module Clusters
         build_cloud_manager = K8::BuildCloudManager.new(cluster, build_cloud)
 
         # Teardown the builder
-        build_cloud_manager.teardown!
+        build_cloud_manager.remove_builder!
 
         # Mark the build cloud as uninstalled (keep the record for logs)
         build_cloud.update!(

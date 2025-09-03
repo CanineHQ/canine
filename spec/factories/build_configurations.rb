@@ -2,13 +2,14 @@
 #
 # Table name: build_configurations
 #
-#  id             :bigint           not null, primary key
-#  driver         :integer          not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  build_cloud_id :bigint
-#  project_id     :bigint           not null
-#  provider_id    :bigint           not null
+#  id               :bigint           not null, primary key
+#  driver           :integer          not null
+#  image_repository :string           not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  build_cloud_id   :bigint
+#  project_id       :bigint           not null
+#  provider_id      :bigint           not null
 #
 # Indexes
 #
@@ -27,5 +28,6 @@ FactoryBot.define do
     provider
     project
     driver { :docker }
+    image_repository { "czhu12/canine" }
   end
 end

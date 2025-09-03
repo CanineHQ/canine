@@ -53,11 +53,10 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
-  gem "selenium-webdriver"
 
   gem "database_cleaner-active_record", '~> 2.2.2'
   gem 'faker', '~> 3.5.2'
-  gem 'shoulda-matchers', '~> 6.0'
+  gem 'shoulda-matchers', '~> 6.5'
 end
 
 gem "cssbundling-rails"
@@ -65,22 +64,21 @@ gem "devise", "~> 4.9"
 gem "friendly_id", "~> 5.4"
 gem "jsbundling-rails"
 gem "name_of_person", github: "basecamp/name_of_person"
-gem "noticed", "~> 2.7"
+gem "noticed", "~> 2.8"
 gem "omniauth-github", "~> 2.0"
-gem "pretender", "~> 0.3.4"
+gem "pretender", "~> 0.6.0"
 gem "pundit", "~> 2.5"
 gem "good_job", "~> 4.0"
 gem "sitemap_generator", "~> 6.1"
 gem "responders", github: "heartcombo/responders", branch: "main"
 gem "dotenv", "~> 3.1"
 gem "image_processing", "~> 1.13"
-gem "k8s-ruby", "~> 0.16.0"
+gem "k8s-ruby", "~> 0.17.2"
 gem "kubeclient", "~> 4.12"
 gem "light-service", "~> 0.20.0"
 gem "octokit", "~> 10.0"
 gem "omniauth-digitalocean", "~> 0.3.2"
-gem "pagy", "~> 9.3"
-gem "rqrcode", "~> 2.2"
+gem "pagy", "~> 9.4"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
@@ -91,17 +89,17 @@ gem "rack", "~> 2.2"
 
 gem "tailwindcss-rails", "~> 2.7"
 
-gem "httparty", "~> 0.22.0"
+gem "httparty", "~> 0.23.1"
 
 gem "redcarpet", "~> 3.6"
 
-gem "rubyzip", "~> 2.4"
+gem "rubyzip", "~> 3.0"
 
 gem "sassc-rails", "~> 2.1"
 
 gem "cron2english", "~> 0.1.7"
 
-gem "avo", "~> 3.23"
+gem "avo", "~> 3.24"
 
 gem "sentry-ruby", "~> 5.23"
 gem "sentry-rails", "~> 5.26"

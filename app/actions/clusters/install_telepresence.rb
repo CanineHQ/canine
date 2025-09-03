@@ -1,11 +1,10 @@
 class Clusters::InstallTelepresence
   extend LightService::Action
-  expects :cluster
+  expects :cluster, :kubectl
 
   executed do |context|
     cluster = context.cluster
-    runner = Cli::RunAndLog.new(cluster)
-    kubectl = K8::Kubectl.new(cluster.kubeconfig, runner)
+    kubectl = context.kubectl
     cluster.info("Checking if Telepresence is already installed...", color: :yellow)
 
     begin

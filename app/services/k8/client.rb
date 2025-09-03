@@ -15,17 +15,10 @@ module K8
       to: :client
     )
 
-    def self.from_project(project)
-      new(project.cluster.kubeconfig)
-    end
-
-    def self.from_cluster(cluster)
-      new(cluster.kubeconfig)
-    end
-
-    def initialize(kubeconfig)
-      @_kubeconfig = kubeconfig
-      @kubeconfig = kubeconfig.is_a?(String) ? JSON.parse(kubeconfig) : kubeconfig
+    def initialize(connection)
+      @connection = connection
+      @_kubeconfig = connection.kubeconfig
+      @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
       @client = build_client
     end
 
@@ -37,7 +30,7 @@ module K8
     end
 
     def get_ingresses(namespace:)
-      result = K8::Kubectl.new(@_kubeconfig).call("get ingresses -n #{namespace} -o json")
+      result = K8::Kubectl.new(@connection).call("get ingresses -n #{namespace} -o json")
       JSON.parse(result, object_class: OpenStruct).items
     end
 
@@ -66,7 +59,7 @@ module K8
     end
 
     def version
-      result = K8::Kubectl.new(@_kubeconfig).call("version -o yaml")
+      result = K8::Kubectl.new(@connection).call("version -o yaml")
       YAML.safe_load(result)
     end
 
@@ -87,6 +80,16 @@ module K8
       YAML.safe_load(kubeconfig_string)
     rescue Psych::SyntaxError => e
       raise "Invalid YAML in kubeconfig: #{e.message}"
+    end
+
+    def build_kubeconfig(kubeconfig_string)
+      if kubeconfig_string.is_a?(String)
+        load_kubeconfig(kubeconfig_string)
+      elsif kubeconfig_string.nil?
+        K8Stack.fetch_kubeconfig(@connection.cluster, @connection.user)
+      else
+        kubeconfig_string
+      end
     end
 
     def build_client

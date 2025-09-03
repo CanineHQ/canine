@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe AddOns::InstallHelmChart do
   let(:add_on) { create(:add_on) }
+  let(:user) { create(:user) }
+  let(:connection) { K8::Connection.new(add_on, user) }
   let(:kubectl) { instance_double(K8::Kubectl) }
   let(:helm_client) { instance_double(K8::Helm::Client) }
 
@@ -20,7 +22,7 @@ RSpec.describe AddOns::InstallHelmChart do
       expect(add_on).to receive(:installing!)
       expect(add_on).to receive(:installed!)
 
-      described_class.execute(add_on:)
+      described_class.execute(connection:)
     end
 
     context 'when add_on is already installed' do
@@ -28,7 +30,7 @@ RSpec.describe AddOns::InstallHelmChart do
 
       it 'sets status to updating' do
         expect(add_on).to receive(:updating!)
-        described_class.execute(add_on:)
+        described_class.execute(connection:)
       end
     end
 
@@ -40,7 +42,7 @@ RSpec.describe AddOns::InstallHelmChart do
       it 'sets status to failed and records error' do
         expect(add_on).to receive(:failed!)
         expect(add_on).to receive(:error).with('test error')
-        expect { described_class.execute(add_on:) }.to raise_error(StandardError)
+        expect { described_class.execute(connection:) }.to raise_error(StandardError)
       end
     end
   end

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html class="h-full antialiased dark" data-theme="dark" lang="en">
+  <head>
+    <%= render 'shared/head' %>
+  </head>
+
+   <body data-controller="theme" data-theme-preference-value="dark">
+    <div class="size-full">
+      <div class="flex">
+        <main class="main-wrapper overflow-x-hidden overflow-y-auto">
+          <div class="flex h-full flex-col">
+            <div class="content-wrapper max-w-full lg:max-w-3/4">
+              <%= yield %>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+  </body>
+</html>

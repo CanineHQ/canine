@@ -14,7 +14,7 @@ class Projects::DeploymentsController < Projects::BaseController
       build.current_user = current_user
     end
     if new_build.save
-      Projects::BuildJob.perform_later(new_build)
+      Projects::BuildJob.perform_later(new_build, current_user)
       redirect_to root_projects_path(@project, new_build), notice: "Redeploying..."
     else
       redirect_to root_projects_path(@project), alert: "Failed to redeploy"

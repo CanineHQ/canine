@@ -3,8 +3,9 @@ require 'rails_helper'
 
 RSpec.describe Projects::DestroyJob do
   let(:project) { create(:project) }
+  let(:user) { create(:user) }
   let(:job) { described_class.new }
-  let(:subject) { job.perform(project) }
+  let(:subject) { job.perform(project, user) }
 
   before do
     allow(job).to receive(:delete_namespace)

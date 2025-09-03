@@ -48,5 +48,16 @@ FactoryBot.define do
       provider { Provider::GITLAB_PROVIDER }
       auth { { "info" => { "nickname" => "test_user" } }.to_json }
     end
+
+    trait :custom_registry do
+      provider { Provider::CUSTOM_REGISTRY_PROVIDER }
+      registry_url { "docker.io" }
+      auth { { "info" => { "nickname" => "test_user" } }.to_json }
+    end
+
+    trait :portainer do
+      provider { Provider::PORTAINER_PROVIDER }
+      access_token { "sample_access_token" }
+    end
   end
 end

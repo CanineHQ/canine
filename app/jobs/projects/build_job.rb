@@ -6,8 +6,9 @@ class Projects::BuildJob < ApplicationJob
   queue_as :default
   class BuildFailure < StandardError; end
 
-  def perform(build)
+  def perform(build, user)
     project = build.project
+    build.in_progress!
     # If its a container registry deploy, we don't need to build the docker image
     if project.container_registry?
       build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
@@ -18,20 +19,25 @@ class Projects::BuildJob < ApplicationJob
       # Initialize the Docker builder
       image_builder = if project.build_configuration&.k8s?
         build.info("Driver: Kubernetes (#{project.build_configuration.build_cloud.friendly_name})", color: :green)
-        Builders::BuildCloud.new(build)
-      else
+        Builders::BuildCloud.new(build, project.build_configuration.build_cloud)
+      elsif project.build_configuration.docker?
         build.info("Driver: Docker", color: :green)
         Builders::Docker.new(build)
+      else
+        build.info("Driver: Canine Cloud", color: :green)
+        Builders::Cloud.new(build)
       end
 
+      image_builder.setup
       # Login to registry
-      image_builder.login_to_registry(project_credential_provider)
+      image_builder.login_to_registry
 
       # Clone repository and build
       clone_repository_and_build_image(project, build, image_builder)
+      image_builder.cleanup
     end
 
-    complete_build!(build)
+    complete_build!(build, user)
     # TODO: Step 7: Optionally, add post-deploy tasks or slack notifications
   rescue StandardError => e
     # Don't overwrite status if it was already set to killed
@@ -63,10 +69,10 @@ class Projects::BuildJob < ApplicationJob
   end
 
 
-  def complete_build!(build)
+  def complete_build!(build, user)
     build.completed!
     deployment = Deployment.create!(build:)
-    Projects::DeploymentJob.perform_later(deployment)
+    Projects::DeploymentJob.perform_later(deployment, user)
   end
 
   def clone_repository_and_build_image(project, build, image_builder)

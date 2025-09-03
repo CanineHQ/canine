@@ -12,6 +12,13 @@
             description: "Build images using Docker on the deployment server. Simple setup, suitable for smaller projects."
           },
           {
+            icon: "/images/logo-compact.png",
+            name: "project[build_configuration][driver]",
+            label: "Canine Cloud",
+            value: "cloud",
+            description: "We'll build the images for you on our servers, for free."
+          },
+          {
             icon: "skill-icons:kubernetes",
             name: "project[build_configuration][driver]",
             label: "Kubernetes Build Cloud",
@@ -20,8 +27,35 @@
             partial: "projects/build_configurations/k8s_build_cloud",
             locals: { current_account:, bc_form:, build_configuration: }
           }
-        ] %>
+        ].select { |option| BuildConfiguration::BUILDER_OPTIONS.include?(option[:value].to_sym) } %>
         
+      </div>
+      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Credentials</span>
+        </label>
+        <%= bc_form.select(
+          :provider_id,
+          current_user.providers.has_container_registry.map { |provider| [ provider.friendly_name, provider.id ] },
+          { include_blank: "Select a provider..." },
+          { class: "select select-bordered w-full" }
+        ) %>
+        <label class="label">
+          <span class="label-text-alt">Select a provider with a container registry</span>
+        </label>
+      </div>
+      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Image repository</span>
+        </label>
+        <%= bc_form.text_field(
+          :image_repository,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          value: build_configuration.image_repository,
+          placeholder: "namespace/repo",
+          pattern: "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]/[a-zA-Z0-9._-]+",
+          title: "Must be in the format 'namespace/repo'"
+        ) %>
       </div>
     <% end %>
   </div>

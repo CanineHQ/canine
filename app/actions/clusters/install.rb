@@ -2,9 +2,10 @@ class Clusters::Install
   DEFAULT_NAMESPACE = "canine-system".freeze
   extend LightService::Organizer
 
-  def self.call(cluster)
-    cluster.installing!
-    result = with(cluster:).reduce(
+  def self.call(cluster, user)
+    connection = K8::Connection.new(cluster, user)
+    kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
+    result = with(cluster:, user:, kubectl:, connection:).reduce(
       Clusters::IsReady,
       Clusters::CreateNamespace,
       Clusters::InstallNginxIngress,

@@ -18,7 +18,7 @@ class Async::Projects::Processes::IndexViewModel < Async::BaseViewModel
 
   def get_pods_for_project(project)
     # Get all pods for a given namespace
-    client = K8::Client.from_project(project).client
-    pods = client.get_pods(namespace: project.name)
+    client = K8::Client.new(K8::Connection.new(project.cluster, current_user))
+    client.get_pods(namespace: project.name)
   end
 end

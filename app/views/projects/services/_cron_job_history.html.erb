@@ -1,7 +1,7 @@
 <div>
   <h3 class="text-sm font-medium mb-1">Recent Job Runs</h3>
   <div class="flex flex-wrap gap-1">
-    <% cron_job = K8::Stateless::CronJob.new(service) %>
+    <% cron_job = K8::Stateless::CronJob.new(service).connect(active_connection) %>
     <% cron_job.run_history.take(20).each do |job_run| %>
       <% 
         status_color = case job_run.status

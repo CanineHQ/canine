@@ -56,12 +56,12 @@ class ClustersController < ApplicationController
   end
 
   def retry_install
-    Clusters::InstallJob.perform_later(@cluster)
+    Clusters::InstallJob.perform_later(@cluster, current_user)
     redirect_to @cluster, notice: "Retrying installation for cluster..."
   end
 
   def test_connection
-    client = K8::Client.new(@cluster.kubeconfig)
+    client = K8::Client.new(K8::Connection.new(@cluster, current_user))
     if client.can_connect?
       render turbo_stream: turbo_stream.replace("test_connection_frame", partial: "clusters/connection_success")
     else
@@ -87,7 +87,9 @@ class ClustersController < ApplicationController
         # Create a directory for each project
         # Export services, deployments, ingress and cron jobs from a kubernetes namespace
         %w[services deployments ingress cronjobs].each do |resource|
-          yaml_content = K8::Kubectl.new(@cluster.kubeconfig).call("get #{resource} -n #{project.name} -o yaml")
+          yaml_content = K8::Kubectl.new(
+            K8::Connection.new(@cluster, current_user)
+          ).call("get #{resource} -n #{project.name} -o yaml")
           export(@cluster.name, project.name, yaml_content, zio)
         end
       end
@@ -108,7 +110,7 @@ class ClustersController < ApplicationController
   # POST /clusters or /clusters.json
   def create
     @cluster = current_account.clusters.new(cluster_params)
-    result = Clusters::Create.call(@cluster)
+    result = Clusters::Create.call(@cluster, current_user)
 
     # Uncomment to authorize with Pundit
     # authorize @cluster
@@ -116,7 +118,7 @@ class ClustersController < ApplicationController
     respond_to do |format|
       if result.success?
         # Kick off cluster job
-        Clusters::InstallJob.perform_later(@cluster)
+        Clusters::InstallJob.perform_later(@cluster, current_user)
         format.html { redirect_to @cluster, notice: "Cluster was successfully created." }
         format.json { render :show, status: :created, location: @cluster }
       else
@@ -152,7 +154,7 @@ class ClustersController < ApplicationController
   end
 
   def destroy
-    Clusters::DestroyJob.perform_later(@cluster)
+    Clusters::DestroyJob.perform_later(@cluster, current_user)
     respond_to do |format|
       format.html { redirect_to clusters_url, status: :see_other, notice: "Cluster is being deleted... It may take a few minutes to complete." }
       format.json { head :no_content }

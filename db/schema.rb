@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_02_182502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -108,6 +108,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "provider_id", null: false
+    t.string "image_repository", null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
     t.index ["provider_id"], name: "index_build_configurations_on_provider_id"
@@ -127,12 +128,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
 
   create_table "clusters", force: :cascade do |t|
     t.string "name", null: false
-    t.jsonb "kubeconfig", default: {}, null: false
+    t.jsonb "kubeconfig", default: {}
     t.bigint "account_id", null: false
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "cluster_type", default: 0
+    t.string "external_id"
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
@@ -393,13 +395,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
     t.string "docker_command"
     t.text "predeploy_command"
     t.integer "status", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "container_registry_url"
     t.jsonb "canine_config", default: {}
     t.text "postdeploy_command"
     t.text "predestroy_command"
     t.text "postdestroy_command"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "container_registry_url"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
@@ -436,6 +438,15 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
     t.datetime "updated_at", null: false
     t.text "description"
     t.index ["project_id"], name: "index_services_on_project_id"
+  end
+
+  create_table "stack_managers", force: :cascade do |t|
+    t.string "provider_url", null: false
+    t.integer "stack_manager_type", default: 0, null: false
+    t.bigint "account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_stack_managers_on_account_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -493,5 +504,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_08_23_202522) do
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
+  add_foreign_key "stack_managers", "accounts"
   add_foreign_key "volumes", "projects"
 end

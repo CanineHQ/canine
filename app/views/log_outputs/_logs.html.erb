@@ -4,7 +4,7 @@
     data-logs-target="container"
     id="<%= dom_id(loggable, :logs) %>"
   >
-    <% loggable.log_outputs.order(created_at: :asc).each do |log_output| %>
+    <% loggable.log_outputs.order(created_at: :desc).limit(100).reverse.each do |log_output| %>
       <%= render "log_outputs/log_line", log_output: log_output %>
     <% end %>
     <% if loggable.log_outputs.empty? %>

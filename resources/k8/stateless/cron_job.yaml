@@ -17,7 +17,7 @@ spec:
         spec:
           containers:
           - name: <%= project.name %>
-            image: <%= project.container_registry_url %>
+            image: <%= project.container_image_reference %>
             imagePullPolicy: Always
             command: <% service.command.split(' ').each do |c| %>
               - <%= c %>

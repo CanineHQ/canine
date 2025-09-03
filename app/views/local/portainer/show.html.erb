@@ -1,0 +1,33 @@
+<div class="space-y-4">
+  <h4 class="text-lg font-bold">Enter your Portainer URL below.</h4>
+
+  <%= form_with url: local_portainer_path, model: current_account.stack_manager, method: :put do |form| %>
+    <div class="form-group">
+      <%= form.label :provider_url, "Portainer URL" %>
+      <%= form.text_field :provider_url, class: "input input-bordered w-full max-w-xs", placeholder: "http://portainer.portainer.svc.cluster.local:9000" %>
+      <label class="label">
+        <span class="label-text-alt">All data is saved locally and never sent to any external servers.</span>
+      </label>
+    </div>
+    <h4 class="text-lg font-bold my-4">Login to Portainer</h4>
+    <div class="form-group" data-controller="toggle-password">
+      <%= form.label :username, "Username" %>
+      <%= form.text_field :username, class: "input input-bordered w-full max-w-xs" %>
+    </div>
+    <div class="form-group" data-controller="toggle-password">
+      <%= form.label :password, "Password" %>
+      <%= form.text_field :password, type: "password", class: "input input-bordered w-full max-w-xs", data: { toggle_password_target: "input" } %>
+      <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+        <iconify-icon icon="mdi:eye"></iconify-icon>
+      </button>
+    </div>
+    <div class="text-center"> or </div>
+    <div>
+      <%= link_to "Connect via Github", Git::Github::UrlHelper.authorize_url, class: "btn btn-primary" %>
+    </div>
+    <div class="form-footer">
+      <%= form.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+

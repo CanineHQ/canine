@@ -21,10 +21,9 @@ module Projects
       return nil unless build_config_params.present?
 
       build_config = project.build_configuration || project.build_build_configuration
-      build_config.assign_attributes(
-        driver: build_config_params[:driver],
-        build_cloud_id: build_config_params[:build_cloud_id]
-      )
+      build_config.assign_attributes({
+          provider_id: project.project_credential_provider.provider_id
+        }.merge(BuildConfiguration.permit_params(build_config_params)))
       build_config
     end
   end

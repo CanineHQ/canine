@@ -18,7 +18,6 @@ class K8::Stateless::CronJob < K8::Base
   private
 
   def fetch_jobs_for_cronjob
-    kubectl = K8::Kubectl.from_project(project)
     result = kubectl.call("get jobs -n #{project.name} -o json")
     all_jobs = JSON.parse(result, object_class: OpenStruct).items
 

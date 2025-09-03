@@ -1,0 +1,102 @@
+<div class="min-h-screen py-8" data-controller="onboarding">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header and Navigation -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold ">
+        Let's get started
+      </h1>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="mb-8">
+      <ul aria-label="Steps" role="group" class="steps overflow-auto w-full hidden" data-onboarding-target="stepHeaderParent">
+        <li aria-label="Step" class="step step-primary" data-onboarding-target="stepHeader">Choose Configuration</li>
+        <li aria-label="Step" class="step" data-onboarding-target="stepHeader">Setup Configuration</li>
+        <li aria-label="Step" class="step" data-onboarding-target="stepHeader">Additional Login</li>
+      </ul>
+    </div>
+
+    <!-- Plan Options -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8" data-onboarding-target="step">
+      <div
+        class="border-2 border-green-500 rounded-lg p-6 bg-white dark:bg-gray-800 shadow-sm cursor-pointer"
+        data-action="click->onboarding#selectConfigurationOption"
+        data-value="local"
+        data-onboarding-target="selectedConfigurationOption"
+      >
+        <div class="flex items-start justify-between mb-4">
+          <div class="max-w-[329px]">
+            <h3 class="text-xl font-semibold dark:text-white">Local</h3>
+            <p class="mt-1 dark:text-gray-300">Run everything locally on your own machine. No external services or cluster permissions needed—just download, install, and you’re ready to spin up and manage clusters directly from your laptop.</p>
+          </div>
+          <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center checkIcon">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="border-2 rounded-lg p-6 bg-white dark:bg-gray-800 shadow-sm cursor-pointer"
+        data-action="click->onboarding#selectConfigurationOption"
+        data-value="portainer"
+        data-onboarding-target="selectedConfigurationOption"
+      >
+        <div class="flex items-start justify-between mb-4">
+          <div class="max-w-[329px]">
+            <h3 class="text-xl font-semibold dark:text-white">Portainer</h3>
+            <p class="mt-1 dark:text-gray-300">Run your Kubernetes management interface directly inside your cluster using Portainer. </p>
+          </div>
+          <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center hidden checkIcon">
+            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup Configuration -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8 hidden" data-onboarding-target="step">
+      <%= form_with url: local_portainer_path, model: current_account.stack_manager, method: :put, data: { onboarding_target: "portainerUrlForm" } do |form| %>
+        <div class="form-group">
+          <%= form.label :provider_url, "Portainer URL" %>
+          <%= form.text_field :provider_url, class: "input input-bordered w-full max-w-xs", placeholder: "http://portainer.portainer.svc.cluster.local:9000" %>
+          <label class="label">
+            <span class="label-text-alt">All data is saved locally and never sent to any external servers.</span>
+          </label>
+        </div>
+      <% end %> 
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-8 hidden" data-onboarding-target="step">
+      <%= form_with url: local_portainer_path, model: current_account.stack_manager, method: :put, data: { onboarding_target: "githubForm" } do |form| %>
+        <div class="form-group" data-controller="toggle-password">
+          <%= form.label :username, "Username" %>
+          <%= form.text_field :username, class: "input input-bordered w-full max-w-xs" %>
+        </div>
+        <div class="form-group" data-controller="toggle-password">
+          <%= form.label :password, "Password" %>
+          <%= form.text_field :password, type: "password", class: "input input-bordered w-full max-w-xs", data: { toggle_password_target: "input" } %>
+          <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+            <iconify-icon icon="mdi:eye"></iconify-icon>
+          </button>
+        </div>
+        <div class="text-center"> or </div>
+        <div>
+          <%= link_to Git::Github::UrlHelper.authorize_url(github_oauth_local_portainer_url), class: "btn btn-primary btn-outline" do %>
+            <iconify-icon icon="mdi:github"></iconify-icon> Connect via Github
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center">
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg text-lg transition-colors" data-action="click->onboarding#next">
+        Next
+      </button>
+    </div>
+  </div>
+</div>

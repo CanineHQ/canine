@@ -36,6 +36,7 @@ class User < ApplicationRecord
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
+  has_many :build_clouds, through: :clusters
   has_many :projects, through: :accounts
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts
@@ -45,7 +46,12 @@ class User < ApplicationRecord
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
 
   def github_provider
-  providers.find_by(provider: "github")
+    providers.find_by(provider: "github")
+  end
+
+  def portainer_jwt
+    return @portainer_jwt if @portainer_jwt
+    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
   end
 
   private

@@ -8,7 +8,7 @@ class Async::AddOns::Processes::PodsViewModel < Async::BaseViewModel
 
   def pods
     @pods ||= begin
-      client = K8::Client.new(add_on.cluster.kubeconfig).client
+      client = K8::Client.new(K8::Connection.new(add_on.cluster, current_user))
       client.get_pods(namespace: add_on.name)
     end
   end

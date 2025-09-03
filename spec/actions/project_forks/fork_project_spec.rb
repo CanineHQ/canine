@@ -91,6 +91,12 @@ RSpec.describe ProjectForks::ForkProject do
     end
 
     context 'without build configuration' do
+      let(:provider) { create(:provider, :container_registry, user: account.owner) }
+      before do
+        parent_project.build_configuration = nil
+        parent_project.save!
+      end
+
       it 'does not create a build configuration for the child project' do
         result = described_class.execute(parent_project:, pull_request:)
 

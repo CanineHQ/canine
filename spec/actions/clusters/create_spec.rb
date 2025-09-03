@@ -5,6 +5,7 @@ RSpec.describe Clusters::Create do
     YAML.safe_load(File.read(Rails.root.join('spec/resources/k8/kubeconfig.yml')))
   end
   let(:cluster) { build(:cluster, kubeconfig: valid_kubeconfig) }
+  let(:user) { create(:user) }
 
   describe '.call' do
     context 'when kubeconfig is valid and cluster can connect' do
@@ -13,7 +14,7 @@ RSpec.describe Clusters::Create do
       end
 
       it 'returns a successful context' do
-        result = described_class.call(cluster)
+        result = described_class.call(cluster, user)
         expect(result).to be_success
       end
     end

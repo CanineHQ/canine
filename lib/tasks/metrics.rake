@@ -5,8 +5,9 @@ namespace :metrics do
   end
 
   desc "Poll Kubernetes cluster metrics"
-  task fetch: :environment do
-    Scheduled::FetchMetricsJob.perform_now
+  task fetch: :environment do |_, args|
+    user_id = args[:user_id] || 1
+    Scheduled::FetchMetricsJob.perform_now(user_id)
   end
 
   desc "Flush metrics older than 1 week"

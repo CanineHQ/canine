@@ -8,7 +8,13 @@
           <iconify-icon icon="lucide:cloud" height="24" class="text-primary"></iconify-icon>
           <h3 class="card-title text-lg">Build Cloud</h3>
         </div>
-        <%= render "clusters/build_clouds/status", build_cloud: build_cloud %>
+        <%= render(
+          "shared/partials/async_renderer",
+          view_model: Async::Clusters::BuildClouds::StatusViewModel.new(
+            current_user,
+            build_cloud_id: build_cloud.id
+          )
+        ) %>
       </div>
 
       <% if build_cloud.installing? %>
@@ -52,18 +58,18 @@
               <iconify-icon icon="lucide:settings" height="16" class="text-base-content/60"></iconify-icon>
               <span class="font-medium">Configuration</span>
             </div>
-            <div class="grid grid-cols-2 gap-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-base-content/70">Replicas:</span>
-                <span class="font-mono"><%= build_cloud.replicas %></span>
+            <div class="grid grid-cols-3 gap-3 text-sm">
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-base-content/70"><iconify-icon icon="lucide:server" height="14"></iconify-icon> Replicas</div>
+                <div class="font-mono text-md"><%= build_cloud.replicas %></div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-base-content/70">CPU:</span>
-                <span class="font-mono"><%= integer_to_compute(build_cloud.cpu_requests) %>/<%= integer_to_compute(build_cloud.cpu_limits) %></span>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-base-content/70"><iconify-icon icon="lucide:cpu" height="14"></iconify-icon> CPU</div>
+                <div class="font-mono text-md"><%= integer_to_compute(build_cloud.cpu_requests) %> / <%= integer_to_compute(build_cloud.cpu_limits) %></div>
               </div>
-              <div class="flex justify-between col-span-2">
-                <span class="text-base-content/70">Memory:</span>
-                <span class="font-mono"><%= integer_to_memory(build_cloud.memory_requests) %>/<%= integer_to_memory(build_cloud.memory_limits) %></span>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 text-base-content/70"><iconify-icon icon="lucide:hard-drive" height="14"></iconify-icon> Memory</div>
+                <div class="font-mono text-md"><%= integer_to_memory(build_cloud.memory_requests) %> / <%= integer_to_memory(build_cloud.memory_limits) %></div>
               </div>
             </div>
           </div>
@@ -106,7 +112,7 @@
                             class: "btn btn-primary btn-sm",
                             data: { turbo_confirm: "Reinstall BuildKit on your cluster?" } do %>
                 <iconify-icon icon="lucide:refresh-cw" height="16"></iconify-icon>
-                <%= build_cloud.failed? ? "Retry" : "Reinstall" %>
+                Reinstall
               <% end %>
             <% end %>
           </div>

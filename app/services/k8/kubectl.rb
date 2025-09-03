@@ -4,20 +4,13 @@ class K8::Kubectl
   include K8::Kubeconfig
   attr_reader :kubeconfig, :runner
 
-  def initialize(kubeconfig, runner = Cli::RunAndReturnOutput.new)
-    @kubeconfig = kubeconfig
+  def initialize(connection, runner = Cli::RunAndReturnOutput.new)
+    @_kubeconfig = connection.kubeconfig
+    @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
     if @kubeconfig.nil?
       raise "Kubeconfig is required"
     end
     @runner = runner
-  end
-
-  def self.from_project(project)
-    new(project.cluster.kubeconfig)
-  end
-
-  def self.from_add_on(add_on)
-    new(add_on.cluster.kubeconfig)
   end
 
   def apply_yaml(yaml_content)

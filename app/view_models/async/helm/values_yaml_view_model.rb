@@ -4,7 +4,8 @@ class Async::Helm::ValuesYamlViewModel < Async::BaseViewModel
 
   def service
     @add_on ||= current_user.add_ons.find(params[:add_on_id])
-    @service ||= K8::Helm::Service.new(@add_on)
+    connection = K8::Connection.new(@add_on, current_user)
+    @service ||= K8::Helm::Service.new(connection)
   end
 
   def initial_render
