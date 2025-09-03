@@ -108,6 +108,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_02_182502) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "provider_id", null: false
+    t.integer "build_type", default: 0, null: false
     t.string "image_repository", null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
@@ -395,13 +396,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_02_182502) do
     t.string "docker_command"
     t.text "predeploy_command"
     t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "container_registry_url"
     t.jsonb "canine_config", default: {}
     t.text "postdeploy_command"
     t.text "predestroy_command"
     t.text "postdestroy_command"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "container_registry_url"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"

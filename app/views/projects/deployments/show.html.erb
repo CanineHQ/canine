@@ -4,10 +4,9 @@
 <%= project_layout(@project) do %>
   <div>
     <div class="flex items-center gap-3">
-      <div>
-        <%= @build.created_at.strftime("%B %d, %Y at %I:%M %p") %>
-        <%= render "projects/deployments/status", build: @build %>
-      </div>
+      <%= @build.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+      <%= turbo_stream_from dom_id(@build, :status) %>
+      <%= render "projects/deployments/status", build: @build %>
       <% if @build.in_progress? %>
         <%= button_to "Kill Build", 
             kill_project_deployment_path(@project, @build), 
