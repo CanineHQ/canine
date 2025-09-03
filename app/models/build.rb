@@ -43,5 +43,6 @@ class Build < ApplicationRecord
     if events.last
       broadcast_replace_later_to [ project, :events ], target: dom_id(self, :index), partial: "projects/deployments/event_build_row", locals: { project:, event: events.last }
     end
+    broadcast_replace_later_to dom_id(self, :status), target: dom_id(self, :status), partial: "projects/deployments/status", locals: { build: self }
   end
 end

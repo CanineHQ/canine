@@ -1,20 +1,22 @@
-<%
-  status = (build.deployment&.status || build.status)
-  status = status == "in_progress" ? "pending" : status.humanize
-  badge_color = case status
-  when "pending"
-    "warning"
-  when "Failed"
-    "error"
-  when "Completed"
-    "success"
-  when "Killed"
-    "error"
-  end
-%>
-<div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-  <%= status %>
-  <% if status == "pending" %>
-    <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
-  <% end %>
+<div id="<%= dom_id(build, :status) %>">
+  <%
+    status = (build.deployment&.status || build.status)
+    status = status == "in_progress" ? "pending" : status.humanize
+    badge_color = case status
+    when "pending"
+      "warning"
+    when "Failed"
+      "error"
+    when "Completed"
+      "success"
+    when "Killed"
+      "error"
+    end
+  %>
+  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+    <%= status %>
+    <% if status == "pending" %>
+      <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
+    <% end %>
+  </div>
 </div>
