@@ -44,7 +44,7 @@ RSpec.describe Portainer::Client do
       end
 
       it "raises an error" do
-        expect { client.endpoints }.to raise_error("Failed to fetch endpoints from Portainer")
+        expect { client.endpoints }.to raise_error(Portainer::Client::UnauthorizedError)
       end
     end
   end
