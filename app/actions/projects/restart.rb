@@ -1,11 +1,12 @@
 class Projects::Restart
   extend LightService::Action
-  expects :project, :user
+  expects :connection
 
   executed do |context|
-    context.project.services.running.each do |service|
+    project = context.connection.project
+    project.services.running.each do |service|
       if service.web_service? || service.background_service?
-        K8::Stateless::Deployment.new(service, context.user).restart
+        K8::Stateless::Deployment.new(service).connect(context.connection).restart
       end
     end
   end

@@ -13,7 +13,7 @@ class ProjectsController < ApplicationController
   end
 
   def restart
-    result = Projects::Restart.execute(project: @project, user: current_user)
+    result = Projects::Restart.execute(connection: K8::Connection.new(@project, current_user))
     if result.success?
       redirect_to project_url(@project), notice: "All services have been restarted"
     else
