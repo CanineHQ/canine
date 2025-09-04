@@ -3,6 +3,7 @@
 # Table name: build_configurations
 #
 #  id               :bigint           not null, primary key
+#  build_type       :integer          default(0), not null
 #  driver           :integer          not null
 #  image_repository :string           not null
 #  created_at       :datetime         not null

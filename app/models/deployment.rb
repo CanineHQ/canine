@@ -10,7 +10,7 @@
 #
 # Indexes
 #
-#  index_deployments_on_build_id  (build_id)
+#  index_deployments_on_build_id  (build_id) UNIQUE
 #
 # Foreign Keys
 #
