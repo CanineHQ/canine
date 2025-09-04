@@ -2,7 +2,7 @@ module Loggable
   extend ActiveSupport::Concern
 
   included do
-    has_many :log_outputs, as: :loggable, dependent: :destroy
+    has_many :log_outputs, as: :loggable, dependent: :delete_all
   end
 
   def info(line, color: nil)
