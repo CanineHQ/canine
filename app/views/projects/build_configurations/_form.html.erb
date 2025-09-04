@@ -36,7 +36,15 @@
         </label>
         <%= bc_form.select(
           :provider_id,
-          current_user.providers.has_container_registry.map { |provider| [ provider.friendly_name, provider.id ] },
+          options_for_select(
+            current_account.providers.has_container_registry.map do |provider|
+              [provider.friendly_name, provider.id]
+            end,
+            selected: build_configuration.provider_id,
+            disabled: current_account.providers.has_container_registry.select do |p|
+              !current_user.providers.include?(p)
+            end.map(&:id)
+          ),
           { include_blank: "Select a provider..." },
           { class: "select select-bordered w-full" }
         ) %>
