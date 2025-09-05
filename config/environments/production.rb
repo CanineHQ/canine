@@ -49,7 +49,7 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  if Rails.application.config.local_mode
+  if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     config.ssl_options = { hsts: false }
     config.force_ssl = false
   else
