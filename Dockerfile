@@ -45,7 +45,6 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-RUN gem install foreman
 # Install javascript dependencies
 ARG NODE_VERSION=20.11.0
 ARG YARN_VERSION=1.22.21
@@ -87,4 +86,4 @@ COPY --from=build /usr/local/bin/telepresence /usr/local/bin/telepresence
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 EXPOSE 3000
-CMD ["./bin/run"]
+CMD ["./bin/rails", "server"]
