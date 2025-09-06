@@ -48,6 +48,49 @@ module Portainer
       response.parsed_response['jwt'] if response.success?
     end
 
+    def registries
+      response = get("/api/registries")
+      registries_data.map do |registry_data|
+        Portainer::Data::Registry.new(
+          id: registry_data["Id"],
+          name: registry_data["Name"],
+          url: registry_data["URL"],
+          username: registry_data["Username"],
+          password: registry_data["Password"],
+          authentication: registry_data["Authentication"]
+        )
+      end
+    end
+
+    def endpoints
+      response = get("/api/endpoints")
+      response.map do |endpoint_data|
+        Portainer::Data::Endpoint.new(
+          id: endpoint_data["Id"],
+          name: endpoint_data["Name"],
+          url: endpoint_data["URL"]
+        )
+      end
+    end
+
+
+  def get_registry_secret(project, registry_id, endpoint_id)
+    put(
+      "/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
+      body: { namespaces: [ project.name ] }
+    )
+  end
+
+  def put(path, body:)
+    fetch_wrapper do
+      self.class.put(
+        "#{provider_url}#{path}",
+        headers:,
+        body: body.to_json
+      )
+    end
+  end
+
     def get(path)
      fetch_wrapper do
         self.class.get("#{provider_url}#{path}", headers:)
