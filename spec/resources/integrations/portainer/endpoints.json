@@ -1,0 +1,253 @@
+[
+  {
+    "Id": 1,
+    "Name": "local",
+    "Type": 5,
+    "ContainerEngine": "",
+    "URL": "https://kubernetes.default.svc",
+    "GroupId": 1,
+    "PublicURL": "",
+    "Gpus": [],
+    "TLSConfig": {
+      "TLS": true,
+      "TLSSkipVerify": true
+    },
+    "AzureCredentials": {
+      "ApplicationID": "",
+      "TenantID": "",
+      "AuthenticationKey": ""
+    },
+    "TagIds": [],
+    "Status": 1,
+    "Snapshots": [],
+    "UserAccessPolicies": {},
+    "TeamAccessPolicies": {},
+    "EdgeKey": "",
+    "ComposeSyntaxMaxVersion": "3.9",
+    "SecuritySettings": {
+      "allowBindMountsForRegularUsers": true,
+      "allowPrivilegedModeForRegularUsers": true,
+      "allowVolumeBrowserForRegularUsers": false,
+      "allowHostNamespaceForRegularUsers": true,
+      "allowDeviceMappingForRegularUsers": true,
+      "allowStackManagementForRegularUsers": true,
+      "allowContainerCapabilitiesForRegularUsers": true,
+      "allowSysctlSettingForRegularUsers": true,
+      "enableHostManagementFeatures": false
+    },
+    "LastCheckInDate": 0,
+    "QueryDate": 0,
+    "Heartbeat": false,
+    "Edge": {
+      "AsyncMode": false,
+      "PingInterval": 0,
+      "SnapshotInterval": 0,
+      "CommandInterval": 0
+    },
+    "AuthorizedUsers": null,
+    "AuthorizedTeams": null,
+    "Tags": null,
+    "StatusMessage": {
+      "summary": "",
+      "detail": "",
+      "operation": "",
+      "operationStatus": "",
+      "warnings": null
+    },
+    "CloudProvider": null,
+    "Kubernetes": {
+      "Snapshots": [
+        {
+          "Time": 1756101218,
+          "KubernetesVersion": "v1.33.1",
+          "NodeCount": 2,
+          "TotalCPU": 4,
+          "TotalMemory": 6167871488,
+          "DiagnosticsData": null
+        }
+      ],
+      "Configuration": {
+        "UseLoadBalancer": false,
+        "UseServerMetrics": true,
+        "EnableResourceOverCommit": true,
+        "ResourceOverCommitPercentage": 0,
+        "StorageClasses": [
+          {
+            "Name": "do-block-storage",
+            "AccessModes": [
+              "RWO"
+            ],
+            "Provisioner": "dobs.csi.digitalocean.com",
+            "AllowVolumeExpansion": true
+          }
+        ],
+        "IngressClasses": [
+          {
+            "Name": "nginx",
+            "Type": "nginx",
+            "Blocked": false,
+            "BlockedNamespaces": null
+          }
+        ],
+        "RestrictDefaultNamespace": false,
+        "IngressAvailabilityPerNamespace": false,
+        "AllowNoneIngressClass": false,
+        "RestrictSecrets": false,
+        "RestrictStandardUserIngressW": false
+      },
+      "Flags": {
+        "IsServerMetricsDetected": true,
+        "IsServerIngressClassDetected": true,
+        "IsServerStorageDetected": true
+      }
+    },
+    "PostInitMigrations": {
+      "MigrateIngresses": false,
+      "MigrateGPUs": false,
+      "MigrateGateKeeper": false,
+      "MigrateSecretOwners": false
+    },
+    "EdgeCheckinInterval": 5,
+    "Agent": {},
+    "LocalTimeZone": "",
+    "ChangeWindow": {
+      "Enabled": false,
+      "StartTime": "",
+      "EndTime": ""
+    },
+    "DeploymentOptions": null,
+    "EnableImageNotification": false,
+    "EnableGPUManagement": false
+  },
+  {
+    "Id": 2,
+    "Name": "cluster-production",
+    "Type": 6,
+    "ContainerEngine": "",
+    "URL": "137.184.242.139:9001",
+    "GroupId": 1,
+    "PublicURL": "",
+    "Gpus": null,
+    "TLSConfig": {
+      "TLS": true,
+      "TLSSkipVerify": true
+    },
+    "AzureCredentials": {
+      "ApplicationID": "",
+      "TenantID": "",
+      "AuthenticationKey": ""
+    },
+    "TagIds": [],
+    "Status": 1,
+    "Snapshots": [],
+    "UserAccessPolicies": {},
+    "TeamAccessPolicies": {},
+    "EdgeKey": "",
+    "ComposeSyntaxMaxVersion": "3.9",
+    "SecuritySettings": {
+      "allowBindMountsForRegularUsers": true,
+      "allowPrivilegedModeForRegularUsers": true,
+      "allowVolumeBrowserForRegularUsers": false,
+      "allowHostNamespaceForRegularUsers": true,
+      "allowDeviceMappingForRegularUsers": true,
+      "allowStackManagementForRegularUsers": true,
+      "allowContainerCapabilitiesForRegularUsers": true,
+      "allowSysctlSettingForRegularUsers": true,
+      "enableHostManagementFeatures": false
+    },
+    "LastCheckInDate": 0,
+    "QueryDate": 0,
+    "Heartbeat": false,
+    "Edge": {
+      "AsyncMode": false,
+      "PingInterval": 0,
+      "SnapshotInterval": 0,
+      "CommandInterval": 0
+    },
+    "AuthorizedUsers": null,
+    "AuthorizedTeams": null,
+    "Tags": null,
+    "StatusMessage": {
+      "summary": "",
+      "detail": "",
+      "operation": "",
+      "operationStatus": "",
+      "warnings": null
+    },
+    "CloudProvider": {
+      "Provider": "kubeconfig",
+      "Name": "KubeConfig",
+      "URL": "",
+      "Region": "",
+      "Size": null,
+      "NodeCount": 0,
+      "CPU": null,
+      "RAM": null,
+      "HDD": null,
+      "NetworkID": null,
+      "CredentialID": 1,
+      "ResourceGroup": "",
+      "Tier": "",
+      "PoolName": "",
+      "DNSPrefix": "",
+      "KubernetesVersion": "",
+      "AmiType": null,
+      "InstanceType": null,
+      "NodeVolumeSize": null,
+      "AddonWithArgs": null,
+      "NodeIPs": null,
+      "OfflineInstall": false
+    },
+    "Kubernetes": {
+      "Snapshots": [
+        {
+          "Time": 1756101218,
+          "KubernetesVersion": "v1.33.1",
+          "NodeCount": 1,
+          "TotalCPU": 1,
+          "TotalMemory": 2062741504,
+          "DiagnosticsData": {
+            "Log": "[{\"message\":\"2025/08/24 15:06:25 http: TLS handshake error from 79.124.58.198:37300: tls: first record does not look like a TLS handshake\",\"timestamp\":\"2025-08-24T15:06:25.284038669Z\"},{\"message\":\"2025/08/24 18:58:28 http: TLS handshake error from 3.131.215.38:55564: client sent an HTTP request to an HTTPS server\",\"timestamp\":\"2025-08-24T18:58:28.592064577Z\"},{\"message\":\"2025/08/24 18:58:28 http: TLS handshake error from 3.131.215.38:55568: client sent an HTTP request to an HTTPS server\",\"timestamp\":\"2025-08-24T18:58:28.872671629Z\"},{\"message\":\"2025/08/24 18:59:10 http: TLS handshake error from 3.131.215.38:47574: unexpected EOF\",\"timestamp\":\"2025-08-24T18:59:10.589372939Z\"},{\"message\":\"2025/08/24 19:05:01 http: TLS handshake error from 3.131.215.38:59934: tls: first record does not look like a TLS handshake\",\"timestamp\":\"2025-08-24T19:05:01.960651151Z\"},{\"message\":\"2025/08/24 20:18:52 http: TLS handshake error from 20.163.74.20:53424: EOF\",\"timestamp\":\"2025-08-24T20:18:52.494419881Z\"},{\"message\":\"2025/08/24 20:18:52 http: TLS handshake error from 20.163.74.20:38240: tls: first record does not look like a TLS handshake\",\"timestamp\":\"2025-08-24T20:18:52.573306731Z\"},{\"message\":\"2025/08/24 20:29:27 http: TLS handshake error from 129.212.185.205:52764: EOF\",\"timestamp\":\"2025-08-24T20:29:27.107993100Z\"},{\"message\":\"2025/08/25 03:50:30 http: TLS handshake error from 184.105.139.67:58636: client sent an HTTP request to an HTTPS server\",\"timestamp\":\"2025-08-25T03:50:30.359767261Z\"},{\"message\":\"2025/08/25 04:27:52 http: TLS handshake error from 185.247.137.177:53051: client sent an HTTP request to an HTTPS server\",\"timestamp\":\"2025-08-25T04:27:52.622441368Z\"}]"
+          }
+        }
+      ],
+      "Configuration": {
+        "UseLoadBalancer": false,
+        "UseServerMetrics": false,
+        "EnableResourceOverCommit": true,
+        "ResourceOverCommitPercentage": 20,
+        "StorageClasses": [],
+        "IngressClasses": [],
+        "RestrictDefaultNamespace": false,
+        "IngressAvailabilityPerNamespace": false,
+        "AllowNoneIngressClass": false,
+        "RestrictSecrets": false,
+        "RestrictStandardUserIngressW": false
+      },
+      "Flags": {
+        "IsServerMetricsDetected": true,
+        "IsServerIngressClassDetected": true,
+        "IsServerStorageDetected": true
+      }
+    },
+    "PostInitMigrations": {
+      "MigrateIngresses": false,
+      "MigrateGPUs": false,
+      "MigrateGateKeeper": false,
+      "MigrateSecretOwners": false
+    },
+    "EdgeCheckinInterval": 5,
+    "Agent": {
+      "Version": "2.27.9"
+    },
+    "LocalTimeZone": "",
+    "ChangeWindow": {
+      "Enabled": false,
+      "StartTime": "",
+      "EndTime": ""
+    },
+    "DeploymentOptions": null,
+    "EnableImageNotification": false,
+    "EnableGPUManagement": false
+  }
+]
