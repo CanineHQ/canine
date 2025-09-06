@@ -29,13 +29,14 @@ class Provider < ApplicationRecord
   GITHUB_PROVIDER = "github"
   CUSTOM_REGISTRY_PROVIDER = "container_registry"
   GITLAB_PROVIDER = "gitlab"
-  PORTAINER_PROVIDER = "portainer"
   GIT_TYPE = "git"
   REGISTRY_TYPE = "registry"
   PROVIDER_TYPES = {
     GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER ],
     REGISTRY_TYPE => [ CUSTOM_REGISTRY_PROVIDER ]
   }
+
+  PORTAINER_PROVIDER = "portainer"
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?

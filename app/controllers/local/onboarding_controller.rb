@@ -1,15 +1,19 @@
 class Local::OnboardingController < ApplicationController
-  before_action :authorize
-  layout "onboarding"
+  layout "homepage"
+
   def index
   end
 
-  private
+  def create
+    result = Portainer::Onboarding::Create.call(params)
 
-  def authorize
-    unless Flipper.enabled?(:portainer_oauth)
-      flash[:error] = "This feature is not yet ready"
+    if result.success?
+      sign_in(result.user)
       redirect_to root_path
+    else
+      redirect_to local_onboarding_index_path, alert: result.message
     end
   end
+
+  private
 end
