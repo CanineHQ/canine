@@ -23,7 +23,8 @@ class K8::Connection
     if cluster.kubeconfig.present?
       cluster.kubeconfig
     else
-      Portainer::Stack.new(stack_manager, user).fetch_kubeconfig(cluster)
+      stack = stack_manager.connect(user)
+      stack.fetch_kubeconfig(cluster)
     end
   end
 

@@ -1,7 +1,7 @@
 class Portainer::Onboarding::CreateUserWithStackManager
   extend LightService::Action
   expects :jwt, :username, :provider_url
-  promises :user, :account
+  promises :user, :account, :stack_manager
 
   executed do |context|
     password = Devise.friendly_token
@@ -27,12 +27,12 @@ class Portainer::Onboarding::CreateUserWithStackManager
         context.account = context.user.accounts.first
       end
 
-      tech_stack = StackManager.find_or_initialize_by(
+      context.stack_manager = StackManager.find_or_initialize_by(
         account: context.account,
         stack_manager_type: :portainer,
         provider_url: context.provider_url
       )
-      tech_stack.save!
+      context.stack_manager.save!
     end
   end
 end

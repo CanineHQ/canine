@@ -3,8 +3,13 @@ class StackManagersController < ApplicationController
 
   def sync_clusters
     @stack_manager = current_account.stack_manager
-    @stack_manager.instance(current_user).sync_clusters
-    unless @stack_manager.instance(current_user).provides_clusters?
+    if @stack_manager.nil?
+      redirect_to clusters_path, alert: "Stack manager not found"
+      return
+    end
+    stack = @stack_manager.connect(current_user)
+    stack.sync_clusters
+    unless stack.provides_clusters?
       redirect_to clusters_path, alert: "This stack manager does not provide clusters"
       return
     end

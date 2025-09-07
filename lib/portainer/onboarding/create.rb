@@ -9,6 +9,9 @@ class Portainer::Onboarding::Create
     ).reduce(
       Portainer::Onboarding::AuthenticateWithPortainer,
       Portainer::Onboarding::CreateUserWithStackManager,
+      # Sync clusters
+      Portainer::SyncClusters
+      # Sync registries
     )
   end
 end

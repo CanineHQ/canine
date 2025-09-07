@@ -14,18 +14,18 @@ class Portainer::Stack
     true
   end
 
-  def sync_registries
-    response = client.get("/api/registries")
+  def sync_registries(user)
+    response = client.registries
     response.map do |registry|
-      stack_manager.account.providers.create!(name: registry["Name"], external_id: registry["Id"])
+      user.providers.create!(name: registry["Name"], external_id: registry["Id"])
     end
   end
 
   def sync_clusters
-    response = client.get("/api/endpoints")
+    response = client.endpoints
     response.map do |external_cluster|
-      cluster = stack_manager.account.clusters.find_or_initialize_by(external_id: external_cluster["Id"])
-      cluster.name = external_cluster["Name"]
+      cluster = stack_manager.account.clusters.find_or_initialize_by(external_id: external_cluster.id)
+      cluster.name = external_cluster.name
       cluster.status = :running
       cluster.save
       cluster
