@@ -6,10 +6,10 @@ export default class extends Controller {
   toggle() {
     if (this.inputTarget.type === "password") {
       this.inputTarget.type = "text"
-      this.iconTarget.classList.replace("bi-eye", "bi-eye-slash")
+      this.iconTarget.setAttribute("icon", "mdi:eye-off")
     } else {
       this.inputTarget.type = "password"
-      this.iconTarget.classList.replace("bi-eye-slash", "bi-eye")
+      this.iconTarget.setAttribute("icon", "mdi:eye")
     }
   }
 }

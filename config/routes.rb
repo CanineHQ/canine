@@ -123,7 +123,11 @@ Rails.application.routes.draw do
     get "/github_token", to: "local/pages#github_token"
     put "/github_token", to: "local/pages#update_github_token"
     namespace :local do
-      resources :onboarding, only: [ :index, :create ]
+      resources :onboarding, only: [ :index, :create ] do
+        collection do
+          post :verify_url
+        end
+      end
       resource :portainer, only: [ :show, :update ] do
         collection do
           get :github_oauth

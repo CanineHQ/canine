@@ -1,14 +1,28 @@
-<div data-onboarding-target="step">
+<div data-onboarding-target="step" data-controller="onboarding">
   <%= form_with url: local_onboarding_index_path, method: :post do |form| %>
     <div class="form-group">
       <%= form.label :provider_url, "Portainer URL" %>
-      <%= form.text_field :provider_url, name: "stack_manager[provider_url]", class: "input input-bordered w-full", placeholder: "http://portainer.portainer.svc.cluster.local:9000" %>
-      <label class="label">
-        <span class="label-text-alt">All data is saved locally and never sent to any external servers.</span>
-      </label>
+      <%= form.text_field :provider_url, name: "stack_manager[provider_url]", class: "input input-bordered w-full", placeholder: "http://portainer.portainer.svc.cluster.local:9000", data: { onboarding_target: "urlInput", action: "blur->onboarding#verifyUrl" } %>
+      <div class="label justify-end">
+        <span class="label-text-alt">
+          <div class="text-success flex items-center gap-x-0.5 hidden" data-onboarding-target="verifyUrlSuccess">
+            Verified
+            <iconify-icon icon="lucide:circle-check"></iconify-icon>
+          </div>
+          <div class="text-error flex items-center gap-x-0.5 hidden" data-onboarding-target="verifyUrlError">
+            <span data-onboarding-target="errorMessage">Error</span>
+            <iconify-icon icon="lucide:circle-x"></iconify-icon>
+          </div>
+          <div class="text-gray-500 flex items-center gap-x-0.5 hidden" data-onboarding-target="verifyUrlLoading">
+            Loading
+            <iconify-icon class="animate-spin" icon="lucide:loader-circle"></iconify-icon>
+          </div>
+        </span>
+      </div>
+
     </div>
 
-    <div class="form-group" data-controller="toggle-password">
+    <div class="form-group">
       <%= form.label :username, "Portainer Username" %>
       <%= form.text_field :username, name: "user[username]", class: "input input-bordered w-full" %>
     </div>
