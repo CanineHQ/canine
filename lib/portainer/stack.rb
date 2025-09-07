@@ -36,7 +36,7 @@ class Portainer::Stack
     full_kubeconfig["clusters"] = full_kubeconfig["clusters"].select do |cluster_config|
       cluster_config["cluster"]["server"].ends_with?("/api/endpoints/#{cluster.external_id}/kubernetes")
     end
-    #full_kubeconfig["clusters"][0]["cluster"]["server"] = full_kubeconfig["clusters"][0]["cluster"]["server"].gsub("https://", "http://")
+    # full_kubeconfig["clusters"][0]["cluster"]["server"] = full_kubeconfig["clusters"][0]["cluster"]["server"].gsub("https://", "http://")
     cluster_name = full_kubeconfig["clusters"][0]["name"]
     full_kubeconfig["contexts"] = full_kubeconfig["contexts"].select do |context|
       context["context"]["cluster"] == cluster_name
