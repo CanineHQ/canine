@@ -71,6 +71,13 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resource :stack_managers, only: [] do
+    collection do
+      post :sync_clusters
+    end
+  end
+
   resources :clusters do
     member do
       post :transfer_ownership

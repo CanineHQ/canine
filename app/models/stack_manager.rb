@@ -27,9 +27,9 @@ class StackManager < ApplicationRecord
   validates_presence_of :account, :provider_url, :stack_manager_type
   validates_uniqueness_of :account
 
-  def instance
+  def instance(current_user)
     if portainer?
-      Portainer::Stack.new(self)
+      Portainer::Stack.new(self, current_user)
     end
   end
 end

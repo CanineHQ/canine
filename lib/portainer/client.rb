@@ -73,26 +73,25 @@ module Portainer
       end
     end
 
-
-  def get_registry_secret(project, registry_id, endpoint_id)
-    put(
-      "/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
-      body: { namespaces: [ project.name ] }
-    )
-  end
-
-  def put(path, body:)
-    fetch_wrapper do
-      self.class.put(
-        "#{provider_url}#{path}",
-        headers:,
-        body: body.to_json
+    def get_registry_secret(project, registry_id, endpoint_id)
+      put(
+        "/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
+        body: { namespaces: [ project.name ] }
       )
     end
-  end
+
+    def put(path, body:)
+      fetch_wrapper do
+        self.class.put(
+          "#{provider_url}#{path}",
+          headers:,
+          body: body.to_json
+        )
+      end
+    end
 
     def get(path)
-     fetch_wrapper do
+      fetch_wrapper do
         self.class.get("#{provider_url}#{path}", headers:)
       end
     end
