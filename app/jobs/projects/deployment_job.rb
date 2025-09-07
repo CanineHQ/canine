@@ -24,7 +24,7 @@ class Projects::DeploymentJob < ApplicationJob
     # For each of the projects services
     deploy_services(project, kubectl)
 
-    sweep_unused_resources(project, kubectl)
+    sweep_unused_resources(project, user)
 
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
