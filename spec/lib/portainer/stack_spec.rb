@@ -5,18 +5,11 @@ RSpec.describe Portainer::Stack do
   let(:account) { create(:account) }
   let(:stack_manager) { create(:stack_manager, account: account) }
   let(:provider) { create(:provider, :portainer, user: account.owner) }
-  let(:portainer_stack) { described_class.new(stack_manager, account.owner) }
-
-  describe "#initialize" do
-    it "sets the stack_manager and user" do
-      expect(portainer_stack.stack_manager).to eq(stack_manager)
-      expect(portainer_stack.user).to eq(user)
-    end
-  end
+  let(:client) { Portainer::Client.new(stack_manager.provider_url, account.owner.portainer_jwt) }
+  let(:portainer_stack) { described_class.new(stack_manager, client) }
 
   describe "#sync_clusters" do
     let(:endpoints_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/endpoints.json")) }
-    let(:client) { Portainer::Client.new(stack_manager.provider_url, account.owner.portainer_jwt) }
 
     before do
       allow(client).to receive(:get).with("/api/endpoints").and_return(JSON.parse(endpoints_json))
@@ -29,15 +22,42 @@ RSpec.describe Portainer::Stack do
   end
 
   describe "#fetch_kubeconfig" do
-    let(:kubeconfig_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/kubeconfig.json")) }
+    let(:kubeconfig_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/config.json")) }
     let(:cluster) { create(:cluster, account:, external_id: "1") }
+    let(:client) { Portainer::Client.new(stack_manager.provider_url, account.owner.portainer_jwt) }
 
     before do
       allow(client).to receive(:get_kubernetes_config).and_return(JSON.parse(kubeconfig_json))
     end
 
-    it "fetches kubernetes config from the client, and sets the context" do
+    it "fetches kubernetes config and filters for the specific cluster" do
       result = portainer_stack.fetch_kubeconfig(cluster)
+
+      expect(result["clusters"].length).to eq(1)
+      expect(result["clusters"][0]["name"]).to eq("portainer-cluster-local")
+      expect(result["clusters"][0]["cluster"]["server"]).to end_with("/api/endpoints/1/kubernetes")
+    end
+
+    it "filters contexts to match the selected cluster" do
+      result = portainer_stack.fetch_kubeconfig(cluster)
+
+      expect(result["contexts"].length).to eq(1)
+      expect(result["contexts"][0]["name"]).to eq("portainer-ctx-local")
+      expect(result["contexts"][0]["context"]["cluster"]).to eq("portainer-cluster-local")
+    end
+
+    it "sets the current context to the filtered context" do
+      result = portainer_stack.fetch_kubeconfig(cluster)
+
+      expect(result["current-context"]).to eq("portainer-ctx-local")
+    end
+
+    it "preserves other kubeconfig fields" do
+      result = portainer_stack.fetch_kubeconfig(cluster)
+
+      expect(result["apiVersion"]).to eq("v1")
+      expect(result["kind"]).to eq("Config")
+      expect(result["users"]).to be_present
     end
   end
 end

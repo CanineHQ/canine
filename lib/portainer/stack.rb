@@ -1,16 +1,17 @@
 class Portainer::Stack
-  attr_reader :stack_manager, :user
-  def initialize(stack_manager, user)
+  attr_reader :stack_manager, :client
+  def initialize(stack_manager, client)
     @stack_manager = stack_manager
-    @user = user
+    @client = client
+  end
+
+  def self.build(stack_manager, user)
+    client = Portainer::Client.new(stack_manager.provider_url, user.portainer_jwt)
+    new(stack_manager, client)
   end
 
   def provides_clusters?
     true
-  end
-
-  def client
-    @client ||= Portainer::Client.new(stack_manager.provider_url, user.portainer_jwt)
   end
 
   def sync_registries
