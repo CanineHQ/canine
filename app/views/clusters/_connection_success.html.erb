@@ -1,1 +1,4 @@
-<%= button_to "✅ Connection successful!", test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" %>
+<%= button_to test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" do %>
+  <iconify-icon icon="lucide:check-circle" height="16" class="text-green-500"></iconify-icon>
+  Connection successful!
+<% end %>
