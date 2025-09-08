@@ -18,10 +18,10 @@ class Local::OnboardingController < ApplicationController
 
   def verify_url
     url = params[:url]
-    
+
     begin
       response = HTTParty.get(url, timeout: 5, verify: false)
-      
+
       if response.success?
         render json: { success: true }
       else
