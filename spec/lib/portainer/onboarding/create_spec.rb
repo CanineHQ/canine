@@ -14,6 +14,8 @@ RSpec.describe Portainer::Onboarding::Create do
 
   before do
     allow(Portainer::Client).to receive(:authenticate).and_return(jwt)
+    result = File.read(Rails.root.join(*%w[spec resources portainer endpoints.json]))
+    stub_request(:get, "https://test.portainer.io/api/endpoints").to_return(status: 200, body: result, headers: { 'Content-Type' => 'application/json' })
   end
 
   describe '#execute' do

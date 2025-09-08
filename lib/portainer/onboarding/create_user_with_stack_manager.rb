@@ -13,6 +13,7 @@ class Portainer::Onboarding::CreateUserWithStackManager
         password:,
         password_confirmation: password,
       )
+      context.user.write_attribute(:admin, true)
       context.user.save!
 
       provider = context.user.providers.find_or_initialize_by(provider: "portainer")
