@@ -9,7 +9,7 @@ class K8::Helm::Clickhouse < K8::Helm::Service
 
   def password
     output = K8::Kubectl.new(
-      K8::Connection.new(add_on.cluster, user),
+      connection,
       Cli::RunAndReturnOutput.new,
     ).call("get secret --namespace #{add_on.name} #{service_name} -o jsonpath='{.data.admin-password}' | base64 -d")
     output
