@@ -1,5 +1,5 @@
 class K8::Helm::Service
-  attr_reader :add_on, :client, :connection, :user, :kubectl
+  attr_reader :add_on, :client, :connection, :kubectl
 
   def self.create_from_add_on(connection)
     add_on = connection.add_on
