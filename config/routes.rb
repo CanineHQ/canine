@@ -134,7 +134,11 @@ Rails.application.routes.draw do
         end
       end
     end
-    root to: "local/onboarding#index"
+    if Rails.application.config.onboarding_methods.any?
+      root to: "static#index"
+    else
+      root to: "local/onboarding#index"
+    end
   else
     root to: "static#index"
   end

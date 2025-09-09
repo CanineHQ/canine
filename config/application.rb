@@ -17,6 +17,7 @@ module Canine
     config.local_mode = config.boot_mode == "local"
     config.cloud_mode = config.boot_mode == "cloud"
     config.cluster_mode = config.boot_mode == "cluster"
+    config.onboarding_methods = ENV.fetch("ONBOARDING_METHODS", "").split(",")
 
     config.assets.css_compressor = nil
 

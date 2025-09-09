@@ -8,7 +8,11 @@ class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token
 
   before_action :configure_permitted_parameters, if: :devise_controller?
-  before_action :authenticate_user!
+  if Rails.application.config.local_mode
+    include Local::Authentication
+  else
+    before_action :authenticate_user!
+  end
 
   layout :determine_layout
 
