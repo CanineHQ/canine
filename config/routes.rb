@@ -135,9 +135,9 @@ Rails.application.routes.draw do
       end
     end
     if Rails.application.config.onboarding_methods.any?
-      root to: "static#index"
-    else
       root to: "local/onboarding#index"
+    else
+      root to: "projects#index"
     end
   else
     root to: "static#index"
