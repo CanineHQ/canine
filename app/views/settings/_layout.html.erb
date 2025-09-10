@@ -15,6 +15,12 @@
             Credentials
           <% end %>
         </li>
+        <li class="<%= 'underline' if controller_name == 'stack_managers' %>" style="text-underline-offset: 0.25rem;">
+          <%= link_to stack_manager_path do %>
+            <iconify-icon icon="lucide:layers" ></iconify-icon>
+            Stack Manager
+          <% end %>
+        </li>
       </ul>
     </li>
 

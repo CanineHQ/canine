@@ -35,6 +35,4 @@ class Local::OnboardingController < ApplicationController
       render json: { success: false, message: "Error: #{e.message}" }
     end
   end
-
-  private
 end

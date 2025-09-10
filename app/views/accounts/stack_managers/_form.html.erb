@@ -1,0 +1,62 @@
+<%= form_with(model: stack_manager, url: stack_manager_path, local: local_form ||= false) do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+
+  <div class="form-control">
+    <%= form.label :stack_manager_type, class: "label" do %>
+      <span class="label-text">Stack Manager Type</span>
+    <% end %>
+    <%= form.select :stack_manager_type, 
+        options_for_select(StackManager.stack_manager_types.map {|k,v| [k.humanize, k]}, stack_manager.stack_manager_type),
+        {},
+        class: "select select-bordered w-full" %>
+  </div>
+
+  <div class="form-control mt-4">
+    <%= render "accounts/stack_managers/url", form: form %>
+  </div>
+  <% if stack_manager.cloud? %>
+    <div class="form-control">
+      <%= form.label :access_token, class: "label" do %>
+        <span class="label-text">Access Token</span>
+      <% end %>
+      <%= form.text_field :access_token, class: "input input-bordered w-full" %>
+    </div>
+  <% end %>
+
+  <% if stack_manager.persisted? %>
+    <div class="divider"></div>
+
+    <div class="flex justify-between">
+      <%= button_to stack_manager_path, 
+          method: :delete,
+          class: "btn btn-error btn-outline",
+          data: { 
+            turbo_frame: "current_account_stack_manager",
+            turbo_confirm: "Are you sure you want to remove this stack manager configuration?"
+          } do %>
+        <iconify-icon icon="lucide:trash"></iconify-icon>
+        Delete Configuration
+      <% end %>
+      
+      <div class="flex gap-2">
+        <%= button_to sync_clusters_stack_managers_path, 
+            method: :post,
+            class: "btn btn-outline",
+            data: { turbo_frame: "_top" } do %>
+          <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+          Sync Clusters
+        <% end %>
+        <%= form.submit "Update Configuration", class: "btn btn-primary" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="mt-6 flex justify-end gap-2">
+      <% if account.stack_manager %>
+        <%= link_to "Cancel", stack_manager_path, 
+            class: "btn btn-ghost",
+            data: { turbo_frame: "current_account_stack_manager" } %>
+      <% end %>
+      <%= form.submit "Save Configuration", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% end %>

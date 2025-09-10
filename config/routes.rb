@@ -13,6 +13,12 @@ Rails.application.routes.draw do
       get :switch
     end
   end
+  
+  resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
+    collection do
+      post :verify_url
+    end
+  end
   namespace :inbound_webhooks do
     resources :github, controller: :github, only: [ :create ]
     resources :gitlab, controller: :gitlab, only: [ :create ]
@@ -120,8 +126,6 @@ Rails.application.routes.draw do
   get "/calculator", to: "static#calculator"
   # Public marketing homepage
   if Rails.application.config.local_mode
-    get "/github_token", to: "local/pages#github_token"
-    put "/github_token", to: "local/pages#update_github_token"
     namespace :local do
       resources :onboarding, only: [ :index, :create ] do
         collection do

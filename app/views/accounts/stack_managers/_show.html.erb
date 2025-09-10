@@ -1,0 +1,59 @@
+<div class="card card-bordered bg-base-100">
+  <div class="card-body">
+    <div class="flex justify-between items-start mb-4">
+      <h3 class="card-title">Stack Manager Configuration</h3>
+      <div class="flex gap-2">
+        <%= link_to edit_stack_manager_path, 
+            class: "btn btn-sm btn-ghost",
+            data: { turbo_frame: "current_account_stack_manager" } do %>
+          <iconify-icon icon="lucide:edit"></iconify-icon>
+          Edit
+        <% end %>
+        <%= button_to stack_manager_path, 
+            method: :delete,
+            class: "btn btn-sm btn-error btn-outline",
+            data: { 
+              turbo_frame: "current_account_stack_manager",
+              turbo_confirm: "Are you sure you want to remove this stack manager configuration?"
+            } do %>
+          <iconify-icon icon="lucide:trash"></iconify-icon>
+          Delete
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="space-y-4">
+      <div>
+        <div class="text-sm text-base-content/70">Type</div>
+        <div class="font-medium"><%= stack_manager.stack_manager_type.humanize %></div>
+      </div>
+      
+      <div>
+        <div class="text-sm text-base-content/70">Provider URL</div>
+        <div class="font-medium">
+          <%= link_to stack_manager.provider_url, 
+              stack_manager.provider_url, 
+              target: "_blank",
+              class: "link link-primary" %>
+        </div>
+      </div>
+      
+      <div>
+        <div class="text-sm text-base-content/70">Configured</div>
+        <div class="font-medium"><%= stack_manager.created_at.strftime("%B %d, %Y at %I:%M %p") %></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="flex justify-end">
+      <%= button_to sync_clusters_stack_managers_path, 
+          method: :post,
+          class: "btn btn-primary",
+          data: { turbo_frame: "_top" } do %>
+        <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+        Sync Clusters
+      <% end %>
+    </div>
+  </div>
+</div>

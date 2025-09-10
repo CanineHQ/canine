@@ -1,0 +1,17 @@
+<div class="card card-bordered bg-base-100">
+  <div class="card-body text-center py-12">
+    <div class="flex flex-col items-center gap-4">
+      <iconify-icon icon="lucide:layers" class="text-5xl text-base-content/50"></iconify-icon>
+      <h3 class="text-xl font-semibold">No Stack Manager Configured</h3>
+      <p class="text-base-content/70 max-w-md">
+        Connect a stack manager to deploy and manage your containerized applications across multiple environments.
+      </p>
+      <%= link_to new_stack_manager_path, 
+          class: "btn btn-primary",
+          data: { turbo_frame: "current_account_stack_manager" } do %>
+        <iconify-icon icon="lucide:plus"></iconify-icon>
+        Configure Stack Manager
+      <% end %>
+    </div>
+  </div>
+</div>

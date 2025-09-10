@@ -3,6 +3,7 @@
 # Table name: stack_managers
 #
 #  id                 :bigint           not null, primary key
+#  access_token       :string
 #  provider_url       :string           not null
 #  stack_manager_type :integer          default("portainer"), not null
 #  created_at         :datetime         not null
@@ -26,6 +27,11 @@ class StackManager < ApplicationRecord
 
   validates_presence_of :account, :provider_url, :stack_manager_type
   validates_uniqueness_of :account
+  validates_presence_of :access_token, if: :cloud?
+
+  def cloud?
+    Rails.application.config.cloud_mode
+  end
 
   def connect(current_user)
     if portainer?

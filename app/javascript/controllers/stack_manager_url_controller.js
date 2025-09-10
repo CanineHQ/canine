@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = ["urlInput", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "errorMessage"]
 
   async verifyUrl(event) {
+    console.log("HELLO")
     const url = this.urlInputTarget.value.trim()
     
     if (!url) {
@@ -14,7 +15,7 @@ export default class extends Controller {
     this.showLoading()
 
     try {
-      const response = await fetch('/local/onboarding/verify_url', {
+      const response = await fetch('/stack_manager/verify_url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
