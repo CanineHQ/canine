@@ -3,6 +3,7 @@
 # Table name: stack_managers
 #
 #  id                 :bigint           not null, primary key
+#  access_token       :string
 #  provider_url       :string           not null
 #  stack_manager_type :integer          default("portainer"), not null
 #  created_at         :datetime         not null
@@ -21,6 +22,7 @@ FactoryBot.define do
   factory :stack_manager do
     provider_url { 'http://portainer.portainer.svc.cluster.local:9000' }
     stack_manager_type { :portainer }
+    access_token { SecureRandom.hex(10) }
     account
   end
 end

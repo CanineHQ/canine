@@ -1,0 +1,22 @@
+<div>
+  <%= form_with url: local_onboarding_index_path, method: :post do |form| %>
+    <%= render "accounts/stack_managers/url", form: form %>
+
+    <div class="form-group">
+      <%= form.label :username, "Portainer Username" %>
+      <%= form.text_field :username, name: "user[username]", class: "input input-bordered w-full" %>
+    </div>
+    <div class="form-group" data-controller="toggle-password">
+      <%= form.label :password, "Portainer Password" %>
+      <div class="flex items-center">
+        <%= form.text_field :password, name: "user[password]", type: "password", class: "input input-bordered w-full", data: { toggle_password_target: "input" } %>
+        <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+          <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <div class="form-footer">
+      <%= form.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

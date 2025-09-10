@@ -1,6 +1,4 @@
 class Local::PortainersController < ApplicationController
-  before_action :authorize
-
   def show
   end
 
@@ -34,13 +32,6 @@ class Local::PortainersController < ApplicationController
       flash[:notice] = "The Portainer configuration has been updated"
     else
       flash[:error] = result.message
-    end
-  end
-
-  def authorize
-    unless Flipper.enabled?(:portainer_oauth)
-      flash[:error] = "This feature is not yet ready"
-      redirect_to root_path
     end
   end
 end

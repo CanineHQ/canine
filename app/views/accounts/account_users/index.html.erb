@@ -1,7 +1,17 @@
-<%= content_for :title, "Users" %>
+<%= content_for :title, "Account Settings" %>
 <%= turbo_stream_from [:account_users, current_account] %>
 
 <div>
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold">Account Settings</h2>
+    <p class="text-base-content/70"><%= @account.name %></p>
+  </div>
+
+  <div class="tabs tabs-boxed mb-6">
+    <a class="tab tab-active">Team Members</a>
+    <a class="tab" href="<%= account_stack_manager_path(@account) %>">Stack Manager</a>
+  </div>
+
   <div>
     <h3 class="text-lg font-medium">Team Members</h3>
     <div class="flex text-sm">

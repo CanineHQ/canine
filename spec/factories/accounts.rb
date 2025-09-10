@@ -24,5 +24,11 @@ FactoryBot.define do
     after(:create) do |account|
       create(:account_user, account: account, user: account.owner)
     end
+
+    trait :with_stack_manager do
+      after(:create) do |account|
+        create(:stack_manager, account:)
+      end
+    end
   end
 end

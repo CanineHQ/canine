@@ -1,0 +1,46 @@
+{
+  "kind": "Config",
+  "apiVersion": "v1",
+  "preferences": {},
+  "clusters": [
+    {
+      "name": "portainer-cluster-local",
+      "cluster": {
+        "server": "https://portainer.portainer.svc.cluster.local:9000/api/endpoints/1/kubernetes",
+        "insecure-skip-tls-verify": true
+      }
+    },
+    {
+      "name": "portainer-cluster-cluster-production",
+      "cluster": {
+        "server": "https://portainer.portainer.svc.cluster.local:9000/api/endpoints/2/kubernetes",
+        "insecure-skip-tls-verify": true
+      }
+    }
+  ],
+  "users": [
+    {
+      "name": "portainer-sa-user-eb457a62-d190-427f-88d5-a2457ecfc1af-1",
+      "user": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsInJvbGUiOjEsInNjb3BlIjoia3ViZWNvbmZpZyIsImZvcmNlQ2hhbmdlUGFzc3dvcmQiOmZhbHNlLCJpYXQiOjE3NTcyMDU3NTUsImp0aSI6IjNjY2FkNGM3LTI3ZGItNGMyZS05ZmVkLTNmNDY2YjdiNzUyOCJ9.gJmSXsN6NnDD4RtJyQRgitkkqAGWl_4amS6ru9KkM0c"
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "name": "portainer-ctx-local",
+      "context": {
+        "cluster": "portainer-cluster-local",
+        "user": "portainer-sa-user-eb457a62-d190-427f-88d5-a2457ecfc1af-1"
+      }
+    },
+    {
+      "name": "portainer-ctx-cluster-production",
+      "context": {
+        "cluster": "portainer-cluster-cluster-production",
+        "user": "portainer-sa-user-eb457a62-d190-427f-88d5-a2457ecfc1af-1"
+      }
+    }
+  ],
+  "current-context": "portainer-ctx-local"
+}

@@ -23,8 +23,14 @@ class K8::Connection
     if cluster.kubeconfig.present?
       cluster.kubeconfig
     else
-      K8Stack.fetch_kubeconfig(cluster, user)
+      raise StandardError.new("No stack manager found") if stack_manager.blank?
+      stack = stack_manager.connect(user)
+      stack.fetch_kubeconfig(cluster)
     end
+  end
+
+  def stack_manager
+    cluster.account.stack_manager
   end
 
   %i[add_on project].each do |method_name|

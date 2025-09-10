@@ -35,6 +35,7 @@ class Cluster < ApplicationRecord
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :account_id }
+  validates_presence_of :kubeconfig, unless: :external?
   enum :status, {
     initializing: 0,
     installing: 1,
@@ -64,6 +65,9 @@ class Cluster < ApplicationRecord
     create_build_cloud_record!(attributes)
   end
 
+  def external?
+    external_id.present?
+  end
   private
 
   def create_build_cloud_record!(attributes)

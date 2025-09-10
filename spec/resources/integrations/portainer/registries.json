@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "Name": "docker-hub",
+    "Type": 1,
+    "URL": "docker.io",
+    "Authentication": false,
+    "Username": "",
+    "Password": "",
+    "RegistryAccesses": []
+  },
+  {
+    "Id": 2,
+    "Name": "private-registry",
+    "Type": 1,
+    "URL": "registry.example.com",
+    "Authentication": true,
+    "Username": "admin",
+    "Password": "secret",
+    "RegistryAccesses": []
+  }
+]

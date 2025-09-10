@@ -10,20 +10,22 @@
     <div aria-label="Card" class="card card-bordered bg-base-100">
       <div class="card-body">
         <div class="text-right px-5 pt-5">
-          <%= link_to new_cluster_path, title: t("scaffold.new.title", model: "Cluster") do %>
-            <button class="btn btn-primary btn-sm">
-              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-              <span class="hidden sm:inline">New Cluster</span>
-            </button>
-          <% end %>
-          <% if current_account.stack_manager&.portainer? %>
-            <%= link_to sync_clusters_path do %>
-              <button class="btn btn-outline btn-sm">
-                <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
-                <span class="hidden sm:inline">Sync Clusters</span>
+          <div class="flex items-center justify-end gap-2">
+            <%= link_to new_cluster_path, title: t("scaffold.new.title", model: "Cluster") do %>
+              <button class="btn btn-primary btn-sm">
+                <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+                <span class="hidden sm:inline">New Cluster</span>
               </button>
             <% end %>
-          <% end %>
+
+            <% if current_account.stack_manager&.portainer? %>
+              <%= button_to sync_clusters_stack_managers_path, class: "btn btn-outline btn-sm" do %>
+                <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
+                <span class="hidden sm:inline">Sync Clusters</span>
+              <% end %>
+            <% end %>
+          </div>
+
         </div>
         <%= tag.div id: ("clusters" if @pagy.pages == 1) do %>
 
