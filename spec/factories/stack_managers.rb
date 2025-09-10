@@ -22,6 +22,7 @@ FactoryBot.define do
   factory :stack_manager do
     provider_url { 'http://portainer.portainer.svc.cluster.local:9000' }
     stack_manager_type { :portainer }
+    access_token { SecureRandom.hex(10) }
     account
   end
 end

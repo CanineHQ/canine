@@ -13,7 +13,7 @@ Rails.application.routes.draw do
       get :switch
     end
   end
-  
+
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url

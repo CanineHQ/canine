@@ -19,14 +19,35 @@ RSpec.describe Portainer::Onboarding::Create do
   end
 
   describe '#execute' do
-    it 'creates a user with admin privileges' do
-      result = described_class.call(params)
+    context 'when BOOT_MODE=cluster' do
+      around do |example|
+        original_cloud_mode = Rails.application.config.cloud_mode
+        original_cluster_mode = Rails.application.config.cluster_mode
+        Rails.application.config.cluster_mode = true
+        Rails.application.config.cloud_mode = false
+        example.run
+      ensure
+        Rails.application.config.cloud_mode = original_cloud_mode
+        Rails.application.config.cluster_mode = original_cluster_mode
+      end
 
-      expect(result).to be_success
-      expect(result.user).to be_persisted
-      expect(result.user.email).to eq('testuser@oncanine.run')
-      expect(result.user.admin).to be true
-      expect(result.account.stack_manager).to be_persisted
+      it 'creates a user with admin privileges' do
+        result = described_class.call(params)
+
+        expect(result).to be_success
+        expect(result.user).to be_persisted
+        expect(result.user.email).to eq('testuser@oncanine.run')
+        expect(result.user.admin).to be true
+        expect(result.account.stack_manager).to be_persisted
+      end
+    end
+
+    context 'when BOOT_MODE=cloud (cloud is default)' do
+      it 'fails with an error message' do
+        result = described_class.call(params)
+
+        expect(result).to be_failure
+      end
     end
   end
 end

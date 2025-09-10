@@ -7,6 +7,7 @@ class Portainer::Onboarding::Create
       password: params[:user][:password],
       provider_url: params[:stack_manager][:provider_url],
     ).reduce(
+      Portainer::Onboarding::ValidateBootMode,
       Portainer::Onboarding::AuthenticateWithPortainer,
       Portainer::Onboarding::CreateUserWithStackManager,
       # Sync clusters
