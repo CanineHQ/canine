@@ -7,11 +7,11 @@
     <div class="flex text-sm">
       <div class="flex items-center gap-1">
         <iconify-icon icon="lucide:building"></iconify-icon>
-        <%= @account.name %>
+        <%= current_account.name %>
       </div>
       <div class="flex items-center ml-4 gap-1">
         <iconify-icon icon="lucide:users"></iconify-icon>
-        <%= @account.users.count %> Member<%= "s" if @account.users.count != 1 %>
+        <%= current_account.users.count %> Member<%= "s" if current_account.users.count != 1 %>
       </div>
     </div>
   </div>
@@ -53,7 +53,7 @@
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <div class="mb-4 w-full text-xl font-bold">Invite Team Member to <%= @account.name %></div>
+    <div class="mb-4 w-full text-xl font-bold">Invite Team Member to <%= current_account.name %></div>
     <div>
       <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
         <div class="form-control mt-1 w-full">
