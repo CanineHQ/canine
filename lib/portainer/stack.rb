@@ -6,7 +6,12 @@ class Portainer::Stack
   end
 
   def self.build(stack_manager, user)
-    client = Portainer::Client.new(stack_manager.provider_url, user.portainer_jwt)
+    access_token = if stack_manager.access_token.present?
+      stack_manager.access_token
+    else
+      user.portainer_jwt
+    end
+    client = Portainer::Client.new(stack_manager.provider_url, access_token)
     new(stack_manager, client)
   end
 

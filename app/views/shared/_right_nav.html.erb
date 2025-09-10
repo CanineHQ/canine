@@ -8,7 +8,11 @@
       </div>
     </label>
     <ul class="menu dropdown-content mt-4 w-52 rounded-box bg-base-100 p-2 shadow">
-      <%= render "shared/default_right_nav" %>
+      <% if Rails.application.config.local_mode %>
+        <%= render "shared/local_right_nav" %>
+      <% else %>
+        <%= render "shared/default_right_nav" %>
+      <% end %>
     </ul>
   </div>
 </div>
