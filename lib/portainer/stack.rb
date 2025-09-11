@@ -16,6 +16,10 @@ class Portainer::Stack
     new(stack_manager, client)
   end
 
+  def requires_reauthentication?
+    stack_manager.access_token.blank?
+  end
+
   def provides_clusters?
     true
   end

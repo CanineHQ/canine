@@ -23,7 +23,9 @@ class ApplicationController < ActionController::Base
       return nil unless user_signed_in?
       @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.accounts.first
 
-      if Flipper.enabled?(:stack_manager, @current_account) && @current_account.stack_manager.present?
+      if Flipper.enabled?(:stack_manager, @current_account) &&
+        @current_account.stack_manager.present? &&
+        @current_account.stack_manager.requires_reauthentication?
         authenticate_stack!
       end
       @current_account

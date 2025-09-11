@@ -21,7 +21,7 @@ module Canine
     if ENV['PORTAINER_URL'].present?
       config.default_stack_manager = {
         provider_url: ENV['PORTAINER_URL'],
-        stack_manager_type: :portainer,
+        stack_manager_type: :portainer
       }
     end
 
