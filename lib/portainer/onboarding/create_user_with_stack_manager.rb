@@ -32,8 +32,8 @@ class Portainer::Onboarding::CreateUserWithStackManager
 
       context.stack_manager = StackManager.find_or_initialize_by(
         account: context.account,
-        stack_manager_type: :portainer,
-        provider_url: context.provider_url
+        stack_manager_type: Rails.application.config.default_stack_manager[:stack_manager_type],
+        provider_url: Rails.application.config.default_stack_manager[:provider_url]
       )
       context.stack_manager.save!
     end

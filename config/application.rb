@@ -18,6 +18,12 @@ module Canine
     config.cloud_mode = config.boot_mode == "cloud"
     config.cluster_mode = config.boot_mode == "cluster"
     config.onboarding_methods = ENV.fetch("ONBOARDING_METHODS", "").split(",")
+    if ENV['PORTAINER_URL'].present?
+      config.default_stack_manager = {
+        provider_url: ENV['PORTAINER_URL'],
+        stack_manager_type: :portainer,
+      }
+    end
 
     config.assets.css_compressor = nil
 

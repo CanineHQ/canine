@@ -18,6 +18,13 @@ module Portainer
       @provider_url = provider_url
     end
 
+    def authenticated?
+      response = get("/api/users/me")
+      true
+    rescue UnauthorizedError => e
+      false
+    end
+
     def get_kubernetes_config
       fetch_wrapper do
         self.class.get(

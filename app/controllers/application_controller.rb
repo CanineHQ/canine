@@ -22,8 +22,21 @@ class ApplicationController < ActionController::Base
     def current_account
       return nil unless user_signed_in?
       @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.accounts.first
+
+      if Flipper.enabled?(:stack_manager, @current_account) && @current_account.stack_manager.present?
+        authenticate_stack!
+      end
+      @current_account
     end
     helper_method :current_account
+
+    def authenticate_stack!
+      unless @current_account.stack_manager.connect(current_user).authenticated?
+        # Log user out
+        sign_out(current_user)
+        redirect_to new_user_session_path, alert: "Please login to continue."
+      end
+    end
 
     def time_ago(t)
       if t.present?

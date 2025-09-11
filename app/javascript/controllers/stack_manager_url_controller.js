@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["urlInput", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "errorMessage"]
 
   async verifyUrl(event) {
-    console.log("HELLO")
     const url = this.urlInputTarget.value.trim()
     
     if (!url) {
