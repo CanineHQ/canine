@@ -43,6 +43,34 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
       end
     end
 
+    context 'when keep_existing_value flag is set' do
+      before do
+        project.environment_variables.create!(name: 'SECRET_VAR', value: 'secret_value')
+        project.environment_variables.create!(name: 'PUBLIC_VAR', value: 'public_value')
+      end
+
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'SECRET_VAR', value: '', keep_existing_value: 'true' },
+            { name: 'PUBLIC_VAR', value: 'updated_value' }
+          ]
+        }
+      end
+
+      it 'preserves the value for variables with keep_existing_value flag' do
+        subject
+        expect(project.environment_variables.find_by(name: 'SECRET_VAR').value).to eq('secret_value')
+        expect(project.environment_variables.find_by(name: 'PUBLIC_VAR').value).to eq('updated_value')
+      end
+
+      it 'does not create events for preserved values' do
+        expect { subject }.not_to change {
+          project.environment_variables.find_by(name: 'SECRET_VAR').events.count
+        }
+      end
+    end
+
     context 'when removing environment variables' do
       before do
         project.environment_variables.create!(name: 'VAR_TO_REMOVE', value: 'value')
