@@ -1,6 +1,6 @@
 class AddOnsController < ApplicationController
   include StorageHelper
-  before_action :set_add_on, only: [ :show, :edit, :update, :destroy, :restart ]
+  before_action :set_add_on, only: [ :show, :edit, :update, :destroy, :restart, :download_values ]
 
   # GET /add_ons
   def index
@@ -86,6 +86,22 @@ class AddOnsController < ApplicationController
       chart_name: params[:chart_name]
     )
     render partial: "add_ons/helm/default_values", locals: { default_values: @default_values }
+  end
+
+  def download_values
+    if @add_on.installed?
+      values_yaml = @service.all_values_yaml
+      if values_yaml.present?
+        send_data values_yaml,
+                  filename: "#{@add_on.name}-values.yaml",
+                  type: 'text/yaml',
+                  disposition: 'attachment'
+      else
+        redirect_to @add_on, alert: "Unable to download values. Please ensure the add-on is properly installed."
+      end
+    else
+      redirect_to @add_on, alert: "Values can only be downloaded for installed add-ons."
+    end
   end
 
   # DELETE /add_ons/1 or /add_ons/1.json

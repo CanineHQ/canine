@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     end
     member do
       post :restart
+      get :download_values
     end
     resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons

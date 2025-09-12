@@ -36,6 +36,15 @@ class K8::Helm::Client
     end
   end
 
+  def get_all_values_yaml(name, namespace: 'default')
+    return StandardError.new("Can't get all values yaml if not connected") unless connected?
+    with_kube_config do |kubeconfig_file|
+      command = "helm get values #{name} --all --namespace #{namespace} --kubeconfig=#{kubeconfig_file.path}"
+      output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+      output
+    end
+  end
+
   def ls
     return StandardError.new("Can't list helm charts if not connected") unless connected?
     with_kube_config do |kubeconfig_file|
