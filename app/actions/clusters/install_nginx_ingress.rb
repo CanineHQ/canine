@@ -14,6 +14,7 @@ class Clusters::InstallNginxIngress
     rescue Cli::CommandFailedError => e
       cluster.info("Nginx ingress controller not detected, installing...", color: :yellow)
       command = "bash #{Rails.root.join("resources", "k8", "scripts", "install_nginx_ingress.sh")}"
+      runner = Cli::RunAndLog.new(cluster)
       kubectl.with_kube_config do |kubeconfig_file|
         begin
           runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path, "NAMESPACE" => Clusters::Install::DEFAULT_NAMESPACE })
