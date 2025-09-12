@@ -67,7 +67,11 @@ Rails.application.routes.draw do
     end
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects
-    resources :environment_variables, only: %i[index create destroy], module: :projects
+    resources :environment_variables, only: %i[index show create destroy], module: :projects do
+      collection do
+        get :download
+      end
+    end
     resources :deployments, only: %i[index show], module: :projects do
       collection do
         post :deploy

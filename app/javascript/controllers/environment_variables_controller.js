@@ -1,9 +1,5 @@
-// Customizable command palette for advanced users
-// Opens with cmd+k or ctrl+k by default
-// https://github.com/excid3/ninja-keys
-
 import { Controller } from "@hotwired/stimulus"
-import { destroy } from '@rails/request.js'
+import { destroy, get } from '@rails/request.js'
 
 export default class extends Controller {
   static targets = ["container"]
@@ -19,39 +15,95 @@ export default class extends Controller {
     })
   }
 
-  download() {
-    const vars = JSON.parse(this.varsValue)
-    const env = vars.map(v => `${v.name}=${v.value}`).join("\n")
-    const blob = new Blob([env], { type: "text/plain" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = ".env"
-    a.click()
-  }
-
   add(e) {
     e.preventDefault();
-    this._add("", "")
+    this._add("", "", null, true)
   }
 
-  _add(name, value, id=null) {
+  _add(name, value, id=null, isNew=false) {
     const container = this.containerTarget;
     const div = document.createElement("div");
-    // Make the value 3x the width of the name
+    const isHidden = !isNew && id !== null
+    const displayValue = isHidden ? '' : value
+    const placeholder = isHidden ? '••••••••••••••••••••••••' : 'VALUE'
+    
     div.innerHTML = `
-      <div class="flex items-center my-4 space-x-2" id="${id ? id : ''}">
+      <div class="flex items-center my-4 space-x-2" data-env-id="${id || ''}">
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" value="${name}">
-        <input aria-label="Env value" placeholder="VALUE" class="input input-bordered focus:outline-offset-0 w-full" type="text" name="environment_variables[][value]" value="${value}">
+        ${isHidden ? `<input type="hidden" name="environment_variables[][keep_existing_value]" value="true">` : ''}
+        <input 
+          aria-label="Env value" 
+          placeholder="${placeholder}" 
+          class="input input-bordered focus:outline-offset-0 w-full" 
+          type="text" 
+          name="environment_variables[][value]" 
+          value="${displayValue}"
+          data-original-value="${displayValue}"
+          data-revealed="${!isHidden}"
+          ${isHidden ? 'readonly' : ''}
+        >
+        ${isHidden ? `
+          <button 
+            type="button" 
+            class="btn btn-neutral"
+            data-action="environment-variables#reveal"
+          >
+            Reveal
+          </button>
+        ` : ''}
         <button type="button" class="btn btn-danger" data-action="environment-variables#remove">Delete</button>
       </div>
     `;
     container.appendChild(div);
   }
 
+  async reveal(event) {
+    event.preventDefault();
+    const button = event.target;
+    const wrapper = button.closest('[data-env-id]');
+    const envId = wrapper.dataset.envId;
+    const input = wrapper.querySelector('input[name="environment_variables[][value]"]');
+    const keepExistingInput = wrapper.querySelector('input[name="environment_variables[][keep_existing_value]"]');
+    
+    if (!envId) return;
+    
+    button.textContent = 'Loading...';
+    button.disabled = true;
+    
+    try {
+      const response = await get(`/projects/${this.projectIdValue}/environment_variables/${envId}`)
+      if (response.ok) {
+        const data = await response.json
+        input.value = data.value
+        input.dataset.originalValue = data.value
+        input.dataset.revealed = 'true'
+        input.readOnly = false
+        input.placeholder = 'VALUE'
+        // Remove the keep_existing_value hidden input since we now have the real value
+        if (keepExistingInput) {
+          keepExistingInput.remove()
+        }
+        button.remove()
+      } else {
+        button.textContent = 'Error'
+        setTimeout(() => {
+          button.textContent = 'Reveal'
+          button.disabled = false
+        }, 2000)
+      }
+    } catch (error) {
+      console.error('Failed to reveal value:', error)
+      button.textContent = 'Error'
+      setTimeout(() => {
+        button.textContent = 'Reveal'
+        button.disabled = false
+      }, 2000)
+    }
+  }
+
   async remove(event) {
     event.preventDefault();
-    const div = event.target.closest("div");
+    const div = event.target.closest("[data-env-id]");
     div.remove();
   }
 }

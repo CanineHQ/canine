@@ -7,6 +7,19 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
     @environment_variables = @project.environment_variables
   end
 
+  def show
+    @environment_variable = @project.environment_variables.find(params[:id])
+    render json: { value: @environment_variable.value }
+  end
+
+  def download
+    env_content = @project.environment_variables.map { |ev| "#{ev.name}=#{ev.value}" }.join("\n")
+    send_data env_content,
+              filename: "#{@project.name.parameterize}.env",
+              type: 'text/plain',
+              disposition: 'attachment'
+  end
+
   def create
     result = EnvironmentVariables::Update.call(
       project: @project,
