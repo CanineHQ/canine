@@ -38,8 +38,6 @@ export default class extends Controller {
           type="text" 
           name="environment_variables[][value]" 
           value="${displayValue}"
-          data-original-value="${displayValue}"
-          data-revealed="${!isHidden}"
           ${isHidden ? 'readonly' : ''}
         >
         ${isHidden ? `
@@ -75,8 +73,6 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json
         input.value = data.value
-        input.dataset.originalValue = data.value
-        input.dataset.revealed = 'true'
         input.readOnly = false
         input.placeholder = 'VALUE'
         // Remove the keep_existing_value hidden input since we now have the real value
