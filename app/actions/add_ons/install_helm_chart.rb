@@ -24,22 +24,33 @@ class AddOns::InstallHelmChart
     package_details = add_on.metadata['package_details']
 
     add_on.update_install_stage!(1)
-    client.add_repo(
-      package_details['repository']['name'],
-      package_details['repository']['url']
-    )
+    if package_details['repository']['url'].include?("oci://")
+      add_on.update_install_stage!(3)
+      client.install(
+        add_on.name,
+        package_details['repository']['url'],
+        values: add_on.values,
+        namespace: add_on.name
+      )
+    else
+      client.add_repo(
+        package_details['repository']['name'],
+        package_details['repository']['url']
+      )
 
-    add_on.update_install_stage!(2)
-    client.repo_update(repo_name: chart_url.split('/').first)
+      add_on.update_install_stage!(2)
+      client.repo_update(repo_name: chart_url.split('/').first)
 
-    add_on.update_install_stage!(3)
-    client.install(
-      add_on.name,
-      chart_url,
-      values: add_on.values,
-      namespace: add_on.name
-    )
+      add_on.update_install_stage!(3)
+      client.install(
+        add_on.name,
+        chart_url,
+        values: add_on.values,
+        namespace: add_on.name
+      )
+    end
     add_on.installed!
+
   rescue => e
     add_on.failed!
     add_on.error(e.message)
