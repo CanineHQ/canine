@@ -8,6 +8,7 @@ class PodViewModel
   end
 
   def show_pod_logs_path
+    logs_url(parent.name, pod.metadata.name)
     if parent.is_a?(Project)
       project_process_path(parent, pod.metadata.name)
     elsif parent.is_a?(AddOn)

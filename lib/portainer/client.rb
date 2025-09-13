@@ -56,7 +56,7 @@ module Portainer
     end
 
     def registries
-      response = get("/api/registries")
+      registries_data = get("/api/registries")
       registries_data.map do |registry_data|
         Portainer::Data::Registry.new(
           id: registry_data["Id"],
@@ -80,11 +80,17 @@ module Portainer
       end
     end
 
-    def get_registry_secret(project, registry_id, endpoint_id)
-      put(
+    def get_registry_secret(registry_id, endpoint_id, kubectl)
+      # Put the registry secret into the default namespace
+      response = put(
         "/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
-        body: { namespaces: [ project.name ] }
+        body: { namespaces: [ Clusters::Install::DEFAULT_NAMESPACE ] }
       )
+      secret_name = "registry-#{registry_id}"
+      secret = kubectl.call("get secret #{secret_name} -n #{Clusters::Install::DEFAULT_NAMESPACE} -o json")
+      raw_secret = Base64.decode64(JSON.parse(secret)['data']['.dockerconfigjson'])
+      credentials = JSON.parse(raw_secret)
+      credentials
     end
 
     def put(path, body:)

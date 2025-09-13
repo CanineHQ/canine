@@ -37,10 +37,31 @@ class Portainer::Stack
     "/#{cluster.external_id}/kubernetes/applications/#{namespace}/#{service}/#{pod_name}/#{container}/logs"
   end
 
-  def sync_registries(user)
+  def sync_registries(
+    user,
+    target_cluster
+  )
+    kubectl = K8::Kubectl.new(K8::Connection.new(target_cluster, user))
     response = client.registries
-    response.map do |registry|
-      user.providers.create!(name: registry["Name"], external_id: registry["Id"])
+    providers = response.map do |registry|
+      provider = user.providers.find_or_initialize_by(
+        external_id: registry.id,
+      )
+      provider.registry_url = registry.url
+
+      credentials = client.get_registry_secret(
+        provider.external_id,
+        target_cluster.external_id,
+        kubectl,
+      )
+      provider.auth = {
+        info: {
+          username: credentials['auths'][provider.registry_url]['username']
+        }
+      }.to_json
+      provider.access_token = credentials['auths'][provider.registry_url]['password']
+      provider.save!
+      provider
     end
   end
 
@@ -67,5 +88,14 @@ class Portainer::Stack
     end
     full_kubeconfig["current-context"] = full_kubeconfig["contexts"][0]["name"]
     full_kubeconfig
+  end
+
+  def install_recipe
+    [
+      Clusters::IsReady,
+      Clusters::CreateNamespace,
+      Clusters::InstallMetricServer,
+      Clusters::InstallTelepresence
+    ]
   end
 end

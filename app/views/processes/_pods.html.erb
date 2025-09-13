@@ -63,7 +63,12 @@
         <td>
           <div class="flex items-center space-x-2">
             <div class="font-medium">
-              <%= link_to "Show Logs", view_model.show_pod_logs_path, class: "btn btn-sm btn-outline" %>
+              <%= link_to(
+                "Show Logs",
+                view_model.show_pod_logs_path,
+                class: "btn btn-sm btn-outline",
+                target: view_model.show_pod_logs_path.include?("http") ? "_blank" : nil,
+              ) %>
             </div>
 
             <div class="font-medium">
