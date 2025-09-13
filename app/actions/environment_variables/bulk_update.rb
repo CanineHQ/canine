@@ -32,6 +32,9 @@ class EnvironmentVariables::BulkUpdate
 
       updated_variables.each do |ev|
         env_variable = env_variable_data.find { |evd| evd[:name] == ev.name }
+        # Skip updating value if keep_existing_value flag is set
+        next if env_variable[:keep_existing_value] == "true"
+
         unless env_variable[:value] == ev.value
           ev.update!(
             value: env_variable[:value].strip,
