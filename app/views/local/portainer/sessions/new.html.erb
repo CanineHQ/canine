@@ -1,0 +1,29 @@
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h1 class="text-2xl font-bold text-center">Log in with Portainer</h1>
+      <div class="space-y-4">
+        <h4 class="text-lg font-bold">Enter your Portainer URL below.</h4>
+
+        <%= form_with url: local_portainer_sessions_path, method: :post do |form| %>
+          <h4 class="text-lg font-bold my-4">Login to Portainer</h4>
+          <div class="form-group" data-controller="toggle-password">
+            <%= form.label :username, "Username" %>
+            <%= form.text_field :username, class: "input input-bordered w-full max-w-xs" %>
+          </div>
+          <div class="form-group" data-controller="toggle-password">
+            <%= form.label :password, "Password" %>
+            <%= form.text_field :password, type: "password", class: "input input-bordered w-full max-w-xs", data: { toggle_password_target: "input" } %>
+            <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+              <iconify-icon icon="mdi:eye"></iconify-icon>
+            </button>
+          </div>
+          <div class="form-footer">
+            <%= form.submit "Submit", class: "btn btn-primary w-full" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>

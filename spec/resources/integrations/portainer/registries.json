@@ -1,22 +1,40 @@
 [
   {
     "Id": 1,
-    "Name": "docker-hub",
-    "Type": 1,
+    "Type": 6,
+    "Name": "dockerhub",
     "URL": "docker.io",
-    "Authentication": false,
-    "Username": "",
-    "Password": "",
-    "RegistryAccesses": []
-  },
-  {
-    "Id": 2,
-    "Name": "private-registry",
-    "Type": 1,
-    "URL": "registry.example.com",
+    "BaseURL": "",
     "Authentication": true,
-    "Username": "admin",
-    "Password": "secret",
-    "RegistryAccesses": []
+    "Username": "chriszhu12",
+    "ManagementConfiguration": null,
+    "Gitlab": {
+      "ProjectId": 0,
+      "InstanceURL": "",
+      "ProjectPath": ""
+    },
+    "Quay": {
+      "OrganisationName": ""
+    },
+    "Ecr": {
+      "Region": ""
+    },
+    "RegistryAccesses": {
+      "1": {
+        "UserAccessPolicies": null,
+        "TeamAccessPolicies": null,
+        "Namespaces": [
+          "canine-system"
+        ]
+      }
+    },
+    "UserAccessPolicies": null,
+    "TeamAccessPolicies": null,
+    "AuthorizedUsers": null,
+    "AuthorizedTeams": null,
+    "Github": {
+      "UseOrganisation": false,
+      "OrganisationName": ""
+    }
   }
 ]

@@ -1,11 +1,14 @@
 <div class="flex justify-center items-center min-h-screen bg-base-200">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <h1 class="text-2xl font-bold text-center">Log in with Portainer</h1>
-      <div class="text-center text-sm">
-      </div>
+      <h1 class="text-2xl font-bold text-center">
+        Log in to <%= @account.name %>
+      </h1>
+      <p class="text-center text-sm text-gray-500 mt-2">
+        Sign in to access your account
+      </p>
 
-      <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+      <%= form_with(model: resource, as: resource_name, url: account_sign_in_path(@account.slug), method: :post, html: { class: "space-y-4 mt-6" }) do |f| %>
         <% if flash[:alert] %>
           <div class="alert alert-error mb-4">
             <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
@@ -15,16 +18,16 @@
 
         <div class="form-control">
           <%= f.label :email, class: "label" do %>
-            <span class="label-text">Email</span>
+            <span class="label-text"><%= @account.stack_manager.present? ? "Username" : "Email" %></span>
           <% end %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: true, class: "input input-bordered w-full" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: @account.stack_manager.present? ? "Enter your username" : "Enter your email", class: "input input-bordered w-full" %>
         </div>
 
         <div class="form-control">
           <%= f.label :password, class: "label" do %>
             <span class="label-text">Password</span>
           <% end %>
-          <%= f.password_field :password, autocomplete: "current-password", placeholder: true, class: "input input-bordered w-full" %>
+          <%= f.password_field :password, autocomplete: "current-password", placeholder: "Enter your password", class: "input input-bordered w-full" %>
         </div>
 
         <% if devise_mapping.rememberable? -%>
@@ -37,16 +40,19 @@
         <% end %>
 
         <div class="form-control mt-6">
-          <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
+          <%= f.submit "Sign in to #{@account.name}", class: "btn btn-primary w-full" %>
         </div>
       <% end %>
 
-      <div class="flex items-center my-4">
-        <div class="flex-grow border-t border-gray-600"></div>
-        <span class="mx-4 text-gray-500">OR</span>
-        <div class="flex-grow border-t border-gray-600"></div>
+      <div class="divider">New to <%= @account.name %>?</div>
+
+      <p class="text-center text-sm">
+        Contact your account administrator to get access
+      </p>
+
+      <div class="mt-4 text-center">
+        <%= link_to "Back to main login", new_user_session_path, class: "link link-primary text-sm" %>
       </div>
-      <%= render "devise/shared/links" %>
     </div>
   </div>
 </div>

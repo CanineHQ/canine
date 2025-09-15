@@ -1,23 +1,26 @@
 class Portainer::Stack
   attr_reader :stack_manager, :client
-  def initialize(stack_manager, client)
-    @stack_manager = stack_manager
-    @client = client
-  end
   delegate :authenticated?, to: :client
+  def initialize(stack_manager)
+    @stack_manager = stack_manager
+  end
 
-  def self.build(stack_manager, user)
+  def connect(user)
     access_token = if stack_manager.access_token.present?
       stack_manager.access_token
     else
       user.portainer_jwt
     end
-    client = Portainer::Client.new(stack_manager.provider_url, access_token)
-    new(stack_manager, client)
+    @client = Portainer::Client.new(stack_manager.provider_url, access_token)
+    self
   end
 
   def requires_reauthentication?
     stack_manager.access_token.blank?
+  end
+
+  def provides_registries?
+    true
   end
 
   def provides_clusters?

@@ -8,7 +8,7 @@ module Portainer
 
     include HTTParty
 
-    default_options.update(verify: false)
+    default_options.update(verify: false, timeout: 5)
 
     class UnauthorizedError < StandardError; end
     class PermissionDeniedError < StandardError; end

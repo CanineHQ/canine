@@ -33,9 +33,13 @@ class StackManager < ApplicationRecord
     Rails.application.config.cloud_mode
   end
 
-  def connect(current_user)
+  def requires_reauthentication?
+    access_token.blank?
+  end
+
+  def stack
     if portainer?
-      Portainer::Stack.build(self, current_user)
+      Portainer::Stack.new(self)
     end
   end
 end

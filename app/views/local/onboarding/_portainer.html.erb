@@ -3,6 +3,10 @@
     <%= render "accounts/stack_managers/url", form: form %>
 
     <div class="form-group">
+      <%= form.label :account_name, "Account Name" %>
+      <%= form.text_field :account_name, name: "account[name]", class: "input input-bordered w-full" %>
+    </div>
+    <div class="form-group">
       <%= form.label :username, "Portainer Username" %>
       <%= form.text_field :username, name: "user[username]", class: "input input-bordered w-full" %>
     </div>

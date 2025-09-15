@@ -32,7 +32,7 @@ class Clusters::BuildCloudsController < Clusters::BaseController
     end
 
     if @build_cloud.update(build_cloud_params)
-      Clusters::InstallBuildCloudJob.perform_later(@build_cloud)
+      Clusters::InstallBuildCloudJob.perform_later(@build_cloud, current_user)
       render partial: "clusters/build_clouds/show", locals: { cluster: @cluster }
     else
       render partial: "clusters/build_clouds/edit", locals: { cluster: @cluster, build_cloud: @build_cloud }

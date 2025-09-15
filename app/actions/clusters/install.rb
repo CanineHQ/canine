@@ -13,7 +13,7 @@ class Clusters::Install
   def self.recipe(cluster, user)
     recipe = if cluster.account.stack_manager.present?
       stack_manager = cluster.account.stack_manager
-      stack_manager.connect(user).install_recipe
+      stack_manager.stack.connect(user).install_recipe
     else
       DEFAULT_RECIPE
     end

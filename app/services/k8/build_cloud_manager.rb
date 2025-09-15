@@ -6,7 +6,7 @@ class K8::BuildCloudManager
 
   attr_reader :connection, :build_cloud
 
-  def self.install(build_cloud)
+  def self.install(build_cloud, connection)
     if build_cloud.pending? || build_cloud.failed?
       build_cloud.update(error_message: nil, status: :installing)
     else
@@ -22,7 +22,10 @@ class K8::BuildCloudManager
 
     begin
       # Initialize the K8::BuildCloud service with the build_cloud model
-      build_cloud_manager = K8::BuildCloudManager.new(build_cloud.cluster, build_cloud)
+      build_cloud_manager = K8::BuildCloudManager.new(
+        connection,
+        build_cloud,
+      )
 
       # Run the setup
       build_cloud_manager.create_or_update_builder!
@@ -44,7 +47,6 @@ class K8::BuildCloudManager
       else
         raise "Builder was created but is not ready"
       end
-
     rescue StandardError => e
       # Update build cloud record with failure
       build_cloud.update!(
@@ -60,6 +62,7 @@ class K8::BuildCloudManager
       )
 
       Rails.logger.error("Failed to install build cloud on cluster #{build_cloud.cluster.name}: #{e.message}")
+      raise e
     end
   end
 
@@ -214,7 +217,7 @@ class K8::BuildCloudManager
   end
 
   def remove_builder!
-    K8::Kubectl.new(connection.kubeconfig).call("delete namespace #{namespace} --ignore-not-found=true")
+    K8::Kubectl.new(connection).call("delete namespace #{namespace} --ignore-not-found=true")
 
     # Delete locally, this also removes the builder from kubernetes
     runner.call("docker buildx rm #{build_cloud.name}")

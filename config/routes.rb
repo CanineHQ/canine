@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  # Account-specific URL-based routes
+  devise_scope :user do
+    get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
+    post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
+  end
+
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
     Avo::Engine.routes.draw do
@@ -81,6 +87,7 @@ Rails.application.routes.draw do
   resource :stack_managers, only: [] do
     collection do
       post :sync_clusters
+      post :sync_registries
     end
   end
 
@@ -133,6 +140,7 @@ Rails.application.routes.draw do
         end
       end
       resource :portainer, only: [ :show, :update ] do
+        resources :sessions, only: [ :new, :create ], controller: 'portainer/sessions'
         collection do
           get :github_oauth
         end
