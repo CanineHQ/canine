@@ -21,13 +21,21 @@ class FaviconService
     end
   end
 
-  # Returns the best available favicon URL, trying multiple providers
-  def fetch_best_url(size: 64)
-    return nil if @domain.blank?
+  def exists?(size: 64, provider: :direct)
+    return false if @domain.blank?
 
-    # DuckDuckGo is preferred as it doesn't return a default image
-    # Google always returns something, even if it's just their default globe
-    duckduckgo_favicon_url
+    url = case provider
+    when :direct
+            direct_favicon_url
+    when :google
+            google_favicon_url(size)
+    when :duckduckgo
+            duckduckgo_favicon_url
+    else
+            direct_favicon_url
+    end
+
+    check_favicon_exists(url)
   end
 
   private
@@ -57,5 +65,23 @@ class FaviconService
 
   def direct_favicon_url
     "https://#{@domain}/favicon.ico"
+  end
+
+  def check_favicon_exists(url)
+    require 'net/http'
+    require 'uri'
+
+    begin
+      uri = URI.parse(url)
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', open_timeout: 2, read_timeout: 2) do |http|
+        http.head(uri.path.empty? ? '/' : uri.path + (uri.query ? "?#{uri.query}" : ''))
+      end
+
+      # Check if response is successful (2xx) or redirect (3xx)
+      response.code.to_i >= 200 && response.code.to_i < 400
+    rescue StandardError
+      # Return false for any network errors, timeouts, etc.
+      false
+    end
   end
 end

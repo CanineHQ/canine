@@ -1,6 +1,6 @@
-<% cache ["project_favicon_v2", project.id, project.domains.first&.domain_name], expires_in: 7.days do %>
+<% cache ["project_favicon_v4", project.id, project.domains.first&.domain_name], expires_in: 7.days do %>
   <% if project.domains.any? %>
-    <% favicon_url = FaviconService.new(project.domains.first.domain_name).fetch_best_url %>
+    <% favicon_url = FaviconService.new(project.domains.first.domain_name).fetch_url %>
     <img src="<%= favicon_url %>" alt="favicon" class="w-5 h-5" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
     <iconify-icon icon="lucide:globe" class="w-5 h-5" style="display:none;"></iconify-icon>
   <% else %>
