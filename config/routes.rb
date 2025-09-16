@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   # Account-specific URL-based routes
   devise_scope :user do
+    get '/accounts/select', to: 'users/sessions#account_select'
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end

@@ -4,16 +4,33 @@
 
     <div class="form-group">
       <%= form.label :account_name, "Account Name" %>
-      <%= form.text_field :account_name, name: "account[name]", class: "input input-bordered w-full" %>
+      <%= form.text_field(
+        :account_name,
+        name: "account[name]",
+        class: "input input-bordered w-full",
+        required: true,
+      ) %>
     </div>
     <div class="form-group">
       <%= form.label :username, "Portainer Username" %>
-      <%= form.text_field :username, name: "user[username]", class: "input input-bordered w-full" %>
+      <%= form.text_field(
+        :username,
+        name: "user[username]",
+        class: "input input-bordered w-full",
+        required: true,
+      ) %>
     </div>
     <div class="form-group" data-controller="toggle-password">
       <%= form.label :password, "Portainer Password" %>
       <div class="flex items-center">
-        <%= form.text_field :password, name: "user[password]", type: "password", class: "input input-bordered w-full", data: { toggle_password_target: "input" } %>
+        <%= form.text_field(
+          :password,
+          name: "user[password]",
+          type: "password",
+          class: "input input-bordered w-full",
+          required: true,
+          data: { toggle_password_target: "input" },
+        ) %>
         <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
           <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
         </button>

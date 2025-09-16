@@ -1,6 +1,10 @@
 class Users::SessionsController < Devise::SessionsController
-  layout 'homepage', only: [ :new, :create, :account_login, :account_create ]
+  layout 'homepage', only: [ :new, :create, :account_login, :account_create, :account_select ]
+  before_action :require_no_authentication, only: [ :account_login, :account_select ]
   before_action :load_account_from_slug, only: [ :account_login, :account_create ]
+
+  before_action :check_if_default_sign_in_allowed, only: [ :new ]
+  before_action :check_if_account_select_allowed, only: [ :account_select ]
 
   def new
     super
@@ -10,13 +14,17 @@ class Users::SessionsController < Devise::SessionsController
     super
   end
 
+  def account_select
+    @accounts = Account.all.includes(:stack_manager)
+  end
+
   def account_login
     self.resource = resource_class.new(sign_in_params)
     clean_up_passwords(resource)
-    if @account.stack_manager.portainer?
+    if @account.stack_manager&.portainer?
       render "devise/sessions/portainer"
     else
-      redirect_to new_user_session_path
+      render :new
     end
   end
 
@@ -48,6 +56,18 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   private
+
+  def check_if_default_sign_in_allowed
+    if Rails.application.config.account_sign_in_only
+      redirect_to accounts_select_url
+    end
+  end
+
+  def check_if_account_select_allowed
+    unless Rails.application.config.account_sign_in_only
+      redirect_to new_user_session_path
+    end
+  end
 
   def load_account_from_slug
     @account = Account.friendly.find(params[:slug])
