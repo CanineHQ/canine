@@ -6,14 +6,14 @@
           Log in to <%= @account.name %>
         </h1>
         <div class="flex justify-center">
-          <%= render "devise/sessions/portainer_badge" %>
+          <%= render "devise/sessions/portainer_badge", stack_manager: @account.stack_manager %>
         </div>
       </div>
       <p class="text-center text-sm text-gray-500 mt-2">
         Sign in to access your account
       </p>
 
-      <%= form_with(model: resource, as: resource_name, url: account_sign_in_path(@account.slug), method: :post, html: { class: "space-y-4 mt-6" }) do |f| %>
+      <%= form_with(model: resource, as: resource_name, url: account_sign_in_path(@account.slug), method: :post, html: { class: "space-y-4" }) do |f| %>
         <% if flash[:alert] %>
           <div class="alert alert-error mb-4">
             <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>

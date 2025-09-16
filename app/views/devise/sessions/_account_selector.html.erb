@@ -26,7 +26,7 @@
     </div>
 
     <% if account.stack_manager&.portainer? %>
-      <%= render "devise/sessions/portainer_badge" %>
+      <%= render "devise/sessions/portainer_badge", stack_manager: account.stack_manager %>
     <% end %>
   </div>
 <% end %>
