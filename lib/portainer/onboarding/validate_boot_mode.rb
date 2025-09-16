@@ -3,7 +3,7 @@ class Portainer::Onboarding::ValidateBootMode
 
   executed do |context|
     if Rails.application.config.cloud_mode
-      context.fail_with_rollback!("Portainer onboarding is not available in cloud mode")
+      context.fail_and_return!("Portainer onboarding is not available in cloud mode")
     end
   end
 end

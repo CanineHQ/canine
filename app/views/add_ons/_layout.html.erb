@@ -26,7 +26,8 @@
         <div class="text-sm">
           <%= render "add_ons/status", add_on: add_on %>
         </div>
-        <h1 class="text-lg font-medium">
+        <h1 class="text-lg font-medium flex items-center gap-2 my-2">
+          <img src="<%= get_logo_image_url(add_on.metadata.dig('package_details', 'logo_image_id')) %>" class="h-8 w-8">
           <%= add_on.name %>
         </h1>
         <div class="text-sm">
