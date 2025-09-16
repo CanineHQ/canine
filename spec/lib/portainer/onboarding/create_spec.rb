@@ -43,6 +43,16 @@ RSpec.describe Portainer::Onboarding::Create do
     end
 
     context 'when BOOT_MODE=cloud (cloud is default)' do
+      around do |example|
+        original_cloud_mode = Rails.application.config.cloud_mode
+        original_cluster_mode = Rails.application.config.cluster_mode
+        Rails.application.config.cluster_mode = false
+        Rails.application.config.cloud_mode = true
+        example.run
+      ensure
+        Rails.application.config.cloud_mode = original_cloud_mode
+        Rails.application.config.cluster_mode = original_cluster_mode
+      end
       it 'fails with an error message' do
         result = described_class.call(params)
 

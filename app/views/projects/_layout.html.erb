@@ -8,7 +8,10 @@
     <div>
       <%= render "projects/status", project: project %>
     </div>
-    <h3 class="text-lg font-medium"><%= project.name %></h3>
+    <h3 class="text-lg font-medium flex items-center gap-2 my-2">
+      <%= render "projects/favicon", project: project %>
+      <%= project.name %>
+    </h3>
     <% if project.domains.any? %>
       <div class="my-3">
         <% project.domains.each do |domain| %>
