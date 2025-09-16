@@ -6,7 +6,7 @@ class FaviconService
     @domain = clean_domain(domain)
   end
 
-  def fetch_url(size: 64, provider: :google)
+  def fetch_url(size: 64, provider: :duckduckgo)
     return nil if @domain.blank?
 
     case provider
@@ -17,8 +17,17 @@ class FaviconService
     when :direct
       direct_favicon_url
     else
-      google_favicon_url(size)
+      duckduckgo_favicon_url
     end
+  end
+
+  # Returns the best available favicon URL, trying multiple providers
+  def fetch_best_url(size: 64)
+    return nil if @domain.blank?
+
+    # DuckDuckGo is preferred as it doesn't return a default image
+    # Google always returns something, even if it's just their default globe
+    duckduckgo_favicon_url
   end
 
   private
