@@ -15,6 +15,7 @@ class Clusters::InstallAcmeIssuer
       cluster.info("Installing cert-manager...", color: :yellow)
       command = "bash #{Rails.root.join("resources", "k8", "scripts", "install_cert_manager.sh")}"
 
+      runner = Cli::RunAndLog.new(cluster)
       kubectl.with_kube_config do |kubeconfig_file|
         begin
           runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path, "NAMESPACE" => Clusters::Install::DEFAULT_NAMESPACE })

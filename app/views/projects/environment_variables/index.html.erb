@@ -3,7 +3,7 @@
     class="flex-1"
     data-controller="environment-variables"
     data-environment-variables-project-id-value="<%= @project.id %>"
-    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: e.value } }.to_json %>"
+    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: nil } }.to_json %>"
   >
     <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
       <div data-environment-variables-target="container"></div>
@@ -12,7 +12,7 @@
           <button class="btn btn-neutral btn-outline" type="button" data-action="environment-variables#add">Add new environment variable</button>
           <%= form.submit "Save", class: "btn btn-primary" %>
         </div>
-        <button type="button" class="btn btn-outline" data-action="environment-variables#download">Download as .env</button>
+        <%= link_to "Download as .env", download_project_environment_variables_path(@project), class: "btn btn-outline", target: "_blank" %>
       </div>
     <% end %>
   </div>

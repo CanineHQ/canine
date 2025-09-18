@@ -9,7 +9,12 @@
       <% end %>
     </div>
     <div>
-      <h2 class="text-lg font-bold">Configuration</h2>
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-lg font-bold">Configuration</h2>
+        <% if @add_on.installed? %>
+          <%= link_to "Download Values", download_values_add_on_path(@add_on), class: "btn btn-outline btn-sm", target: "_blank" %>
+        <% end %>
+      </div>
       <%= form_with(model: @add_on) do |form| %>
         <div class="form-group" data-controller="yaml-editor">
           <%= form.label :values_yaml, "Values YAML" %>

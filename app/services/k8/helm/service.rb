@@ -45,6 +45,14 @@ class K8::Helm::Service
     nil
   end
 
+  def all_values_yaml
+    helm_client = K8::Helm::Client.connect(connection, Cli::RunAndReturnOutput.new)
+    helm_client.get_all_values_yaml(add_on.name, namespace: add_on.name)
+  rescue StandardError => e
+    Rails.logger.error("Error getting all values.yaml for #{add_on.name}: #{e.message}")
+    nil
+  end
+
   def storage_metrics
     pods = client.pods_for_namespace(add_on.name)
     volumes = pods.flat_map do |pod|

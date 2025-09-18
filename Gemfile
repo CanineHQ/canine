@@ -93,7 +93,7 @@ gem "httparty", "~> 0.23.1"
 
 gem "redcarpet", "~> 3.6"
 
-gem "rubyzip", "~> 3.0"
+gem "rubyzip", "~> 3.1"
 
 gem "sassc-rails", "~> 2.1"
 
@@ -101,7 +101,7 @@ gem "cron2english", "~> 0.1.7"
 
 gem "avo", "~> 3.24"
 
-gem "sentry-ruby", "~> 5.23"
+gem "sentry-ruby", "~> 5.27"
 gem "sentry-rails", "~> 5.26"
 
 gem "sys-proctable", "~> 1.3"

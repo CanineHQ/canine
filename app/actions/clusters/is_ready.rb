@@ -5,6 +5,7 @@ class Clusters::IsReady
 
   executed do |context|
     client = K8::Client.new(context.connection)
+    cluster = context.connection.cluster
     if client.can_connect?
       cluster.installing!
       cluster.success("Cluster is ready")

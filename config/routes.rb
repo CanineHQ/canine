@@ -46,6 +46,7 @@ Rails.application.routes.draw do
     end
     member do
       post :restart
+      get :download_values
     end
     resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
@@ -73,7 +74,11 @@ Rails.application.routes.draw do
     end
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects
-    resources :environment_variables, only: %i[index create destroy], module: :projects
+    resources :environment_variables, only: %i[index show create destroy], module: :projects do
+      collection do
+        get :download
+      end
+    end
     resources :deployments, only: %i[index show], module: :projects do
       collection do
         post :deploy
