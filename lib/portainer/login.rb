@@ -9,7 +9,6 @@ class Portainer::Login
     context.user = User.find_or_initialize_by(
       email: context.username + "@oncanine.run",
     )
-    context.user.errors.add(:base, "Invalid username or password")
     jwt = Portainer::Client.authenticate(
       username: context.username,
       auth_code: context.password,
@@ -34,9 +33,10 @@ class Portainer::Login
     unless context.account.users.include?(context.user)
       context.account.account_users.create!(user: context.user)
     end
+  rescue Portainer::Client::ConnectionError => e
+    context.fail_and_return!(e.message)
   rescue StandardError => e
     context.user ||= User.new(email: context.username)
-    context.user.errors.add(:base, "Authentication failed: #{e.message}")
-    context.fail_and_return!
+    context.fail_and_return!("Authentication failed: #{e.message}")
   end
 end

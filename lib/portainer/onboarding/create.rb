@@ -4,7 +4,7 @@ class Portainer::Onboarding::Create
   def self.post_create
     [
       Portainer::SyncClusters,
-      Portainer::SyncRegistries,
+      Portainer::SyncRegistries
     ]
   end
 

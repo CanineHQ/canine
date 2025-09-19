@@ -11,6 +11,7 @@ module Portainer
     default_options.update(verify: false, timeout: 5)
 
     class UnauthorizedError < StandardError; end
+    class ConnectionError < StandardError; end
     class PermissionDeniedError < StandardError; end
 
     def initialize(provider_url, jwt)
@@ -53,6 +54,10 @@ module Portainer
       end
 
       response.parsed_response['jwt'] if response.success?
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
     def registries
@@ -101,12 +106,20 @@ module Portainer
           body: body.to_json
         )
       end
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
     def get(path)
       fetch_wrapper do
         self.class.get("#{provider_url}#{path}", headers:)
       end
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
   private

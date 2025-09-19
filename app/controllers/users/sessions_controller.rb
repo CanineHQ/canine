@@ -39,13 +39,12 @@ class Users::SessionsController < Devise::SessionsController
 
       if result.success?
         sign_in(result.user)
-
         # Auto-associate user with account if they sign in through account URL
         session[:account_id] = result.account.id
 
         redirect_to after_sign_in_path_for(result.user), notice: "Logged in successfully"
       else
-        flash.now[:alert] = result.message
+        flash[:alert] = result.message
         self.resource = result.user || resource_class.new(sign_in_params)
         clean_up_passwords(resource)
         render 'devise/sessions/portainer'
