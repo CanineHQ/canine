@@ -32,7 +32,7 @@ class Users::SessionsController < Devise::SessionsController
     # If account has a stack manager, use Portainer authentication
     if @account.stack_manager.present?
       result = Portainer::Login.execute(
-        username: params[:user][:email],
+        username: params[:user][:username],
         password: params[:user][:password],
         account: @account,
       )
@@ -46,7 +46,7 @@ class Users::SessionsController < Devise::SessionsController
         redirect_to after_sign_in_path_for(result.user), notice: "Logged in successfully"
       else
         flash.now[:alert] = result.message
-        self.resource = resource_class.new(sign_in_params)
+        self.resource = result.user || resource_class.new(sign_in_params)
         clean_up_passwords(resource)
         render 'devise/sessions/portainer'
       end

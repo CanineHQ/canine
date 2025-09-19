@@ -21,11 +21,13 @@
           </div>
         <% end %>
 
+        <%= render 'shared/error_messages', resource: resource %>
+
         <div class="form-control">
-          <%= f.label :email, class: "label" do %>
+          <%= f.label :username, class: "label" do %>
             <span class="label-text">Portainer Username</span>
           <% end %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Enter your username", class: "input input-bordered w-full" %>
+          <%= f.text_field :username, autofocus: true, placeholder: "Enter your username", class: "input input-bordered w-full" %>
         </div>
 
         <div class="form-control">

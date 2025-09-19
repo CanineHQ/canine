@@ -11,8 +11,13 @@ class Portainer::Stack
     else
       user.portainer_jwt
     end
-    @client = Portainer::Client.new(stack_manager.provider_url, access_token)
+    @_client = Portainer::Client.new(stack_manager.provider_url, access_token)
     self
+  end
+
+  def client
+    raise "Client not connected" unless @_client.present?
+    @_client
   end
 
   def requires_reauthentication?
@@ -77,6 +82,11 @@ class Portainer::Stack
       cluster.save
       cluster
     end
+
+    disappeared_clusters = stack_manager.account.clusters.select { |cluster| !response.map(&:id).map(&:to_s).include?(cluster.external_id.to_s) }
+    disappeared_clusters.each do |cluster|
+      cluster.deleted!
+    end
   end
 
   def fetch_kubeconfig(cluster)
@@ -84,7 +94,10 @@ class Portainer::Stack
     full_kubeconfig["clusters"] = full_kubeconfig["clusters"].select do |cluster_config|
       cluster_config["cluster"]["server"].ends_with?("/api/endpoints/#{cluster.external_id}/kubernetes")
     end
-    # full_kubeconfig["clusters"][0]["cluster"]["server"] = full_kubeconfig["clusters"][0]["cluster"]["server"].gsub("https://", "http://")
+    if full_kubeconfig["clusters"].empty?
+      raise "Cluster is not discoverable in the stack"
+    end
+
     cluster_name = full_kubeconfig["clusters"][0]["name"]
     full_kubeconfig["contexts"] = full_kubeconfig["contexts"].select do |context|
       context["context"]["cluster"] == cluster_name
