@@ -5,7 +5,6 @@
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
 
-  <% unless Rails.application.config.local_mode %>
   <div class="flex items-center justify-center">
     <details class="mx-auto dropdown">
       <summary class="btn m-1"><%= current_account.name %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
@@ -24,8 +23,6 @@
       </ul>
     </details>
   </div>
-
-  <% end %>
 
   <div data-simplebar="init" class="h-[calc(100vh-128px)] lg:h-[calc(100vh-294px)] simplebar-scrollable-y">
     <div class="simplebar-wrapper">
@@ -128,16 +125,6 @@
                   </details>
                 </li>
 
-                <% unless Rails.application.config.local_mode %>
-                  <li class="mb-0.5">
-                    <%= link_to account_account_users_path(current_account) do %>
-                      <div class="flex items-center gap-2">
-                        <iconify-icon icon="lucide:users" height="18"></iconify-icon>
-                        Team Members 
-                      </div>
-                    <% end %>
-                  </li>
-                <% end %>
               </div>
             </div>
           </div>

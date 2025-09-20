@@ -1,4 +1,5 @@
 class Accounts::AccountUsersController < ApplicationController
+  include SettingsHelper
   def create
     user = User.find_or_initialize_by(email: user_params[:email]) do |user|
       user.first_name = user_params[:email].split("@").first

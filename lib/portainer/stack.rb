@@ -30,6 +30,10 @@ class Portainer::Stack
     stack_manager.access_token.blank?
   end
 
+  def provides_authentication?
+    true
+  end
+
   def provides_registries?
     true
   end

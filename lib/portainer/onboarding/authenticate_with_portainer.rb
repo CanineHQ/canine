@@ -9,5 +9,6 @@ class Portainer::Onboarding::AuthenticateWithPortainer
       username: context.username,
       provider_url: context.provider_url
     )
+    context.fail_and_return!("Invalid username or password") if context.jwt.blank?
   end
 end

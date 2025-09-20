@@ -20,7 +20,8 @@ module Portainer
     end
 
     def authenticated?
-      response = get("/api/users/me")
+      # TODO: This needs to be added back in.
+      # response = get("/api/users/me")
       true
     rescue UnauthorizedError => e
       false

@@ -14,6 +14,17 @@ class Users::SessionsController < Devise::SessionsController
     super
   end
 
+  def destroy
+    account = current_account
+    super do
+      # If the account has a stack manager that provides authentication,
+      # redirect to the custom account login URL after logout
+      if account&.stack_manager&.stack&.provides_authentication?
+        return redirect_to account_sign_in_path(account.slug), notice: "Signed out successfully."
+      end
+    end
+  end
+
   def account_select
     @accounts = Account.all.includes(:stack_manager)
   end
