@@ -27,12 +27,12 @@ RSpec.describe Clusters::Install do
 
     context 'when account has a stack manager' do
       let(:stack_manager) { create(:stack_manager, account: account) }
-      let(:portainer_stack) { instance_double(Portainer::Stack) }
+      let(:portainer_stack) { Portainer::Stack.new(stack_manager) }
       let(:custom_recipe) { [ Clusters::IsReady, Clusters::CreateNamespace ] }
 
       before do
         allow(account).to receive(:stack_manager).and_return(stack_manager)
-        allow(stack_manager).to receive(:connect).with(user).and_return(portainer_stack)
+        allow(stack_manager).to receive(:stack).and_return(portainer_stack)
         allow(portainer_stack).to receive(:install_recipe).and_return(custom_recipe)
       end
 

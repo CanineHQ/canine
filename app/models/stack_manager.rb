@@ -39,7 +39,7 @@ class StackManager < ApplicationRecord
 
   def stack
     if portainer?
-      Portainer::Stack.new(self)
+      @_stack ||= Portainer::Stack.new(self)
     end
   end
 end

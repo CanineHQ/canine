@@ -4,9 +4,9 @@ RSpec.describe Portainer::Onboarding::Create do
   let(:jwt) { 'test-jwt-token' }
   let(:params) do
     ActionController::Parameters.new(
+      account: { name: 'testorg' },
       user: { username: username, password: 'testpassword' },
       stack_manager: { provider_url: 'https://test.portainer.io' },
-      organization_name: 'testorg'
     )
   end
 

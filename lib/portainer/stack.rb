@@ -5,6 +5,12 @@ class Portainer::Stack
     @stack_manager = stack_manager
   end
 
+  # Ugh, this is only used for testing.
+  def _connect_with_client(client)
+    @_client = client
+    self
+  end
+
   def connect(user)
     access_token = if stack_manager.access_token.present?
       stack_manager.access_token
