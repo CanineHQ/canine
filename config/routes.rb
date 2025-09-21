@@ -146,7 +146,7 @@ Rails.application.routes.draw do
     namespace :local do
       resources :authentication do
         member do
-          get :login
+          post :login
         end
       end
       resources :onboarding, only: [ :index, :create ] do

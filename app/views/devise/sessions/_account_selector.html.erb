@@ -3,7 +3,7 @@
 else
   account_sign_in_url(account)
 end %>
-<%= link_to redirect_url, class: "block group" do %>
+<%= link_to redirect_url, data: { turbo_method: :post }, class: "block group" do %>
   <div class="bg-base-200 p-5 rounded-xl hover:bg-base-300 transition-all duration-300 hover:shadow-2xl hover:shadow-white/10 border border-base-300 hover:border-white/30 transform hover:scale-[1.02] hover:-translate-y-1">
     <div class="flex items-center gap-4">
       <div class="relative">
@@ -20,7 +20,7 @@ end %>
         </h3>
         <% if account.respond_to?(:slug) && account.slug.present? %>
           <p class="text-sm text-base-content/60 mt-0.5 transition-all duration-300 transform group-hover:translate-x-1 group-hover:text-base-content/90">
-            <%= account.slug %>.canine.app
+            <%= account.slug %>
           </p>
         <% end %>
       </div>
