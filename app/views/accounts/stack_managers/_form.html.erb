@@ -23,40 +23,21 @@
     </div>
   <% end %>
 
-  <% if stack_manager.persisted? %>
-    <div class="divider"></div>
-
-    <div class="flex justify-between">
-      <%= button_to stack_manager_path, 
-          method: :delete,
-          class: "btn btn-error btn-outline",
-          data: { 
-            turbo_frame: "current_account_stack_manager",
-            turbo_confirm: "Are you sure you want to remove this stack manager configuration?"
-          } do %>
-        <iconify-icon icon="lucide:trash"></iconify-icon>
-        Delete Configuration
-      <% end %>
-      
-      <div class="flex gap-2">
-        <%= button_to sync_clusters_stack_managers_path, 
-            method: :post,
-            class: "btn btn-outline",
-            data: { turbo_frame: "_top" } do %>
-          <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
-          Sync Clusters
-        <% end %>
-        <%= form.submit "Update Configuration", class: "btn btn-primary" %>
-      </div>
+  <div class="mt-4">
+    <div class="alert alert-warning">
+      <iconify-icon icon="lucide:alert-triangle" height="20"></iconify-icon>
+      <span>Changes to the stack manager could affect cluster connectivity.</span>
     </div>
-  <% else %>
-    <div class="mt-6 flex justify-end gap-2">
-      <% if account.stack_manager %>
-        <%= link_to "Cancel", stack_manager_path, 
-            class: "btn btn-ghost",
-            data: { turbo_frame: "current_account_stack_manager" } %>
-      <% end %>
-      <%= form.submit "Save Configuration", class: "btn btn-primary" %>
-    </div>
-  <% end %>
+  </div>
+  <div class="form-footer flex justify-end gap-2">
+    <% if account.stack_manager %>
+      <%= link_to(
+        "Cancel",
+        stack_manager_path,
+        class: "btn btn-ghost",
+        data: { turbo_frame: "current_account_stack_manager" },
+      ) %>
+    <% end %>
+    <%= form.submit "Save Configuration", class: "btn btn-primary" %>
+  </div>
 <% end %>

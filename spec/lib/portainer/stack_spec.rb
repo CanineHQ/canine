@@ -6,7 +6,7 @@ RSpec.describe Portainer::Stack do
   let(:stack_manager) { create(:stack_manager, account: account) }
   let(:provider) { create(:provider, :portainer, user: account.owner) }
   let(:client) { Portainer::Client.new(stack_manager.provider_url, account.owner.portainer_jwt) }
-  let(:portainer_stack) { described_class.new(stack_manager, client) }
+  let(:portainer_stack) { described_class.new(stack_manager)._connect_with_client(client) }
 
   describe "#sync_clusters" do
     let(:endpoints_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/endpoints.json")) }

@@ -1,32 +1,59 @@
 <div class="flex flex-row gap-x-4 items-stretch">
-  <ul class="menu w-64 rounded bg-base-200 self-start !pb-6">
-    <li>
-      <h2 class="menu-title">Settings</h2>
-      <ul>
-        <li class="<%= 'underline' if current_page?(edit_user_registration_path) %>" style="text-underline-offset: 0.25rem;">
-          <%= link_to edit_user_registration_path do %>
-            <iconify-icon icon="lucide:user" ></iconify-icon>
-            Account
-          <% end %>
-        </li>
-        <li class="<%= 'underline' if current_page?(providers_path) %>" style="text-underline-offset: 0.25rem;">
-          <%= link_to providers_path do %>
-            <iconify-icon icon="lucide:key-round" ></iconify-icon>
-            Credentials
-          <% end %>
-        </li>
-        <% if Flipper.enabled?(:stack_manager, current_account) %>
-        <li class="<%= 'underline' if controller_name == 'stack_managers' %>" style="text-underline-offset: 0.25rem;">
-          <%= link_to stack_manager_path do %>
-            <iconify-icon icon="lucide:layers" ></iconify-icon>
-            Stack Manager
-          <% end %>
-        </li>
-        <% end %>
-      </ul>
-    </li>
+  <div class="w-64 space-y-4">
+    <% if current_account.stack_manager.present? && current_account.stack_manager.stack.provides_authentication? %>
+    <div class="rounded bg-base-200 p-4">
+      <div class="mb-4">
+        <%= render "devise/sessions/portainer_badge", stack_manager: current_account.stack_manager %>
+      </div>
+      <h3 class="text-sm font-semibold mb-3">Account Login URL</h3>
+      <div class="flex items-center gap-2 mb-2">
+        <input type="text"
+               value="<%= request.base_url %>/accounts/<%= current_account.slug %>/sign_in"
+               readonly
+               class="input input-bordered input-sm flex-1 text-xs">
+        <button class="btn btn-sm btn-square"
+                data-controller="clipboard"
+                data-clipboard-text="<%= request.base_url %>/accounts/<%= current_account.slug %>/sign_in">
+          <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+        </button>
+      </div>
+    </div>
+    <% end %>
 
-  </ul>
+    <ul class="menu rounded bg-base-200 self-start !pb-6">
+      <li>
+        <h2 class="menu-title">Settings</h2>
+        <ul>
+          <li class="<%= 'underline' if current_page?(edit_user_registration_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to edit_user_registration_path do %>
+              <iconify-icon icon="lucide:user" ></iconify-icon>
+              Profile
+            <% end %>
+          </li>
+          <li class="<%= 'underline' if current_page?(providers_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to providers_path do %>
+              <iconify-icon icon="lucide:key-round" ></iconify-icon>
+              Credentials
+            <% end %>
+          </li>
+          <li class="<%= 'underline' if current_page?(account_account_users_path(current_account)) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to account_account_users_path(current_account) do %>
+              <iconify-icon icon="lucide:users" ></iconify-icon>
+              Team Members
+            <% end %>
+          </li>
+          <% if Flipper.enabled?(:stack_manager, current_account) %>
+          <li class="<%= 'underline' if controller_name == 'stack_managers' %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to stack_manager_path do %>
+              <iconify-icon icon="lucide:layers" ></iconify-icon>
+              Stack Manager
+            <% end %>
+          </li>
+          <% end %>
+        </ul>
+      </li>
+    </ul>
+  </div>
   <div class="flex-1 container px-0">
     <%= yield %>
   </div>

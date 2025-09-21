@@ -14,11 +14,13 @@
 #  uid                 :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  external_id         :string
 #  user_id             :bigint           not null
 #
 # Indexes
 #
-#  index_providers_on_user_id  (user_id)
+#  index_providers_on_external_id  (external_id) UNIQUE
+#  index_providers_on_user_id      (user_id)
 #
 # Foreign Keys
 #
@@ -40,6 +42,7 @@ class Provider < ApplicationRecord
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
+  validates :external_id, uniqueness: true, allow_nil: true
   scope :has_container_registry, -> { where(provider: [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ]) }
 
   belongs_to :user

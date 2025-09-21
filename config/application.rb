@@ -15,9 +15,11 @@ module Canine
     end
 
     config.local_mode = config.boot_mode == "local"
+    config.local_mode_passwordless = ENV.fetch("LOCAL_MODE_PASSWORDLESS", "false") == "true"
     config.cloud_mode = config.boot_mode == "cloud"
     config.cluster_mode = config.boot_mode == "cluster"
     config.onboarding_methods = ENV.fetch("ONBOARDING_METHODS", "").split(",")
+    config.account_sign_in_only = ENV.fetch("ACCOUNT_SIGN_IN_ONLY", "") == "true"
 
     config.assets.css_compressor = nil
 

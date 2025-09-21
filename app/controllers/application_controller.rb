@@ -8,11 +8,7 @@ class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token
 
   before_action :configure_permitted_parameters, if: :devise_controller?
-  if Rails.application.config.local_mode
-    include Local::Authentication
-  else
-    before_action :authenticate_user!
-  end
+  before_action :authenticate_user!
 
   layout :determine_layout
 
@@ -22,8 +18,28 @@ class ApplicationController < ActionController::Base
     def current_account
       return nil unless user_signed_in?
       @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.accounts.first
+
+      verify_stack!
+      @current_account
     end
     helper_method :current_account
+
+    # Start of stack manager
+    def verify_stack!
+      if Flipper.enabled?(:stack_manager, @current_account) &&
+        @current_account.stack_manager.present? &&
+        @current_account.stack_manager.requires_reauthentication?
+        authenticate_stack!
+      end
+    end
+
+    def authenticate_stack!
+      unless @current_account.stack_manager.stack.connect(current_user).authenticated?
+        # Log user out
+        sign_out(current_user)
+        redirect_to new_user_session_path, alert: "Please login to continue."
+      end
+    end
 
     def time_ago(t)
       if t.present?

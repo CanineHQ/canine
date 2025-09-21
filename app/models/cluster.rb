@@ -41,7 +41,8 @@ class Cluster < ApplicationRecord
     installing: 1,
     running: 2,
     failed: 3,
-    destroying: 4
+    destroying: 4,
+    deleted: 5
   }
   enum :cluster_type, {
     k8s: 0,

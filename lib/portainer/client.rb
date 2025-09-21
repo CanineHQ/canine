@@ -8,14 +8,23 @@ module Portainer
 
     include HTTParty
 
-    default_options.update(verify: false)
+    default_options.update(verify: false, timeout: 5)
 
     class UnauthorizedError < StandardError; end
+    class ConnectionError < StandardError; end
     class PermissionDeniedError < StandardError; end
 
     def initialize(provider_url, jwt)
       @jwt = jwt
       @provider_url = provider_url
+    end
+
+    def authenticated?
+      # TODO: This needs to be added back in.
+      # response = get("/api/users/me")
+      true
+    rescue UnauthorizedError => e
+      false
     end
 
     def get_kubernetes_config
@@ -46,10 +55,14 @@ module Portainer
       end
 
       response.parsed_response['jwt'] if response.success?
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
     def registries
-      response = get("/api/registries")
+      registries_data = get("/api/registries")
       registries_data.map do |registry_data|
         Portainer::Data::Registry.new(
           id: registry_data["Id"],
@@ -73,11 +86,17 @@ module Portainer
       end
     end
 
-    def get_registry_secret(project, registry_id, endpoint_id)
-      put(
+    def get_registry_secret(registry_id, endpoint_id, kubectl)
+      # Put the registry secret into the default namespace
+      response = put(
         "/api/endpoints/#{endpoint_id}/registries/#{registry_id}",
-        body: { namespaces: [ project.name ] }
+        body: { namespaces: [ Clusters::Install::DEFAULT_NAMESPACE ] }
       )
+      secret_name = "registry-#{registry_id}"
+      secret = kubectl.call("get secret #{secret_name} -n #{Clusters::Install::DEFAULT_NAMESPACE} -o json")
+      raw_secret = Base64.decode64(JSON.parse(secret)['data']['.dockerconfigjson'])
+      credentials = JSON.parse(raw_secret)
+      credentials
     end
 
     def put(path, body:)
@@ -88,12 +107,20 @@ module Portainer
           body: body.to_json
         )
       end
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
     def get(path)
       fetch_wrapper do
         self.class.get("#{provider_url}#{path}", headers:)
       end
+    rescue Socket::ResolutionError
+      raise ConnectionError, "Portainer URL is not resolvable"
+    rescue Net::ReadTimeout
+      raise ConnectionError, "Connection to Portainer timed out"
     end
 
   private

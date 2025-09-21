@@ -24,7 +24,7 @@ class K8::Connection
       cluster.kubeconfig
     else
       raise StandardError.new("No stack manager found") if stack_manager.blank?
-      stack = stack_manager.connect(user)
+      stack = stack_manager.stack.connect(user)
       stack.fetch_kubeconfig(cluster)
     end
   end

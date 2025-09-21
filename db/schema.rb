@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_10_043822) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_14_175112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,7 +28,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_10_043822) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug", null: false
     t.index ["owner_id"], name: "index_accounts_on_owner_id"
+    t.index ["slug"], name: "index_accounts_on_slug", unique: true
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -421,6 +423,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_10_043822) do
     t.datetime "updated_at", null: false
     t.datetime "last_used_at"
     t.string "registry_url"
+    t.string "external_id"
+    t.index ["external_id"], name: "index_providers_on_external_id", unique: true
     t.index ["user_id"], name: "index_providers_on_user_id"
   end
 

@@ -5,6 +5,9 @@ class AccountsController < ApplicationController
     redirect_to root_path
   end
 
+  def show
+  end
+
   def create
     account = current_user.accounts.create!(
       name: account_params[:name],

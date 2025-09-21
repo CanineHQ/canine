@@ -1,6 +1,6 @@
 class Portainer::Onboarding::CreateUserWithStackManager
   extend LightService::Action
-  expects :jwt, :username, :provider_url
+  expects :jwt, :username, :provider_url, :account_name
   promises :user, :account, :stack_manager
 
   executed do |context|
@@ -23,7 +23,7 @@ class Portainer::Onboarding::CreateUserWithStackManager
       provider.save!
 
       if context.user.accounts.empty?
-        context.account = Account.create!(owner: context.user, name: "#{context.username}'s Organization")
+        context.account = Account.create!(owner: context.user, name: context.account_name)
 
         AccountUser.create!(account: context.account, user: context.user)
       else

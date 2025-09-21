@@ -41,13 +41,15 @@
           <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
         </div>
       <% end %>
+      <% unless Rails.application.config.local_mode %>
 
-      <div class="flex items-center my-4">
-        <div class="flex-grow border-t border-gray-600"></div>
-        <span class="mx-4 text-gray-500">OR</span>
-        <div class="flex-grow border-t border-gray-600"></div>
-      </div>
-      <%= render "devise/shared/links" %>
+        <div class="flex items-center my-4">
+          <div class="flex-grow border-t border-gray-600"></div>
+          <span class="mx-4 text-gray-500">OR</span>
+          <div class="flex-grow border-t border-gray-600"></div>
+        </div>
+        <%= render "devise/shared/links" %>
+      <% end %>
     </div>
   </div>
 </div>

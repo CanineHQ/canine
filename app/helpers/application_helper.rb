@@ -28,4 +28,38 @@ module ApplicationHelper
   def in_namespace?(namespace)
     controller.controller_path.include?(namespace)
   end
+
+  def letter_to_color(letter)
+    colors = [
+      '#8B5CF6', # Violet-500
+      '#3B82F6', # Blue-500
+      '#06B6D4', # Cyan-500
+      '#10B981', # Emerald-500
+      '#F59E0B', # Amber-500
+      '#EF4444', # Red-500
+      '#EC4899', # Pink-500
+      '#6366F1', # Indigo-500
+      '#14B8A6', # Teal-500
+      '#84CC16', # Lime-500
+      '#F97316', # Orange-500
+      '#A855F7', # Purple-500
+      '#0EA5E9', # Sky-500
+      '#22C55E', # Green-500
+      '#FACC15', # Yellow-500
+      '#DC2626', # Rose-600
+      '#7C3AED', # Violet-600
+      '#2563EB', # Blue-600
+      '#0891B2', # Cyan-600
+      '#059669', # Emerald-600
+      '#D97706', # Amber-600
+      '#BE185D', # Pink-700
+      '#4F46E5', # Indigo-600
+      '#0D9488', # Teal-600
+      '#65A30D', # Lime-600
+      '#EA580C'  # Orange-600
+    ]
+
+    index = letter.upcase.ord - 'A'.ord
+    colors[index % colors.length]
+  end
 end

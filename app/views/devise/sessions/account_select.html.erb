@@ -1,0 +1,16 @@
+<div class="min-h-screen bg-base-100 flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-2xl">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-base-content mb-3">Select an Account</h1>
+      <p class="text-base text-base-content/70">
+        Choose an account to continue to Canine
+      </p>
+    </div>
+
+    <div class="space-y-3">
+      <% @accounts.each do |account| %>
+        <%= render "devise/sessions/account_selector", account: %>
+      <% end %>
+    </div>
+  </div>
+</div>

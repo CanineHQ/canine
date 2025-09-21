@@ -4,6 +4,7 @@
 #
 #  id         :bigint           not null, primary key
 #  name       :string           not null
+#  slug       :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  owner_id   :bigint
@@ -11,6 +12,7 @@
 # Indexes
 #
 #  index_accounts_on_owner_id  (owner_id)
+#  index_accounts_on_slug      (slug) UNIQUE
 #
 # Foreign Keys
 #

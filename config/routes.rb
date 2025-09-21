@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  # Account-specific URL-based routes
+  devise_scope :user do
+    get '/accounts/select', to: 'users/sessions#account_select'
+    get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
+    post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
+  end
+
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
     Avo::Engine.routes.draw do
@@ -86,6 +93,7 @@ Rails.application.routes.draw do
   resource :stack_managers, only: [] do
     collection do
       post :sync_clusters
+      post :sync_registries
     end
   end
 
@@ -132,14 +140,14 @@ Rails.application.routes.draw do
   # Public marketing homepage
   if Rails.application.config.local_mode
     namespace :local do
+      resources :authentication do
+        member do
+          get :login
+        end
+      end
       resources :onboarding, only: [ :index, :create ] do
         collection do
           post :verify_url
-        end
-      end
-      resource :portainer, only: [ :show, :update ] do
-        collection do
-          get :github_oauth
         end
       end
     end
