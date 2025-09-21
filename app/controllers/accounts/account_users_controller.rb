@@ -8,13 +8,13 @@ class Accounts::AccountUsersController < ApplicationController
     end
     AccountUser.create!(account: current_account, user: user)
 
-    redirect_to account_account_users_path(current_account), notice: "User was successfully added."
+    redirect_to account_users_path, notice: "User was successfully added."
   end
 
   def destroy
     current_account.account_users.find(params[:id]).destroy
 
-    redirect_to account_account_users_path(current_account), notice: "User was successfully destroyed."
+    redirect_to account_users_path, notice: "User was successfully destroyed."
   end
 
   def index

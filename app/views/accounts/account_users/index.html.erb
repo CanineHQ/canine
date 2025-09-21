@@ -56,7 +56,7 @@
       </form>
       <div class="mb-4 w-full text-xl font-bold">Invite Team Member to <%= current_account.name %></div>
       <div>
-        <%= form_with(model: User.new, url: account_account_users_path) do |form| %>
+        <%= form_with(model: User.new, url: account_users_path) do |form| %>
           <div class="form-control mt-1 w-full">
             <label class="label">
               <span class="label-text">Email</span>

@@ -17,7 +17,9 @@ Rails.application.routes.draw do
     end
   end
   resources :accounts, only: [ :create ] do
-    resources :account_users, only: %i[create index destroy], module: :accounts
+    collection do
+      resources :account_users, only: %i[create index destroy], module: :accounts
+    end
     member do
       get :switch
     end

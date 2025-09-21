@@ -36,8 +36,8 @@
               Credentials
             <% end %>
           </li>
-          <li class="<%= 'underline' if current_page?(account_account_users_path(current_account)) %>" style="text-underline-offset: 0.25rem;">
-            <%= link_to account_account_users_path(current_account) do %>
+          <li class="<%= 'underline' if current_page?(account_users_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to account_users_path do %>
               <iconify-icon icon="lucide:users" ></iconify-icon>
               Team Members
             <% end %>

@@ -5,6 +5,14 @@
       <p class="text-base text-base-content/70">
         Choose an account to continue to Canine
       </p>
+      <% if Rails.application.config.local_mode_passwordless %>
+        <div class="mt-4 inline-flex">
+          <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20">
+            <iconify-icon icon="lucide:key-round" width="14" height="14"></iconify-icon>
+            <span class="font-medium">Passwordless Mode</span>
+          </div>
+        </div>
+      <% end %>
     </div>
 
     <div class="space-y-3">
