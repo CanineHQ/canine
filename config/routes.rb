@@ -140,15 +140,14 @@ Rails.application.routes.draw do
   # Public marketing homepage
   if Rails.application.config.local_mode
     namespace :local do
+      resources :authentication do
+        member do
+          get :login
+        end
+      end
       resources :onboarding, only: [ :index, :create ] do
         collection do
           post :verify_url
-        end
-      end
-      resource :portainer, only: [ :show, :update ] do
-        resources :sessions, only: [ :new, :create ], controller: 'portainer/sessions'
-        collection do
-          get :github_oauth
         end
       end
     end
