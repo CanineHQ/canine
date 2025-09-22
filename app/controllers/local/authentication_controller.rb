@@ -19,13 +19,13 @@ class Local::AuthenticationController < ApplicationController
 
   private
 
-  def check_if_passwordless_allowed
-    unless Rails.application.config.local_mode_passwordless
-      redirect_to new_user_session_path
-    end
-  end
-
   def load_account_from_slug
     @account = Account.friendly.find(params[:id])
+  end
+
+  def check_if_passwordless_allowed
+    unless Rails.application.config.local_mode_passwordless
+      redirect_to account_sign_in_path(@account)
+    end
   end
 end
