@@ -1,6 +1,7 @@
 module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
+    skip_before_action :authenticate_user!, only: [ :verify_url ]
 
     def index
       redirect_to stack_manager_path

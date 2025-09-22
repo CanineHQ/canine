@@ -149,11 +149,7 @@ Rails.application.routes.draw do
           post :login
         end
       end
-      resources :onboarding, only: [ :index, :create ] do
-        collection do
-          post :verify_url
-        end
-      end
+      resources :onboarding, only: [ :index, :create ]
     end
     if Rails.application.config.onboarding_methods.any?
       root to: "local/onboarding#index"

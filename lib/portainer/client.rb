@@ -19,6 +19,13 @@ module Portainer
       @provider_url = provider_url
     end
 
+    def self.reachable?(provider_url)
+      HTTParty.get("#{provider_url}/system/status")
+      true
+    rescue Socket::ResolutionError, Net::ReadTimeout, StandardError
+      false
+    end
+
     def authenticated?
       # TODO: This needs to be added back in.
       # response = get("/api/users/me")
