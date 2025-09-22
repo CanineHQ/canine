@@ -1,9 +1,4 @@
-<% redirect_url = if Rails.application.config.local_mode && Rails.application.config.local_mode_passwordless
-  login_local_authentication_url(account.slug)
-else
-  account_sign_in_url(account)
-end %>
-<%= link_to redirect_url, data: { turbo_method: :post }, class: "block group" do %>
+<%= link_to(login_local_authentication_url(account.slug), data: { turbo_method: :post }, class: "block group") do %>
   <div class="bg-base-200 p-5 rounded-xl hover:bg-base-300 transition-all duration-300 hover:shadow-2xl hover:shadow-white/10 border border-base-300 hover:border-white/30 transform hover:scale-[1.02] hover:-translate-y-1">
     <div class="flex items-center gap-4">
       <div class="relative">
