@@ -1,24 +1,38 @@
 <div class="min-h-screen bg-base-100 flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-2xl">
-    <div class="text-center mb-10">
-      <h1 class="text-4xl font-bold text-base-content mb-3">Select an Account</h1>
-      <p class="text-base text-base-content/70">
-        Choose an account to continue to Canine
-      </p>
-      <% if Rails.application.config.local_mode_passwordless %>
-        <div class="mt-4 inline-flex">
-          <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20">
-            <iconify-icon icon="lucide:key-round" width="14" height="14"></iconify-icon>
-            <span class="font-medium">Passwordless Mode</span>
-          </div>
+    <% if @accounts.empty? %>
+      <div class="text-center py-12">
+        <div class="mb-6">
+          <iconify-icon icon="lucide:user-plus" width="64" height="64" class="text-base-content/30"></iconify-icon>
         </div>
-      <% end %>
-    </div>
+        <h3 class="text-xl font-semibold text-base-content mb-2">No Accounts</h3>
+        <p class="text-base-content/70 mb-6">Get started on Canine by creating your first account.</p>
+        <%= link_to new_user_registration_path, class: "btn btn-primary" do %>
+          <iconify-icon icon="lucide:plus" width="20" height="20"></iconify-icon>
+          Create Your First Account
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-base-content mb-3">Select an Account</h1>
+        <p class="text-base text-base-content/70">
+          Choose an account to continue to Canine, or <%= link_to "create a new account", new_user_registration_path, class: "link link-primary" %>.
+        </p>
+        <% if Rails.application.config.local_mode_passwordless %>
+          <div class="mt-4 inline-flex">
+            <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20">
+              <iconify-icon icon="lucide:key-round" width="14" height="14"></iconify-icon>
+              <span class="font-medium">Passwordless Mode</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
 
-    <div class="space-y-3">
-      <% @accounts.each do |account| %>
-        <%= render "devise/sessions/account_selector", account: %>
-      <% end %>
-    </div>
+      <div class="space-y-3">
+        <% @accounts.each do |account| %>
+          <%= render "devise/sessions/account_selector", account: %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>
