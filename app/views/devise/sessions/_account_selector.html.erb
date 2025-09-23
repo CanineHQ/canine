@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <div class="flex justify-start">
+    <div class="flex justify-start mt-3">
       <% if account.stack_manager&.portainer? %>
         <%= render "devise/sessions/portainer_badge", stack_manager: account.stack_manager %>
       <% end %>

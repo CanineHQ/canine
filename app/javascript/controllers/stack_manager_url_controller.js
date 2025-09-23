@@ -3,6 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["urlInput", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "errorMessage"]
 
+  connect() {
+    if (this.urlInputTarget.value) {
+      this.verifyUrl()
+    }
+  }
+
   async verifyUrl(event) {
     const url = this.urlInputTarget.value.trim()
     
