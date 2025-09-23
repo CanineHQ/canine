@@ -104,7 +104,8 @@ class ClustersController < ApplicationController
   end
 
   def download_kubeconfig
-    send_data @cluster.kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
+    connection = K8::Connection.new(@cluster, current_user)
+    send_data connection.kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
   end
 
   # POST /clusters or /clusters.json
