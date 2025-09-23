@@ -27,11 +27,6 @@ class StackManager < ApplicationRecord
 
   validates_presence_of :account, :provider_url, :stack_manager_type
   validates_uniqueness_of :account
-  validates_presence_of :access_token, if: :cloud?
-
-  def cloud?
-    Rails.application.config.cloud_mode
-  end
 
   def requires_reauthentication?
     access_token.blank?

@@ -14,7 +14,7 @@
   <div class="form-control mt-4">
     <%= render "accounts/stack_managers/url", form: form %>
   </div>
-  <% if stack_manager.cloud? %>
+  <% if Rails.application.config.cloud_mode %>
     <div class="form-control">
       <%= form.label :access_token, class: "label" do %>
         <span class="label-text">Access Token</span>
