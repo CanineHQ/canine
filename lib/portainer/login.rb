@@ -27,7 +27,7 @@ class Portainer::Login
         username: portainer_user.username
       }
     }.to_json
-    provider.access_token: portainer_user.jwt
+    provider.access_token = portainer_user.jwt
     provider.save!
 
     unless context.account.users.include?(context.user)

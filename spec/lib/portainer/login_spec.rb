@@ -22,7 +22,7 @@ RSpec.describe Portainer::Login do
   describe '#execute' do
     context 'when authentication succeeds' do
       before do
-        allow(Portainer::Client).to receive(:authenticate).and_return(jwt)
+        allow(Portainer::Client).to receive(:authenticate).and_return(Portainer::Data::User.new(id: 1, username:, jwt:))
       end
 
       it 'creates or finds a user' do
@@ -43,7 +43,7 @@ RSpec.describe Portainer::Login do
 
     context 'when authentication fails' do
       before do
-        allow(Portainer::Client).to receive(:authenticate).and_return(nil)
+        allow(Portainer::Client).to receive(:authenticate).and_raise(Portainer::Client::AuthenticationError.new('Invalid username or password'))
       end
 
       it 'fails with error message' do

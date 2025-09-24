@@ -69,7 +69,7 @@ module Portainer
           headers: { 'Authorization' => "Bearer #{jwt}" },
         )
 
-        return Portainer::Data::User.new(
+        Portainer::Data::User.new(
           id: username_response.parsed_response['Id'],
           username: username_response.parsed_response['Username'],
           jwt:

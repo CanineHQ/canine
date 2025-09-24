@@ -14,5 +14,8 @@ RSpec.shared_context 'with portainer' do
     WebMock.stub_request(:any, %r{/api/auth}).to_return(
       status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer authenticate.json])), headers:
     )
+    WebMock.stub_request(:any, %r{/api/users/me}).to_return(
+      status: 200, body: File.read(Rails.root.join(*%w[spec resources portainer users_me.json])), headers:
+    )
   end
 end

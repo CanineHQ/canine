@@ -1,0 +1,36 @@
+{
+  "Id": 1,
+  "Username": "admin",
+  "Role": 1,
+  "TokenIssueAt": 0,
+  "PortainerAuthorizations": {
+    "PortainerUserListGitCredential": true,
+    "PortainerUserListToken": true,
+    "PortainerUserList": true,
+    "PortainerUserMemberships": true,
+    "PortainerTeamList": true,
+    "PortainerUserDeleteGitCredential": true,
+    "PortainerRoleList": true,
+    "PortainerTemplateList": true,
+    "PortainerUserRevokeToken": true,
+    "PortainerUserInspect": true,
+    "PortainerTemplateInspect": true,
+    "PortainerUserCreateGitCredential": true,
+    "PortainerDockerHubInspect": true,
+    "PortainerEndpointList": true,
+    "PortainerUserInspectGitCredential": true,
+    "PortainerUserCreateToken": true,
+    "PortainerEndpointInspect": true,
+    "PortainerMOTD": true,
+    "PortainerUserUpdateGitCredential": true,
+    "PortainerEndpointGroupList": true
+  },
+  "EndpointAuthorizations": {},
+  "ThemeSettings": {
+    "color": "",
+    "subtleUpgradeButton": false
+  },
+  "UseCache": false,
+  "OpenAIApiKey": "",
+  "forceChangePassword": false
+}

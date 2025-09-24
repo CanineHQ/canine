@@ -13,7 +13,7 @@ RSpec.describe Portainer::Onboarding::Create do
   let(:username) { 'testuser' }
 
   before do
-    allow(Portainer::Client).to receive(:authenticate).and_return(jwt)
+    allow(Portainer::Client).to receive(:authenticate).and_return(Portainer::Data::User.new(id: 1, username:, jwt:))
     allow(described_class).to receive(:post_create).and_return([])
   end
 
@@ -72,7 +72,7 @@ RSpec.describe Portainer::Onboarding::Create do
       end
 
       before do
-        allow(Portainer::Client).to receive(:authenticate).and_return(nil)
+        allow(Portainer::Client).to receive(:authenticate).and_raise(Portainer::Client::AuthenticationError.new('Invalid username or password'))
       end
 
       it 'fails with invalid username or password message' do
