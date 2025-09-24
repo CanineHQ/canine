@@ -11,5 +11,6 @@ RSpec.describe Portainer::Authenticate do
     result = described_class.execute(user:, stack_manager:, auth_code:)
     expect(result).to be_success
     expect(user.providers.first.access_token).to eql('jwt')
+    expect(user.providers.first.username).to eql('admin')
   end
 end
