@@ -10,6 +10,7 @@ class Local::OnboardingController < ApplicationController
 
     if result.success?
       sign_in(result.user)
+      session[:account_id] = result.account.id
       redirect_to root_path
     else
       redirect_to local_onboarding_index_path, alert: result.message

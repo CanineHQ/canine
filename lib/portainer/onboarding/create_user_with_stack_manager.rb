@@ -27,13 +27,9 @@ class Portainer::Onboarding::CreateUserWithStackManager
       provider.access_token = context.portainer_user.jwt
       provider.save!
 
-      if context.user.accounts.empty?
-        context.account = Account.create!(owner: context.user, name: context.account_name)
+      context.account = Account.create!(owner: context.user, name: context.account_name)
 
-        AccountUser.create!(account: context.account, user: context.user)
-      else
-        context.account = context.user.accounts.first
-      end
+      AccountUser.create!(account: context.account, user: context.user)
 
       context.stack_manager = StackManager.find_or_initialize_by(
         account: context.account,

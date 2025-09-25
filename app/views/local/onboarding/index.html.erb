@@ -8,6 +8,15 @@
       </h1>
     </div>
 
+    <!-- render flash messages -->
+    <% if flash[:alert] %>
+      <div class="alert alert-error mb-4">
+        <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
+        <span><%= flash[:alert] %></span>
+      </div>
+    <% end %>
+
+    <!-- render radio selector -->
     <div class="form-control mt-4">
       <%= render "shared/partials/radio_selector", selected: nil, options: [
         {

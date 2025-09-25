@@ -4,9 +4,10 @@ class Portainer::SyncRegistries
   expects :stack_manager, :user, :clusters
 
   executed do |context|
+    clusters = context.stack_manager.account.clusters
     context.stack_manager.stack.connect(context.user).sync_registries(
       context.user,
-      context.clusters.first
+      clusters.first
     )
   end
 end
