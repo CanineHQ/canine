@@ -73,7 +73,7 @@ class K8::BuildCloudManager
 
   def ensure_active!
     # TODO: Check the pods in the namespace and ensure they are running.
-    K8::Client.from_cluster(build_cloud.cluster).pods_for_namespace(build_cloud.namespace).any?
+    K8::Client.new(connection).pods_for_namespace(build_cloud.namespace).any?
   rescue StandardError
     false
   end
