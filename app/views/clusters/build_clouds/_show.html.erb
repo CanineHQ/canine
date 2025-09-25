@@ -8,13 +8,7 @@
           <iconify-icon icon="lucide:cloud" height="24" class="text-primary"></iconify-icon>
           <h3 class="card-title text-lg">Build Cloud</h3>
         </div>
-        <%= render(
-          "shared/partials/async_renderer",
-          view_model: Async::Clusters::BuildClouds::StatusViewModel.new(
-            current_user,
-            build_cloud_id: build_cloud.id
-          )
-        ) %>
+        <%= render "clusters/build_clouds/status", build_cloud: %>
       </div>
 
       <% if build_cloud.installing? %>
