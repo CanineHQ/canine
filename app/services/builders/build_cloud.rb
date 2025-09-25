@@ -5,6 +5,7 @@ require 'ostruct'
 
 module Builders
   class BuildCloud < Builders::Base
+    include K8::Kubeconfig
     attr_reader :build_cloud_manager
 
     def initialize(build, build_cloud_manager)
@@ -25,7 +26,13 @@ module Builders
 
       command = construct_buildx_command(project, repository_path)
       runner = Cli::RunAndLog.new(build, killable: build)
-      runner.call(command.join(" "))
+      with_kube_config do |kubeconfig_file|
+        runner.call(command.join(" "), envs: { "KUBECONFIG" => kubeconfig_file.path })
+      end
+    end
+
+    def kubeconfig
+      build_cloud_manager.connection.kubeconfig
     end
 
     def construct_buildx_command(project, repository_path)
