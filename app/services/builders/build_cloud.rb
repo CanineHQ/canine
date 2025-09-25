@@ -5,14 +5,11 @@ require 'ostruct'
 
 module Builders
   class BuildCloud < Builders::Base
-    attr_reader :build_cloud, :build_cloud_manager
+    attr_reader :build_cloud_manager
 
-    # @param connection [Object] An object that responds to #kubeconfig
-    # @param build_cloud [BuildCloud] Optional BuildCloud model to use for namespace
-    def initialize(build, build_cloud)
+    def initialize(build, build_cloud_manager)
       super(build)
-      @build_cloud = build_cloud
-      @build_cloud_manager = K8::BuildCloudManager.new(build_cloud.cluster, build_cloud)
+      @build_cloud_manager = build_cloud_manager
     end
 
     def setup
@@ -33,7 +30,7 @@ module Builders
 
     def construct_buildx_command(project, repository_path)
       command = [ "docker", "buildx", "build" ]
-      command += [ "--builder", build_cloud.name ]
+      command += [ "--builder", build_cloud_manager.build_cloud.name ]
       command += [ "--platform", "linux/amd64,linux/arm64" ]
       command += [ "--push" ]  # Push directly to registry
       command += [ "--progress", "plain" ]
