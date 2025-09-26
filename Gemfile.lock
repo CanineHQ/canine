@@ -552,10 +552,10 @@ GEM
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
     securerandom (0.4.1)
-    sentry-rails (5.27.1)
+    sentry-rails (5.28.0)
       railties (>= 5.0)
-      sentry-ruby (~> 5.27.1)
-    sentry-ruby (5.27.1)
+      sentry-ruby (~> 5.28.0)
+    sentry-ruby (5.28.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
     shoulda-matchers (6.5.0)
@@ -695,7 +695,7 @@ DEPENDENCIES
   rubyzip (~> 3.1)
   sassc-rails (~> 2.1)
   sentry-rails (~> 5.27)
-  sentry-ruby (~> 5.27)
+  sentry-ruby (~> 5.28)
   shoulda-matchers (~> 6.5)
   simplecov
   sitemap_generator (~> 6.1)
