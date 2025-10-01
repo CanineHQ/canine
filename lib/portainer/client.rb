@@ -4,6 +4,7 @@ require 'httparty'
 
 module Portainer
   class Client
+    KUBERNETES_ENDPOINT_TYPES = [ 5, 6, 7 ]
     attr_reader :jwt, :provider_url
 
     include HTTParty
@@ -98,12 +99,12 @@ module Portainer
     end
 
     def endpoints
-      response = get("/api/endpoints")
+      response = get("/api/endpoints", query: { types: KUBERNETES_ENDPOINT_TYPES })
       response.map do |endpoint_data|
         Portainer::Data::Endpoint.new(
           id: endpoint_data["Id"],
           name: endpoint_data["Name"],
-          url: endpoint_data["URL"]
+          url: endpoint_data["URL"],
         )
       end
     end
@@ -135,9 +136,9 @@ module Portainer
       raise ConnectionError, "Connection to Portainer timed out"
     end
 
-    def get(path)
+    def get(path, query: {})
       fetch_wrapper do
-        self.class.get("#{provider_url}#{path}", headers:)
+        self.class.get("#{provider_url}#{path}", headers:, query:)
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
