@@ -6,8 +6,9 @@ class Portainer::Login
 
   executed do |context|
     provider_url = context.account.stack_manager.provider_url
+    hostname = URI.parse(provider_url).host
     context.user = User.find_or_initialize_by(
-      email: context.username + "@oncanine.run",
+      email: context.username + "@#{hostname}",
     )
     portainer_user = Portainer::Client.authenticate(
       username: context.username,

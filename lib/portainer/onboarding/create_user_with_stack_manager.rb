@@ -5,9 +5,10 @@ class Portainer::Onboarding::CreateUserWithStackManager
 
   executed do |context|
     password = Devise.friendly_token
+    hostname = URI.parse(context.provider_url).host
     ActiveRecord::Base.transaction do
       context.user = User.find_or_initialize_by(
-        email: context.username + "@oncanine.run",
+        email: context.username + "@#{hostname}",
       )
       context.user.assign_attributes(
         password:,
