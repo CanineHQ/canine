@@ -30,16 +30,16 @@
               Profile
             <% end %>
           </li>
-          <li class="<%= 'underline' if current_page?(providers_path) %>" style="text-underline-offset: 0.25rem;">
-            <%= link_to providers_path do %>
-              <iconify-icon icon="lucide:key-round" ></iconify-icon>
-              Credentials
-            <% end %>
-          </li>
           <li class="<%= 'underline' if current_page?(account_users_path) %>" style="text-underline-offset: 0.25rem;">
             <%= link_to account_users_path do %>
               <iconify-icon icon="lucide:users" ></iconify-icon>
               Team Members
+            <% end %>
+          </li>
+          <li class="<%= 'underline' if current_page?(providers_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to providers_path do %>
+              <iconify-icon icon="lucide:key-round" ></iconify-icon>
+              Credentials
             <% end %>
           </li>
           <% if Flipper.enabled?(:stack_manager, current_account) %>
