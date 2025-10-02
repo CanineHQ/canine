@@ -131,7 +131,7 @@
     "Name": "testing-production",
     "Type": 6,
     "ContainerEngine": "",
-    "URL": "137.184",
+    "URL": "137.184.242.139:9001",
     "GroupId": 1,
     "PublicURL": "",
     "Gpus": null,

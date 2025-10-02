@@ -35,7 +35,7 @@ RSpec.describe Portainer::Onboarding::Create do
 
         expect(result).to be_success
         expect(result.user).to be_persisted
-        expect(result.user.email).to eq('testuser@oncanine.run')
+        expect(result.user.email).to eq('testuser@test.portainer.io')
         expect(result.user.admin).to be true
         expect(result.account.stack_manager).to be_persisted
       end

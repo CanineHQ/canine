@@ -1,7 +1,9 @@
 require "rails_helper"
 require "webmock/rspec"
+require 'support/shared_contexts/with_portainer'
 
 RSpec.describe Portainer::Stack do
+  include_context 'with portainer'
   let(:account) { create(:account) }
   let(:stack_manager) { create(:stack_manager, account: account) }
   let(:provider) { create(:provider, :portainer, user: account.owner) }
@@ -9,12 +11,6 @@ RSpec.describe Portainer::Stack do
   let(:portainer_stack) { described_class.new(stack_manager)._connect_with_client(client) }
 
   describe "#sync_clusters" do
-    let(:endpoints_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/endpoints.json")) }
-
-    before do
-      allow(client).to receive(:get).with("/api/endpoints").and_return(JSON.parse(endpoints_json))
-    end
-
     it "fetches endpoints and creates/updates clusters" do
       portainer_stack.sync_clusters
       expect(account.clusters.count).to eq(2)

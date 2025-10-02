@@ -30,7 +30,7 @@ RSpec.describe Portainer::Login do
 
         expect(context).to be_success
         expect(context.user).to be_persisted
-        expect(context.user.email).to eq('testuser@oncanine.run')
+        expect(context.user.email).to eq('testuser@portainer.example.com')
       end
 
       it 'stores the JWT token in provider' do
