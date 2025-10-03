@@ -7,7 +7,10 @@
 
   <% if current_account.stack_manager.present? %>
     <div class="flex items-center justify-center">
-      <%= render "devise/sessions/portainer_badge", stack_manager: current_account.stack_manager %>
+      <%= render "devise/sessions/portainer_badge",
+                 stack_manager: current_account.stack_manager,
+                 verify_url: authenticated_stack_manager_path,
+                 logout_on_failure: true %>
     </div>
   <% end %>
   <div class="flex items-center justify-center">

@@ -9,7 +9,7 @@
       <%= link_to "+ Container Registry Credentials", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER), class: "btn btn-primary btn-sm" %>
 
       <% if current_account.stack_manager&.stack&.provides_registries? %>
-        <%= button_to sync_registries_stack_managers_path, class: "btn btn-outline btn-sm" do %>
+        <%= button_to sync_registries_stack_manager_path, class: "btn btn-outline btn-sm" do %>
           <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
           <span class="hidden sm:inline">Sync Credentials</span>
         <% end %>

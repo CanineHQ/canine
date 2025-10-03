@@ -2,6 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["urlInput", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "errorMessage"]
+  static values = {
+    verifyUrl: String,
+    logoutOnFailure: Boolean
+  }
 
   connect() {
     if (this.urlInputTarget.value) {
@@ -20,7 +24,7 @@ export default class extends Controller {
     this.showLoading()
 
     try {
-      const response = await fetch('/stack_manager/verify_url', {
+      const response = await fetch(this.verifyUrlValue, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,9 +39,15 @@ export default class extends Controller {
         this.showSuccess()
       } else {
         this.showError(data.message || 'Unable to connect to Portainer')
+        if (this.logoutOnFailureValue) {
+          await this.logout()
+        }
       }
     } catch (error) {
       this.showError('Network error - please check the URL')
+      if (this.logoutOnFailureValue) {
+        await this.logout()
+      }
     }
   }
 
@@ -63,5 +73,28 @@ export default class extends Controller {
     this.verifyUrlSuccessTarget.classList.add('hidden')
     this.verifyUrlErrorTarget.classList.add('hidden')
     this.verifyUrlLoadingTarget.classList.add('hidden')
+  }
+
+  async logout() {
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+
+      const response = await fetch('/users/sign_out', {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'text/vnd.turbo-stream.html, text/html, application/xhtml+xml',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+      })
+
+      if (response.ok) {
+        window.location.href = '/users/sign_in'
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
+      window.location.href = '/users/sign_in'
+    }
   }
 }

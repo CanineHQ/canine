@@ -1,5 +1,11 @@
+<%
+  verify_url ||= verify_url_stack_manager_path
+  logout_on_failure ||= false
+%>
 <div class="border-t border-base-300/50 transition-all duration-300 group-hover:border-base-300"
-     data-controller="stack-manager-url">
+     data-controller="stack-manager-url"
+     data-stack-manager-url-verify-url-value="<%= verify_url %>"
+     data-stack-manager-url-logout-on-failure-value="<%= logout_on_failure %>">
   <input type="hidden" data-stack-manager-url-target="urlInput" value="<%= stack_manager.provider_url %>" />
   <div class="flex items-center justify-between">
     <%= link_to stack_manager.provider_url, target: "_blank", rel: "noopener", class: "group/badge inline-flex" do %>
