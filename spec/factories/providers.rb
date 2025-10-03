@@ -19,8 +19,7 @@
 #
 # Indexes
 #
-#  index_providers_on_external_id  (external_id) UNIQUE
-#  index_providers_on_user_id      (user_id)
+#  index_providers_on_user_id  (user_id)
 #
 # Foreign Keys
 #

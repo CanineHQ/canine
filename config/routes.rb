@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url
+      get :authenticated
     end
   end
   namespace :inbound_webhooks do

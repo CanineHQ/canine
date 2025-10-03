@@ -27,6 +27,9 @@ class K8::Stateless::Ingress < K8::Base
 
   def self.ip_address(client)
     service = client.get_services.find { |s| s['metadata']['name'] == 'ingress-nginx-controller' }
+    if service.nil?
+      raise "Ingress-nginx-controller service not installed"
+    end
     service.status.loadBalancer.ingress[0].ip
   end
 

@@ -4,7 +4,7 @@
     <%= render 'shared/head' %>
   </head>
 
-   <body data-controller="theme" data-theme-preference-value="dark">
+   <body data-controller="theme<%= ' stack-manager-authentication' if current_account&.stack_manager&.present? %>" data-theme-preference-value="dark">
     <div class="size-full">
       <div class="flex">
         <%= render 'layouts/sidebar' %>

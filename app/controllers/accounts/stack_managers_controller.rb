@@ -1,7 +1,24 @@
 module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
-    skip_before_action :authenticate_user!, only: [ :verify_url ]
+    skip_before_action :authenticate_user!, only: [ :verify_url, :authenticated ]
+
+    def authenticated
+      stack_manager = current_account&.stack_manager
+
+      if stack_manager.nil? || current_user&.portainer_jwt.nil?
+        head :unauthorized
+        return
+      end
+
+      portainer_client = Portainer::Client.new(stack_manager.provider_url, current_user.portainer_jwt)
+
+      if portainer_client.authenticated?
+        head :ok
+      else
+        head :unauthorized
+      end
+    end
 
     def index
       redirect_to stack_manager_path
