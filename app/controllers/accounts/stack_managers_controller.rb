@@ -4,20 +4,33 @@ module Accounts
     before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url ]
 
-    def authenticated
-      stack_manager = current_account&.stack_manager
-
-      if stack_manager.nil? || current_user&.portainer_jwt.nil?
-        head :unauthorized
-        return
+    def verify_login
+      stack_manager = current_account.stack_manager
+      if stack_manager.nil?
+        head :not_found
       end
 
-      portainer_client = Portainer::Client.new(stack_manager.provider_url, current_user.portainer_jwt)
-
-      if portainer_client.authenticated?
+      if stack_manager.stack.client.authenticated?
         head :ok
       else
         head :unauthorized
+      end
+    end
+
+    def verify_url
+      url = params[:url]
+      begin
+        response = HTTParty.get(url, timeout: 5, verify: false)
+
+        if response.success?
+          head :ok
+        else
+          head :bad_gateway
+        end
+      rescue Net::ReadTimeout, SocketError, Errno::ECONNREFUSED
+        head :bad_gateway
+      rescue StandardError
+        head :internal_server_error
       end
     end
 
@@ -90,25 +103,6 @@ module Accounts
       redirect_to providers_path, notice: "Registries synced successfully"
     end
 
-    def verify_url
-      url = params[:url]
-
-      begin
-        response = HTTParty.get(url, timeout: 5, verify: false)
-
-        if response.success?
-          render json: { success: true }
-        else
-          render json: { success: false, message: "Server returned status #{response.code}" }
-        end
-      rescue Net::ReadTimeout
-        render json: { success: false, message: "Connection timeout - server took too long to respond" }
-      rescue SocketError, Errno::ECONNREFUSED
-        render json: { success: false, message: "Unable to connect - please check the URL" }
-      rescue StandardError => e
-        render json: { success: false, message: "Error: #{e.message}" }
-      end
-    end
 
     private
 

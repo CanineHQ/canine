@@ -28,7 +28,7 @@
         <div class="font-medium"><%= stack_manager.stack_manager_type.humanize %></div>
       </div>
       
-      <div data-controller="stack-manager-url" data-stack-manager-url-verify-url-value="<%= verify_url_stack_manager_path %>">
+      <div data-controller="stack-manager--url-input">
         <div class="text-sm text-base-content/70">Provider URL</div>
         <div class="flex items-center gap-2">
           <div class="font-medium">
@@ -40,10 +40,10 @@
               :provider_url,
               stack_manager.provider_url,
               class: "hidden input input-bordered w-full",
-              data: { stack_manager_url_target: "urlInput" }
+              data: { "stack-manager--url-input-target": "urlInput" }
             ) %>
           </div>
-          <button class="btn btn-ghost btn-sm" data-action="stack-manager-url#verifyUrl">Test Connection <iconify-icon icon="lucide:refresh-cw"></iconify-icon></button>
+          <button class="btn btn-ghost btn-sm" data-action="stack-manager--url-input#verifyUrl">Test Connection <iconify-icon icon="lucide:refresh-cw"></iconify-icon></button>
           <%= render "accounts/stack_managers/url_connection_statuses" %>
         </div>
       </div>

@@ -1,11 +1,11 @@
-<div data-controller="stack-manager-url" data-stack-manager-url-verify-url-value="<%= verify_url_stack_manager_path %>">
+<div data-controller="stack-manager--url-input">
   <%= form.label :provider_url, "Portainer URL" %>
   <%= form.text_field(
     :provider_url,
     name: "stack_manager[provider_url]",
     class: "input input-bordered w-full",
     placeholder: "http://portainer.portainer.svc.cluster.local:9000",
-    data: { stack_manager_url_target: "urlInput", action: "blur->stack-manager-url#verifyUrl" },
+    data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
   ) %>
   <div class="label justify-end">
     <span class="label-text-alt">
