@@ -28,6 +28,9 @@ Rails.application.routes.draw do
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url
+      post :verify_login
+      post :sync_clusters
+      post :sync_registries
     end
   end
   namespace :inbound_webhooks do
@@ -91,13 +94,6 @@ Rails.application.routes.draw do
         post :redeploy
         patch :kill
       end
-    end
-  end
-
-  resource :stack_managers, only: [] do
-    collection do
-      post :sync_clusters
-      post :sync_registries
     end
   end
 

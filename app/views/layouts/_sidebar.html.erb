@@ -5,6 +5,14 @@
     <span class="sr-only"><%= Rails.configuration.application_name %></span>
   <% end %>
 
+  <% if current_account.stack_manager.present? %>
+    <div class="flex items-center justify-center">
+      <%= render "devise/sessions/portainer_badge",
+                 stack_manager: current_account.stack_manager,
+                 verification_method: "authentication",
+                 logout_on_unauthorized: true %>
+    </div>
+  <% end %>
   <div class="flex items-center justify-center">
     <details class="mx-auto dropdown">
       <summary class="btn m-1"><%= current_account.name %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>

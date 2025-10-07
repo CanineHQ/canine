@@ -1,22 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["urlInput", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "errorMessage"]
-
-  connect() {
-    if (this.urlInputTarget.value) {
-      this.verifyUrl()
-    }
-  }
+  static targets = [
+    "urlInput",
+    "verifyUrlSuccess",
+    "verifyUrlError",
+    "verifyUrlLoading",
+  ]
 
   async verifyUrl(event) {
     const url = this.urlInputTarget.value.trim()
-    
-    if (!url) {
-      this.hideAllStatuses()
-      return
-    }
 
+    this.hideAllStatuses()
     this.showLoading()
 
     try {
@@ -29,12 +24,15 @@ export default class extends Controller {
         body: JSON.stringify({ url: url })
       })
 
-      const data = await response.json()
+      if (response.status === 401) {
+        this.showError('Unauthorized')
+        return
+      }
 
-      if (data.success) {
+      if (response.ok) {
         this.showSuccess()
       } else {
-        this.showError(data.message || 'Unable to connect to Portainer')
+        this.showError('Unable to connect')
       }
     } catch (error) {
       this.showError('Network error - please check the URL')

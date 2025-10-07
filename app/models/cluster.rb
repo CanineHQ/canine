@@ -69,6 +69,7 @@ class Cluster < ApplicationRecord
   def external?
     external_id.present?
   end
+
   private
 
   def create_build_cloud_record!(attributes)

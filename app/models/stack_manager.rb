@@ -28,6 +28,8 @@ class StackManager < ApplicationRecord
   validates_presence_of :account, :provider_url, :stack_manager_type
   validates_uniqueness_of :account
 
+  before_validation :strip_trailing_slash_from_provider_url
+
   def requires_reauthentication?
     access_token.blank?
   end
@@ -36,5 +38,19 @@ class StackManager < ApplicationRecord
     if portainer?
       @_stack ||= Portainer::Stack.new(self)
     end
+  end
+
+  private
+
+  def strip_trailing_slash_from_provider_url
+    return if provider_url.blank?
+
+    uri = URI.parse(provider_url)
+    uri.path = ""
+    uri.query = nil
+    uri.fragment = nil
+    self.provider_url = uri.to_s
+  rescue URI::InvalidURIError
+    # Leave provider_url unchanged if it's invalid
   end
 end

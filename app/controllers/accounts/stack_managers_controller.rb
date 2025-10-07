@@ -1,7 +1,38 @@
 module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
+    before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url ]
+
+    def verify_login
+      stack_manager = current_account.stack_manager
+      if stack_manager.nil?
+        head :not_found
+      end
+
+      if stack_manager.stack.client.authenticated?
+        head :ok
+      else
+        head :unauthorized
+      end
+    end
+
+    def verify_url
+      url = params[:url]
+      begin
+        response = HTTParty.get(url, timeout: 5, verify: false)
+
+        if response.success?
+          head :ok
+        else
+          head :bad_gateway
+        end
+      rescue Net::ReadTimeout, SocketError, Errno::ECONNREFUSED
+        head :bad_gateway
+      rescue StandardError
+        head :internal_server_error
+      end
+    end
 
     def index
       redirect_to stack_manager_path
@@ -46,30 +77,41 @@ module Accounts
       redirect_to stack_manager_path, notice: "Stack manager was successfully removed."
     end
 
-    def verify_url
-      url = params[:url]
-
-      begin
-        response = HTTParty.get(url, timeout: 5, verify: false)
-
-        if response.success?
-          render json: { success: true }
-        else
-          render json: { success: false, message: "Server returned status #{response.code}" }
-        end
-      rescue Net::ReadTimeout
-        render json: { success: false, message: "Connection timeout - server took too long to respond" }
-      rescue SocketError, Errno::ECONNREFUSED
-        render json: { success: false, message: "Unable to connect - please check the URL" }
-      rescue StandardError => e
-        render json: { success: false, message: "Error: #{e.message}" }
+    def sync_clusters
+      @stack.sync_clusters
+      unless @stack.provides_clusters?
+        redirect_to clusters_path, alert: "This stack manager does not provide clusters"
+        return
       end
+      redirect_to clusters_path, notice: "Clusters synced successfully"
     end
+
+    def sync_registries
+      unless @stack.provides_registries?
+        redirect_to providers_path, alert: "This stack manager does not provide registries"
+        return
+      end
+
+      clusters = @stack.sync_clusters
+      target_cluster = clusters.first
+      if target_cluster.nil?
+        redirect_to providers_path, alert: "No cluster found"
+        return
+      end
+
+      @stack.sync_registries(current_user, target_cluster)
+      redirect_to providers_path, notice: "Registries synced successfully"
+    end
+
 
     private
 
     def stack_manager_params
       params.require(:stack_manager).permit(:provider_url, :stack_manager_type)
+    end
+
+    def set_stack
+      @stack ||= current_account.stack_manager&.stack&.connect(current_user)
     end
   end
 end

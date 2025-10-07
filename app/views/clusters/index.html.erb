@@ -19,7 +19,7 @@
             <% end %>
 
             <% if current_account.stack_manager&.portainer? %>
-              <%= button_to sync_clusters_stack_managers_path, class: "btn btn-outline btn-sm" do %>
+              <%= button_to sync_clusters_stack_manager_path, class: "btn btn-outline btn-sm" do %>
                 <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
                 <span class="hidden sm:inline">Sync Clusters</span>
               <% end %>

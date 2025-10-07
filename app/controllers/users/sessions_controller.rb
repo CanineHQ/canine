@@ -19,9 +19,17 @@ class Users::SessionsController < Devise::SessionsController
     super do
       # If the account has a stack manager that provides authentication,
       # redirect to the custom account login URL after logout
-      if account&.stack_manager&.stack&.provides_authentication?
-        return redirect_to account_sign_in_path(account.slug), notice: "Signed out successfully."
+      redirect_url = if account&.stack_manager&.stack&.provides_authentication?
+        account_sign_in_path(account.slug)
+      else
+        root_path
       end
+
+      respond_to do |format|
+        format.html { redirect_to redirect_url, notice: "Signed out successfully." }
+        format.json { render json: { redirect_url: redirect_url }, status: :ok }
+      end
+      return
     end
   end
 
