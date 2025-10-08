@@ -51,7 +51,7 @@ class Clusters::BuildCloudsController < Clusters::BaseController
       @cluster.build_cloud
     end
 
-    Clusters::InstallBuildCloudJob.perform_later(build_cloud)
+    Clusters::InstallBuildCloudJob.perform_later(build_cloud, current_user)
 
     redirect_to edit_cluster_path(@cluster), notice: "Build cloud installation started. This may take a few minutes..."
   end
