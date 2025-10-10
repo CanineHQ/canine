@@ -1,6 +1,7 @@
 export class PortainerChecker {
   static STATUS_OK = "ok";
   static STATUS_UNAUTHORIZED = "unauthorized";
+  static STATUS_NOT_ALLOWED = "not_allowed";
   static STATUS_ERROR = "error";
 
   csrfToken() {
@@ -22,6 +23,10 @@ export class PortainerChecker {
   toResult(response) {
     if (response.status === 401) {
       return PortainerChecker.STATUS_UNAUTHORIZED;
+    }
+
+    if (response.status === 405) {
+      return PortainerChecker.STATUS_NOT_ALLOWED;
     }
 
     if (response.status === 502) {

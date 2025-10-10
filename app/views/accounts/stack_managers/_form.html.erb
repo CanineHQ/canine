@@ -14,14 +14,20 @@
   <div class="form-control mt-4">
     <%= render "accounts/stack_managers/url", form: form %>
   </div>
-  <% if Rails.application.config.cloud_mode %>
-    <div class="form-control">
-      <%= form.label :access_token, class: "label" do %>
-        <span class="label-text">Access Token</span>
-      <% end %>
-      <%= form.text_field :access_token, class: "input input-bordered w-full" %>
-    </div>
-  <% end %>
+
+  <div class="form-control">
+    <%= form.label :access_token, class: "label" do %>
+      <span class="label-text">Access Token</span>
+    <% end %>
+    <%= form.text_field :access_token, class: "input input-bordered w-full" %>
+  </div>
+
+  <div class="form-control">
+    <%= form.label :enable_role_based_access_control, class: "label cursor-pointer justify-start gap-2" do %>
+      <%= form.check_box :enable_role_based_access_control, class: "checkbox" %>
+      <span class="label-text">If enabled, the access token will be used for async operations. For all other options, the user's Portainer session will be used to connect to the clusters.</span>
+    <% end %>
+  </div>
 
   <div class="mt-4">
     <div class="alert alert-warning">

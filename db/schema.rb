@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_02_214647) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_09_003742) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -451,6 +451,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_02_214647) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "access_token"
+    t.boolean "enable_role_based_access_control", default: true
     t.index ["account_id"], name: "index_stack_managers_on_account_id", unique: true
   end
 

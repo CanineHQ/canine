@@ -11,13 +11,18 @@ class Portainer::Stack
     self
   end
 
-  def connect(user)
-    access_token = if stack_manager.access_token.present?
+  def retrieve_access_token(user, allow_anonymous: false)
+    if !stack_manager.enable_role_based_access_control && stack_manager.access_token.present?
+      stack_manager.access_token
+    elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       stack_manager.access_token
     else
       user.portainer_jwt
     end
-    @_client = Portainer::Client.new(stack_manager.provider_url, access_token)
+  end
+
+  def connect(user, allow_anonymous: false)
+    @_client = Portainer::Client.new(stack_manager.provider_url, retrieve_access_token(user, allow_anonymous:))
     self
   end
 
