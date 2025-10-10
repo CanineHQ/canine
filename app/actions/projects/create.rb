@@ -71,8 +71,8 @@ module Projects
       steps << Projects::ValidateNamespaceAvailability
       steps << Projects::Save
 
-      # Only register webhook in non-local mode
-      if !Rails.application.config.local_mode && provider.git?
+      # Only register webhook in cloud mode
+      if Rails.application.config.cloud_mode && provider.git?
         steps << Projects::RegisterGitWebhook
       end
 

@@ -22,7 +22,7 @@ class Projects::BuildJob < ApplicationJob
         Builders::BuildCloud.new(
           build,
           K8::BuildCloudManager.new(
-            K8::Connection.new(project, user),
+            K8::Connection.new(project, user, allow_anonymous: true),
             project.build_configuration.build_cloud
           )
         )

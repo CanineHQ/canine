@@ -2,13 +2,14 @@
 #
 # Table name: stack_managers
 #
-#  id                 :bigint           not null, primary key
-#  access_token       :string
-#  provider_url       :string           not null
-#  stack_manager_type :integer          default("portainer"), not null
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  account_id         :bigint           not null
+#  id                               :bigint           not null, primary key
+#  access_token                     :string
+#  enable_role_based_access_control :boolean          default(TRUE)
+#  provider_url                     :string           not null
+#  stack_manager_type               :integer          default("portainer"), not null
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  account_id                       :bigint           not null
 #
 # Indexes
 #

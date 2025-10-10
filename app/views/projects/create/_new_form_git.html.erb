@@ -93,13 +93,11 @@
         </div>
       <% end %>
 
-      <% unless Rails.application.config.local_mode %>
-        <%= render(FormFieldComponent.new(
-          label: "Autodeploy",
-          description: "Automatically deploy the project when the branch is pushed to."
-        )) do %>
-          <%= form.check_box :autodeploy, class: "checkbox" %>
-        <% end %>
+      <%= render(FormFieldComponent.new(
+        label: "Autodeploy",
+        description: "Automatically deploy the project when the branch is pushed to."
+      )) do %>
+        <%= form.check_box :autodeploy, class: "checkbox" %>
       <% end %>
 
       <%= render(FormFieldComponent.new(

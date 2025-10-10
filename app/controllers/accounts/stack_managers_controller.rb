@@ -10,6 +10,8 @@ module Accounts
         head :not_found
       end
 
+      # If the user is not having an email domain end in the
+      # portainer stack url, don't log them out, just return a different unauthorized.
       if stack_manager.stack.client.authenticated?
         head :ok
       else
@@ -107,7 +109,12 @@ module Accounts
     private
 
     def stack_manager_params
-      params.require(:stack_manager).permit(:provider_url, :stack_manager_type)
+      params.require(:stack_manager).permit(
+        :provider_url,
+        :stack_manager_type,
+        :access_token,
+        :enable_role_based_access_control
+      )
     end
 
     def set_stack
