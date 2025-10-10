@@ -107,4 +107,25 @@ RSpec.describe StackManager, type: :model do
       expect(stack_manager.provider_url).to eq(invalid_url)
     end
   end
+
+  describe '#domain_host' do
+    it 'returns the host' do
+      stack_manager = build(:stack_manager, provider_url: 'https://portainer.example.com:9443')
+      expect(stack_manager.domain_host).to eq('portainer.example.com')
+    end
+  end
+
+  describe '#is_user?' do
+    let(:stack_manager) { build(:stack_manager, provider_url: 'https://portainer.example.com') }
+
+    it 'returns true when user email ends with domain host' do
+      user = double('User', email: 'john@portainer.example.com')
+      expect(stack_manager.is_user?(user)).to be true
+    end
+
+    it 'returns false when user email does not end with domain host' do
+      user = double('User', email: 'john@otherdomain.com')
+      expect(stack_manager.is_user?(user)).to be false
+    end
+  end
 end

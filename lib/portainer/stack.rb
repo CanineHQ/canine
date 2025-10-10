@@ -12,7 +12,7 @@ class Portainer::Stack
   end
 
   def connect(user, allow_anonymous: false)
-    access_token = if stack_manager.access_token.present? && !enable_role_based_access_control
+    access_token = if stack_manager.access_token.present? && !stack_manager.enable_role_based_access_control
       stack_manager.access_token
     elsif stack_manager.access_token.present? && allow_anonymous
       stack_manager.access_token

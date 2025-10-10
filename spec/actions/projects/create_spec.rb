@@ -90,7 +90,7 @@ RSpec.describe Projects::Create do
 
     context 'in cloud mode' do
       before do
-        allow(Rails.application.config).to receive(:local_mode).and_return(false)
+        allow(Rails.application.config).to receive(:cloud_mode).and_return(true)
       end
 
       it 'validates with github and registers webhooks' do
@@ -105,7 +105,7 @@ RSpec.describe Projects::Create do
 
     context 'in local mode' do
       before do
-        allow(Rails.application.config).to receive(:local_mode).and_return(true)
+        allow(Rails.application.config).to receive(:cloud_mode).and_return(false)
       end
 
       it 'validates with github and does not register webhooks' do

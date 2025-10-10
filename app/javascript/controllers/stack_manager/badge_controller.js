@@ -5,7 +5,7 @@ const AUTHENTICATION_VERIFICATION_METHOD = "authentication";
 const URL_VERIFICATION_METHOD = "url";
 
 export default class extends Controller {
-  static targets = [ "message", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading" ]
+  static targets = [ "message", "verifyUrlSuccess", "verifyUrlError", "verifyUrlLoading", "verifyUrlNotAllowed" ]
 
   static values = {
     verificationMethod: String,
@@ -27,6 +27,8 @@ export default class extends Controller {
       this.logout();
     } else if (result === PortainerChecker.STATUS_OK) {
       this.verifyUrlSuccessTarget.classList.remove('hidden')
+    } else if (result === PortainerChecker.STATUS_NOT_ALLOWED) {
+      this.verifyUrlNotAllowedTarget.classList.remove('hidden')
     } else {
       this.verifyUrlErrorTarget.classList.remove('hidden')
     }

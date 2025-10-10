@@ -12,6 +12,11 @@ module Accounts
 
       # If the user is not having an email domain end in the
       # portainer stack url, don't log them out, just return a different unauthorized.
+      if !stack_manager.is_user?(current_user)
+        head :method_not_allowed
+        return
+      end
+
       if stack_manager.stack.client.authenticated?
         head :ok
       else
