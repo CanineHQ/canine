@@ -50,7 +50,7 @@ module Accounts
     end
 
     def new
-      @stack_manager = current_account.build_stack_manager
+      @stack_manager = StackManager.new
     end
 
     def create

@@ -16,13 +16,18 @@ class Portainer::Stack
       stack_manager.access_token
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       stack_manager.access_token
-    else
+    elsif user.portainer_jwt.present?
       user.portainer_jwt
+    else
+      raise "No access token found for user or stack manager. Please check your configuration."
     end
   end
 
   def connect(user, allow_anonymous: false)
-    @_client = Portainer::Client.new(stack_manager.provider_url, retrieve_access_token(user, allow_anonymous:))
+    @_client = Portainer::Client.new(
+      stack_manager.provider_url,
+      retrieve_access_token(user, allow_anonymous:),
+    )
     self
   end
 
