@@ -1,8 +1,9 @@
 class K8::Connection
-  attr_reader :clusterable, :user
-  def initialize(clusterable, user)
+  attr_reader :clusterable, :user, :allow_anonymous
+  def initialize(clusterable, user, allow_anonymous: false)
     @clusterable = clusterable
     @user = user
+    @allow_anonymous = allow_anonymous
   end
 
   def cluster
@@ -24,7 +25,7 @@ class K8::Connection
       cluster.kubeconfig
     else
       raise StandardError.new("No stack manager found") if stack_manager.blank?
-      stack = stack_manager.stack.connect(user)
+      stack = stack_manager.stack.connect(user, allow_anonymous: allow_anonymous)
       stack.fetch_kubeconfig(cluster)
     end
   end

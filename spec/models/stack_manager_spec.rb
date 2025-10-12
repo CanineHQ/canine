@@ -2,13 +2,14 @@
 #
 # Table name: stack_managers
 #
-#  id                 :bigint           not null, primary key
-#  access_token       :string
-#  provider_url       :string           not null
-#  stack_manager_type :integer          default("portainer"), not null
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  account_id         :bigint           not null
+#  id                               :bigint           not null, primary key
+#  access_token                     :string
+#  enable_role_based_access_control :boolean          default(TRUE)
+#  provider_url                     :string           not null
+#  stack_manager_type               :integer          default("portainer"), not null
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  account_id                       :bigint           not null
 #
 # Indexes
 #
@@ -104,6 +105,27 @@ RSpec.describe StackManager, type: :model do
 
       stack_manager.valid?
       expect(stack_manager.provider_url).to eq(invalid_url)
+    end
+  end
+
+  describe '#domain_host' do
+    it 'returns the host' do
+      stack_manager = build(:stack_manager, provider_url: 'https://portainer.example.com:9443')
+      expect(stack_manager.domain_host).to eq('portainer.example.com')
+    end
+  end
+
+  describe '#is_user?' do
+    let(:stack_manager) { build(:stack_manager, provider_url: 'https://portainer.example.com') }
+
+    it 'returns true when user email ends with domain host' do
+      user = double('User', email: 'john@portainer.example.com')
+      expect(stack_manager.is_user?(user)).to be true
+    end
+
+    it 'returns false when user email does not end with domain host' do
+      user = double('User', email: 'john@otherdomain.com')
+      expect(stack_manager.is_user?(user)).to be false
     end
   end
 end
