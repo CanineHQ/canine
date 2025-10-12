@@ -58,6 +58,14 @@ FactoryBot.define do
       end
     end
 
+    trait :gitlab do
+      after(:build) do |project|
+        provider = create(:provider, :gitlab)
+        project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
+        project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+      end
+    end
+
     trait :container_registry do
       after(:build) do |project|
         provider = create(:provider, :container_registry)

@@ -21,10 +21,27 @@ class Git::Gitlab::Client < Git::Client
   end
 
   def commits(branch)
-    HTTParty.get(
+    response = HTTParty.get(
       "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/commits?ref=#{branch}",
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
+    unless response.success?
+      raise "Failed to fetch commits: #{response.body}"
+    end
+
+    response.map do |commit|
+      Git::Common::Commit.new(
+        sha: commit["id"],
+        message: commit["message"],
+        author_name: commit["author_name"],
+        author_email: commit["author_email"],
+        authored_at: DateTime.parse(commit["authored_date"]),
+        committer_name: commit["committer_name"],
+        committer_email: commit["committer_email"],
+        committed_at: DateTime.parse(commit["committed_date"]),
+        url: commit["web_url"]
+      )
+    end
   end
 
   def can_write_webhooks?

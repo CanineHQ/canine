@@ -11,7 +11,19 @@ class Git::Github::Client < Git::Client
   end
 
   def commits(branch)
-    client.commits(repository_url, branch)
+    client.commits(repository_url, branch).map do |commit|
+      Git::Common::Commit.new(
+        sha: commit.sha,
+        message: commit.commit.message,
+        author_name: commit.commit.author.name,
+        author_email: commit.commit.author.email,
+        authored_at: commit.commit.author.date,
+        committer_name: commit.commit.committer.name,
+        committer_email: commit.commit.committer.email,
+        committed_at: commit.commit.committer.date,
+        url: commit.html_url
+      )
+    end
   end
 
   def initialize(access_token:, repository_url:)

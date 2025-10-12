@@ -1,12 +1,21 @@
 # spec/actions/projects/create_spec.rb
 require 'rails_helper'
 
-class MockCommit < Struct.new(:sha, :commit)
-end
-
 class MockGithub
   def commits(branch)
-    [ MockCommit.new(sha: "1234", commit: { message: "initial commit" }) ]
+    [
+      Git::Common::Commit.new(
+        sha: "1234",
+        message: "initial commit",
+        author_name: "Test Author",
+        author_email: "test@example.com",
+        authored_at: Time.current,
+        committer_name: "Test Committer",
+        committer_email: "committer@example.com",
+        committed_at: Time.current,
+        url: "https://example.com/commit/1234"
+      )
+    ]
   end
 end
 
