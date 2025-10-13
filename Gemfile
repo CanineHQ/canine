@@ -99,7 +99,7 @@ gem "sassc-rails", "~> 2.1"
 
 gem "cron2english", "~> 0.1.7"
 
-gem "avo", "~> 3.24"
+gem "avo", "~> 3.25"
 
 gem "sentry-ruby", "~> 5.28"
 gem "sentry-rails", "~> 5.27"
