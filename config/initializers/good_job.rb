@@ -36,7 +36,8 @@ Rails.application.configure do
         description: "Cleanup closed PR projects every 30 minutes"
       },
       check_for_new_commits: {
-        cron: "* * * * *",
+        # Run in cloud mode every 5 minutes, in local mode every minute
+        cron: Rails.application.config.cloud_mode ? "*/5 * * * *" : "* * * * *",
         class: "Scheduled::CheckForNewCommitsJob",
         description: "Check for new commits every minute"
       }
