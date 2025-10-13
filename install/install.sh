@@ -17,7 +17,7 @@ mkdir -p ~/.canine
 # Remove existing src directory if it exists
 rm -rf ~/.canine/src
 # Shallow clone the repo
-git clone --depth 1 https://github.com/czhu12/canine.git ~/.canine/src
+git clone --depth 1 https://github.com/CanineHQ/canine.git ~/.canine/src
 
 cd ~/.canine/src
 echo " [OK]"

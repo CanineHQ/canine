@@ -1,7 +1,7 @@
 <br/>
 <div align="center">
-<a href="https://github.com/czhu12/canine">
-<img src="https://github.com/czhu12/canine/blob/main/public/images/logo-full.png?raw=true" alt="Logo" height="100">
+<a href="https://github.com/CanineHQ/canine">
+<img src="https://github.com/CanineHQ/canine/blob/main/public/images/logo-full.png?raw=true" alt="Logo" height="100">
 </a>
 <h3 align="center">Canine</h3>
 <p align="center">
@@ -12,17 +12,17 @@ Power of Kubernetes, Simplicity of Heroku
 <br/>
 <br/>
 <a href="https://canine.sh">View Demo .</a>  
-<a href="https://github.com/czhu12/canine/issues/new?labels=bug">Report Bug .</a>
-<a href="https://github.com/czhu12/canine/issues/new?labels=enhancement">Request Feature</a>
+<a href="https://github.com/CanineHQ/canine/issues/new?labels=bug">Report Bug .</a>
+<a href="https://github.com/CanineHQ/canine/issues/new?labels=enhancement">Request Feature</a>
 </p>
 </div>
 
-[![Build Status](https://github.com/czhu12/canine/actions/workflows/ci.yml/badge.svg)](https://github.com/czhu12/canine/actions/workflows/ci.yml)
+[![Build Status](https://github.com/CanineHQ/canine/actions/workflows/ci.yml/badge.svg)](https://github.com/CanineHQ/canine/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://opensource.org/licenses/Apache)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/canine)](https://artifacthub.io/packages/search?repo=canine)
 
 
-![Deployment Screenshot](https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/public/images/deployment_styled.png)
+![Deployment Screenshot](https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/public/images/deployment_styled.png)
 
 ## About the project
 Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
@@ -34,13 +34,13 @@ Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
 
 ## Installation
 ```bash
-curl -sSL https://raw.githubusercontent.com/czhu12/canine/refs/heads/main/install/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/install/install.sh | bash
 ```
 ---
 
 Or run manually if you prefer:
 ```bash
-git clone https://github.com/czhu12/canine.git
+git clone https://github.com/CanineHQ/canine.git
 cd canine/install
 docker compose up -d
 ```
@@ -66,4 +66,4 @@ For more information & pricing, take a look at our landing page [https://canine.
 
 ## License
 
-[Apache 2.0 License](https://github.com/czhu12/canine/blob/main/LICENSE)
+[Apache 2.0 License](https://github.com/CanineHQ/canine/blob/main/LICENSE)
