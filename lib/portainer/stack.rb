@@ -98,8 +98,11 @@ class Portainer::Stack
     response.map do |external_cluster|
       cluster = stack_manager.account.clusters.find_or_initialize_by(external_id: external_cluster.id)
       cluster.name = external_cluster.name
-      cluster.status = :running
+      new_record = cluster.new_record?
       cluster.save
+      if new_record
+        Clusters::InstallJob.perform_later(cluster, stack_manager.account.owner)
+      end
       cluster
     end
 

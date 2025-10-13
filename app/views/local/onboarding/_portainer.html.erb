@@ -3,6 +3,17 @@
     <%= render "accounts/stack_managers/url", form: form %>
 
     <div class="form-group">
+      <%= form.label :access_code, "Access Code" %>
+      <%= form.text_field(
+        :access_code,
+        placeholder: "Enter your access code",
+        name: "account[access_code]",
+        class: "input input-bordered w-full",
+        required: true,
+      ) %>
+    </div>
+
+    <div class="form-group">
       <%= form.label :account_name, "Account Name" %>
       <%= form.text_field(
         :account_name,
