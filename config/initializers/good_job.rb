@@ -34,6 +34,11 @@ Rails.application.configure do
         cron: "*/30 * * * *",
         class: "CleanupClosedPrProjectsJob",
         description: "Cleanup closed PR projects every 30 minutes"
+      },
+      check_for_new_commits: {
+        cron: "*/5 * * * *",
+        class: "Scheduled::CheckForNewCommitsJob",
+        description: "Check for new commits every 5 minutes"
       }
     }
   }

@@ -10,13 +10,13 @@ class Projects::DeployLatestCommit
     # Fetch the latest commit from the default branch
     project = context.project
     current_user = context.current_user || project.account.owner
-    if project.github?
+    if project.git?
       project_credential_provider = project.project_credential_provider
       client = Git::Client.from_project(project)
       commit = client.commits(project.branch).first
       build = project.builds.create!(
         commit_sha: commit.sha,
-        commit_message: commit.commit[:message],
+        commit_message: commit.message,
         current_user:
       )
     else

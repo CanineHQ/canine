@@ -9,7 +9,7 @@ class Projects::DeploymentJob < ApplicationJob
     @logger = deployment
     @marked_resources = []
     project = deployment.project
-    connection = K8::Connection.new(project, user)
+    connection = K8::Connection.new(project, user, allow_anonymous: true)
     kubectl = create_kubectl(deployment, connection)
 
     # Create namespace
@@ -24,7 +24,7 @@ class Projects::DeploymentJob < ApplicationJob
     # For each of the projects services
     deploy_services(project, kubectl)
 
-    sweep_unused_resources(project, user)
+    sweep_unused_resources(project, user, connection)
 
     # Kill all one off containers
     kill_one_off_containers(project, kubectl)
@@ -114,11 +114,11 @@ class Projects::DeploymentJob < ApplicationJob
     kubectl.apply_yaml(namespace_yaml)
   end
 
-  def sweep_unused_resources(project, user)
+  def sweep_unused_resources(project, user, connection)
     # Check deployments that need to be deleted
     # Exclude Persistent Volumes
     resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ 'Pv' ].include?(r) }
-    kubectl = K8::Kubectl.new(K8::Connection.new(project, user))
+    kubectl = K8::Kubectl.new(connection)
 
     resources_to_sweep.each do |resource_type|
       results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))

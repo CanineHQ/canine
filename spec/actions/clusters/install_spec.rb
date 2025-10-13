@@ -4,6 +4,7 @@ RSpec.describe Clusters::Install do
   let(:account) { create(:account) }
   let(:cluster) { create(:cluster, account: account, status: :initializing) }
   let(:user) { create(:user) }
+  let!(:portainer_provider) { create(:provider, :portainer, user: user) }
   let(:connection) { instance_double(K8::Connection) }
   let(:kubectl) { instance_double(K8::Kubectl) }
   let(:cli_runner) { instance_double(Cli::RunAndLog) }

@@ -7,6 +7,7 @@ RSpec.describe Portainer::Stack do
   let(:account) { create(:account) }
   let(:stack_manager) { create(:stack_manager, account: account, access_token: "access_token") }
   let(:provider) { create(:provider, :portainer, user: account.owner) }
+  let!(:portainer_provider) { create(:provider, :portainer, user: account.owner) }
   let(:client) { Portainer::Client.new(stack_manager.provider_url, account.owner.portainer_jwt) }
   let(:portainer_stack) { described_class.new(stack_manager)._connect_with_client(client) }
 
