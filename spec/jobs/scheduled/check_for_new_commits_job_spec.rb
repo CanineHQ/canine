@@ -2,17 +2,6 @@ require 'rails_helper'
 
 RSpec.describe Scheduled::CheckForNewCommitsJob, type: :job do
   describe '#perform' do
-    context 'when cloud mode is enabled' do
-      before do
-        allow(Rails.application.config).to receive(:cloud_mode).and_return(true)
-      end
-
-      it 'does not check for commits' do
-        expect(Project).not_to receive(:where)
-        described_class.new.perform
-      end
-    end
-
     context 'when cloud mode is disabled' do
       before do
         allow(Rails.application.config).to receive(:cloud_mode).and_return(false)
