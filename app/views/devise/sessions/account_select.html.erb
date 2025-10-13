@@ -33,6 +33,12 @@
           <%= render "devise/sessions/account_selector", account: %>
         <% end %>
       </div>
+
+      <div class="text-center mt-6">
+        <p class="text-sm text-base-content/60">
+          Visit <%= link_to "here", local_onboarding_index_url, class: "link link-primary" %> to create a new account.
+        </p>
+      </div>
     <% end %>
   </div>
 </div>
