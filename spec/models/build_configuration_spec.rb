@@ -39,26 +39,26 @@ RSpec.describe BuildConfiguration, type: :model do
   end
 
   describe '#container_image_reference' do
-    let(:build_configuration) { create(:build_configuration, project:, provider:, image_repository: 'czhu12/canine') }
+    let(:build_configuration) { create(:build_configuration, project:, provider:, image_repository: 'CanineHQ/canine') }
 
     context 'with github provider' do
       let(:provider) { create(:provider, :github) }
       it 'returns the container image reference' do
-        expect(build_configuration.container_image_reference).to eq('ghcr.io/czhu12/canine:main')
+        expect(build_configuration.container_image_reference).to eq('ghcr.io/CanineHQ/canine:main')
       end
     end
 
     context 'with gitlab provider' do
       let(:provider) { create(:provider, :gitlab) }
       it 'returns the container image reference' do
-        expect(build_configuration.container_image_reference).to eq('registry.gitlab.com/czhu12/canine:main')
+        expect(build_configuration.container_image_reference).to eq('registry.gitlab.com/CanineHQ/canine:main')
       end
     end
 
     context 'with container registry provider, but project is still git' do
       let(:provider) { create(:provider, :container_registry, registry_url: 'docker.io') }
       it 'returns the container image reference' do
-        expect(build_configuration.container_image_reference).to eq('docker.io/czhu12/canine:main')
+        expect(build_configuration.container_image_reference).to eq('docker.io/CanineHQ/canine:main')
       end
     end
 
@@ -70,7 +70,7 @@ RSpec.describe BuildConfiguration, type: :model do
       end
 
       it 'returns the container image reference with latest tag' do
-        expect(build_configuration.container_image_reference).to eq('ghcr.io/czhu12/canine:latest')
+        expect(build_configuration.container_image_reference).to eq('ghcr.io/CanineHQ/canine:latest')
       end
     end
   end

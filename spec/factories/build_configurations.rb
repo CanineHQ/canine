@@ -29,6 +29,6 @@ FactoryBot.define do
     provider
     project
     driver { :docker }
-    image_repository { "czhu12/canine" }
+    image_repository { "CanineHQ/canine" }
   end
 end
