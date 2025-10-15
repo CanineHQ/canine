@@ -4,6 +4,7 @@ x-shared-env: &shared-env
   SECRET_KEY_BASE: a38fcb39d60f9d146d2a0053a25024b9
   APP_HOST: http://localhost:${PORT:-3000}
   LOCAL_MODE_PASSWORDLESS: true
+  ALLOWED_HOSTNAME: "*"
 
 services:
   postgres:
