@@ -4,8 +4,8 @@ import { PortainerChecker } from "../../utils/portainer"
 export default class extends Controller {
   static targets = [
     "urlInput",
-    "accessCodeInput",
-    "accessCodeHelp",
+    "accessTokenInput",
+    "accessTokenHelp",
     "verifyUrlSuccess",
     "verifyUrlError",
     "verifyUrlLoading",
@@ -14,15 +14,15 @@ export default class extends Controller {
 
   async verifyUrl() {
     const url = this.urlInputTarget.value.trim()
-    const accessCode = this.accessCodeInputTarget.value.trim()
+    const accessToken = this.accessTokenInputTarget.value.trim()
     if (url) {
-      this.accessCodeHelpTarget.querySelector('a').href = `${url.replace(/\/$/, '')}/#!/account`
-      this.accessCodeHelpTarget.classList.remove('hidden')
+      this.accessTokenHelpTarget.querySelector('a').href = `${url.replace(/\/$/, '')}/#!/account`
+      this.accessTokenHelpTarget.classList.remove('hidden')
     } else {
-      this.accessCodeHelpTarget.classList.add('hidden')
+      this.accessTokenHelpTarget.classList.add('hidden')
     }
 
-    if (!url || !accessCode) {
+    if (!url || !accessToken) {
       return
     }
 
@@ -30,9 +30,9 @@ export default class extends Controller {
     this.showLoading()
 
     const portainerChecker = new PortainerChecker()
-    const result = await portainerChecker.verifyPortainerUrl(url, accessCode)
+    const result = await portainerChecker.verifyPortainerUrl(url, accessToken)
     if (result === PortainerChecker.STATUS_UNAUTHORIZED) {
-      this.showError('The instance is reachable but the access code is invalid.')
+      this.showError('The instance is reachable but the access token is invalid.')
     } else if (result === PortainerChecker.STATUS_OK) {
       this.showSuccess()
     } else {
