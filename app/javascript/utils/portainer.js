@@ -52,14 +52,14 @@ export class PortainerChecker {
     return this.toResult(response);
   }
 
-  async verifyPortainerUrl(url, accessCode) {
+  async verifyPortainerUrl(url, accessToken) {
     const response = await fetch('/stack_manager/verify_url', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
-      body: JSON.stringify({ stack_manager: { url, access_code: accessCode } })
+      body: JSON.stringify({ stack_manager: { url, access_token: accessToken } })
     })
 
     return this.toResult(response);

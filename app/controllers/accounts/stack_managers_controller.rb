@@ -40,10 +40,10 @@ module Accounts
 
     def verify_url
       url = params[:stack_manager][:url]
-      access_code = params[:stack_manager][:access_code]
+      access_token = params[:stack_manager][:access_token]
       stack_manager = StackManager.new(
         provider_url: url,
-        access_token: access_code,
+        access_token: access_token,
       )
       unless Portainer::Client.reachable?(url)
         return head :bad_gateway

@@ -11,19 +11,19 @@
   </div>
 
   <div class="form-group">
-    <%= form.label :access_code, "Access Code" %>
+    <%= form.label :access_token, "Access Token" %>
     <%= form.text_field(
-      :access_code,
-      placeholder: "Enter your access code",
-      name: "account[access_code]",
+      :access_token,
+      name: "stack_manager[access_token]",
+      placeholder: "Enter your access token",
       class: "input input-bordered w-full",
       required: true,
-      data: { "stack-manager--url-input-target": "accessCodeInput", action: "blur->stack-manager--url-input#verifyUrl" },
+      data: { "stack-manager--url-input-target": "accessTokenInput", action: "blur->stack-manager--url-input#verifyUrl" },
     ) %>
-    <div class="hidden" data-stack-manager--url-input-target="accessCodeHelp">
-      <label class="label flex justify-between" for="access_code">
+    <div class="hidden" data-stack-manager--url-input-target="accessTokenHelp">
+      <label class="label flex justify-between" for="access_token">
         <span class="label-text-alt">
-          <a class="link link-primary" target="_blank" href="#">Get your access code in Portainer →</a>
+          <a class="link link-primary" target="_blank" href="#">Get your access token in Portainer →</a>
         </span>
       </label>
     </div>
