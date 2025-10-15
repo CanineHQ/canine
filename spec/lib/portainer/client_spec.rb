@@ -7,7 +7,7 @@ RSpec.describe Portainer::Client do
   include_context 'with portainer'
   let(:portainer_url) { "https://portainer.example.com" }
   let(:portainer_token) { "test-token-123" }
-  let(:client) { described_class.new(portainer_url, portainer_token) }
+  let(:client) { described_class.new(portainer_url, Portainer::Client::UserJWT.new(portainer_token)) }
 
   describe "#endpoints" do
     it "fetches and parses endpoints correctly" do

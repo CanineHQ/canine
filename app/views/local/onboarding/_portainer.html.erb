@@ -1,6 +1,11 @@
 <div>
   <%= form_with url: local_onboarding_index_path, method: :post do |form| %>
-    <%= render "accounts/stack_managers/url", form: form %>
+    <%= render(FormFieldComponent.new(
+      label: "Portainer Configuration",
+      description: "The command to run to start the container."
+    )) do %>
+      <%= render "accounts/stack_managers/url", form: form %>
+    <% end %>
 
     <div class="form-group">
       <%= form.label :account_name, "Account Name" %>

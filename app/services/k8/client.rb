@@ -86,7 +86,7 @@ module K8
       if kubeconfig_string.is_a?(String)
         load_kubeconfig(kubeconfig_string)
       elsif kubeconfig_string.nil?
-        K8Stack.fetch_kubeconfig(@connection.cluster, @connection.user)
+        @connection.kubeconfig
       else
         kubeconfig_string
       end

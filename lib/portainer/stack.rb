@@ -1,6 +1,7 @@
 class Portainer::Stack
   attr_reader :stack_manager, :client
   delegate :authenticated?, to: :client
+  delegate :get_kubernetes_config, to: :client
   def initialize(stack_manager)
     @stack_manager = stack_manager
   end
@@ -13,11 +14,11 @@ class Portainer::Stack
 
   def retrieve_access_token(user, allow_anonymous: false)
     if !stack_manager.enable_role_based_access_control && stack_manager.access_token.present?
-      stack_manager.access_token
+      Portainer::Client::AccessToken.new(stack_manager.access_token)
+    elsif user.present? && user.portainer_jwt.present?
+      Portainer::Client::UserJWT.new(user.portainer_jwt)
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
-      stack_manager.access_token
-    elsif user.portainer_jwt.present?
-      user.portainer_jwt
+      Portainer::Client::AccessToken.new(stack_manager.access_token)
     else
       raise "No access token found for user or stack manager. Please check your configuration."
     end
@@ -98,8 +99,11 @@ class Portainer::Stack
     response.map do |external_cluster|
       cluster = stack_manager.account.clusters.find_or_initialize_by(external_id: external_cluster.id)
       cluster.name = external_cluster.name
-      cluster.status = :running
+      new_record = cluster.new_record?
       cluster.save
+      if new_record
+        Clusters::InstallJob.perform_later(cluster, stack_manager.account.owner)
+      end
       cluster
     end
 

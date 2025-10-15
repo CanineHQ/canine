@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     collection do
       post :verify_url
       post :verify_login
+      post :check_reachable
       post :sync_clusters
       post :sync_registries
     end

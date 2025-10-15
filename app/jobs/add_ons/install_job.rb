@@ -1,7 +1,7 @@
 class AddOns::InstallJob < ApplicationJob
   def perform(add_on, user)
     needs_restart = add_on.installed?
-    connection = K8::Connection.new(add_on, user)
+    connection = K8::Connection.new(add_on, user, allow_anonymous: true)
     AddOns::InstallHelmChart.execute(connection:)
 
     if needs_restart

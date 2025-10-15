@@ -20,7 +20,7 @@ export default class extends Controller {
       result = await portainerChecker.verifyPortainerAuthentication();
     } else if (this.verificationMethodValue === URL_VERIFICATION_METHOD) {
       const url = this.verifyUrlValue;
-      result = await portainerChecker.verifyPortainerUrl(url);
+      result = await portainerChecker.checkReachable(url);
     }
 
     if (result === PortainerChecker.STATUS_UNAUTHORIZED) {
