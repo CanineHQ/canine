@@ -1,5 +1,5 @@
 <div class="min-h-screen py-8">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header and Navigation -->
     <img src="/images/logo-full.png" alt="Canine Logo" class="h-[40px]">
     <div class="mb-8">
@@ -22,16 +22,16 @@
         {
           icon: "/images/logo-compact.png",
           name: "project[build_configuration][driver]",
-          label: "Normal",
+          label: "Normal (Recommended)",
           value: "normal",
-          description: "Build images using Docker on the deployment server. Simple setup, suitable for smaller projects.",
+          description: "Standard installation of Canine. Select this if it's your first time using Canine.",
           href: new_user_registration_url
         },
         {
           icon: "/images/helm/portainer.png",
           name: "project[build_configuration][driver]",
           label: "Portainer",
-          description: "Build images in your Kubernetes cluster. Scalable, distributed builds with better resource utilization.",
+          description: "Import from an existing Portainer instance. Only select this if you want to integrate Canine with Portainer.",
           value: "portainer",
           partial: "local/onboarding/portainer",
           locals: { current_account: }

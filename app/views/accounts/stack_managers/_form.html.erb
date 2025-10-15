@@ -15,25 +15,6 @@
     <%= render "accounts/stack_managers/url", form: form %>
   </div>
 
-  <div class="form-control">
-    <%= form.label :access_token, class: "label" do %>
-      <span class="label-text">Access Token</span>
-    <% end %>
-    <%= form.text_field :access_token, class: "input input-bordered w-full", required: true %>
-  </div>
-
-  <div class="form-control mt-4">
-    <%= form.label :enable_role_based_access_control, class: "label cursor-pointer justify-start gap-2" do %>
-      <%= form.check_box :enable_role_based_access_control, class: "checkbox" %>
-      <span class="label-text">Enable role based access control (recommended)</span>
-    <% end %>
-    <div class="label">
-      <span class="label-text-alt text-gray-500">
-        If enabled, any access to the cluster will be done through the user's Portainer session, and the access token above will only be used for async Git deployments.
-      </span>
-    </div>
-  </div>
-
   <div class="mt-4">
     <div class="alert alert-warning">
       <iconify-icon icon="lucide:alert-triangle" height="20"></iconify-icon>

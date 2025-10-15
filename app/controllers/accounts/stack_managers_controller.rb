@@ -4,6 +4,14 @@ module Accounts
     before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url ]
 
+    def _verify_stack(stack)
+      if stack.authenticated?
+        head :ok
+      else
+        head :unauthorized
+      end
+    end
+
     def verify_login
       stack_manager = current_account.stack_manager
       if stack_manager.nil?
@@ -17,28 +25,24 @@ module Accounts
         return
       end
 
-      if stack_manager.stack.client.authenticated?
-        head :ok
-      else
-        head :unauthorized
-      end
+      stack = stack_manager.stack.connect(current_user, allow_anonymous: false)
+      _verify_stack(stack)
     end
 
     def verify_url
-      url = params[:url]
-      begin
-        response = HTTParty.get(url, timeout: 5, verify: false)
-
-        if response.success?
-          head :ok
-        else
-          head :bad_gateway
-        end
-      rescue Net::ReadTimeout, SocketError, Errno::ECONNREFUSED
-        head :bad_gateway
-      rescue StandardError
-        head :internal_server_error
+      url = params[:stack_manager][:url]
+      access_code = params[:stack_manager][:access_code]
+      stack_manager = StackManager.new(
+        provider_url: url,
+        access_token: access_code,
+      )
+      unless Portainer::Client.reachable?(url)
+        return head :bad_gateway
       end
+
+      # Allow anonymous because we're checking the verify_url
+      stack = stack_manager.stack.connect(nil, allow_anonymous: true)
+      _verify_stack(stack)
     end
 
     def index

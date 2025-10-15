@@ -1,41 +1,42 @@
 import { Controller } from "@hotwired/stimulus"
+import { PortainerChecker } from "../../utils/portainer"
 
 export default class extends Controller {
   static targets = [
     "urlInput",
+    "accessCodeInput",
+    "accessCodeHelp",
     "verifyUrlSuccess",
     "verifyUrlError",
     "verifyUrlLoading",
+    "errorMessage",
   ]
 
-  async verifyUrl(event) {
+  async verifyUrl() {
     const url = this.urlInputTarget.value.trim()
+    const accessCode = this.accessCodeInputTarget.value.trim()
+    if (url) {
+      this.accessCodeHelpTarget.querySelector('a').href = `${url.replace(/\/$/, '')}/#!/account`
+      this.accessCodeHelpTarget.classList.remove('hidden')
+    } else {
+      this.accessCodeHelpTarget.classList.add('hidden')
+    }
+
+    if (!url || !accessCode) {
+      return
+    }
 
     this.hideAllStatuses()
     this.showLoading()
 
-    try {
-      const response = await fetch('/stack_manager/verify_url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ url: url })
-      })
-
-      if (response.status === 401) {
-        this.showError('Unauthorized')
-        return
-      }
-
-      if (response.ok) {
-        this.showSuccess()
-      } else {
-        this.showError('Unable to connect')
-      }
-    } catch (error) {
-      this.showError('Network error - please check the URL')
+    const portainerChecker = new PortainerChecker()
+    const result = await portainerChecker.verifyPortainerUrl(url, accessCode)
+    if (result === PortainerChecker.STATUS_UNAUTHORIZED) {
+      this.showError('The instance is reachable but the access code is invalid.')
+    } else if (result === PortainerChecker.STATUS_OK) {
+      this.showSuccess()
+    } else {
+      this.showError('Unable to connect to the instance. Please check the URL.')
     }
   }
 
@@ -51,9 +52,7 @@ export default class extends Controller {
 
   showError(message) {
     this.hideAllStatuses()
-    if (this.hasErrorMessageTarget && message) {
-      this.errorMessageTarget.textContent = message
-    }
+    this.errorMessageTarget.textContent = message
     this.verifyUrlErrorTarget.classList.remove('hidden')
   }
 

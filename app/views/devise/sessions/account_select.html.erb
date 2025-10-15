@@ -16,7 +16,7 @@
       <div class="text-center mb-10">
         <h1 class="text-4xl font-bold text-base-content mb-3">Select an Account</h1>
         <p class="text-base text-base-content/70">
-          Choose an account to continue to Canine, or <%= link_to "create a new account", new_user_registration_path, class: "link link-primary" %>.
+          Choose an account to continue to Canine, or <%= link_to "create a new account", local_onboarding_index_url, class: "link link-primary" %>.
         </p>
         <% if Rails.application.config.local_mode_passwordless %>
           <div class="mt-4 inline-flex">

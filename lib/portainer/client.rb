@@ -4,6 +4,9 @@ require 'httparty'
 
 module Portainer
   class Client
+    class UserJWT < Struct.new(:token); end
+    class AccessToken < Struct.new(:token); end
+
     KUBERNETES_ENDPOINT_TYPES = [ 5, 6, 7 ]
     attr_reader :jwt, :provider_url
 
@@ -22,7 +25,7 @@ module Portainer
     end
 
     def self.reachable?(provider_url)
-      HTTParty.get("#{provider_url}/system/status")
+      HTTParty.get("#{provider_url}/system/status", verify: false)
       true
     rescue Socket::ResolutionError, Net::ReadTimeout, StandardError
       false
@@ -31,18 +34,13 @@ module Portainer
     def authenticated?
       # TODO: This needs to be added back in.
       # response = get("/api/users/me")
-      true
+      get("/api/users/me")
     rescue UnauthorizedError => e
       false
     end
 
     def get_kubernetes_config
-      fetch_wrapper do
-        self.class.get(
-          "#{provider_url}/api/kubernetes/config",
-          headers: headers
-        )
-      end
+      get("/api/kubernetes/config")
     end
 
     def self.authenticate(auth_code:, username: nil, provider_url:)
@@ -138,7 +136,7 @@ module Portainer
 
     def get(path, query: {})
       fetch_wrapper do
-        self.class.get("#{provider_url}#{path}", headers:, query:)
+        self.class.get("#{provider_url}#{path}", headers:, query:, verify: false)
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
@@ -150,9 +148,14 @@ module Portainer
 
     def headers
       @headers ||= {
-        'Authorization' => "Bearer #{jwt}",
         'Content-Type' => 'application/json'
-      }
+      }.tap do |headers|
+        if jwt.is_a?(UserJWT)
+          headers['Authorization'] = "Bearer #{jwt.token}"
+        else
+          headers['X-API-Key'] = jwt.token
+        end
+      end
     end
 
     def fetch_wrapper(&block)

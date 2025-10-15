@@ -4,7 +4,8 @@
       <%= render(RadioSelectCardComponent.new(
         name: option[:name],
         value: option[:value],
-        checked: selected == option[:value]
+        checked: selected == option[:value],
+        href: option[:href],
       )) do %>
         <div class="shadow-sm cursor-pointer transition-all hover:shadow-md flex-1">
           <div class="flex items-start gap-3">

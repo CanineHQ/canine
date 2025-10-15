@@ -1,17 +1,11 @@
 <div>
   <%= form_with url: local_onboarding_index_path, method: :post do |form| %>
-    <%= render "accounts/stack_managers/url", form: form %>
-
-    <div class="form-group">
-      <%= form.label :access_code, "Access Code" %>
-      <%= form.text_field(
-        :access_code,
-        placeholder: "Enter your access code",
-        name: "account[access_code]",
-        class: "input input-bordered w-full",
-        required: true,
-      ) %>
-    </div>
+    <%= render(FormFieldComponent.new(
+      label: "Portainer Configuration",
+      description: "The command to run to start the container."
+    )) do %>
+      <%= render "accounts/stack_managers/url", form: form %>
+    <% end %>
 
     <div class="form-group">
       <%= form.label :account_name, "Account Name" %>

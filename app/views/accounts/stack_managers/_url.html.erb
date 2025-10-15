@@ -1,15 +1,49 @@
 <div data-controller="stack-manager--url-input">
-  <%= form.label :provider_url, "Portainer URL" %>
-  <%= form.text_field(
-    :provider_url,
-    name: "stack_manager[provider_url]",
-    class: "input input-bordered w-full",
-    placeholder: "http://portainer.portainer.svc.cluster.local:9000",
-    data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
-  ) %>
+  <div class="form-group">
+    <%= form.label :provider_url, "Portainer URL" %>
+    <%= form.text_field(
+      :provider_url,
+      name: "stack_manager[provider_url]",
+      class: "input input-bordered w-full",
+      placeholder: "http://portainer.portainer.svc.cluster.local:9000",
+      data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
+    ) %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :access_code, "Access Code" %>
+    <%= form.text_field(
+      :access_code,
+      placeholder: "Enter your access code",
+      name: "account[access_code]",
+      class: "input input-bordered w-full",
+      required: true,
+      data: { "stack-manager--url-input-target": "accessCodeInput", action: "blur->stack-manager--url-input#verifyUrl" },
+    ) %>
+    <div class="hidden" data-stack-manager--url-input-target="accessCodeHelp">
+      <label class="label flex justify-between" for="access_code">
+        <span class="label-text-alt">
+          <a class="link link-primary" target="_blank" href="#">Get your access code in Portainer →</a>
+        </span>
+      </label>
+    </div>
+  </div>
   <div class="label justify-end">
     <span class="label-text-alt">
       <%= render "accounts/stack_managers/url_connection_statuses" %>
     </span>
   </div>
+
+  <div class="form-control">
+    <%= form.label :enable_role_based_access_control, class: "label cursor-pointer justify-start gap-2" do %>
+      <%= form.check_box :enable_role_based_access_control, class: "checkbox" %>
+      <span class="label-text">Enable role based access control (recommended)</span>
+    <% end %>
+    <div class="label">
+      <span class="label-text-alt text-gray-500">
+        If enabled, any access to the cluster will be done through the user's Portainer session, and the access token above will only be used for async Git deployments.
+      </span>
+    </div>
+  </div>
+
 </div>

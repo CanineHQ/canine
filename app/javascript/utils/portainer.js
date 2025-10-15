@@ -40,14 +40,14 @@ export class PortainerChecker {
     return PortainerChecker.STATUS_ERROR;
   }
 
-  async verifyPortainerUrl(url) {
+  async verifyPortainerUrl(url, accessCode) {
     const response = await fetch('/stack_manager/verify_url', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
-      body: JSON.stringify({ url: url })
+      body: JSON.stringify({ stack_manager: { url, access_code: accessCode } })
     })
 
     return this.toResult(response);
