@@ -1,6 +1,6 @@
 class Portainer::Onboarding::CreateUserWithStackManager
   extend LightService::Action
-  expects :portainer_user, :username, :account_name, :provider_url, :access_code, :enable_role_based_access_control
+  expects :portainer_user, :username, :account_name, :provider_url, :access_token, :enable_role_based_access_control
   promises :user, :account, :stack_manager
 
   executed do |context|
@@ -36,7 +36,7 @@ class Portainer::Onboarding::CreateUserWithStackManager
         account: context.account,
         stack_manager_type: :portainer,
         provider_url: context.provider_url,
-        access_token: context.access_code,
+        access_token: context.access_token,
         enable_role_based_access_control: context.enable_role_based_access_control,
       )
       context.stack_manager.save!
