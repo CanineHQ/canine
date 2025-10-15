@@ -15,10 +15,10 @@ class Portainer::Stack
   def retrieve_access_token(user, allow_anonymous: false)
     if !stack_manager.enable_role_based_access_control && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
+    elsif user.present? && user.portainer_jwt.present?
+      Portainer::Client::UserJWT.new(user.portainer_jwt)
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
-    elsif user.portainer_jwt.present?
-      Portainer::Client::UserJWT.new(user.portainer_jwt)
     else
       raise "No access token found for user or stack manager. Please check your configuration."
     end
