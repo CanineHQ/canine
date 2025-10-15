@@ -14,7 +14,7 @@ class Portainer::Onboarding::Create
       password: params[:user][:password],
       account_name: params[:account][:name],
       provider_url: params[:stack_manager][:provider_url],
-      access_code: params[:stack_manager][:access_code],
+      access_token: params[:stack_manager][:access_code],
       enable_role_based_access_control: params[:stack_manager][:enable_role_based_access_control],
     ).reduce(
       Portainer::Onboarding::ValidateBootMode,
