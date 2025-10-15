@@ -40,6 +40,18 @@ export class PortainerChecker {
     return PortainerChecker.STATUS_ERROR;
   }
 
+  async checkReachable(url) {
+    const response = await fetch('/stack_manager/check_reachable', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': this.csrfToken()
+      },
+      body: JSON.stringify({ stack_manager: { url } })
+    })
+    return this.toResult(response);
+  }
+
   async verifyPortainerUrl(url, accessCode) {
     const response = await fetch('/stack_manager/verify_url', {
       method: 'POST',

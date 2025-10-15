@@ -2,7 +2,7 @@ module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
     before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
-    skip_before_action :authenticate_user!, only: [ :verify_url ]
+    skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable ]
 
     def _verify_stack(stack)
       if stack.authenticated?
@@ -27,6 +27,15 @@ module Accounts
 
       stack = stack_manager.stack.connect(current_user, allow_anonymous: false)
       _verify_stack(stack)
+    end
+
+    def check_reachable
+      url = params[:stack_manager][:url]
+      unless Portainer::Client.reachable?(url)
+        head :bad_gateway
+        return
+      end
+      head :ok
     end
 
     def verify_url
