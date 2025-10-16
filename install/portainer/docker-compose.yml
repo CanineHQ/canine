@@ -1,0 +1,55 @@
+x-shared-env: &shared-env
+  DATABASE_URL: postgres://postgres:password@postgres:5432
+  BOOT_MODE: local
+  SECRET_KEY_BASE: a38fcb39d60f9d146d2a0053a25024b9
+  APP_HOST: http://localhost:${PORT:-3000}
+  LOCAL_MODE_PASSWORDLESS: true
+  ALLOWED_HOSTNAME: "*"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_MULTIPLE_DATABASES=canine_production,canine_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Overrides default command so things don't shut down after the process ends.
+    # command: sleep infinity
+    depends_on:
+      - postgres
+    stdin_open: true
+    tty: true
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+      - "3200:3200"
+    environment:
+      <<: *shared-env
+      PORT: ${PORT:-3000}
+      ACCOUNT_SIGN_IN_ONLY: "true"
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bundle exec good_job start
+    depends_on:
+      - postgres
+    environment:
+      <<: *shared-env
+      LOCAL_MODE: "true"
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+
+volumes:
+  postgres:
