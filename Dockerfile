@@ -78,7 +78,7 @@ RUN apt-get update -qq && \
     chmod a+r /etc/apt/keyrings/docker.asc && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list && \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y docker-ce-cli && \
+    apt-get install --no-install-recommends -y docker-ce-cli docker-buildx-plugin && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
