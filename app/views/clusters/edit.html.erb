@@ -70,6 +70,16 @@
       </div>
 
       <div class="mt-6">
+        <%= button_to retry_install_cluster_path(@cluster), method: :post, class: "btn btn-warning btn-outline group mt-2", form: { data: { turbo_confirm: "Are you sure you want to rerun the installation?" } } do %>
+          <iconify-icon icon="lucide:rotate-cw" height="20" class="text-warning group-hover:text-black"></iconify-icon>
+          Rerun Installation
+        <% end %>
+        <div class="mt-2 text-sm text-gray-500">
+          This will retry the cluster installation process, including reinstalling all cluster components.
+        </div>
+      </div>
+
+      <div class="mt-6">
         <%= button_to @cluster, method: :delete, class: "btn btn-error btn-outline group mt-2", form: { data: { turbo_confirm: t("are_you_sure") } } do %>
           <iconify-icon icon="lucide:trash" height="20" class="text-error group-hover:text-error-content"></iconify-icon>
           Delete Cluster
