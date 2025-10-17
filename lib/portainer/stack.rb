@@ -131,11 +131,6 @@ class Portainer::Stack
   end
 
   def install_recipe
-    [
-      Clusters::IsReady,
-      Clusters::CreateNamespace,
-      Clusters::InstallMetricServer,
-      Clusters::InstallTelepresence
-    ]
+    Clusters::Install::DEFAULT_RECIPE
   end
 end
