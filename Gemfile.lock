@@ -101,7 +101,7 @@ GEM
       activerecord (>= 3.2, < 8.0)
       rake (>= 10.4, < 14.0)
     ast (2.4.3)
-    avo (3.24.1)
+    avo (3.25.1)
       actionview (>= 6.1)
       active_link_to
       activerecord (>= 6.1)
@@ -648,7 +648,7 @@ PLATFORMS
 DEPENDENCIES
   actioncable-enhanced-postgresql-adapter (~> 1.0)
   annotate (~> 3.2)
-  avo (~> 3.24)
+  avo (~> 3.25)
   bootsnap
   brakeman
   capybara
