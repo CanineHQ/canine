@@ -1,5 +1,21 @@
 <div>
-  <%= form_with url: local_onboarding_index_path, method: :post do |form| %>
+  <%= form_with url: local_onboarding_index_path, method: :post, class: "space-y-8" do |form| %>
+    <%= render(FormFieldComponent.new(
+      label: "Account Details",
+      description: "The name of your team, organization or account."
+    )) do %>
+      <div class="form-group">
+        <%= form.label :account_name, "Name" %>
+        <%= form.text_field(
+          :account_name,
+          placeholder: "My Organization",
+          name: "account[name]",
+          class: "input input-bordered w-full",
+          required: true,
+        ) %>
+      </div>
+    <% end %>
+
     <%= render(FormFieldComponent.new(
       label: "Portainer Configuration",
       description: "The command to run to start the container."
@@ -7,43 +23,38 @@
       <%= render "accounts/stack_managers/url", form: form %>
     <% end %>
 
-    <div class="form-group">
-      <%= form.label :account_name, "Account Name" %>
-      <%= form.text_field(
-        :account_name,
-        placeholder: "My Organization",
-        name: "account[name]",
-        class: "input input-bordered w-full",
-        required: true,
-      ) %>
-    </div>
-    <div class="form-group">
-      <%= form.label :username, "Portainer Username" %>
-      <%= form.text_field(
-        :username,
-        placeholder: "Enter your username",
-        name: "user[username]",
-        class: "input input-bordered w-full",
-        required: true,
-      ) %>
-    </div>
-    <div class="form-group" data-controller="toggle-password">
-      <%= form.label :password, "Portainer Password" %>
-      <div class="flex items-center">
+    <%= render(FormFieldComponent.new(
+      label: "Portainer Credentials",
+      description: "We'll create the first user in this organization by connecting to your Portainer instance with your credentials."
+    )) do %>
+      <div class="form-group">
+        <%= form.label :username, "Portainer Username" %>
         <%= form.text_field(
-          :password,
-          placeholder: "Enter your password",
-          name: "user[password]",
-          type: "password",
+          :username,
+          placeholder: "Enter your username",
+          name: "user[username]",
           class: "input input-bordered w-full",
           required: true,
-          data: { toggle_password_target: "input" },
         ) %>
-        <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
-          <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
-        </button>
       </div>
-    </div>
+      <div class="form-group" data-controller="toggle-password">
+        <%= form.label :password, "Portainer Password" %>
+        <div class="flex items-center">
+          <%= form.text_field(
+            :password,
+            placeholder: "Enter your password",
+            name: "user[password]",
+            type: "password",
+            class: "input input-bordered w-full",
+            required: true,
+            data: { toggle_password_target: "input" },
+          ) %>
+          <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+            <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    <% end %>
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary" %>
     </div>
