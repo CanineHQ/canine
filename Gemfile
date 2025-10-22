@@ -89,7 +89,7 @@ gem "rack", "~> 3.1"
 
 gem "tailwindcss-rails", "~> 2.7"
 
-gem "httparty", "~> 0.23.1"
+gem "httparty", "~> 0.23.2"
 
 gem "redcarpet", "~> 3.6"
 

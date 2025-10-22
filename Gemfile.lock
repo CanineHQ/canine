@@ -256,7 +256,7 @@ GEM
     http-cookie (1.0.7)
       domain_name (~> 0.5)
     http-form_data (2.3.0)
-    httparty (0.23.1)
+    httparty (0.23.2)
       csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
@@ -666,7 +666,7 @@ DEPENDENCIES
   flipper-ui (~> 1.2.2)
   friendly_id (~> 5.4)
   good_job (~> 4.12)
-  httparty (~> 0.23.1)
+  httparty (~> 0.23.2)
   image_processing (~> 1.13)
   importmap-rails
   jbuilder
