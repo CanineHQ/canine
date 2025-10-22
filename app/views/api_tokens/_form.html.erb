@@ -1,0 +1,14 @@
+<%= form_with model: api_token do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Expires at (leave blank for never)</span>
+      </label>
+      <%= form.datetime_field :expires_at, class: "input input-bordered" %>
+    </div>
+
+  <div class="form-footer">
+    <%= form.submit "Save", class: "btn btn-primary" %>
+    <%= link_to "Cancel", api_tokens_path, class: "btn btn-outline" %>
+  </div>
+<% end %>

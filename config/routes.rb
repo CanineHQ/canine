@@ -62,6 +62,7 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resources :api_tokens, only: %i[index new create destroy]
   resources :projects do
     member do
       post :restart
