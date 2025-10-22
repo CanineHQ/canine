@@ -284,6 +284,9 @@ GEM
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
     json (2.13.2)
+    json-schema (5.2.2)
+      addressable (~> 2.8)
+      bigdecimal (~> 3.1)
     jsonpath (1.1.5)
       multi_json
     jwt (2.9.1)
@@ -506,6 +509,14 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.4)
+    rswag-api (2.16.0)
+      activesupport (>= 5.2, < 8.1)
+      railties (>= 5.2, < 8.1)
+    rswag-specs (2.16.0)
+      activesupport (>= 5.2, < 8.1)
+      json-schema (>= 2.2, < 6.0)
+      railties (>= 5.2, < 8.1)
+      rspec-core (>= 2.14)
     rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -694,6 +705,8 @@ DEPENDENCIES
   redcarpet (~> 3.6)
   responders!
   rspec-rails (~> 8.0)
+  rswag-api (~> 2.10, >= 2.10.1)
+  rswag-specs
   rubocop-rails-omakase
   rubyzip (~> 3.2)
   sassc-rails (~> 2.1)

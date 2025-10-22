@@ -1,7 +1,4 @@
 class ApiTokensController < ApplicationController
-  def index
-  end
-
   def new
     @api_token = ApiToken.new(user: current_user)
   end

@@ -1,0 +1,114 @@
+---
+openapi: 3.0.1
+info:
+  title: Canine API V1
+  version: v1
+  description: Canine API
+components:
+  schemas:
+    projects:
+      type: array
+      items:
+        "$ref": "#/components/schemas/project"
+    project:
+      type: object
+      required:
+      - id
+      - name
+      - repository_url
+      - branch
+      - cluster_id
+      - subfolder
+      - updated_at
+      - created_at
+      properties:
+        id:
+          type: integer
+          example: '1'
+        name:
+          type: string
+          example: example-project
+        repository_url:
+          type: string
+          example: https://github.com/example/example-project
+        branch:
+          type: string
+          example: main
+        cluster_id:
+          type: integer
+          example: '1'
+        subfolder:
+          type: string
+          example: example-subfolder
+        updated_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        created_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        url:
+          type: string
+          example: https://example.com/projects/1
+  securitySchemes:
+    x_api_key:
+      type: apiKey
+      name: X-API-Key
+      in: header
+security:
+- x_api_key: []
+paths:
+  "/projects/{project_id}/deployments/deploy":
+    post:
+      summary: Deploy Project
+      tags:
+      - Deployments
+      operationId: deployProject
+      security:
+      - x_api_key: []
+      responses:
+        '200':
+          description: successful
+  "/projects":
+    get:
+      summary: List Projects
+      tags:
+      - Projects
+      operationId: listProjects
+      security:
+      - x_api_key: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/projects"
+  "/projects/{id}":
+    get:
+      summary: Show Project
+      tags:
+      - Projects
+      operationId: showProject
+      security:
+      - x_api_key: []
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/project"
+  "/projects/{id}/restart":
+    post:
+      summary: Restart Project
+      tags:
+      - Projects
+      operationId: restartProject
+      security:
+      - x_api_key: []
+      responses:
+        '200':
+          description: successful
+servers:
+- url: https://canine.sh
+  description: Production
