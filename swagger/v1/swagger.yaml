@@ -6,10 +6,6 @@ info:
   description: Canine API
 components:
   schemas:
-    projects:
-      type: array
-      items:
-        "$ref": "#/components/schemas/project"
     project:
       type: object
       required:
@@ -49,6 +45,10 @@ components:
         url:
           type: string
           example: https://example.com/projects/1
+    projects:
+      type: array
+      items:
+        "$ref": "#/components/schemas/project"
   securitySchemes:
     x_api_key:
       type: apiKey
@@ -63,8 +63,18 @@ paths:
       tags:
       - Deployments
       operationId: deployProject
-      security:
-      - x_api_key: []
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: project_id
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: integer
       responses:
         '200':
           description: successful
@@ -74,8 +84,12 @@ paths:
       tags:
       - Projects
       operationId: listProjects
-      security:
-      - x_api_key: []
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
       responses:
         '200':
           description: successful
@@ -83,21 +97,6 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/projects"
-  "/projects/{id}":
-    get:
-      summary: Show Project
-      tags:
-      - Projects
-      operationId: showProject
-      security:
-      - x_api_key: []
-      responses:
-        '200':
-          description: successful
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/project"
   "/projects/{id}/restart":
     post:
       summary: Restart Project
@@ -106,6 +105,18 @@ paths:
       operationId: restartProject
       security:
       - x_api_key: []
+      parameters:
+      - name: id
+        in: path
+        description: Project ID
+        required: true
+        schema:
+          type: integer
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
       responses:
         '200':
           description: successful

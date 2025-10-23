@@ -58,7 +58,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
 
-  config.swagger_dry_run = false
+  config.rswag_dry_run = false
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

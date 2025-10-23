@@ -9,7 +9,7 @@ module SwaggerSchemas
 
   def self.validate!
     schemas.each do |schema_name, schema|
-      next unless const_defined?(schema_name)
+      next unless const_defined?(schema_name.upcase)
     end
   end
 end
