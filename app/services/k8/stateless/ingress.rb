@@ -14,9 +14,12 @@ class K8::Stateless::Ingress < K8::Base
   def certificate_status
     return nil unless @service.domains.any?
     return nil unless @service.allow_public_networking?
-    return nil unless @service.allow_public_networking?
 
-    kubectl.call("get certificate example-tls -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+    kubectl.call("get certificate #{certificate_name} -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+  end
+
+  def certificate_name
+    "#{@service.name}-tls"
   end
 
   def get_ingress
