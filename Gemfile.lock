@@ -7,12 +7,12 @@ GIT
 
 GIT
   remote: https://github.com/heartcombo/responders.git
-  revision: 9bdc60dfbfa8001641c1c4df7bc73c3fc2a4cf41
+  revision: c1692d5896f94a52f4a39e7591c1b62c6a3e3db6
   branch: main
   specs:
-    responders (3.1.1)
-      actionpack (>= 5.2)
-      railties (>= 5.2)
+    responders (3.2.0)
+      actionpack (>= 7.0)
+      railties (>= 7.0)
 
 GEM
   remote: https://rubygems.org/
@@ -120,7 +120,7 @@ GEM
     avo-heroicons (0.1.1)
     base64 (0.3.0)
     bcrypt (3.1.20)
-    benchmark (0.4.1)
+    benchmark (0.5.0)
     bigdecimal (3.3.1)
     bindex (0.8.1)
     bootsnap (1.18.6)
