@@ -15,7 +15,7 @@ spec:
     <% service.domains.each do |domain| %>
     - <%= domain.domain_name %>
     <% end %>
-    secretName: example-tls
+    secretName: <%= certificate_name %>
   rules:
   <% service.domains.each do |domain| %>
   - host: <%= domain.domain_name %>
