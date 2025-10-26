@@ -8,7 +8,8 @@ class AddOns::ProcessesController < AddOns::BaseController
     @pod_events = client.get_pod_events(params[:id], @add_on.name)
     @logs = client.get_pod_log(params[:id], @add_on.name)
   rescue Kubeclient::HttpError => e
-    @logs = e.to_s
+    @logs = ""
+    @error = e.to_s
   rescue Kubeclient::ResourceNotFoundError
     flash[:alert] = "Pod #{params[:id]} not found"
     redirect_to add_on_processes_path(@add_on)

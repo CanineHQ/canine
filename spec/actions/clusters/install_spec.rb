@@ -37,8 +37,24 @@ RSpec.describe Clusters::Install do
         allow(portainer_stack).to receive(:install_recipe).and_return(custom_recipe)
       end
 
-      it 'returns the stack manager recipe' do
-        expect(described_class.recipe(cluster, user)).to eq(custom_recipe)
+      context 'when cluster has a kubeconfig' do
+        before do
+          allow(cluster).to receive(:kubeconfig).and_return("asdf")
+        end
+
+        it 'returns the default recipe' do
+          expect(described_class.recipe(cluster, user)).to eq(described_class::DEFAULT_RECIPE)
+        end
+      end
+
+      context 'when cluster has no kubeconfig' do
+        before do
+          allow(cluster).to receive(:kubeconfig).and_return(nil)
+        end
+
+        it 'returns the stack manager recipe' do
+          expect(described_class.recipe(cluster, user)).to eq(custom_recipe)
+        end
       end
     end
   end
