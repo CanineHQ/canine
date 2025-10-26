@@ -1,3 +1,9 @@
 <%= add_on_layout(@add_on) do %>
-  <%= render "log_outputs/pod_logs", logs: @logs, pod_events: @pod_events, back_path: add_on_processes_path(@add_on) %>
+  <%= render(
+    "log_outputs/pod_logs",
+    logs: @logs,
+    pod_events: @pod_events,
+    back_path: add_on_processes_path(@add_on),
+    error: @error
+  ) %>
 <% end %>
