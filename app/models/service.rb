@@ -42,6 +42,7 @@ class Service < ApplicationRecord
   scope :running, -> { where(status: [ :healthy, :unhealthy, :updated ]) }
 
   has_one :cron_schedule, dependent: :destroy
+  has_one :resource_constraint, as: :constrainable, dependent: :destroy
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy

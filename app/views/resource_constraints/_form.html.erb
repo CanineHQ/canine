@@ -1,0 +1,123 @@
+<%# locals: (form:, resource_constraint:) %>
+<div class="space-y-6">
+  <%= form.fields_for :resource_constraint, (resource_constraint || form.object.resource_constraint || ResourceConstraint.new) do |rc_form| %>
+
+    <!-- CPU Configuration -->
+    <div class="space-y-4">
+      <div class="font-medium flex items-center gap-2 font-bold">
+        <iconify-icon icon="lucide:cpu" height="20"></iconify-icon>
+        <span>CPU Configuration</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <%= rc_form.label :cpu_request, class: "label" do %>
+            <span class="label-text font-medium">CPU Request</span>
+          <% end %>
+          <%= rc_form.text_field :cpu_request,
+              class: "input input-bordered w-full font-mono text-sm",
+              value: resource_constraint&.cpu_request_formatted,
+              placeholder: "500m or 1" %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              Minimum CPU guaranteed (e.g., 100m, 500m, 1, 2)
+            </span>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <%= rc_form.label :cpu_limit, class: "label" do %>
+            <span class="label-text font-medium">CPU Limit</span>
+          <% end %>
+          <%= rc_form.text_field :cpu_limit,
+              class: "input input-bordered w-full font-mono text-sm",
+              value: resource_constraint&.cpu_limit_formatted,
+              placeholder: "1 or 2" %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              Maximum CPU allowed (e.g., 1, 2, 4)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Memory Configuration -->
+    <div class="space-y-4">
+      <div class="font-medium flex items-center gap-2 font-bold">
+        <iconify-icon icon="lucide:hard-drive" height="20"></iconify-icon>
+        <span>Memory Configuration</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <%= rc_form.label :memory_request, class: "label" do %>
+            <span class="label-text font-medium">Memory Request</span>
+          <% end %>
+          <%= rc_form.text_field :memory_request,
+              class: "input input-bordered w-full font-mono text-sm",
+              value: resource_constraint&.memory_request_formatted,
+              placeholder: "512Mi or 1Gi" %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              Minimum memory guaranteed (e.g., 128Mi, 512Mi, 1Gi)
+            </span>
+          </div>
+        </div>
+
+        <div class="form-control">
+          <%= rc_form.label :memory_limit, class: "label" do %>
+            <span class="label-text font-medium">Memory Limit</span>
+          <% end %>
+          <%= rc_form.text_field :memory_limit,
+              class: "input input-bordered w-full font-mono text-sm",
+              value: resource_constraint&.memory_limit_formatted,
+              placeholder: "1Gi or 2Gi" %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              Maximum memory allowed (e.g., 1Gi, 2Gi, 4Gi)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GPU Configuration -->
+    <div class="space-y-4">
+      <div class="font-medium flex items-center gap-2 font-bold">
+        <iconify-icon icon="lucide:zap" height="20"></iconify-icon>
+        <span>GPU Configuration</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-control">
+          <%= rc_form.label :gpu_request, class: "label" do %>
+            <span class="label-text font-medium">GPU Request</span>
+          <% end %>
+          <%= rc_form.number_field :gpu_request,
+              class: "input input-bordered w-full",
+              value: resource_constraint&.gpu_request,
+              min: 0,
+              placeholder: "0" %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              Number of GPUs required (integer)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <iconify-icon icon="lucide:info" height="20"></iconify-icon>
+      <div class="text-sm">
+        <p class="font-medium">Resource format:</p>
+        <ul class="list-disc list-inside mt-1">
+          <li><strong>CPU:</strong> Use millicores (100m, 500m) or cores (1, 2, 4)</li>
+          <li><strong>Memory:</strong> Use Mi (mebibytes) or Gi (gibibytes)</li>
+          <li><strong>Limits</strong> must be greater than or equal to <strong>Requests</strong></li>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>
