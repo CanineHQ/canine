@@ -50,6 +50,8 @@ class Project < ApplicationRecord
   has_one :build_configuration, dependent: :destroy
   has_one :resource_constraint, as: :constrainable, dependent: :destroy
 
+  accepts_nested_attributes_for :resource_constraint, allow_destroy: true
+
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
   has_one :project_fork_cluster, class_name: "Cluster", foreign_key: :id, primary_key: :project_fork_cluster_id

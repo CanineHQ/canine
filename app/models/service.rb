@@ -43,6 +43,9 @@ class Service < ApplicationRecord
 
   has_one :cron_schedule, dependent: :destroy
   has_one :resource_constraint, as: :constrainable, dependent: :destroy
+
+  accepts_nested_attributes_for :resource_constraint, allow_destroy: true
+
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
@@ -75,6 +78,15 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
+      resource_constraint_attributes: [
+        :id,
+        :cpu_request,
+        :cpu_limit,
+        :memory_request,
+        :memory_limit,
+        :gpu_request,
+        :_destroy
+      ]
     )
   end
 end
