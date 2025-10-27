@@ -4,16 +4,34 @@
   <%= turbo_frame_tag "provider" do %>
     <%= render "providers/index" %>
     <div class="flex items-center gap-2">
-      <%= link_to "+ Github Credentials", new_provider_path(provider_type: Provider::GITHUB_PROVIDER), class: "btn btn-primary btn-sm" %>
-      <%= link_to "+ Gitlab Credentials", new_provider_path(provider_type: Provider::GITLAB_PROVIDER), class: "btn btn-primary btn-sm" %>
-      <%= link_to "+ Container Registry Credentials", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER), class: "btn btn-primary btn-sm" %>
-
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-primary btn-sm">
+          + New Credential
+          <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
+          <li>
+            <%= link_to "Github", new_provider_path(provider_type: Provider::GITHUB_PROVIDER) %>
+          <li>
+            <%= link_to "Gitlab", new_provider_path(provider_type: Provider::GITLAB_PROVIDER) %>
+          </li>
+          <li>
+            <%= link_to "Container Registry", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER) %>
+          </li>
+        </ul>
+      </div>
       <% if current_account.stack_manager&.stack&.provides_registries? %>
         <%= button_to sync_registries_stack_manager_path, class: "btn btn-outline btn-sm" do %>
           <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
           <span class="hidden sm:inline">Sync Credentials</span>
         <% end %>
       <% end %>
+    </div>
+  <% end %>
+  <%= turbo_frame_tag "api_token" do %>
+    <%= render "api_tokens/index" %>
+    <div class="flex items-center gap-2">
+      <%= link_to "+ API Token", new_api_token_path, class: "btn btn-primary btn-sm" %>
     </div>
   <% end %>
 <% end %>

@@ -1,0 +1,8 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "api_token" do %>
+    <div class="font-lg font-bold mt-4">
+      Add API Token
+    </div>
+    <%= render "api_tokens/form", api_token: @api_token %>
+  <% end %>
+<% end %>
