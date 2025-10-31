@@ -28,8 +28,6 @@ class AddOn < ApplicationRecord
   has_one :account, through: :cluster
   has_one :resource_constraint, as: :constrainable, dependent: :destroy
 
-  accepts_nested_attributes_for :resource_constraint, allow_destroy: true
-
   enum :status, {
     installing: 0,
     installed: 1,

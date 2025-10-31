@@ -15,16 +15,7 @@ module Projects
         :container_registry_url,
         :predeploy_command,
         :project_fork_status,
-        :project_fork_cluster_id,
-        resource_constraint_attributes: [
-          :id,
-          :cpu_request,
-          :cpu_limit,
-          :memory_request,
-          :memory_limit,
-          :gpu_request,
-          :_destroy
-        ]
+        :project_fork_cluster_id
       )
     end
 

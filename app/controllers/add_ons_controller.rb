@@ -138,16 +138,7 @@ class AddOnsController < ApplicationController
       :chart_url,
       :name,
       metadata: {},
-      values: {},
-      resource_constraint_attributes: [
-        :id,
-        :cpu_request,
-        :cpu_limit,
-        :memory_request,
-        :memory_limit,
-        :gpu_request,
-        :_destroy
-      ]
+      values: {}
     )
 
     # Uncomment to use Pundit permitted attributes
