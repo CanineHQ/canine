@@ -37,6 +37,29 @@
     </div>
 
     <div>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-2xl font-bold">Resource Constraints</h2>
+        <% if @add_on.resource_constraint.present? %>
+          <%= button_to "Remove Constraints", add_on_resource_constraint_path(@add_on), method: :delete, class: "btn btn-error btn-outline", form: { data: { turbo_confirm: "Are you sure you want to remove resource constraints?" } } %>
+        <% end %>
+      </div>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <% if @add_on.resource_constraint.present? %>
+        <%= form_with(model: @add_on.resource_constraint, url: add_on_resource_constraint_path(@add_on), method: :patch) do |form| %>
+          <%= render "resource_constraints/form", form: form, resource_constraint: @add_on.resource_constraint %>
+          <div class="form-footer mt-6">
+            <%= form.submit "Update Resource Constraints", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      <% else %>
+        <%= turbo_frame_tag "resource_constraint_form" do %>
+          <%= link_to "Enable Resource Constraints", new_add_on_resource_constraint_path(@add_on), class: "btn btn-primary btn-outline" %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div>
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="mt-6">

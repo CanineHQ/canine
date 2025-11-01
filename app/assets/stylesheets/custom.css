@@ -77,3 +77,11 @@
 .max-w-9xl {
   max-width: 96rem;
 }
+
+.slider::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 rounded-full bg-primary cursor-pointer;
+}
+
+.slider::-moz-range-thumb {
+  @apply w-4 h-4 rounded-full bg-primary cursor-pointer border-0;
+}

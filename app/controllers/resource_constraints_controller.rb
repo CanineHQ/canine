@@ -7,8 +7,8 @@ class ResourceConstraintsController < ApplicationController
   end
 
   def create
-    @resource_constraint = @constrainable.build_resource_constraint(resource_constraint_params)
-    result = ResourceConstraints::Create.call(@resource_constraint, params)
+    @resource_constraint = @constrainable.build_resource_constraint
+    result = ResourceConstraints::Create.call(@resource_constraint, resource_constraint_params)
 
     if result.success?
       redirect_to_constrainable notice: "Resource constraints created successfully."
@@ -21,8 +21,7 @@ class ResourceConstraintsController < ApplicationController
   end
 
   def update
-    @resource_constraint.assign_attributes(resource_constraint_params)
-    result = ResourceConstraints::Update.call(@resource_constraint, params)
+    result = ResourceConstraints::Update.call(@resource_constraint, resource_constraint_params)
 
     if result.success?
       redirect_to_constrainable notice: "Resource constraints updated successfully."
