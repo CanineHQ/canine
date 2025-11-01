@@ -132,7 +132,14 @@ class AddOnsController < ApplicationController
     if params[:add_on][:metadata].present?
       params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
     end
-    params.require(:add_on).permit(:cluster_id, :chart_type, :chart_url, :name, metadata: {}, values: {})
+    params.require(:add_on).permit(
+      :cluster_id,
+      :chart_type,
+      :chart_url,
+      :name,
+      metadata: {},
+      values: {}
+    )
 
     # Uncomment to use Pundit permitted attributes
     # params.require(:add_on).permit(policy(@add_on).permitted_attributes)

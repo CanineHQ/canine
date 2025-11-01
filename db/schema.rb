@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_09_003742) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_27_014101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -425,6 +425,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_09_003742) do
     t.string "registry_url"
     t.string "external_id"
     t.index ["user_id"], name: "index_providers_on_user_id"
+  end
+
+  create_table "resource_constraints", force: :cascade do |t|
+    t.string "constrainable_type", null: false
+    t.bigint "constrainable_id", null: false
+    t.bigint "cpu_request"
+    t.bigint "cpu_limit"
+    t.bigint "memory_request"
+    t.bigint "memory_limit"
+    t.integer "gpu_request"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["constrainable_type", "constrainable_id"], name: "index_resource_constraints_on_constrainable"
   end
 
   create_table "services", force: :cascade do |t|

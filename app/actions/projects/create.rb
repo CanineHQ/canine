@@ -15,7 +15,7 @@ module Projects
         :container_registry_url,
         :predeploy_command,
         :project_fork_status,
-        :project_fork_cluster_id,
+        :project_fork_cluster_id
       )
     end
 

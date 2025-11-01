@@ -48,6 +48,7 @@ class Project < ApplicationRecord
 
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy
+  has_one :resource_constraint, as: :constrainable, dependent: :destroy
 
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy

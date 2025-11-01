@@ -1,0 +1,19 @@
+<%= turbo_frame_tag "resource_constraint_form" do %>
+  <h3 class="text-lg font-bold mb-4">New Resource Constraints</h3>
+  <%
+    url = case @constrainable_type
+          when 'add_on'
+            add_on_resource_constraint_path(@constrainable)
+          when 'project'
+            project_resource_constraint_path(@constrainable)
+          when 'service'
+            project_service_resource_constraint_path(@project, @constrainable)
+          end
+  %>
+  <%= form_with(model: @resource_constraint, url: url, method: :post, data: { turbo_frame: "resource_constraint_form" }) do |form| %>
+    <%= render "resource_constraints/form", form: form, resource_constraint: @resource_constraint %>
+    <div class="form-footer mt-6">
+      <%= form.submit "Create Resource Constraints", class: "btn btn-primary", data: { turbo: false } %>
+    </div>
+  <% end %>
+<% end %>
