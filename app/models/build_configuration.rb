@@ -36,6 +36,7 @@ class BuildConfiguration < ApplicationRecord
   belongs_to :project
   belongs_to :build_cloud, optional: true
   belongs_to :provider
+  has_many :build_packs, dependent: :destroy
 
   validates_presence_of :project, :provider, :driver
   validates_presence_of :image_repository
