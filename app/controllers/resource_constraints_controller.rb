@@ -1,6 +1,6 @@
 class ResourceConstraintsController < ApplicationController
   before_action :set_constrainable
-  before_action :set_resource_constraint, only: [:edit, :update, :destroy]
+  before_action :set_resource_constraint, only: [ :edit, :update, :destroy ]
 
   def new
     @resource_constraint = @constrainable.build_resource_constraint
