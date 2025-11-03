@@ -560,8 +560,8 @@ GEM
     sentry-ruby (5.28.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    shoulda-matchers (6.5.0)
-      activesupport (>= 5.2.0)
+    shoulda-matchers (7.0.1)
+      activesupport (>= 7.1)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -699,7 +699,7 @@ DEPENDENCIES
   sassc-rails (~> 2.1)
   sentry-rails (~> 5.27)
   sentry-ruby (~> 5.28)
-  shoulda-matchers (~> 6.5)
+  shoulda-matchers (~> 7.0)
   simplecov
   sitemap_generator (~> 6.1)
   sprockets-rails

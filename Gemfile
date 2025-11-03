@@ -56,7 +56,7 @@ group :test do
 
   gem "database_cleaner-active_record", '~> 2.2.2'
   gem 'faker', '~> 3.5.2'
-  gem 'shoulda-matchers', '~> 6.5'
+  gem 'shoulda-matchers', '~> 7.0'
 end
 
 gem "cssbundling-rails"
