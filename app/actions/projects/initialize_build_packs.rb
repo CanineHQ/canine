@@ -5,7 +5,7 @@ module Projects
     extend LightService::Action
 
     expects :build_configuration, :params
-    promises :build_packs, optional: true
+    promises :build_packs
 
     def self.fetch_buildpack_details!(build_pack)
       result = Buildpacks::Details.execute(
@@ -17,6 +17,7 @@ module Projects
     end
 
     executed do |context|
+      context.build_packs = []
       build_configuration = context.build_configuration
       next context unless build_configuration&.buildpacks?
 

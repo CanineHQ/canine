@@ -38,14 +38,7 @@ RSpec.describe Projects::InitializeBuildPacks do
     })
   end
 
-  let(:context) do
-    {
-      build_configuration: build_configuration,
-      params: params
-    }
-  end
-
-  subject { described_class.execute(context) }
+  subject { described_class.execute(build_configuration: build_configuration, params: params) }
 
   it 'builds build packs from attributes' do
     expect { subject }.to change { build_configuration.build_packs.size }.from(0).to(2)

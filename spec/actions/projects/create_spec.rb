@@ -76,6 +76,7 @@ RSpec.describe Projects::Create do
       end
 
       context 'with buildpacks' do
+        include_context 'buildpack details stubbing'
         let(:params) do
           ActionController::Parameters.new({
             project: {
@@ -94,20 +95,20 @@ RSpec.describe Projects::Create do
                 provider_id: provider.id,
                 build_type: 'buildpacks',
                 buildpack_base_builder: 'paketobuildpacks/builder:full',
-                build_packs_attributes: {
-                  '0' => {
+                build_packs_attributes: [
+                  {
                     namespace: 'paketo-buildpacks',
                     name: 'ruby',
                     version: '',
                     reference_type: 'registry'
                   },
-                  '1' => {
+                  {
                     namespace: 'paketo-buildpacks',
                     name: 'nodejs',
                     version: '1.2.3',
                     reference_type: 'registry'
                   }
-                }
+                ]
               }
             }
           })
