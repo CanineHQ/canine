@@ -3,10 +3,11 @@
 # Table name: build_packs
 #
 #  id                     :bigint           not null, primary key
+#  build_order            :integer          not null
 #  details                :jsonb
 #  name                   :string
 #  namespace              :string
-#  reference_type         :string           not null
+#  reference_type         :integer          not null
 #  uri                    :text
 #  version                :string
 #  created_at             :datetime         not null
@@ -27,11 +28,12 @@ class BuildPack < ApplicationRecord
   VERIFIED_NAMESPACES = %w[io.buildpacks paketo-buildpacks heroku tanzu-buildpacks].freeze
 
   belongs_to :build_configuration
+  validates_presence_of :build_order
 
   enum :reference_type, {
     registry: 0,
     git: 1,
-    url: 2,
+    url: 2
   }
 
   validates :reference_type, presence: true
@@ -68,5 +70,13 @@ class BuildPack < ApplicationRecord
     else
       uri
     end
+  end
+
+  def key
+    "#{namespace}/#{name}"
+  end
+
+  def static_info
+    BuildConfiguration.available_buildpacks[key] || {}
   end
 end

@@ -109,7 +109,14 @@ export default class extends Controller {
 
   selectItem(item, itemElement) {
     this.onItemSelect(item, itemElement)
+    this.clearInput()
     this.hideDropdown()
+  }
+
+  clearInput() {
+    if (this.input) {
+      this.input.value = ''
+    }
   }
 
   showDropdown() {
@@ -123,9 +130,9 @@ export default class extends Controller {
 
   showLoading() {
     this.dropdown.innerHTML = `
-      <li class="p-4 text-center">
+      <li class="p-4 text-center flex items-center justify-center gap-2">
         <span class="loading loading-spinner loading-sm"></span>
-        <span class="ml-2">Searching...</span>
+        <span>Searching...</span>
       </li>
     `
     this.showDropdown()

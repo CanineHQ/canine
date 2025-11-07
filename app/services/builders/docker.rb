@@ -32,7 +32,7 @@ module Builders
         "--progress=plain",
         "--platform", "linux/amd64",
         "-t", project.container_image_reference,
-        "-f", File.join(repository_path, project.dockerfile_path)
+        "-f", File.join(repository_path, project.build_configuration.dockerfile_path)
       ]
 
       # Add environment variables to the build command
@@ -43,7 +43,7 @@ module Builders
       docker_build_command.push("--push")
 
       # Add the build context directory at the end
-      docker_build_command.push(File.join(repository_path, project.docker_build_context_directory))
+      docker_build_command.push(File.join(repository_path, project.build_configuration.context_directory))
       Rails.logger.info("Docker build command: `#{docker_build_command.join(" ")}`")
       docker_build_command
     end

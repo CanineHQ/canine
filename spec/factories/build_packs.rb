@@ -3,10 +3,11 @@
 # Table name: build_packs
 #
 #  id                     :bigint           not null, primary key
+#  build_order            :integer          not null
 #  details                :jsonb
 #  name                   :string
 #  namespace              :string
-#  reference_type         :string           not null
+#  reference_type         :integer          not null
 #  uri                    :text
 #  version                :string
 #  created_at             :datetime         not null
@@ -26,7 +27,7 @@
 FactoryBot.define do
   factory :build_pack do
     build_configuration
-    reference_type { :registry }
+    reference_type { "registry" }
     namespace { "paketo-buildpacks" }
     name { "ruby" }
     version { "0.47.7" }
@@ -40,25 +41,19 @@ FactoryBot.define do
     end
 
     trait :git do
-      reference_type { :git }
+      reference_type { "git" }
       namespace { nil }
       name { nil }
+      version { nil }
       uri { "https://github.com/DataDog/heroku-buildpack-datadog.git" }
       details { {} }
     end
 
-    trait :docker do
-      reference_type { :docker }
-      namespace { nil }
-      name { nil }
-      uri { "docker://paketobuildpacks/ruby:0.47.7" }
-      details { {} }
-    end
-
     trait :url do
-      reference_type { :url }
+      reference_type { "url" }
       namespace { nil }
       name { nil }
+      version { nil }
       uri { "https://github.com/heroku/buildpacks-ruby/releases/download/v0.1.0/buildpack.tgz" }
       details { {} }
     end

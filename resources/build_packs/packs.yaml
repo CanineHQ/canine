@@ -1,0 +1,101 @@
+---
+# Flat list of available buildpacks
+# Key format: namespace/name
+
+paketo-buildpacks/ruby:
+  namespace: paketo-buildpacks
+  name: ruby
+  image: /images/languages/ruby.webp
+  description: "Paketo Ruby Buildpack - A language family buildpack for building Ruby apps"
+  reference_type: registry
+
+heroku/ruby:
+  namespace: heroku
+  name: ruby
+  image: /images/languages/ruby.webp
+  description: "Heroku's buildpack for Ruby applications"
+  reference_type: registry
+
+paketo-buildpacks/python:
+  namespace: paketo-buildpacks
+  name: python
+  image: /images/languages/python.webp
+  description: "Paketo Python Buildpack - A language family buildpack for building Python apps"
+  reference_type: registry
+
+heroku/python:
+  namespace: heroku
+  name: python
+  image: /images/languages/python.webp
+  description: "Heroku's buildpack for Python applications"
+  reference_type: registry
+
+paketo-buildpacks/go:
+  namespace: paketo-buildpacks
+  name: go
+  image: /images/languages/golang.webp
+  description: "Paketo Go Buildpack - A language family buildpack for building Go apps"
+  reference_type: registry
+
+heroku/go:
+  namespace: heroku
+  name: go
+  image: /images/languages/golang.webp
+  description: "Heroku's buildpack for Go applications"
+  reference_type: registry
+
+paketo-buildpacks/java:
+  namespace: paketo-buildpacks
+  name: java
+  image: /images/languages/java.webp
+  description: "Paketo Java Buildpack - A language family buildpack for building Java apps"
+  reference_type: registry
+
+heroku/java:
+  namespace: heroku
+  name: java
+  image: /images/languages/java.webp
+  description: "Heroku's buildpack for Java applications"
+  reference_type: registry
+
+paketo-buildpacks/nodejs:
+  namespace: paketo-buildpacks
+  name: nodejs
+  image: /images/languages/javascript.webp
+  description: "Paketo Node.js Buildpack - A language family buildpack for building Node.js apps"
+  reference_type: registry
+
+heroku/nodejs:
+  namespace: heroku
+  name: nodejs
+  image: /images/languages/javascript.webp
+  description: "Heroku's buildpack for Node.js applications"
+  reference_type: registry
+
+paketo-buildpacks/php:
+  namespace: paketo-buildpacks
+  name: php
+  image: /images/languages/php.webp
+  description: "Paketo PHP Buildpack - A language family buildpack for building PHP apps"
+  reference_type: registry
+
+heroku/php:
+  namespace: heroku
+  name: php
+  image: /images/languages/php.webp
+  description: "Heroku's buildpack for PHP applications"
+  reference_type: registry
+
+paketo-buildpacks/sbt:
+  namespace: paketo-buildpacks
+  name: sbt
+  image: /images/languages/scala.webp
+  description: "Paketo SBT Buildpack - A buildpack for building Scala apps with SBT"
+  reference_type: registry
+
+heroku/scala:
+  namespace: heroku
+  name: scala
+  image: /images/languages/scala.webp
+  description: "Heroku's buildpack for Scala applications"
+  reference_type: registry

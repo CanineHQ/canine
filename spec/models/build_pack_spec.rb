@@ -3,10 +3,11 @@
 # Table name: build_packs
 #
 #  id                     :bigint           not null, primary key
+#  build_order            :integer          not null
 #  details                :jsonb
 #  name                   :string
 #  namespace              :string
-#  reference_type         :string           not null
+#  reference_type         :integer          not null
 #  uri                    :text
 #  version                :string
 #  created_at             :datetime         not null
@@ -28,7 +29,7 @@ require 'rails_helper'
 RSpec.describe BuildPack, type: :model do
   describe '#reference' do
     context 'registry buildpack' do
-      let(:build_pack) { create(:build_pack, namespace: 'paketo-buildpacks', name: 'ruby') }
+      let(:build_pack) { create(:build_pack) }
 
       context 'when version is present' do
         before { build_pack.update(version: '0.47.7') }
@@ -52,14 +53,6 @@ RSpec.describe BuildPack, type: :model do
 
       it 'returns the git URL' do
         expect(build_pack.reference).to eq('https://github.com/DataDog/heroku-buildpack-datadog.git')
-      end
-    end
-
-    context 'docker buildpack' do
-      let(:build_pack) { create(:build_pack, :docker) }
-
-      it 'returns the docker URI' do
-        expect(build_pack.reference).to eq('docker://paketobuildpacks/ruby:0.47.7')
       end
     end
 
@@ -91,7 +84,7 @@ RSpec.describe BuildPack, type: :model do
 
   describe '#display_name' do
     it 'returns namespace/name for registry buildpacks' do
-      build_pack = create(:build_pack, namespace: 'paketo-buildpacks', name: 'ruby')
+      build_pack = create(:build_pack)
       expect(build_pack.display_name).to eq('paketo-buildpacks/ruby')
     end
 

@@ -9,10 +9,8 @@ RSpec.describe Projects::Update do
       name: 'original-name',
       branch: 'main',
       cluster: cluster,
-      docker_build_context_directory: '.',
       repository_url: 'original/repo',
       docker_command: 'rails s',
-      dockerfile_path: 'Dockerfile',
     )
   end
 
@@ -24,10 +22,12 @@ RSpec.describe Projects::Update do
             name: 'updated-name',
             branch: 'develop',
             cluster_id: cluster.id,
-            docker_build_context_directory: './app',
             repository_url: 'updated/repo',
             docker_command: 'bundle exec rails s',
-            dockerfile_path: 'docker/Dockerfile'
+            build_configuration: {
+              context_directory: './app',
+              dockerfile_path: 'docker/Dockerfile'
+            }
           }
         })
       end
@@ -39,10 +39,10 @@ RSpec.describe Projects::Update do
         expect(result).to be_success
         expect(result.project.name).to eq('updated-name')
         expect(result.project.branch).to eq('develop')
-        expect(result.project.docker_build_context_directory).to eq('./app')
+        expect(result.project.build_configuration.context_directory).to eq('./app')
         expect(result.project.repository_url).to eq('updated/repo')
         expect(result.project.docker_command).to eq('bundle exec rails s')
-        expect(result.project.dockerfile_path).to eq('docker/Dockerfile')
+        expect(result.project.build_configuration.dockerfile_path).to eq('docker/Dockerfile')
       end
 
       it 'strips and downcases repository_url' do
@@ -64,7 +64,9 @@ RSpec.describe Projects::Update do
               driver: 'k8s',
               build_cloud_id: build_cloud.id,
               provider_id: build_provider.id,
-              image_repository: 'updated/repo'
+              image_repository: 'updated/repo',
+              context_directory: './app',
+              dockerfile_path: 'docker/Dockerfile'
             }
           }
         })

@@ -1,0 +1,25 @@
+<div>
+  <div class="form-control mt-1 mb-2 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Dockerfile path</span>
+    </label>
+    <%= bc_form.text_field(
+      :dockerfile_path,
+      class: "input input-bordered w-full focus:outline-offset-0",
+      value: build_configuration.dockerfile_path
+    ) %>
+    <label class="label">
+      <span class="label-text-alt">* Required</span>
+    </label>
+  </div>
+  <div class="form-control mt-1 mb-2 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Build context directory</span>
+    </label>
+    <%= bc_form.text_field(
+      :context_directory,
+      class: "input input-bordered w-full focus:outline-offset-0",
+      value: build_configuration.context_directory
+    ) %>
+  </div>
+</div>

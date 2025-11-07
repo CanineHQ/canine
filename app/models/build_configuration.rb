@@ -2,15 +2,18 @@
 #
 # Table name: build_configurations
 #
-#  id               :bigint           not null, primary key
-#  build_type       :integer          default(0), not null
-#  driver           :integer          not null
-#  image_repository :string           not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  build_cloud_id   :bigint
-#  project_id       :bigint           not null
-#  provider_id      :bigint           not null
+#  id                     :bigint           not null, primary key
+#  build_type             :integer          default("dockerfile"), not null
+#  buildpack_base_builder :string
+#  context_directory      :string           default("."), not null
+#  dockerfile_path        :string           default("./Dockerfile"), not null
+#  driver                 :integer          not null
+#  image_repository       :string           not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  build_cloud_id         :bigint
+#  project_id             :bigint           not null
+#  provider_id            :bigint           not null
 #
 # Indexes
 #
@@ -36,7 +39,7 @@ class BuildConfiguration < ApplicationRecord
   belongs_to :project
   belongs_to :build_cloud, optional: true
   belongs_to :provider
-  has_many :build_packs, dependent: :destroy
+  has_many :build_packs, -> { order(:build_order) }, dependent: :destroy
 
   validates_presence_of :project, :provider, :driver
   validates_presence_of :image_repository
@@ -46,8 +49,18 @@ class BuildConfiguration < ApplicationRecord
   }
 
   def self.permit_params(params)
-    params.permit(:image_repository, :driver, :build_cloud_id, :provider_id)
+    params.permit(:image_repository, :driver, :build_cloud_id, :provider_id, :context_directory, :dockerfile_path, :build_type, :buildpack_base_builder)
   end
+
+  def self.available_buildpacks
+    packs_file = Rails.root.join("resources", "build_packs", "packs.yaml")
+    YAML.load_file(packs_file)
+  end
+
+  enum :build_type, {
+    dockerfile: 0,
+    buildpacks: 1
+  }
 
   enum :driver, {
     cloud: 0,

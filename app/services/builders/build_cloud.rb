@@ -42,7 +42,7 @@ module Builders
       command += [ "--push" ]  # Push directly to registry
       command += [ "--progress", "plain" ]
       command += [ "-t", project.container_image_reference ]
-      command += [ "-f", File.join(repository_path, project.dockerfile_path) ]
+      command += [ "-f", File.join(repository_path, project.build_configuration.dockerfile_path) ]
 
       # Add build arguments
       project.environment_variables.each do |envar|
@@ -56,7 +56,7 @@ module Builders
       command += [ "--push" ]
 
       # Add build context
-      command << File.join(repository_path, project.docker_build_context_directory)
+      command << File.join(repository_path, project.build_configuration.context_directory)
 
       command
     end

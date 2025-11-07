@@ -33,6 +33,14 @@ export default class extends AsyncSearchDropdownController {
   }
 
   onItemSelect(buildpack, itemElement) {
-    console.log('Selected buildpack:', buildpack)
+    const latest = buildpack.latest
+    this.dispatch("buildpack-selected", {
+      detail: {
+        namespace: latest.namespace,
+        name: latest.name,
+        version: latest.version,
+        description: latest.description
+      }
+    })
   }
 }
