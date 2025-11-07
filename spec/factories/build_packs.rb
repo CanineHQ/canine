@@ -31,6 +31,7 @@ FactoryBot.define do
     namespace { "paketo-buildpacks" }
     name { "ruby" }
     version { "0.47.7" }
+    sequence(:build_order) { |n| n }
     details do
       {
         "description" => "A language family buildpack for building Ruby apps",

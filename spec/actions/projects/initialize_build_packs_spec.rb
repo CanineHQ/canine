@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Projects::InitializeBuildPacks do
+  include_context 'buildpack details stubbing'
+
   let(:provider) { create(:provider, :github) }
   let(:project) { create(:project) }
   let(:build_configuration) do
@@ -17,20 +19,20 @@ RSpec.describe Projects::InitializeBuildPacks do
     ActionController::Parameters.new({
       project: {
         build_configuration: {
-          build_packs_attributes: {
-            '0' => {
+          build_packs_attributes: [
+            {
               namespace: 'paketo-buildpacks',
               name: 'ruby',
               version: '0.47.7',
               reference_type: 'registry'
             },
-            '1' => {
+            {
               namespace: 'paketo-buildpacks',
               name: 'nodejs',
               version: '',
               reference_type: 'registry'
             }
-          }
+          ]
         }
       }
     })

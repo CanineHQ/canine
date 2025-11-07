@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Projects::UpdateBuildPacks do
+  include_context 'buildpack details stubbing'
+
   let(:provider) { create(:provider, :github) }
   let(:project) { create(:project) }
   let(:build_configuration) do
@@ -51,7 +53,7 @@ RSpec.describe Projects::UpdateBuildPacks do
               name: 'ruby',
               version: '',
               reference_type: 'registry'
-            },
+            }
           ]
         }
       }
@@ -65,29 +67,10 @@ RSpec.describe Projects::UpdateBuildPacks do
     }
   end
 
-  let(:buildpack_details_result) do
-    double(
-      result: Buildpacks::Details::BuildpackDetailsResult.new(
-        latest: {
-          version: '0.47.7',
-          namespace: 'paketo-buildpacks',
-          name: 'go',
-          description: 'Go buildpack'
-        },
-        versions: []
-      )
-    )
-  end
-
-  before do
-    allow(Buildpacks::Details).to receive(:execute).and_return(buildpack_details_result)
-  end
-
   it 'keeps existing build packs, creates new ones, and deletes missing ones' do
-    expect(build_configuration.build_packs.map(&:key)).to eq(['paketo-buildpacks/ruby', 'paketo-buildpacks/nodejs'])
+    expect(build_configuration.build_packs.map(&:key)).to eq([ 'paketo-buildpacks/ruby', 'paketo-buildpacks/nodejs' ])
     described_class.execute(context)
     build_configuration.build_packs.reload
-    expect(build_configuration.build_packs.map(&:key)).to eq(['paketo-buildpacks/go', 'paketo-buildpacks/ruby'])
+    expect(build_configuration.build_packs.map(&:key)).to eq([ 'paketo-buildpacks/go', 'paketo-buildpacks/ruby' ])
   end
 end
-

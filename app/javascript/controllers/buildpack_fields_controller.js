@@ -29,7 +29,8 @@ export default class extends Controller {
       name: name,
       version: version || '',
       image: '/images/languages/buildpack.webp',
-      description: description || ''
+      description: description || '',
+      reference_type: 'registry'
     }
 
     // Check if already selected
