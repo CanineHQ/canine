@@ -194,5 +194,72 @@ RSpec.describe Projects::Update do
         expect(project.reload.name).to eq(original_name)
       end
     end
+
+    context 'with buildpacks' do
+      include_context 'buildpack details stubbing'
+      let(:build_provider) { create(:provider, :container_registry, user:) }
+      let!(:existing_build_config) do
+        create(:build_configuration,
+          project: project,
+          driver: 'docker',
+          provider: build_provider,
+          build_type: 'buildpacks',
+          buildpack_base_builder: 'paketobuildpacks/builder:full'
+        )
+      end
+
+      let!(:old_build_pack) do
+        create(:build_pack,
+          build_configuration: existing_build_config,
+          namespace: 'paketo-buildpacks',
+          name: 'python',
+          version: '1.0.0',
+          build_order: 0
+        )
+      end
+
+      let(:params) do
+        ActionController::Parameters.new({
+          project: {
+            name: 'updated-name',
+            build_configuration: {
+              build_type: 'buildpacks',
+              buildpack_base_builder: 'paketobuildpacks/builder:full',
+              build_packs_attributes: [
+                {
+                  namespace: 'paketo-buildpacks',
+                  name: 'ruby',
+                  version: '0.47.7',
+                  reference_type: 'registry'
+                },
+                {
+                  namespace: 'paketo-buildpacks',
+                  name: 'nodejs',
+                  version: '1.2.3',
+                  reference_type: 'registry'
+                }
+              ]
+            }
+          }
+        })
+      end
+
+      subject { described_class.call(project, params) }
+
+      it 'updates build packs with correct order and removes old packs' do
+        expect { subject }.to change { BuildPack.count }.by(1)
+
+        result = subject
+        expect(result).to be_success
+
+        build_packs = project.build_configuration.reload.build_packs
+        expect(build_packs.count).to eq(2)
+        expect(build_packs.map(&:name)).not_to include('python')
+        expect(build_packs.first.name).to eq('ruby')
+        expect(build_packs.first.build_order).to eq(0)
+        expect(build_packs.second.name).to eq('nodejs')
+        expect(build_packs.second.build_order).to eq(1)
+      end
+    end
   end
 end
