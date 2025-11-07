@@ -3,7 +3,7 @@
 # Table name: build_configurations
 #
 #  id                     :bigint           not null, primary key
-#  build_type             :integer          default("dockerfile"), not null
+#  build_type             :integer          not null
 #  buildpack_base_builder :string
 #  context_directory      :string           default("."), not null
 #  dockerfile_path        :string           default("./Dockerfile"), not null
