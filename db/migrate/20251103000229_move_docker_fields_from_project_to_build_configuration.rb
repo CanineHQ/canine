@@ -1,7 +1,7 @@
 class MoveDockerFieldsFromProjectToBuildConfiguration < ActiveRecord::Migration[7.2]
   def up
     # Add build fields to build_configurations (excluding docker_command which is used at runtime)
-    add_column :build_configurations, :context_directory, :string, default: ".", null: false
+    add_column :build_configurations, :context_directory, :string, default: "./", null: false
     add_column :build_configurations, :dockerfile_path, :string, default: "./Dockerfile", null: false
     add_column :build_configurations, :build_type, :integer
 
