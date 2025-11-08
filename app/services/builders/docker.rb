@@ -4,14 +4,25 @@ require 'open3'
 
 module Builders
   class Docker < Builders::Base
+    include Builders::Concerns::BuildpackBuilder
+
     # Build and push the Docker image
     def build_image(repository_path)
-      execute_docker_build(repository_path)
+      if project.build_configuration.buildpacks?
+        build_with_buildpacks(repository_path)
+      else
+        build_with_dockerfile(repository_path)
+      end
     end
 
     private
 
-    def execute_docker_build(repository_path)
+    # Pack publishes during build with --publish flag
+    def publish_during_build?
+      true
+    end
+
+    def build_with_dockerfile(repository_path)
       docker_build_command = construct_buildx_command(repository_path)
 
       # Create a new instance of RunAndLog with the build object as the loggable and killable
