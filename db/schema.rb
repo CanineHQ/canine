@@ -113,7 +113,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
     t.integer "build_type", default: 0, null: false
     t.string "image_repository", null: false
     t.string "buildpack_base_builder"
-    t.string "context_directory", default: ".", null: false
+    t.string "context_directory", default: "./", null: false
     t.string "dockerfile_path", default: "./Dockerfile", null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"

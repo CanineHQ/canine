@@ -5,7 +5,7 @@
 #  id                     :bigint           not null, primary key
 #  build_type             :integer          default("dockerfile"), not null
 #  buildpack_base_builder :string
-#  context_directory      :string           default("."), not null
+#  context_directory      :string           default("./"), not null
 #  dockerfile_path        :string           default("./Dockerfile"), not null
 #  driver                 :integer          not null
 #  image_repository       :string           not null

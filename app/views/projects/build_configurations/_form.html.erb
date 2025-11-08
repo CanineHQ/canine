@@ -30,6 +30,21 @@
         ].select { |option| BuildConfiguration::BUILDER_OPTIONS.include?(option[:value].to_sym) } %>
         
       </div>
+
+      <div class="form-control mt-1 mb-2 w-full max-w-md">
+        <label class="label">
+          <span class="label-text">Build context directory</span>
+        </label>
+        <%= bc_form.text_field(
+          :context_directory,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          value: build_configuration.context_directory
+        ) %>
+        <label class="label">
+          <span class="label-text-alt">Where should we run the build? Defaults to the root of the repository.</span>
+        </label>
+      </div>
+
       <div class="form-control mt-1 mb-2 w-full max-w-md">
         <label class="label">
           <span class="label-text">Credentials</span>
@@ -69,6 +84,9 @@
         </label>
       </div>
       <div class="form-control mt-4">
+        <label class="label mb-2">
+          <span class="label-text">Build method</span>
+        </label>
         <%= render "shared/partials/radio_selector", selected: build_configuration.build_type || "dockerfile", options: [
           {
             icon: "skill-icons:docker",
