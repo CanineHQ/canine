@@ -3,26 +3,26 @@ class StaticController < ApplicationController
   skip_before_action :authenticate_user!
   ILLUSTRATIONS = [
     {
-      src: "/images/illustrations/design_2.png",
+      src: "/images/illustrations/design_2.webp",
       title: "You enjoy vendor lock-in",
       description: "Canine makes it possible to deploy to 230+ cloud providers, with the same UI.",
       background_color: "bg-green-100"
 
     },
     {
-      src: "/images/illustrations/design_3.png",
+      src: "/images/illustrations/design_3.webp",
       title: "You like spending more, for less",
       description: "Pay Hetzner like pricing for Heroku like dev experiences.",
       background_color: "bg-yellow-100"
     },
     {
-      src: "/images/illustrations/design_4.png",
+      src: "/images/illustrations/design_4.webp",
       title: "You don't want modern infrastructure",
       description: "Would rather cobble together SSH scripts? Look elsewhere.",
       background_color: "bg-blue-100"
     },
     {
-      src: "/images/illustrations/design_5.png",
+      src: "/images/illustrations/design_5.webp",
       title: "You like configuring infrastructure more than building apps",
       description: "Canine makes your infrastructure \"just work\".",
       background_color: "bg-violet-100"
