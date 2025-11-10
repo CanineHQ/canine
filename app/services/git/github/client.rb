@@ -64,6 +64,8 @@ class Git::Github::Client < Git::Client
 
   def webhook_exists?
     webhook.present?
+  rescue Octokit::NotFound
+    false
   end
 
   def remove_webhook!

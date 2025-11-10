@@ -1,0 +1,87 @@
+
+<div class="flex flex-row gap-6">
+  <div class="flex-shrink my-4 border-l-2 border-base-300 pl-4">
+  </div>
+  <div data-controller="buildpack-fields" data-buildpack-fields-packs-value="<%= BuildConfiguration.available_buildpacks.to_json %>">
+    <div class="form-control mt-1 mb-2 w-full max-w-md">
+      <label class="label">
+        <span class="label-text">Base Builder</span>
+      </label>
+      <%= bc_form.select(
+        :buildpack_base_builder,
+        options_for_select(
+          [
+            ["heroku/builder-classic:22", "heroku/builder-classic:22"],
+            ["heroku/builder:22", "heroku/builder:22"],
+            ["heroku/builder:24", "heroku/builder:24"],
+            ["heroku/buildpacks:18", "heroku/buildpacks:18"],
+            ["heroku/buildpacks:20", "heroku/buildpacks:20"],
+            ["paketobuildpacks/builder-jammy-full:latest", "paketobuildpacks/builder-jammy-full:latest"],
+            ["paketobuildpacks/builder:full", "paketobuildpacks/builder:full"]
+          ],
+          selected: build_configuration.buildpack_base_builder || "heroku/buildpacks:20"
+        ),
+        { include_blank: "Select a base builder..." },
+        { class: "select select-bordered w-full", data: { buildpack_fields_target: "baseBuilder" } }
+      ) %>
+      <label class="label">
+        <span class="label-text-alt">Select the base builder image for Cloud Native Buildpacks</span>
+      </label>
+    </div>
+
+    <div class="form-control mt-1 mb-2 w-full max-w-md">
+      <label class="label">
+        <span class="label-text">Buildpacks</span>
+      </label>
+      <div data-buildpack-fields-target="list" class="space-y-2">
+        <% build_configuration.build_packs.each do |build_pack| %>
+          <%= render "projects/build_configurations/buildpack_item", build_pack: build_pack %>
+        <% end %>
+      </div>
+      <button type="button" class="btn btn-outline btn-primary mt-2" data-action="click->buildpack-fields#openModal">
+        <iconify-icon icon="mdi:plus" width="20" height="20"></iconify-icon>
+        Add Buildpack
+      </button>
+    </div>
+
+    <template data-buildpack-fields-target="template">
+      <%= render "projects/build_configurations/buildpack_item" %>
+    </template>
+
+    <dialog data-buildpack-fields-target="modal" class="modal">
+      <div class="modal-box w-11/12 max-w-5xl">
+        <h3 class="font-bold text-lg">Add Buildpacks</h3>
+        <p class="py-2 text-sm text-gray-600">Select buildpacks to add to your build configuration.</p>
+
+        <div class="space-y-4 mt-4">
+          <div>
+            <h4 class="font-semibold mb-2">Selected Buildpacks</h4>
+            <div data-buildpack-fields-target="selectedBuildpacks" class="border border-base-300 rounded-lg max-h-48 overflow-y-auto">
+              <div class="text-sm text-gray-500 p-4 text-center">No buildpacks selected</div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-2">Official Buildpacks</h4>
+            <div data-buildpack-fields-target="availableBuildpacks" class="border border-base-300 rounded-lg max-h-64 overflow-y-auto">
+              <!-- Official buildpacks will be rendered here -->
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-2">Search Registry</h4>
+            <%= render "build_packs/search" %>
+            <div data-buildpack-fields-target="searchResults" class="border border-base-300 rounded-lg max-h-64 overflow-y-auto mt-2">
+              <!-- Search results will be rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <button type="button" class="btn btn-ghost" data-action="click->buildpack-fields#closeModal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-action="click->buildpack-fields#addSelectedBuildpacks">Add Selected</button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</div>

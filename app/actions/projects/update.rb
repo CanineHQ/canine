@@ -12,7 +12,8 @@ module Projects
         build_configuration:,
         params:
       ).reduce(
-        Projects::UpdateSave
+        Projects::UpdateSave,
+        Projects::UpdateBuildPacks
       )
     end
 

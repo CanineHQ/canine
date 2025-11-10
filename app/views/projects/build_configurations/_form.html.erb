@@ -1,6 +1,6 @@
 <div>
   <div>
-    <% build_configuration = project.build_configuration || BuildConfiguration.new(driver: 'docker') %>
+    <% build_configuration = project.build_configuration || BuildConfiguration.new %>
     <%= form.fields_for :build_configuration, build_configuration do |bc_form| %>
       <div class="form-control mt-4">
         <%= render "shared/partials/radio_selector", selected: build_configuration.driver, options: [
@@ -30,7 +30,22 @@
         ].select { |option| BuildConfiguration::BUILDER_OPTIONS.include?(option[:value].to_sym) } %>
         
       </div>
-      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+
+      <div class="form-control mt-1 mb-2 w-full max-w-md">
+        <label class="label">
+          <span class="label-text">Build context directory</span>
+        </label>
+        <%= bc_form.text_field(
+          :context_directory,
+          class: "input input-bordered w-full focus:outline-offset-0",
+          value: build_configuration.context_directory
+        ) %>
+        <label class="label">
+          <span class="label-text-alt">Where should we run the build? Defaults to the root of the repository.</span>
+        </label>
+      </div>
+
+      <div class="form-control mt-1 mb-2 w-full max-w-md">
         <label class="label">
           <span class="label-text">Credentials</span>
         </label>
@@ -49,10 +64,10 @@
           { class: "select select-bordered w-full" }
         ) %>
         <label class="label">
-          <span class="label-text-alt">Select a provider with a container registry</span>
+          <span class="label-text-alt">Select a credential that gives access to a container registry</span>
         </label>
       </div>
-      <div class="form-control mt-1 mb-2 w-full max-w-sm">
+      <div class="form-control mt-1 mb-2 w-full max-w-md">
         <label class="label">
           <span class="label-text">Image repository</span>
         </label>
@@ -64,6 +79,34 @@
           pattern: "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]/[a-zA-Z0-9._-]+",
           title: "Must be in the format 'namespace/repo'"
         ) %>
+        <label class="label">
+          <span class="label-text-alt">If this is left blank, a container registry will be automatically created for you.</span>
+        </label>
+      </div>
+      <div class="form-control mt-4">
+        <label class="label mb-2">
+          <span class="label-text">Build method</span>
+        </label>
+        <%= render "shared/partials/radio_selector", selected: build_configuration.build_type || "dockerfile", options: [
+          {
+            icon: "skill-icons:docker",
+            name: "project[build_configuration][build_type]",
+            label: "Dockerfile",
+            value: "dockerfile",
+            description: "Build images using a Dockerfile. Traditional Docker build approach with full control over the build process.",
+            partial: "projects/build_configurations/dockerfile_fields",
+            locals: { bc_form:, build_configuration: }
+          },
+          {
+            icon: "devicon:heroku",
+            name: "project[build_configuration][build_type]",
+            label: "Buildpacks",
+            value: "buildpacks",
+            description: "Use Cloud Native Buildpacks to automatically detect and build your application. No Dockerfile needed.",
+            partial: "projects/build_configurations/buildpack_fields",
+            locals: { bc_form:, build_configuration: }
+          }
+        ] %>
       </div>
     <% end %>
   </div>

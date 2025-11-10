@@ -32,6 +32,9 @@ FactoryBot.define do
     provider
     project
     driver { :docker }
+    build_type { :dockerfile }
     image_repository { "CanineHQ/canine" }
+    context_directory { "." }
+    dockerfile_path { "./Dockerfile" }
   end
 end
