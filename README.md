@@ -1,7 +1,7 @@
 <br/>
 <div align="center">
 <a href="https://github.com/CanineHQ/canine">
-<img src="https://github.com/CanineHQ/canine/blob/main/public/images/logo-full.png?raw=true" alt="Logo" height="100">
+<img src="https://github.com/CanineHQ/canine/blob/main/public/images/logo-full.webp?raw=true" alt="Logo" height="100">
 </a>
 <h3 align="center">Canine</h3>
 <p align="center">
@@ -22,7 +22,7 @@ Power of Kubernetes, Simplicity of Heroku
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/canine)](https://artifacthub.io/packages/search?repo=canine)
 
 
-![Deployment Screenshot](https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/public/images/deployment_styled.png)
+![Deployment Screenshot](https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/public/images/deployment_styled.webp)
 
 ## About the project
 Canine is an easy to use intuitive deployment platform for Kubernetes clusters.
