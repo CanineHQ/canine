@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_27_014101) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -110,11 +110,30 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_014101) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "provider_id", null: false
-    t.integer "build_type", default: 0, null: false
     t.string "image_repository", null: false
+    t.string "buildpack_base_builder"
+    t.string "context_directory", default: "./", null: false
+    t.string "dockerfile_path", default: "./Dockerfile", null: false
+    t.integer "build_type", null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
     t.index ["provider_id"], name: "index_build_configurations_on_provider_id"
+  end
+
+  create_table "build_packs", force: :cascade do |t|
+    t.bigint "build_configuration_id", null: false
+    t.integer "reference_type", null: false
+    t.string "namespace"
+    t.string "name"
+    t.string "version"
+    t.integer "build_order", null: false
+    t.text "uri"
+    t.jsonb "details", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["build_configuration_id", "reference_type", "namespace", "name"], name: "index_build_packs_on_config_type_namespace_name"
+    t.index ["build_configuration_id", "uri"], name: "index_build_packs_on_config_uri"
+    t.index ["build_configuration_id"], name: "index_build_packs_on_build_configuration_id"
   end
 
   create_table "builds", force: :cascade do |t|
@@ -395,7 +414,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_014101) do
     t.boolean "autodeploy", default: true, null: false
     t.string "dockerfile_path", default: "./Dockerfile", null: false
     t.string "docker_build_context_directory", default: ".", null: false
-    t.string "docker_command"
     t.text "predeploy_command"
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
@@ -508,6 +526,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_27_014101) do
   add_foreign_key "build_configurations", "build_clouds"
   add_foreign_key "build_configurations", "projects"
   add_foreign_key "build_configurations", "providers"
+  add_foreign_key "build_packs", "build_configurations"
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"

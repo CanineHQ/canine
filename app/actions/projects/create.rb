@@ -10,7 +10,6 @@ module Projects
         :branch,
         :cluster_id,
         :docker_build_context_directory,
-        :docker_command,
         :dockerfile_path,
         :container_registry_url,
         :predeploy_command,

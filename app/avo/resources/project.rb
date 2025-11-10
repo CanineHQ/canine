@@ -7,7 +7,6 @@ class Avo::Resources::Project < Avo::BaseResource
     field :branch, as: :text
     field :status, as: :select, options: Project.statuses.keys.map { |status| [ status.humanize, status ] }
     field :autodeploy, as: :boolean
-    field :docker_command, as: :text
     field :dockerfile_path, as: :text
     field :docker_build_context_directory, as: :text
     field :container_registry_url, as: :text
