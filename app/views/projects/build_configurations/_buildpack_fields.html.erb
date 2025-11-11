@@ -19,7 +19,7 @@
             ["paketobuildpacks/builder-jammy-full:latest", "paketobuildpacks/builder-jammy-full:latest"],
             ["paketobuildpacks/builder:full", "paketobuildpacks/builder:full"]
           ],
-          selected: build_configuration.buildpack_base_builder || "heroku/buildpacks:20"
+          selected: build_configuration.buildpack_base_builder || "heroku/buildpacks:24"
         ),
         { include_blank: "Select a base builder..." },
         { class: "select select-bordered w-full", data: { buildpack_fields_target: "baseBuilder" } }
