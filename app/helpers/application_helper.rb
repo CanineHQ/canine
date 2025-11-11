@@ -5,8 +5,10 @@ module ApplicationHelper
     html = '<div class="flex items-center gap-2">'
     html << pagy_nav_prev(pagy) if pagy.prev
     pagy.series.each do |item|
-      if item.to_i == pagy.page.to_i
+      if item.to_s == pagy.page.to_s
         html << link_to(item, url_for(page: item), class: "btn btn-sm btn-neutral min-w-[2.5rem] pointer-events-none")
+      elsif item.to_s == "gap"
+        html << link_to("…", url_for(page: item), class: "btn btn-sm btn-ghost min-w-[2.5rem] pointer-events-none btn-disabled")
       else
         html << link_to(item, url_for(page: item), class: "btn btn-sm btn-ghost min-w-[2.5rem]")
       end
