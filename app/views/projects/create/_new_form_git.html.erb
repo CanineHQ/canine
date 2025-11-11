@@ -2,7 +2,7 @@
   <%= form_with(model: project, data: { turbo: false }) do |form| %>
     <h2 class="text-2xl font-bold">Create a new project from Git repository</h2>
     <%= link_to(
-      "Deploy from Docker Hub instead →",
+      "Deploy from Container Registry instead →",
       new_project_path(provider_type: Provider::REGISTRY_TYPE),
       class: "inline-block mt-2 underline underline-offset-4 text-blue-300 hover:text-blue-200 text-sm",
     ) %>
@@ -80,16 +80,6 @@
               <span class="label-text-alt">* Required</span>
             </label>
           </div>
-
-          <div class="form-control mt-1 mb-2 w-full max-w-sm">
-            <label class="label">
-              <span class="label-text">Container registry URL</span>
-            </label>
-            <%= form.text_field :container_registry_url, class: "input input-bordered w-full focus:outline-offset-0", value: "" %>
-            <label class="label">
-              <span class="label-text-alt">If this is left blank, <span data-new-project-target="gitProviderLabel">Github</span> Container Registry will be used</span>
-            </label>
-          </div>
         </div>
       <% end %>
 
@@ -98,23 +88,6 @@
         description: "Automatically deploy the project when the branch is pushed to."
       )) do %>
         <%= form.check_box :autodeploy, class: "checkbox" %>
-      <% end %>
-
-      <%= render(FormFieldComponent.new(
-        label: "Dockerfile path",
-        description: "The path to the Dockerfile in your repository."
-      )) do %>
-        <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
-        <label class="label">
-          <span class="label-text-alt">* Required</span>
-        </label>
-      <% end %>
-
-      <%= render(FormFieldComponent.new(
-        label: "Docker build context directory",
-        description: "The directory to use as the build context for the Docker build."
-      )) do %>
-        <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
       <% end %>
 
       <%= render(FormFieldComponent.new(

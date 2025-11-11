@@ -39,6 +39,9 @@ RUN apt-get update -qq && \
 RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/v2.21.1/telepresence-linux-amd64 -o /usr/local/bin/telepresence && \
     chmod a+x /usr/local/bin/telepresence
 
+# Install pack CLI for Cloud Native Buildpacks
+RUN curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.38.2/pack-v0.38.2-linux.tgz" | tar -xz -C /usr/local/bin
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
@@ -87,6 +90,7 @@ COPY --from=build /rails /rails
 COPY --from=build /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=build /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=build /usr/local/bin/telepresence /usr/local/bin/telepresence
+COPY --from=build /usr/local/bin/pack /usr/local/bin/pack
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
