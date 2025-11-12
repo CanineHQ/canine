@@ -1,17 +1,14 @@
 <!DOCTYPE html>
-<html class="h-full antialiased dark" data-theme="dark" lang="en">
+<html lang="en">
 <head>
-  <title>Internal Server Error (500)</title>
+  <title>Something Went Wrong (500)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
   <style>
     :root {
       --primary: #167bff;
-      --primary-content: #ffffff;
       --base-100: #191e23;
       --base-200: #252b32;
-      --base-300: #2a3038;
       --base-content: #dcebfa;
       --error: #f31260;
     }
@@ -19,36 +16,47 @@
     body {
       background-color: var(--base-100);
       color: var(--base-content);
-      font-family: 'DM Sans', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
   </style>
 </head>
 
-<body class="h-full">
-  <div class="min-h-full flex items-center justify-center px-4">
-    <div class="max-w-md w-full text-center space-y-6">
-      <div>
-        <img src="/images/illustrations/rover.webp" alt="Internal Server Error" class="h-[300px]">
-      </div>
-      <h1 class="text-8xl font-bold text-error">500</h1>
-      <h2 class="text-2xl font-semibold">Internal Server Error</h2>
-      <p class="text-base-content/70">
-        We're sorry, but something went wrong on our end.
-      </p>
-      <p class="text-sm text-base-content/50">
-        If you are the application owner, check the logs for more information.
-      </p>
-      <div class="flex gap-3 justify-center pt-4">
-        <a href="/" class="btn btn-primary">Go Home</a>
-        <button onclick="history.back()" class="btn btn-ghost">Go Back</button>
-      </div>
-      <div class="pt-6 border-t border-base-300">
-        <a href="https://discord.gg/68YthskqEz" target="_blank" class="text-sm text-primary hover:underline inline-flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
-          </svg>
-          Need help? Join our Discord
-        </a>
+<body>
+  <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl w-full">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Left side - Content -->
+        <div class="space-y-6">
+          <div class="text-8xl font-bold" style="color: #f31260;">500</div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight" style="color: var(--base-content);">
+            Sorry,<br>
+            something<br>
+            went wrong.
+          </h1>
+
+          <div class="flex gap-3 flex-wrap">
+            <a href="/" class="inline-block hover:opacity-90 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200" style="background-color: #f31260;">
+              Take me home
+            </a>
+            <button onclick="history.back()" class="inline-block hover:bg-[#252b32] font-semibold px-8 py-3 rounded-lg transition-colors duration-200" style="background-color: var(--base-200); color: var(--base-content);">
+              Go back
+            </button>
+          </div>
+
+          <div class="pt-4">
+            <a href="https://discord.gg/68YthskqEz" target="_blank" class="text-sm hover:underline inline-flex items-center gap-2" style="color: var(--primary);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+              </svg>
+              Need help? Join our Discord
+            </a>
+          </div>
+        </div>
+
+        <!-- Right side - Illustration -->
+        <div class="flex justify-center md:justify-end">
+          <img src="/images/illustrations/rover.webp" alt="Error illustration" class="w-full max-w-md">
+        </div>
       </div>
     </div>
   </div>
