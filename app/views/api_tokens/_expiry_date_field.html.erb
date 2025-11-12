@@ -1,0 +1,43 @@
+<%
+  seven_days = 7.days.from_now
+  thirty_days = 30.days.from_now
+  sixty_days = 60.days.from_now
+  ninety_days = 90.days.from_now
+%>
+
+<div data-controller="expiry-date" class="flex flex-row gap-6">
+  <div class="form-control w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Expiration</span>
+    </label>
+    <%= form.select :expiry_preset,
+      [
+        ["7 days (#{seven_days.strftime('%b %d, %Y')})", "7_days", { data: { expiry_value: seven_days.strftime('%Y-%m-%dT%H:%M') } }],
+        ["30 days (#{thirty_days.strftime('%b %d, %Y')})", "30_days", { data: { expiry_value: thirty_days.strftime('%Y-%m-%dT%H:%M') } }],
+        ["60 days (#{sixty_days.strftime('%b %d, %Y')})", "60_days", { data: { expiry_value: sixty_days.strftime('%Y-%m-%dT%H:%M') } }],
+        ["90 days (#{ninety_days.strftime('%b %d, %Y')})", "90_days", { data: { expiry_value: ninety_days.strftime('%Y-%m-%dT%H:%M') } }],
+        ["No Expiration", "never", { data: { expiry_value: "" } }],
+        ["Custom", "custom", { data: { expiry_value: "custom" } }]
+      ],
+      { selected: "7_days" },
+      {
+        class: "select select-bordered",
+        data: {
+          expiry_date_target: "select",
+          action: "change->expiry-date#updateExpiryDate"
+        }
+      }
+    %>
+  </div>
+
+  <div class="form-control w-full max-w-sm" data-expiry-date-target="dateInput">
+    <label class="label">
+      <span class="label-text">Select date</span>
+    </label>
+    <%= form.date_field :expires_at,
+      value: seven_days.strftime('%Y-%m-%d'),
+      class: "input input-bordered",
+      data: { "expiry-date-target": "dateInput" }
+    %>
+  </div>
+</div>
