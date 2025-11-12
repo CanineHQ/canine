@@ -10,7 +10,7 @@
         <div class="shadow-sm cursor-pointer transition-all hover:shadow-md flex-1">
           <div class="flex items-start gap-3">
             <div class="text-3xl">
-              <% if option[:icon].match?(/\.(png|jpg|jpeg|gif|svg)$/i) %>
+              <% if option[:icon].match?(/\.(webp|png|jpg|jpeg|gif|svg)$/i) %>
                 <img src="<%= option[:icon] %>" alt="<%= option[:label] %>" height="32" width="32">
               <% else %>
                 <iconify-icon icon="<%= option[:icon] %>" height="32"></iconify-icon>

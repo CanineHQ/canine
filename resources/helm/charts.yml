@@ -3,7 +3,7 @@ helm:
     - name: postgresql
       chart_url: bitnami/postgresql
       friendly_name: PostgreSQL
-      logo: /images/helm/postgresql.png
+      logo: /images/helm/postgresql.webp
       template:
         - name: Storage
           key: primary.persistence.size
@@ -13,7 +13,7 @@ helm:
     - name: redis
       chart_url: bitnami/redis
       friendly_name: Redis
-      logo: /images/helm/redis.png
+      logo: /images/helm/redis.webp
       template:
         - name: Storage
           key: master.persistence.size
@@ -28,7 +28,7 @@ helm:
     - name: metabase
       chart_url: pmint93/metabase
       friendly_name: Metabase
-      logo: /images/helm/metabase.png
+      logo: /images/helm/metabase.webp
       template:
         - name: Connection URI
           key: database.connectionURI
@@ -42,7 +42,7 @@ helm:
             - mysql
           required: true
     - name: elasticsearch
-      logo: /images/helm/elasticsearch.png
+      logo: /images/helm/elasticsearch.webp
       chart_url: bitnami/elasticsearch
       friendly_name: Elasticsearch
       template:
@@ -52,7 +52,7 @@ helm:
           default: 10Gi
 
     - name: clickhouse
-      logo: /images/helm/clickhouse.png
+      logo: /images/helm/clickhouse.webp
       chart_url: bitnami/clickhouse
       friendly_name: ClickHouse
       template:
@@ -79,25 +79,25 @@ helm:
 
     - name: airbyte
       friendly_name: Airbyte
-      logo: /images/helm/airbyte.png
+      logo: /images/helm/airbyte.webp
       repository: https://airbytehq.github.io/helm-charts
       
     - name: minio
-      logo: /images/helm/minio.png
+      logo: /images/helm/minio.webp
       chart_url: bitnami/minio
       friendly_name: MinIO
       
     - name: prometheus
-      logo: /images/helm/prometheus.png
+      logo: /images/helm/prometheus.webp
       chart_url: prometheus-community/prometheus
       
     - name: portainer
-      logo: /images/helm/portainer.png
+      logo: /images/helm/portainer.webp
       chart_url: portainer/portainer
       
     - name: helm_chart
       friendly_name: "Helm Chart"
-      logo: /images/helm/helm_chart.png
+      logo: /images/helm/helm_chart.webp
       controller: "helm-search"
       metadata:
         - name: Name

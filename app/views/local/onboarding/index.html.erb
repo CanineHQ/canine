@@ -1,7 +1,7 @@
 <div class="min-h-screen py-8">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header and Navigation -->
-    <img src="/images/logo-full.png" alt="Canine Logo" class="h-[40px]">
+    <img src="/images/logo-full.webp" alt="Canine Logo" class="h-[40px]">
     <div class="mb-8">
       <h1 class="text-3xl font-bold ">
         Select your installation method
@@ -20,7 +20,7 @@
     <div class="form-control mt-4">
       <%= render "shared/partials/radio_selector", selected: nil, options: [
         {
-          icon: "/images/logo-compact.png",
+          icon: "/images/logo-compact.webp",
           name: "project[build_configuration][driver]",
           label: "Normal (Recommended)",
           value: "normal",
@@ -28,7 +28,7 @@
           href: new_user_registration_url
         },
         {
-          icon: "/images/helm/portainer.png",
+          icon: "/images/helm/portainer.webp",
           name: "project[build_configuration][driver]",
           label: "Portainer",
           description: "Import from an existing Portainer instance. Only select this if you want to integrate Canine with Portainer.",
