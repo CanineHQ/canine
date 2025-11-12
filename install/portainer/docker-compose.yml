@@ -17,13 +17,13 @@ services:
       - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data"
+    networks:
+      - default
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    # Overrides default command so things don't shut down after the process ends.
-    # command: sleep infinity
     depends_on:
       - postgres
     stdin_open: true
@@ -37,6 +37,9 @@ services:
       ACCOUNT_SIGN_IN_ONLY: "true"
     volumes:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    networks:
+      - default
+      - portainer_network
 
   worker:
     build:
@@ -50,6 +53,18 @@ services:
       LOCAL_MODE: "true"
     volumes:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    networks:
+      - default
+      - portainer_network
 
 volumes:
   postgres:
+
+networks:
+  # default local network for this compose file
+  default:
+    name: canine_default   # optional; can omit to let compose auto-name
+  # external network created elsewhere
+  portainer_network:
+    external: true
+

@@ -11,7 +11,7 @@ class Clusters::Install
   ]
 
   def self.recipe(cluster, user)
-    recipe = if cluster.account.stack_manager.present?
+    recipe = if cluster.account.stack_manager.present? && cluster.kubeconfig.blank?
       stack_manager = cluster.account.stack_manager
       stack_manager.stack.connect(user).install_recipe
     else

@@ -1,0 +1,19 @@
+<% build_pack = local_assigns[:build_pack] || BuildPack.new %>
+<div class="card bg-base-200 p-4">
+  <div class="flex gap-3 items-center">
+    <div class="drag-handle cursor-move flex items-center">
+      <iconify-icon icon="mdi:drag-vertical" width="20" height="20" class="text-gray-500"></iconify-icon>
+    </div>
+    <img data-template-image class="w-10 h-10 object-contain" src="<%= build_pack.static_info['image'] || '/images/languages/buildpack.webp' %>" />
+    <div class="flex-1">
+      <div class="font-medium" data-template-title><%= "#{build_pack.namespace}/#{build_pack.name}" %></div>
+      <div class="text-sm text-gray-600" data-template-description><%= build_pack.details.dig('latest', 'description') %></div>
+    </div>
+    <button type="button" class="btn btn-sm btn-ghost" data-action="click->buildpack-fields#remove">
+      <iconify-icon icon="mdi:close" width="20" height="20"></iconify-icon>
+    </button>
+  </div>
+  <input type="hidden" data-template-namespace name="project[build_configuration][build_packs_attributes][][namespace]" value="<%= build_pack.namespace %>" />
+  <input type="hidden" data-template-name name="project[build_configuration][build_packs_attributes][][name]" value="<%= build_pack.name %>" />
+  <input type="hidden" data-template-reference-type name="project[build_configuration][build_packs_attributes][][reference_type]" value="<%= build_pack.reference_type %>" />
+</div>

@@ -190,7 +190,7 @@ export default class extends Controller {
     const header = `
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center">
-          <span class="font-medium">${serviceName}${supportsCanine ? '<span class="ml-2 mr-1">+</span><img src="/images/logo-full.png" class="inline h-8" />' : ''}</span>
+          <span class="font-medium">${serviceName}${supportsCanine ? '<span class="ml-2 mr-1">+</span><img src="/images/logo-full.webp" class="inline h-8" />' : ''}</span>
         </div>
         <div class="text-emerald-400 font-semibold total-cost">${total == 0 ? 'FREE' : `$${total}.00`}</div>
       </div>

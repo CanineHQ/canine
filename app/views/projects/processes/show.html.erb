@@ -1,3 +1,9 @@
 <%= project_layout(@project) do %>
-  <%= render "log_outputs/pod_logs", logs: @logs, pod_events: @pod_events, back_path: project_processes_path(@project) %>
+  <%= render(
+    "log_outputs/pod_logs",
+    logs: @logs,
+    pod_events: @pod_events,
+    back_path: project_processes_path(@project),
+    error: @error
+  ) %>
 <% end %>

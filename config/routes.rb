@@ -47,6 +47,12 @@ Rails.application.routes.draw do
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
+  resources :build_packs, only: [] do
+    collection do
+      get :search
+      get :details
+    end
+  end
   resources :add_ons do
     collection do
       get :search

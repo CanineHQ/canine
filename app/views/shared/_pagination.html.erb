@@ -1,0 +1,8 @@
+<% if pagy.pages > 1 %>
+  <div class="flex items-center gap-4 py-5">
+    <%== custom_pagy_nav(pagy) %>
+    <div class="text-sm text-base-content/70">
+      <%= pagy_info_text(pagy) %>
+    </div>
+  </div>
+<% end %>
