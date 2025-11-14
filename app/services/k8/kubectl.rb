@@ -11,6 +11,11 @@ class K8::Kubectl
       raise "Kubeconfig is required"
     end
     @runner = runner
+    @after_apply_blocks = []
+  end
+
+  def register_after_apply(&block)
+    @after_apply_blocks << block
   end
 
   def apply_yaml(yaml_content)
@@ -24,6 +29,10 @@ class K8::Kubectl
         command = "kubectl apply -f #{yaml_file.path}"
         runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       end
+    end
+
+    @after_apply_blocks.each do |block|
+      block.call(yaml_content)
     end
   end
 
