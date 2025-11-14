@@ -10,7 +10,6 @@ RSpec.describe Projects::Update do
       branch: 'main',
       cluster: cluster,
       repository_url: 'original/repo',
-      docker_command: 'rails s',
     )
   end
 
@@ -23,7 +22,6 @@ RSpec.describe Projects::Update do
             branch: 'develop',
             cluster_id: cluster.id,
             repository_url: 'updated/repo',
-            docker_command: 'bundle exec rails s',
             build_configuration: {
               context_directory: './app',
               dockerfile_path: 'docker/Dockerfile'

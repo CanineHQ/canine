@@ -19,6 +19,12 @@ class Projects::ServicesController < Projects::BaseController
     end
   end
 
+  def show
+    @service = @project.services.find(params[:id])
+    @tab = params[:tab] || "overview"
+    render partial: "projects/services/show", locals: { service: @service, tab: @tab }, layout: false
+  end
+
   def update
     result = Services::Update.execute(service: @service, params: params)
     if result.success?

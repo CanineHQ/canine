@@ -23,13 +23,6 @@
       <%= form.check_box :autodeploy, class: "checkbox" %>
     <% end %>
 
-    <%= render(FormFieldComponent.new(label: "Docker command")) do %>
-      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
-      </label>
-    <% end %>
-
     <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
       <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
     <% end %>
