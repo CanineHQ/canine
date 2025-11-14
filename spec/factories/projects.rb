@@ -8,6 +8,7 @@
 #  canine_config                  :jsonb
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
+#  docker_command                 :string
 #  dockerfile_path                :string           default("./Dockerfile"), not null
 #  name                           :string           not null
 #  postdeploy_command             :text

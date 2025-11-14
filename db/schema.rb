@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_14_025053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -171,6 +171,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "manifests", default: {}
     t.index ["build_id"], name: "index_deployments_on_build_id", unique: true
   end
 
@@ -425,6 +426,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
     t.text "postdestroy_command"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
+    t.string "docker_command"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
   end
 
@@ -443,19 +445,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
     t.string "registry_url"
     t.string "external_id"
     t.index ["user_id"], name: "index_providers_on_user_id"
-  end
-
-  create_table "resource_constraints", force: :cascade do |t|
-    t.string "constrainable_type", null: false
-    t.bigint "constrainable_id", null: false
-    t.bigint "cpu_request"
-    t.bigint "cpu_limit"
-    t.bigint "memory_request"
-    t.bigint "memory_limit"
-    t.integer "gpu_request"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["constrainable_type", "constrainable_id"], name: "index_resource_constraints_on_constrainable"
   end
 
   create_table "services", force: :cascade do |t|

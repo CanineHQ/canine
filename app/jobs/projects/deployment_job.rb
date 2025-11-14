@@ -11,6 +11,9 @@ class Projects::DeploymentJob < ApplicationJob
     project = deployment.project
     connection = K8::Connection.new(project, user, allow_anonymous: true)
     kubectl = create_kubectl(deployment, connection)
+    kubectl.register_after_apply do |yaml_content|
+      deployment.add_manifest(yaml_content)
+    end
 
     # Create namespace
     apply_namespace(project, kubectl)
@@ -20,9 +23,6 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
-    kubectl.register_after_apply do |yaml_content|
-      deployment.add_manifest(yaml_content)
-    end
     predeploy(project, kubectl, connection)
     # For each of the projects services
     deploy_services(project, kubectl)

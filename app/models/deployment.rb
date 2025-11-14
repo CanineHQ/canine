@@ -3,6 +3,7 @@
 # Table name: deployments
 #
 #  id         :bigint           not null, primary key
+#  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -26,8 +27,17 @@ class Deployment < ApplicationRecord
   end
 
   def add_manifest(yaml)
-    self.manifests ||= { 'files' => [] }
-    self.manifests['files'] << yaml
+    manifest = YAML.safe_load(yaml)
+    kind = manifest["kind"]&.downcase
+    name = manifest.dig("metadata", "name")
+    manifest_key = "#{kind}/#{name}"
+
+    self.manifests ||= {}
+    self.manifests[manifest_key] = yaml
     save!
+  end
+
+  def has_manifests?
+    manifests.keys.any?
   end
 end

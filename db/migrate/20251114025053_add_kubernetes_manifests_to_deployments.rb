@@ -1,5 +1,5 @@
 class AddKubernetesManifestsToDeployments < ActiveRecord::Migration[7.2]
   def change
-    add_column :deployments, :manifests, :jsonb
+    add_column :deployments, :manifests, :jsonb, default: {}
   end
 end
