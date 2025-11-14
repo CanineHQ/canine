@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_10_152921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -82,18 +82,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "api_tokens", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "name", null: false
-    t.string "access_token", null: false
-    t.datetime "last_used_at"
-    t.datetime "expires_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["access_token"], name: "index_api_tokens_on_access_token", unique: true
-    t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
   create_table "build_clouds", force: :cascade do |t|
@@ -437,7 +425,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
     t.text "postdestroy_command"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
-    t.string "docker_command"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
   end
 
@@ -456,6 +443,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
     t.string "registry_url"
     t.string "external_id"
     t.index ["user_id"], name: "index_providers_on_user_id"
+  end
+
+  create_table "resource_constraints", force: :cascade do |t|
+    t.string "constrainable_type", null: false
+    t.bigint "constrainable_id", null: false
+    t.bigint "cpu_request"
+    t.bigint "cpu_limit"
+    t.bigint "memory_request"
+    t.bigint "memory_limit"
+    t.integer "gpu_request"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["constrainable_type", "constrainable_id"], name: "index_resource_constraints_on_constrainable"
   end
 
   create_table "services", force: :cascade do |t|
@@ -522,7 +522,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_000229) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
-  add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
   add_foreign_key "build_configurations", "projects"

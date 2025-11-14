@@ -1,0 +1,9 @@
+<div role="tablist" class="tabs tabs-bordered">
+  <a href="<%= project_service_path(service.project, service, tab: 'overview') %>" role="tab" class="tab <%= 'tab-active' if tab == 'overview' %>">Overview</a>
+  <% if service.web_service? %>
+  <a href="<%= project_service_path(service.project, service, tab: 'networking') %>" role="tab" class="tab <%= 'tab-active' if tab == 'networking' %>">Networking</a>
+  <% end %>
+  <a href="<%= project_service_path(service.project, service, tab: 'advanced') %>" role="tab" class="tab <%= 'tab-active' if tab == 'advanced' %>">Advanced</a>
+</div>
+
+<%= yield %>
