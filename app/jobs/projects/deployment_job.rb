@@ -20,6 +20,9 @@ class Projects::DeploymentJob < ApplicationJob
     apply_config_map(project, kubectl)
 
     deploy_volumes(project, kubectl)
+    kubectl.register_after_apply do |yaml_content|
+      deployment.add_manifest(yaml_content)
+    end
     predeploy(project, kubectl, connection)
     # For each of the projects services
     deploy_services(project, kubectl)

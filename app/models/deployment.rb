@@ -24,4 +24,10 @@ class Deployment < ApplicationRecord
   after_update_commit do
     self.build.broadcast_build
   end
+
+  def add_manifest(yaml)
+    self.manifests ||= { 'files' => [] }
+    self.manifests['files'] << yaml
+    save!
+  end
 end
