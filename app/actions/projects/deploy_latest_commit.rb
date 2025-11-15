@@ -11,7 +11,6 @@ class Projects::DeployLatestCommit
     project = context.project
     current_user = context.current_user || project.account.owner
     if project.git?
-      project_credential_provider = project.project_credential_provider
       client = Git::Client.from_project(project)
       commit = client.commits(project.branch).first
       build = project.builds.create!(
