@@ -1,11 +1,13 @@
-<div>
-  <%= turbo_frame_tag "service_#{service.id}" do %>
+<%= turbo_frame_tag("service_#{service.id}", data: { turbo_tabs_target: "content" }) do %>
+  <div class="my-6">
     <% if tab == "overview" %>
-      <%= render "projects/services/overview", service: service, tab: tab %>
+      <%= render "projects/services/overview", service:, tab: %>
+    <% elsif tab == "cron-jobs" %>
+      <%= render "projects/services/cron_job", service:, tab: %>
     <% elsif tab == "networking" %>
-      <%= render "projects/services/networking", service: service, tab: tab %>
+      <%= render "projects/services/networking", service:, tab: %>
     <% elsif tab == "advanced" %>
-      <%= render "projects/services/advanced", service: service, tab: tab %>
+      <%= render "projects/services/advanced", service:, tab: %>
     <% end %>
-  <% end %>
-</div>
+  </div>
+<% end %>

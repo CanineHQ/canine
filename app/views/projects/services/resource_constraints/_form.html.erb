@@ -1,0 +1,28 @@
+<div class="space-y-6" data-controller="resource-constraints--form">
+  <div data-resource-constraints--form-target="container">
+    <!-- CPU Configuration -->
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-32">
+        <div>
+          <div class="font-medium flex items-center gap-2 font-bold mb-4">
+            <iconify-icon icon="lucide:cpu" height="20"></iconify-icon>
+            <span>CPU</span>
+          </div>
+
+          <%= render "projects/services/resource_constraints/cpu_slider", form: form, resource_constraint:, key: :cpu_request %>
+          <%= render "projects/services/resource_constraints/cpu_slider", form: form, resource_constraint:, key: :cpu_limit %>
+        </div>
+
+        <div>
+          <div class="font-medium flex items-center gap-2 font-bold mb-4">
+            <iconify-icon icon="lucide:hard-drive" height="20"></iconify-icon>
+            <span>Memory</span>
+          </div>
+
+          <%= render "projects/services/resource_constraints/memory_slider", form: form, resource_constraint:, key: :memory_request %>
+          <%= render "projects/services/resource_constraints/memory_slider", form: form, resource_constraint:, key: :memory_limit %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

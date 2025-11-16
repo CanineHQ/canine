@@ -1,0 +1,10 @@
+<div>
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex-1">
+      <%= render "projects/services/cron_job_history", service: service %>
+    </div>
+    <div class="ml-4" data-tip="Run Job" class="tooltip">
+      <%= button_to "Run Job", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm btn-outline #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
+    </div>
+  </div>
+</div>

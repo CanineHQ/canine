@@ -7,6 +7,11 @@ class ResourceConstraints::Save
     # Get params hash
     rc_params = context.params
 
+    # Convert blank strings to nil
+    rc_params.each do |key, value|
+      rc_params[key] = nil if value.blank?
+    end
+
     # Convert CPU cores to millicores
     if rc_params[:cpu_request].present?
       rc_params[:cpu_request] = (rc_params[:cpu_request].to_f * 1000).to_i

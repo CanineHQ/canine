@@ -65,7 +65,6 @@ Rails.application.routes.draw do
     resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
     resources :processes, only: %i[index show], module: :add_ons
-    resource :resource_constraint, only: %i[new create edit update destroy]
   end
 
   resources :providers, only: %i[index new create destroy]
@@ -79,15 +78,14 @@ Rails.application.routes.draw do
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
-    resource :resource_constraint, only: %i[new create edit update destroy]
     resources :services, only: %i[index new create destroy update show], module: :projects do
+      resource :resource_constraint, only: %i[show new create update destroy], module: :services
       resources :jobs, only: %i[create], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
           post :check_dns
         end
       end
-      resource :resource_constraint, only: %i[new create edit update destroy]
     end
     resources :metrics, only: [ :index ], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects

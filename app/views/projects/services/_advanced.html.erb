@@ -1,5 +1,5 @@
-<%= services_layout(service, tab) do %>
-  <div>
-    <h1>Advanced</h1>
-  </div>
-<% end %>
+<div>
+  <h2 class="text-xl font-bold">Resource Constraints</h2>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
+  <%= render "projects/services/resource_constraints/show", service: @service, resource_constraint: @service.resource_constraint %>
+</div>

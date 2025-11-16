@@ -2,7 +2,7 @@ require "base64"
 require "json"
 
 class Projects::DeploymentJob < ApplicationJob
-  DEPLOYABLE_RESOURCES = %w[ConfigMap ResourceQuota Deployment CronJob Service Ingress Pv Pvc]
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Deployment CronJob Service Ingress Pv Pvc]
   class DeploymentFailure < StandardError; end
 
   def perform(deployment, user)
@@ -22,7 +22,6 @@ class Projects::DeploymentJob < ApplicationJob
     upload_registry_secrets(kubectl, deployment)
     apply_config_map(project, kubectl)
 
-    deploy_resource_quotas(project, kubectl)
     deploy_volumes(project, kubectl)
     predeploy(project, kubectl, connection)
     # For each of the projects services
@@ -43,12 +42,6 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   private
-
-  def deploy_resource_quotas(project, kubectl)
-    if project.resource_constraint.present?
-      apply_resource_quota(project, kubectl)
-    end
-  end
 
   def deploy_volumes(project, kubectl)
     project.volumes.each do |volume|

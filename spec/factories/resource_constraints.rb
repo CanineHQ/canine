@@ -2,37 +2,28 @@
 #
 # Table name: resource_constraints
 #
-#  id                 :bigint           not null, primary key
-#  constrainable_type :string           not null
-#  cpu_limit          :bigint
-#  cpu_request        :bigint
-#  gpu_request        :integer
-#  memory_limit       :bigint
-#  memory_request     :bigint
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  constrainable_id   :bigint           not null
+#  id             :bigint           not null, primary key
+#  cpu_limit      :bigint
+#  cpu_request    :bigint
+#  gpu_request    :integer
+#  memory_limit   :bigint
+#  memory_request :bigint
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  service_id     :bigint           not null
 #
 # Indexes
 #
-#  index_resource_constraints_on_constrainable  (constrainable_type,constrainable_id)
+#  index_resource_constraints_on_service_id  (service_id)
 #
 FactoryBot.define do
   factory :resource_constraint do
-    association :constrainable, factory: :service
+    service
     cpu_request { 500 }        # 500m
     cpu_limit { 1000 }         # 1 CPU
     memory_request { 536870912 }  # 512Mi
     memory_limit { 1073741824 }   # 1Gi
     gpu_request { 0 }
-
-    trait :with_project do
-      association :constrainable, factory: :project
-    end
-
-    trait :with_add_on do
-      association :constrainable, factory: :add_on
-    end
 
     trait :high_resources do
       cpu_request { 2000 }      # 2 CPU

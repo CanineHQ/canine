@@ -1,0 +1,50 @@
+<div data-controller="resource-constraints--slider" data-resource-constraints--slider-type-value="float" data-resource-constraints--form-target="<%= key %>Field">
+  <% value = resource_constraint.send(key) %>
+  <div class="flex items-center justify-between mb-4">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= check_box_tag "enable_#{key}", "1", value.present?,
+          class: "checkbox checkbox-sm",
+          data: {
+            action: "change->resource-constraints--form#toggleField",
+            resource_constraints__form_field_param: key
+          } %>
+      <span class="text-sm"><%= key.to_s.titleize %></span>
+    </label>
+    <div class="flex items-center">
+      <%= form.text_field(
+        key,
+        type: "number",
+        class: "input input-sm input-bordered font-mono text-sm w-[125px] text-right mr-2 #{'opacity-50 cursor-not-allowed' if value.blank?}",
+        value: value.present? ? (value / 1000.0) : '',
+        step: :any,
+        required: false,
+        placeholder: "0.5",
+        readonly: value.blank?,
+        data: {
+          resource_constraints__slider_target: "numberInput",
+          resource_constraints__form_target: "input",
+          action: "input->resource-constraints--slider#updateSlider"
+        }
+      ) %>
+      <span class="text-gray-200">cores</span>
+    </div>
+  </div>
+  <div class="mt-2">
+    <input
+      type="range"
+      min="0.1"
+      max="16"
+      step="0.1"
+      value="<%= value.present? ? (value / 1000.0) : 0.5 %>"
+      class="w-full h-2 bg-base-300 rounded-lg appearance-none cursor-pointer slider"
+      disabled="<%= value.blank? %>"
+      data-action="input->resource-constraints--slider#updateValue"
+      data-resource-constraints--slider-target="slider"
+      data-resource-constraints--form-target="slider"
+    >
+    <div class="flex justify-between text-xs text-gray-400 mt-1">
+      <span>0.1</span>
+      <span>16.0</span>
+    </div>
+  </div>
+</div>

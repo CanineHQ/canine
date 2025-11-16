@@ -7,7 +7,6 @@ class AddOns::InstallHelmChart
 
     add_on.update_install_stage!(0)
     create_namespace(context.connection)
-    apply_resource_quota(context.connection)
 
     if add_on.installed?
       add_on.updating!
@@ -63,16 +62,6 @@ class AddOns::InstallHelmChart
     kubectl = K8::Kubectl.new(connection, runner)
     namespace_yaml = K8::Namespace.new(connection.add_on).to_yaml
     kubectl.apply_yaml(namespace_yaml)
-  end
-
-  def self.apply_resource_quota(connection)
-    add_on = connection.add_on
-    return unless add_on.resource_constraint.present?
-
-    runner = Cli::RunAndLog.new(add_on)
-    kubectl = K8::Kubectl.new(connection, runner)
-    resource_quota_yaml = K8::Stateless::ResourceQuota.new(add_on).to_yaml
-    kubectl.apply_yaml(resource_quota_yaml)
   end
 
   def self.get_values(add_on)

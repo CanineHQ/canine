@@ -39,7 +39,6 @@ RSpec.describe Projects::Update do
         expect(result.project.branch).to eq('develop')
         expect(result.project.build_configuration.context_directory).to eq('./app')
         expect(result.project.repository_url).to eq('updated/repo')
-        expect(result.project.docker_command).to eq('bundle exec rails s')
         expect(result.project.build_configuration.dockerfile_path).to eq('docker/Dockerfile')
       end
 

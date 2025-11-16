@@ -26,7 +26,6 @@ class AddOn < ApplicationRecord
   include Loggable
   belongs_to :cluster
   has_one :account, through: :cluster
-  has_one :resource_constraint, as: :constrainable, dependent: :destroy
 
   enum :status, {
     installing: 0,

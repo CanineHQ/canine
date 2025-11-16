@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe ResourceConstraints::Save do
-  let(:project) { create(:project) }
-  let(:resource_constraint) { build(:resource_constraint, :with_project, constrainable: project) }
+  let(:service) { create(:service) }
+  let(:resource_constraint) { build(:resource_constraint, service: service) }
 
   describe '.call' do
     context 'with valid CPU core values' do
@@ -106,7 +106,7 @@ RSpec.describe ResourceConstraints::Save do
     end
 
     context 'with nil CPU values' do
-      let(:resource_constraint) { ResourceConstraint.new(constrainable: project) }
+      let(:resource_constraint) { ResourceConstraint.new(service: service) }
       let(:params) do
         {
           memory_request: '512',
@@ -163,6 +163,36 @@ RSpec.describe ResourceConstraints::Save do
         expect(resource_constraint.memory_request).to eq(256)
         expect(resource_constraint.memory_limit).to eq(512)
         expect(resource_constraint.gpu_request).to eq(1)
+      end
+    end
+
+    context 'with blank string values' do
+      let(:resource_constraint) do
+        create(:resource_constraint,
+          service: service,
+          cpu_request: 1000,
+          cpu_limit: 2000,
+          memory_request: 512,
+          memory_limit: 1024)
+      end
+      let(:params) do
+        {
+          cpu_request: '',
+          cpu_limit: '',
+          memory_request: '',
+          memory_limit: ''
+        }
+      end
+
+      subject { described_class.execute(resource_constraint: resource_constraint, params: params) }
+
+      it 'converts blank strings to nil' do
+        result = subject
+        expect(result).to be_success
+        expect(resource_constraint.cpu_request).to be_nil
+        expect(resource_constraint.cpu_limit).to be_nil
+        expect(resource_constraint.memory_request).to be_nil
+        expect(resource_constraint.memory_limit).to be_nil
       end
     end
   end
