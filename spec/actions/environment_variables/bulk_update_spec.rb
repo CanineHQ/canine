@@ -141,6 +141,33 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
       end
     end
 
+    context 'when updating storage_type with keep_existing_value flag' do
+      before do
+        project.environment_variables.create!(name: 'CONFIG_VAR', value: 'sensitive_value', storage_type: :config)
+      end
+
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'CONFIG_VAR', value: '', keep_existing_value: 'true', storage_type: 'secret' }
+          ]
+        }
+      end
+
+      it 'updates the storage_type while preserving the value' do
+        subject
+        var = project.environment_variables.find_by(name: 'CONFIG_VAR')
+        expect(var.value).to eq('sensitive_value')
+        expect(var.storage_type).to eq('secret')
+      end
+
+      it 'creates an event for the storage_type change' do
+        expect { subject }.to change {
+          project.environment_variables.find_by(name: 'CONFIG_VAR').events.count
+        }.by(1)
+      end
+    end
+
     context 'when removing environment variables' do
       before do
         project.environment_variables.create!(name: 'VAR_TO_REMOVE', value: 'value')
