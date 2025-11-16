@@ -3,7 +3,7 @@
     class="flex-1"
     data-controller="environment-variables"
     data-environment-variables-project-id-value="<%= @project.id %>"
-    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: nil } }.to_json %>"
+    data-environment-variables-vars-value="<%= @project.environment_variables.map { |e| { id: e.id, name: e.name, value: nil, storage_type: e.storage_type } }.to_json %>"
   >
     <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
       <div data-environment-variables-target="container"></div>

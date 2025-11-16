@@ -2,7 +2,7 @@ require "base64"
 require "json"
 
 class Projects::DeploymentJob < ApplicationJob
-  DEPLOYABLE_RESOURCES = %w[ConfigMap Deployment CronJob Service Ingress Pv Pvc]
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Ingress Pv Pvc]
   class DeploymentFailure < StandardError; end
 
   def perform(deployment, user)
@@ -21,6 +21,7 @@ class Projects::DeploymentJob < ApplicationJob
     # Upload container registry secrets
     upload_registry_secrets(kubectl, deployment)
     apply_config_map(project, kubectl)
+    apply_secrets(project, kubectl)
 
     deploy_volumes(project, kubectl)
     predeploy(project, kubectl, connection)
@@ -64,7 +65,6 @@ class Projects::DeploymentJob < ApplicationJob
     command.delete_if_exists!
     kubectl.apply_yaml(command_yaml)
     command.wait_for_completion
-    # Get logs f
   end
 
   def predeploy(project, kubectl, connection)

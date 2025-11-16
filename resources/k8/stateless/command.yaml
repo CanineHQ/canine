@@ -24,6 +24,8 @@ spec:
         envFrom:
         - configMapRef:
             name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
         <% if @project.volumes.present? %>
         volumeMounts:
         <% @project.volumes.each do |volume| %>

@@ -24,6 +24,8 @@ spec:
     envFrom:
     - configMapRef:
         name: <%= project.name %>
+    - secretRef:
+        name: <%= project.name %>
   imagePullSecrets:
   - name: dockerconfigjson-github-com
   volumes:

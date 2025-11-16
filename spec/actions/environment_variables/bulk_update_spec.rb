@@ -13,14 +13,38 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
       let(:params) do
         {
           environment_variables: [
-            { name: 'NEW_VAR', value: 'new_value' }
+            { name: 'NEW_VAR', value: 'new_value', storage_type: 'config' },
+            { name: 'NEW_VAR_2', value: 'new_value_2', storage_type: 'secret' }
           ]
         }
       end
 
       it 'creates new environment variables' do
-        expect { subject }.to change { project.environment_variables.count }.by(1)
-        expect(project.environment_variables.last.name).to eq('NEW_VAR')
+        expect { subject }.to change { project.environment_variables.count }.by(2)
+        expect(project.environment_variables.find_by(name: 'NEW_VAR').storage_type).to eq('config')
+        expect(project.environment_variables.find_by(name: 'NEW_VAR_2').storage_type).to eq('secret')
+      end
+
+      it 'defaults to config storage_type when not specified' do
+        subject
+        expect(project.environment_variables.find_by(name: 'NEW_VAR').storage_type).to eq('config')
+      end
+    end
+
+    context 'when adding new environment variables with storage_type' do
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'CONFIG_VAR', value: 'config_value', storage_type: 'config' },
+            { name: 'SECRET_VAR', value: 'secret_value', storage_type: 'secret' }
+          ]
+        }
+      end
+
+      it 'creates environment variables with correct storage_type' do
+        expect { subject }.to change { project.environment_variables.count }.by(2)
+        expect(project.environment_variables.find_by(name: 'CONFIG_VAR').storage_type).to eq('config')
+        expect(project.environment_variables.find_by(name: 'SECRET_VAR').storage_type).to eq('secret')
       end
     end
 
@@ -40,6 +64,52 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
       it 'updates the existing environment variable' do
         subject
         expect(project.environment_variables.find_by(name: 'EXISTING_VAR').value).to eq('new_value')
+      end
+    end
+
+    context 'when updating storage_type of existing variable' do
+      before do
+        project.environment_variables.create!(name: 'CONVERTABLE_VAR', value: 'some_value', storage_type: :config)
+      end
+
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'CONVERTABLE_VAR', value: 'some_value', storage_type: 'secret' }
+          ]
+        }
+      end
+
+      it 'updates the storage_type' do
+        subject
+        expect(project.environment_variables.find_by(name: 'CONVERTABLE_VAR').storage_type).to eq('secret')
+      end
+
+      it 'creates an event for the change' do
+        expect { subject }.to change {
+          project.environment_variables.find_by(name: 'CONVERTABLE_VAR').events.count
+        }.by(1)
+      end
+    end
+
+    context 'when updating value but not storage_type' do
+      before do
+        project.environment_variables.create!(name: 'MIXED_VAR', value: 'old_value', storage_type: :secret)
+      end
+
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'MIXED_VAR', value: 'new_value' }
+          ]
+        }
+      end
+
+      it 'updates the value but preserves storage_type' do
+        subject
+        var = project.environment_variables.find_by(name: 'MIXED_VAR')
+        expect(var.value).to eq('new_value')
+        expect(var.storage_type).to eq('secret')
       end
     end
 

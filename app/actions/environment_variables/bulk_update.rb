@@ -20,6 +20,7 @@ class EnvironmentVariables::BulkUpdate
           project.environment_variables.create!(
             name: ev[:name].strip.upcase,
             value: ev[:value].strip,
+            storage_type: ev[:storage_type] || :config,
             current_user: context.current_user
           )
         end
@@ -33,11 +34,18 @@ class EnvironmentVariables::BulkUpdate
       updated_variables.each do |ev|
         env_variable = env_variable_data.find { |evd| evd[:name] == ev.name }
         # Skip updating value if keep_existing_value flag is set
-        next if env_variable[:keep_existing_value] == "true"
+        if env_variable[:keep_existing_value] == "true"
+          update_attrs = {}
+        else
+          update_attrs = {}
+          update_attrs[:value] = env_variable[:value].strip if env_variable[:value] != ev.value
+        end
+        update_attrs[:storage_type] = env_variable[:storage_type] if env_variable[:storage_type] && env_variable[:storage_type] != ev.storage_type
 
-        unless env_variable[:value] == ev.value
+
+        if update_attrs.any?
           ev.update!(
-            value: env_variable[:value].strip,
+            **update_attrs,
             current_user: context.current_user
           )
           ev.events.create!(

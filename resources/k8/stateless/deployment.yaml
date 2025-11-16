@@ -31,6 +31,8 @@ spec:
         envFrom:
         - configMapRef:
             name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
         ports:
         - containerPort: <%= service.container_port %>
         <% if service.healthcheck_url.present? %>
