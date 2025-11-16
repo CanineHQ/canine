@@ -42,6 +42,8 @@ class Service < ApplicationRecord
   scope :running, -> { where(status: [ :healthy, :unhealthy, :updated ]) }
 
   has_one :cron_schedule, dependent: :destroy
+  has_one :resource_constraint, dependent: :destroy
+
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
@@ -73,7 +75,7 @@ class Service < ApplicationRecord
       :healthcheck_url,
       :replicas,
       :description,
-      :allow_public_networking,
+      :allow_public_networking
     )
   end
 end

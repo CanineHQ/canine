@@ -13,10 +13,6 @@
 
     <% end %>
 
-    <%= render(FormFieldComponent.new(label: "Docker command")) do %>
-      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-    <% end %>
-
     <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
       <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
     <% end %>

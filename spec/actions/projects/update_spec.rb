@@ -10,7 +10,6 @@ RSpec.describe Projects::Update do
       branch: 'main',
       cluster: cluster,
       repository_url: 'original/repo',
-      docker_command: 'rails s',
     )
   end
 
@@ -23,7 +22,6 @@ RSpec.describe Projects::Update do
             branch: 'develop',
             cluster_id: cluster.id,
             repository_url: 'updated/repo',
-            docker_command: 'bundle exec rails s',
             build_configuration: {
               context_directory: './app',
               dockerfile_path: 'docker/Dockerfile'
@@ -41,7 +39,6 @@ RSpec.describe Projects::Update do
         expect(result.project.branch).to eq('develop')
         expect(result.project.build_configuration.context_directory).to eq('./app')
         expect(result.project.repository_url).to eq('updated/repo')
-        expect(result.project.docker_command).to eq('bundle exec rails s')
         expect(result.project.build_configuration.dockerfile_path).to eq('docker/Dockerfile')
       end
 

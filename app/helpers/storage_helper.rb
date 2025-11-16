@@ -34,7 +34,9 @@ module StorageHelper
     SIZE_UNITS.to_a.reverse.each do |unit, bytes|
       if integer >= bytes
         value = (integer.to_f / bytes).round(2)
-        return "#{value}#{unit}i"
+        # Remove unnecessary trailing zeros and decimal point
+        formatted_value = value % 1 == 0 ? value.to_i : value
+        return "#{formatted_value}#{unit}i"
       end
     end
     integer.to_s
