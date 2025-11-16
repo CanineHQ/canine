@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_14_025053) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_16_041928) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -191,6 +191,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_14_025053) do
     t.bigint "project_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "storage_type", default: 0, null: false
     t.index ["project_id", "name"], name: "index_environment_variables_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_environment_variables_on_project_id"
   end

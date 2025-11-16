@@ -6,6 +6,6 @@ metadata:
   labels:
     caninemanaged: 'true'
 data:
-  <% @project.environment_variables.each do |environment_variable| %>
+  <% @project.environment_variables.config.each do |environment_variable| %>
   <%= environment_variable.name %>: "<%= environment_variable.value.gsub('"', '\\"') %>"
   <% end %>
