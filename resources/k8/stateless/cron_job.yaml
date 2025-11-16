@@ -74,3 +74,6 @@ spec:
             # Add your volume specifications here (e.g., persistentVolumeClaim, configMap, etc.)
           <% end %>
           <% end %>
+          <% if service.pod_yaml.present? %>
+<%= service.pod_yaml %>
+          <% end %>

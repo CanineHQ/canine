@@ -3,3 +3,58 @@
   <hr class="mt-3 mb-4 border-t border-base-300" />
   <%= render "projects/services/resource_constraints/show", service: @service, resource_constraint: @service.resource_constraint %>
 </div>
+
+<div class="mt-8" data-controller="content-toggle">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold">Pod Template Configuration</h2>
+
+    <button type="button"
+            class="btn btn-sm btn-outline"
+            data-action="click->content-toggle#toggleEdit"
+            data-content-toggle-target="editButton">
+      <iconify-icon icon="lucide:pen" height="16"></iconify-icon>
+      Edit
+    </button>
+  </div>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
+
+  <div data-content-toggle-target="placeholder" class="p-4 bg-base-200 rounded-lg">
+    <% if @service.pod_yaml.present? %>
+      <p class="text-sm text-gray-500">Custom pod template is configured. Click edit to view and modify.</p>
+    <% else %>
+      <p class="text-sm text-gray-500">No custom pod template configured. Click edit to add custom configuration.</p>
+    <% end %>
+  </div>
+
+  <div data-content-toggle-target="editorContainer" class="hidden">
+    <p class="my-2 text-sm text-gray-300">
+      Enter custom YAML configuration for the pod template spec. This will be merged with the default pod template in your <code>deployment.yaml</code> and <code>cron_job.yaml</code> files.
+      Only the pod template spec fields are supported (<code>containers</code>, <code>volumes</code>, <code>serviceAccountName</code>, etc.).
+    </p>
+
+    <%= form_with(model: @service, url: project_service_path(@service.project, @service), method: :put) do |form| %>
+      <div class="form-control" data-controller="yaml-editor">
+        <%= form.label :pod_yaml, "Pod Template YAML", class: "label" %>
+        <%= form.text_area :pod_yaml,
+          rows: 15,
+          placeholder: "# Example:\ncontainers:\n  - name: sidecar\n    image: nginx:latest\nvolumes:\n  - name: cache\n    emptyDir: {}",
+          class: "textarea textarea-bordered font-mono text-sm w-full",
+          data: { yaml_editor_target: "textarea" },
+          value: @service.pod_yaml.present? ? @service.pod_yaml.to_yaml : "" %>
+        <div data-yaml-editor-target="editor"></div>
+        <label class="label">
+          <span class="label-text-alt">Enter valid YAML for pod template spec fields</span>
+        </label>
+      </div>
+
+      <div class="form-footer mt-6 flex gap-2">
+        <%= form.submit @service.pod_yaml.present? ? "Update Pod Template" : "Save Pod Template", class: "btn btn-primary" %>
+        <button type="button"
+                class="btn btn-outline"
+                data-action="click->content-toggle#cancelEdit">
+          Cancel
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
