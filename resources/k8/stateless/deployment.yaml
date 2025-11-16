@@ -94,3 +94,6 @@ spec:
           claimName: <%= volume.name %>
       <% end %>
       <% end %>
+      <% if service.pod_yaml.present? %>
+<%= service.pod_yaml %>
+      <% end %>
