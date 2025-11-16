@@ -12,7 +12,7 @@ export default class extends Controller {
       })
       event.target.classList.add("tab-active")
       // Show loading spinner
-      this.contentTarget.innerHTML = `<div class="flex items-center justify-center my-6">
+      this.contentTarget.innerHTML = `<div class="flex items-center justify-center my-6" style="height: 300px;">
         <span class="loading loading-spinner loading-sm"></span>
       </div>`
       this.contentTarget.src = event.target.href
