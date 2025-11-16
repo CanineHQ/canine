@@ -4,7 +4,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
   before_action :set_project
 
   def index
-    @environment_variables = @project.environment_variables
+    @environment_variables = @project.environment_variables.order(:name)
   end
 
   def show
@@ -13,7 +13,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
   end
 
   def download
-    env_content = @project.environment_variables.map { |ev| "#{ev.name}=#{ev.value}" }.join("\n")
+    env_content = @project.environment_variables.order(:name).map { |ev| "#{ev.name}=#{ev.value}" }.join("\n")
     send_data env_content,
               filename: "#{@project.name.parameterize}.env",
               type: 'text/plain',
