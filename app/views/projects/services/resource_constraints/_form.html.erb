@@ -9,8 +9,18 @@
             <span>CPU</span>
           </div>
 
-          <%= render "projects/services/resource_constraints/cpu_slider", form: form, resource_constraint:, key: :cpu_request %>
-          <%= render "projects/services/resource_constraints/cpu_slider", form: form, resource_constraint:, key: :cpu_limit %>
+          <%= render(
+            "projects/services/resource_constraints/cpu_slider",
+            form:,
+            resource_constraint:,
+            key: :cpu_request
+          ) %>
+          <%= render(
+            "projects/services/resource_constraints/cpu_slider",
+            form:,
+            resource_constraint:,
+            key: :cpu_limit
+          ) %>
         </div>
 
         <div>
@@ -19,8 +29,18 @@
             <span>Memory</span>
           </div>
 
-          <%= render "projects/services/resource_constraints/memory_slider", form: form, resource_constraint:, key: :memory_request %>
-          <%= render "projects/services/resource_constraints/memory_slider", form: form, resource_constraint:, key: :memory_limit %>
+          <%= render(
+            "projects/services/resource_constraints/memory_slider",
+            form:,
+            resource_constraint:,
+            key: :memory_request
+          ) %>
+          <%= render(
+            "projects/services/resource_constraints/memory_slider",
+            form:,
+            resource_constraint:,
+            key: :memory_limit
+          ) %>
         </div>
       </div>
     </div>
