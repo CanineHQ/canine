@@ -25,7 +25,8 @@ class K8::Base
   def to_yaml
     template_content = template_path.read
     erb_template = ERB.new(template_content)
-    erb_template.result(binding)
+    result = erb_template.result(binding)
+    result.gsub(/\n\s*\n/, "\n")
   end
 
   def client

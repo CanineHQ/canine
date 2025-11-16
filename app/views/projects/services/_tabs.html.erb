@@ -1,0 +1,13 @@
+<div role="tablist" class="tabs tabs-bordered" data-turbo-tabs-target="tabs">
+  <%= link_to "Overview", project_service_path(service.project, service, tab: 'overview'), class: "tab #{'tab-active' if tab == 'overview'}" %>
+
+  <% if service.web_service? %>
+  <%= link_to "Networking", project_service_path(service.project, service, tab: 'networking'), class: "tab #{'tab-active' if tab == 'networking'}" %>
+  <% end %>
+
+  <% if service.cron_job? %>
+  <%= link_to "Cron Job History", project_service_path(service.project, service, tab: 'cron-jobs'), class: "tab #{'tab-active' if tab == 'cron-jobs'}" %>
+  <% end %>
+
+  <%= link_to "Advanced", project_service_path(service.project, service, tab: 'advanced'), class: "tab #{'tab-active' if tab == 'advanced'}" %>
+</div>

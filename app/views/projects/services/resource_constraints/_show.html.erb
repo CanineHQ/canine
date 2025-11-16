@@ -1,0 +1,28 @@
+<%= turbo_frame_tag "resource_constraint_#{service.id}" do %>
+  <% if (service.resource_constraint.present? && service.resource_constraint.persisted?) || (defined?(show_form) && show_form) %>
+    <% resource_constraint = service.resource_constraint || ResourceConstraint.new(service:) %>
+    <%= form_with(
+      model: resource_constraint,
+      url: project_service_resource_constraint_path(service.project, service),
+      method: resource_constraint.persisted? ? :put : :post,
+      data: { turbo_frame: "resource_constraint_form" }) do |form|
+    %>
+      <%= render "projects/services/resource_constraints/form", form: form, resource_constraint: %>
+      <% if resource_constraint.persisted? %>
+        <div class="form-footer mt-6">
+          <%= form.submit "Update Resource Constraints", class: "btn btn-primary" %>
+        </div>
+      <% else %>
+        <div class="form-footer mt-6">
+          <%= link_to "Cancel", project_service_resource_constraint_path(service.project, service), class: "btn btn-outline" %>
+          <%= form.submit "Create Resource Constraints", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    <% end %>
+    <div class="mt-2">
+      <%= button_to "Delete", project_service_resource_constraint_path(service.project, service), method: :delete, class: "btn btn-error btn-outline" %>
+    </div>
+  <% else %>
+    <%= link_to "Enable Resource Constraints", new_project_service_resource_constraint_path(service.project, service), class: "btn btn-primary" %>
+  <% end %>
+<% end %>

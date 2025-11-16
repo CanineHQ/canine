@@ -21,16 +21,14 @@
           <div class="collapse-title">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2 text-xl font-medium">
-                <div>
-                  <% if service.web_service? %>
-                    <iconify-icon icon="ph:globe-duotone" height="16"></iconify-icon>
-                  <% elsif service.background_service? %>
-                    <iconify-icon icon="ph:server" height="16"></iconify-icon>
-                  <% elsif service.cron_job? %>
-                    <iconify-icon icon="ph:clock" height="16"></iconify-icon>
-                  <% end %>
-                  <%= service.name %>
-                </div>
+                <% if service.web_service? %>
+                  <iconify-icon icon="lucide:globe" height="16"></iconify-icon>
+                <% elsif service.background_service? %>
+                  <iconify-icon icon="lucide:cpu" height="16"></iconify-icon>
+                <% elsif service.cron_job? %>
+                  <iconify-icon icon="lucide:clock" height="16"></iconify-icon>
+                <% end %>
+                <%= service.name %>
               </div>
               <div class="my-1">
                 <%= render "projects/services/status", service: service %>
@@ -38,7 +36,10 @@
             </div>
           </div>
           <div class="collapse-content">
-            <%= render "projects/services/show", service: service %>
+            <div data-controller="turbo-tabs">
+              <%= render "projects/services/tabs", service:, tab: "overview" %>
+              <%= render "projects/services/show", service:, tab: "overview" %>
+            </div>
           </div>
         </div>
         <% end %>

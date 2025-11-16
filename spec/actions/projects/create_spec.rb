@@ -13,7 +13,6 @@ RSpec.describe Projects::Create do
         cluster_id: cluster.id,
         docker_build_context_directory: '.',
         repository_url: 'example/repo',
-        docker_command: 'rails s',
         dockerfile_path: 'Dockerfile',
         container_registry_url: '',
         project_credential_provider: {
@@ -49,7 +48,6 @@ RSpec.describe Projects::Create do
               cluster_id: cluster.id,
               docker_build_context_directory: '.',
               repository_url: 'example/repo',
-              docker_command: 'rails s',
               dockerfile_path: 'Dockerfile',
               container_registry_url: '',
               project_credential_provider: {
