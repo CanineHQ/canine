@@ -8,7 +8,7 @@
             action: "change->resource-constraints--form#toggleField",
             resource_constraints__form_field_param: key
           } %>
-      <span class="text-sm"><%= key.to_s.titleize %></span>
+      <span class="text-sm">Enable <%= key.to_s.gsub("cpu", "CPU").gsub("_", " ") %></span>
     </label>
     <div class="flex items-center">
       <%= form.text_field(

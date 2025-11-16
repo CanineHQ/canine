@@ -19,9 +19,11 @@
         </div>
       <% end %>
     <% end %>
-    <div class="mt-2">
-      <%= button_to "Delete", project_service_resource_constraint_path(service.project, service), method: :delete, class: "btn btn-error btn-outline" %>
-    </div>
+    <% if resource_constraint.persisted? %>
+      <div class="mt-2">
+        <%= button_to "Delete", project_service_resource_constraint_path(service.project, service), method: :delete, class: "btn btn-error btn-outline" %>
+      </div>
+    <% end %>
   <% else %>
     <%= link_to "Enable Resource Constraints", new_project_service_resource_constraint_path(service.project, service), class: "btn btn-primary" %>
   <% end %>
