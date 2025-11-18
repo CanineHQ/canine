@@ -1,4 +1,6 @@
 class ApplicationJob < ActiveJob::Base
+  include OpenTelemetryInstrumentation
+
   retry_on StandardError, attempts: 0
 
   # Automatically retry jobs that encountered a deadlock

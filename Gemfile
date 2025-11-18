@@ -113,3 +113,10 @@ gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
 gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
+
+gem "opentelemetry-sdk", "~> 1.5"
+gem "opentelemetry-exporter-otlp", "~> 0.29"
+gem "opentelemetry-instrumentation-rails", "~> 0.32"
+gem "opentelemetry-instrumentation-active_job", "~> 0.8"
+gem "opentelemetry-instrumentation-http", "~> 0.23"
+gem "opentelemetry-instrumentation-pg", "~> 0.29"
