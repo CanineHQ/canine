@@ -1,10 +1,79 @@
-<div>
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex-1">
-      <%= render "projects/services/cron_job_history", service: service %>
-    </div>
-    <div class="ml-4" data-tip="Run Job" class="tooltip">
-      <%= button_to "Run Job", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm btn-outline #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
+<div class="mb-b">
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-bold">
+      Run history for <code class="bg-base-300 px-2 py-1 rounded text-sm"><%= service.name %></code>
+    </h2>
+    <div data-tip="Run Job" class="tooltip">
+      <%= button_to "Run once", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
     </div>
   </div>
+<hr class="mt-3 mb-4 border-t border-base-300" />
+
 </div>
+<% cron_job = K8::Stateless::CronJob.new(service).connect(active_connection) %>
+<% run_history = cron_job.run_history.take(30) %>
+
+<% if run_history.empty? %>
+  <div class="text-center py-12">
+    <p class="text-gray-500 text-md">This job has not been run yet.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr class="border-b border-base-300">
+          <th class="text-left font-medium text-sm">Started</th>
+          <th class="text-left font-medium text-sm">Ran for</th>
+          <th class="text-left font-medium text-sm">Name</th>
+          <th class="text-left font-medium text-sm">Status</th>
+          <th class="text-left font-medium text-sm">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% run_history.each do |job_run| %>
+          <%
+            duration_text = if job_run.duration
+              if job_run.duration < 60
+                "#{job_run.duration} seconds"
+              elsif job_run.duration < 3600
+                minutes = (job_run.duration / 60).round
+                "#{minutes} second#{minutes == 1 ? '' : 's'}"
+              else
+                hours = (job_run.duration / 3600.0).round(1)
+                "#{hours} hour#{hours == 1 ? '' : 's'}"
+              end
+            else
+              "..."
+            end
+
+            started_text = if job_run.started_at
+              time_diff = Time.now - job_run.started_at
+              if time_diff < 60
+                "#{time_diff.to_i} seconds ago"
+              elsif time_diff < 3600
+                minutes = (time_diff / 60).to_i
+                "#{minutes} minute#{minutes == 1 ? '' : 's'} ago"
+              else
+                hours = (time_diff / 3600).to_i
+                "#{hours} hour#{hours == 1 ? '' : 's'} ago"
+              end
+            else
+              "N/A"
+            end
+          %>
+          <tr class="hover:bg-base-300">
+            <td class="text-sm"><%= started_text %></td>
+            <td class="text-sm"><%= duration_text %></td>
+            <td class="text-sm font-medium"><%= job_run.name %></td>
+            <td>
+              <%= render "projects/services/jobs/status", status: job_run.status %>
+            </td>
+            <td>
+              <%= button_to "Delete", project_service_job_path(service.project, service, job_run.name), method: :delete, class: "btn btn-sm btn-error btn-outline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
