@@ -3,9 +3,7 @@
     <h2 class="text-xl font-bold">
       Run history for <code class="bg-base-300 px-2 py-1 rounded text-sm"><%= service.name %></code>
     </h2>
-    <div data-tip="Run Job" class="tooltip">
-      <%= button_to "Run once", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
-    </div>
+    <%= button_to "Run once", project_service_jobs_path(service.project, service), class: "btn btn-primary btn-sm #{!service.healthy? ? 'btn-disabled' : ''}", disabled: !service.healthy? %>
   </div>
 <hr class="mt-3 mb-4 border-t border-base-300" />
 
