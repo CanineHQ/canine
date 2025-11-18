@@ -80,7 +80,7 @@ Rails.application.routes.draw do
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update show], module: :projects do
       resource :resource_constraint, only: %i[show new create update destroy], module: :services
-      resources :jobs, only: %i[create], module: :services
+      resources :jobs, only: %i[show create destroy], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
           post :check_dns
