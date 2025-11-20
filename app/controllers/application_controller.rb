@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
-  def authenticate_user!
+  def authenticate_user!(opts = {})
     if request.headers["X-API-Key"].present?
       authenticate_with_api_token!
     else
