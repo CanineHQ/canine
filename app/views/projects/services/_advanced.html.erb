@@ -58,3 +58,18 @@
     <% end %>
   </div>
 </div>
+
+<div class="mt-8">
+  <h2 class="text-xl font-bold">Danger Zone</h2>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
+
+  <%= button_to(
+    [@service.project, @service],
+    method: :delete,
+    class: "btn btn-error btn-outline",
+    form: { data: { turbo: false, confirm: t("are_you_sure") } }
+  ) do %>
+    <iconify-icon icon="lucide:trash" height="20"></iconify-icon>
+    Delete service
+  <% end %>
+</div>
