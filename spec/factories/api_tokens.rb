@@ -6,13 +6,15 @@
 #  access_token :string           not null
 #  expires_at   :datetime
 #  last_used_at :datetime
+#  name         :string           not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  user_id      :bigint           not null
 #
 # Indexes
 #
-#  index_api_tokens_on_user_id  (user_id)
+#  index_api_tokens_on_access_token  (access_token) UNIQUE
+#  index_api_tokens_on_user_id       (user_id)
 #
 # Foreign Keys
 #
