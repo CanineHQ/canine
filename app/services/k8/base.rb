@@ -29,6 +29,17 @@ class K8::Base
     result.gsub(/\n\s*\n/, "\n")
   end
 
+  def self.manifest_key(yaml)
+    manifest = YAML.safe_load(yaml)
+    kind = manifest["kind"]&.downcase
+    name = manifest.dig("metadata", "name")
+    manifest_key = "#{kind}/#{name}"
+  end
+
+  def suggested_file_name
+    "#{K8::Base.manifest_key(to_yaml).gsub("/", "_").underscore}.yaml"
+  end
+
   def client
     raise "Client not connected" unless connected?
     @client ||= K8::Client.new(connection)
