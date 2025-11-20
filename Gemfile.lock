@@ -400,7 +400,9 @@ GEM
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
     ostruct (0.6.2)
-    pagy (9.4.0)
+    pagy (43.0.0)
+      json
+      yaml
     parallel (1.27.0)
     parser (3.3.9.0)
       ast (~> 2.4.1)
@@ -635,6 +637,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yajl-ruby (1.4.3)
+    yaml (0.4.0)
     yaml-safe_load_stream3 (0.1.2)
     zeitwerk (2.7.3)
 
@@ -683,7 +686,7 @@ DEPENDENCIES
   omniauth-github (~> 2.0)
   omniauth-gitlab (~> 4.1)
   omniauth-rails_csrf_protection (~> 1.0)
-  pagy (~> 9.4)
+  pagy (~> 43.0)
   pg (~> 1.6)
   pretender (~> 0.6.0)
   pry (~> 0.15.2)
