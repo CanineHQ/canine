@@ -23,37 +23,8 @@
       <%= form.check_box :autodeploy, class: "checkbox" %>
     <% end %>
 
-    <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>
-      <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
-    <% end %>
-
-    <%= render(FormFieldComponent.new(label: "Docker build context directory")) do %>
-      <%= form.text_field :docker_build_context_directory, class: "input input-bordered w-full focus:outline-offset-0" %>
-    <% end %>
-
-    <%= render(FormFieldComponent.new(label: "Docker command")) do %>
-      <%= form.text_field :docker_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">If this is left blank, the default run command in the Dockerfile will be used</span>
-      </label>
-    <% end %>
-
     <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
       <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
-    <% end %>
-
-    <%= render(FormFieldComponent.new(label: "Container registry URL")) do %>
-      <%= form.text_field(
-        :container_registry_url,
-        class: "input input-bordered w-full focus:outline-offset-0",
-        value: form.object.attributes["container_registry_url"],
-      ) %>
-      <label class="label">
-        <span class="label-text-alt">If this is left blank, <%= project.github? ? "Github" : "Gitlab" %> Container Registry will be used</span>
-      </label>
     <% end %>
 
     <% if Flipper.enabled?(:build_configuration, current_account) %>

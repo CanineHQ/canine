@@ -18,20 +18,61 @@
     </div>
     <div>
       <!-- link to github -->
-      <%= link_to @build.commit_sha[0..6], "https://github.com/#{@project.repository_url}/commit/#{@build.commit_sha}", class: "underline", target: "_blank", rel: "noopener noreferrer" %>
-      <span class="font-light"><%= @build.commit_message.truncate(50) %></span>
+      <%= link_to(
+        @build.commit_sha[0..6],
+        "https://github.com/#{@project.repository_url}/commit/#{@build.commit_sha}",
+        class: "underline",
+        target: "_blank",
+        rel: "noopener noreferrer"
+      ) %>
+      <span class="font-light"><%= @build.commit_message.truncate(75) %></span>
     </div>
   </div>
   <hr class="mt-2 mb-6 border-base-content/10" />
-  <h2 class="text-xl font-bold mb-4">Build Logs</h2>
+  <h2 class="text-2xl font-bold">Build Logs</h2>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
   <div class="my-4">
     <%= render "log_outputs/logs", loggable: @build %>
   </div>
 
   <% if @build.deployment %>
-    <h2 class="text-xl font-bold mb-4">Release Logs</h2>
-    <div class="my-4">
-      <%= render "log_outputs/logs", loggable: @build.deployment %>
+    <div class="mt-6">
+      <h2 class="text-2xl font-bold">Release Logs</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <div class="my-4">
+        <%= render "log_outputs/logs", loggable: @build.deployment %>
+      </div>
+    </div>
+  <% end %>
+  <% if @build.deployment&.has_manifests? %>
+    <div class="mt-6" data-controller="content-toggle">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold">Deployment Manifests</h2>
+
+        <button type="button"
+                class="btn btn-sm btn-outline"
+                data-action="click->content-toggle#toggleEdit"
+                data-content-toggle-target="editButton">
+          <iconify-icon icon="lucide:eye" height="16"></iconify-icon>
+          View
+        </button>
+      </div>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <div data-content-toggle-target="placeholder" class="p-4 bg-base-200 rounded-lg">
+        <p class="text-sm text-gray-500">Click view to see the Kubernetes manifests that were deployed.</p>
+      </div>
+
+      <div data-content-toggle-target="editorContainer" class="hidden">
+        <%= render "projects/deployments/manifest_browser", deployment: @build.deployment %>
+        <div class="mt-4">
+          <button type="button"
+                  class="btn btn-outline btn-sm"
+                  data-action="click->content-toggle#cancelEdit">
+            Close
+          </button>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>

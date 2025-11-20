@@ -1,0 +1,48 @@
+<div data-controller="resource-constraints--slider" data-resource-constraints--slider-type-value="integer" data-resource-constraints--form-target="<%= key %>Field">
+  <% value = resource_constraint.send(key) %>
+  <div class="flex items-center justify-between mb-4">
+    <label class="flex items-center gap-2 cursor-pointer">
+      <%= check_box_tag "enable_#{key}", "1", value.present?,
+          class: "checkbox checkbox-sm",
+          data: {
+            action: "change->resource-constraints--form#toggleField",
+            resource_constraints__form_field_param: key
+          } %>
+      <span class="text-sm">Enable <%= key.to_s.titleize %></span>
+    </label>
+    <div class="flex items-center">
+      <%= form.text_field(
+        key,
+        type: "number",
+        class: "input input-sm input-bordered font-mono text-sm w-[125px] text-right mr-2 #{'opacity-50 cursor-not-allowed' if value.blank?}",
+        value: value || '',
+        required: false,
+        readonly: value.blank?,
+        data: {
+          resource_constraints__slider_target: "numberInput",
+          resource_constraints__form_target: "input",
+          action: "input->resource-constraints--slider#updateSlider"
+        }
+      ) %>
+      <span class="text-gray-200">MB</span>
+    </div>
+  </div>
+  <div class="mt-2">
+    <input
+      type="range"
+      min="128"
+      max="32768"
+      step="128"
+      value="<%= value || 128 %>"
+      class="w-full h-2 bg-base-300 rounded-lg appearance-none cursor-pointer slider"
+      disabled="<%= value.blank? %>"
+      data-action="input->resource-constraints--slider#updateValue"
+      data-resource-constraints--slider-target="slider"
+      data-resource-constraints--form-target="slider"
+    >
+    <div class="flex justify-between text-xs text-gray-400 mt-1">
+      <span>128</span>
+      <span>32768</span>
+    </div>
+  </div>
+</div>

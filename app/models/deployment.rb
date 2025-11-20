@@ -3,6 +3,7 @@
 # Table name: deployments
 #
 #  id         :bigint           not null, primary key
+#  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
@@ -23,5 +24,20 @@ class Deployment < ApplicationRecord
   enum :status, { in_progress: 0, completed: 1, failed: 2 }
   after_update_commit do
     self.build.broadcast_build
+  end
+
+  def add_manifest(yaml)
+    manifest = YAML.safe_load(yaml)
+    kind = manifest["kind"]&.downcase
+    name = manifest.dig("metadata", "name")
+    manifest_key = "#{kind}/#{name}"
+
+    self.manifests ||= {}
+    self.manifests[manifest_key] = yaml
+    save!
+  end
+
+  def has_manifests?
+    manifests.keys.any?
   end
 end

@@ -47,6 +47,12 @@ Rails.application.routes.draw do
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
+  resources :build_packs, only: [] do
+    collection do
+      get :search
+      get :details
+    end
+  end
   resources :add_ons do
     collection do
       get :search
@@ -73,8 +79,9 @@ Rails.application.routes.draw do
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
-    resources :services, only: %i[index new create destroy update], module: :projects do
-      resources :jobs, only: %i[create], module: :services
+    resources :services, only: %i[index new create destroy update show], module: :projects do
+      resource :resource_constraint, only: %i[show new create update destroy], module: :services
+      resources :jobs, only: %i[show create destroy], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
           post :check_dns

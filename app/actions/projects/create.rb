@@ -9,13 +9,10 @@ module Projects
         :repository_url,
         :branch,
         :cluster_id,
-        :docker_build_context_directory,
-        :docker_command,
-        :dockerfile_path,
         :container_registry_url,
         :predeploy_command,
         :project_fork_status,
-        :project_fork_cluster_id,
+        :project_fork_cluster_id
       )
     end
 
@@ -58,7 +55,10 @@ module Projects
       {
         provider: project.project_credential_provider.provider,
         driver: BuildConfiguration::DEFAULT_BUILDER,
-        image_repository: project.repository_url
+        build_type: :dockerfile,
+        image_repository: project.repository_url,
+        context_directory: ".",
+        dockerfile_path: "./Dockerfile"
       }
     end
 
@@ -69,6 +69,7 @@ module Projects
       end
 
       steps << Projects::ValidateNamespaceAvailability
+      steps << Projects::InitializeBuildPacks
       steps << Projects::Save
 
       # Only register webhook in cloud mode

@@ -31,6 +31,8 @@ spec:
         envFrom:
         - configMapRef:
             name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
         ports:
         - containerPort: <%= service.container_port %>
         <% if service.healthcheck_url.present? %>
@@ -54,6 +56,34 @@ spec:
           mountPath: <%= volume.mount_path %>
         <% end %>
         <% end %>
+        <% resource_constraint = service.resource_constraint %>
+        <% if resource_constraint.present? %>
+        resources:
+          <% if resource_constraint.cpu_request.present? || resource_constraint.memory_request.present? || resource_constraint.gpu_request.present? %>
+          requests:
+            <% if resource_constraint.cpu_request.present? %>
+            cpu: "<%= resource_constraint.cpu_request_formatted %>"
+            <% end %>
+            <% if resource_constraint.memory_request.present? %>
+            memory: "<%= resource_constraint.memory_request_formatted %>"
+            <% end %>
+            <% if resource_constraint.gpu_request.present? && resource_constraint.gpu_request > 0 %>
+            nvidia.com/gpu: <%= resource_constraint.gpu_request %>
+            <% end %>
+          <% end %>
+          <% if resource_constraint.cpu_limit.present? || resource_constraint.memory_limit.present? %>
+          limits:
+            <% if resource_constraint.cpu_limit.present? %>
+            cpu: "<%= resource_constraint.cpu_limit_formatted %>"
+            <% end %>
+            <% if resource_constraint.memory_limit.present? %>
+            memory: "<%= resource_constraint.memory_limit_formatted %>"
+            <% end %>
+            <% if resource_constraint.gpu_request.present? && resource_constraint.gpu_request > 0 %>
+            nvidia.com/gpu: <%= resource_constraint.gpu_request %>
+            <% end %>
+          <% end %>
+        <% end %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com
       <% if @project.volumes.present? %>
@@ -63,4 +93,7 @@ spec:
         persistentVolumeClaim:
           claimName: <%= volume.name %>
       <% end %>
+      <% end %>
+      <% if service.pod_yaml.present? %>
+<%= service.pod_yaml %>
       <% end %>

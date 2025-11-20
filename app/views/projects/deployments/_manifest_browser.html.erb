@@ -1,0 +1,45 @@
+<div data-controller="manifest-browser" class="grid grid-cols-12 gap-4">
+  <!-- Left Column: File List -->
+  <div class="col-span-3 flex flex-col">
+    <div class="px-4 py-3">
+      <h3 class="text-sm font-bold text-base-content/70">Files</h3>
+    </div>
+    <div class="border border-base-300 rounded-lg overflow-y-auto" style="height: 450px;">
+      <div class="p-4">
+        <ul class="menu menu-sm p-0 gap-1">
+          <% deployment.manifests.keys.each_with_index do |manifest_key, index| %>
+            <li>
+              <button
+                type="button"
+                data-manifest-browser-target="file"
+                data-manifest-key="<%= manifest_key %>"
+                data-manifest-content="<%= ERB::Util.html_escape(deployment.manifests[manifest_key]) %>"
+                data-action="click->manifest-browser#selectFile"
+                class="<%= 'active' if index == 0 %>"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span class="truncate"><%= manifest_key %></span>
+              </button>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Content Display -->
+  <div class="col-span-9 flex flex-col">
+    <div class="px-4 py-3">
+      <h3 class="text-sm font-bold text-base-content/70" data-manifest-browser-target="filename"><%= deployment.manifests.keys.first %></h3>
+    </div>
+    <div>
+      <textarea
+        data-manifest-browser-target="content"
+        class="hidden"
+      ><%= deployment.manifests.values.first %></textarea>
+      <div data-manifest-browser-target="editor" style="height: 450px;"></div>
+    </div>
+  </div>
+</div>

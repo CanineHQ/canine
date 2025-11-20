@@ -2,12 +2,13 @@
 #
 # Table name: environment_variables
 #
-#  id         :bigint           not null, primary key
-#  name       :string           not null
-#  value      :text
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  project_id :bigint           not null
+#  id           :bigint           not null, primary key
+#  name         :string           not null
+#  storage_type :integer          default("config"), not null
+#  value        :text
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  project_id   :bigint           not null
 #
 # Indexes
 #
@@ -23,5 +24,10 @@ FactoryBot.define do
     project
     sequence(:name) { |n| "EXAMPLE_VAR_#{n}" }
     sequence(:value) { |n| "example_value_#{n}" }
+    storage_type { :config }
+
+    trait :secret do
+      storage_type { :secret }
+    end
   end
 end

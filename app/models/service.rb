@@ -10,6 +10,7 @@
 #  healthcheck_url         :string
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
+#  pod_yaml                :jsonb
 #  replicas                :integer          default(1)
 #  service_type            :integer          not null
 #  status                  :integer          default("pending")
@@ -42,6 +43,8 @@ class Service < ApplicationRecord
   scope :running, -> { where(status: [ :healthy, :unhealthy, :updated ]) }
 
   has_one :cron_schedule, dependent: :destroy
+  has_one :resource_constraint, dependent: :destroy
+
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
   has_many :domains, dependent: :destroy
@@ -65,7 +68,7 @@ class Service < ApplicationRecord
   end
 
   def self.permitted_params(params)
-    params.require(:service).permit(
+    permitted = params.require(:service).permit(
       :service_type,
       :command,
       :name,
@@ -74,6 +77,19 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
+      :pod_yaml
     )
+
+    # Convert YAML text to JSON if pod_yaml is present
+    if permitted[:pod_yaml].present?
+      begin
+        permitted[:pod_yaml] = YAML.safe_load(permitted[:pod_yaml])
+      rescue Psych::SyntaxError => e
+        # If YAML parsing fails, keep the original value so validation can catch it
+        Rails.logger.error("Failed to parse pod_yaml: #{e.message}")
+      end
+    end
+
+    permitted
   end
 end

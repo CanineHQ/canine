@@ -1,0 +1,21 @@
+<div>
+  <div class="mb-6 space-y-2">
+    <h2 class="text-xl font-bold">Internal URL</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+    <pre
+      class="inline-block cursor-pointer"
+      data-controller="clipboard"
+      data-clipboard-text="<%= service.internal_url %>"><%= service.internal_url %></pre>
+
+    <%= render "projects/services/telepresence_guide", cluster: @project.cluster, url: "http://#{service.internal_url}" %>
+  </div>
+  <div>
+    <h2 class="text-xl font-bold">Public Networking</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+    <% if service.allow_public_networking? %>
+      <div class="form-control form-group">
+        <%= render "projects/services/domains/index", service: service %>
+      </div>
+    <% end %>
+  </div>
+</div>
