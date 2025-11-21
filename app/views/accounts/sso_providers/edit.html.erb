@@ -1,0 +1,13 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "sso_provider" do %>
+    <div class="font-lg font-bold mt-4">
+      Edit <%= @sso_provider.name %>
+    </div>
+
+    <div class="text-sm text-gray-500 mt-2 mb-4">
+      Update your OIDC provider configuration.
+    </div>
+
+    <%= render "accounts/sso_providers/form", sso_provider: @sso_provider, oidc_configuration: @oidc_configuration %>
+  <% end %>
+<% end %>

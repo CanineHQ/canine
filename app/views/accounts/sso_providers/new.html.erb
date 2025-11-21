@@ -1,0 +1,13 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "sso_provider" do %>
+    <div class="font-lg font-bold mt-4">
+      Add OIDC Provider
+    </div>
+
+    <div class="text-sm text-gray-500 mt-2 mb-4">
+      Configure an OpenID Connect (OIDC) provider for SSO authentication. This will allow users to sign in using your organization's identity provider.
+    </div>
+
+    <%= render "accounts/sso_providers/form", sso_provider: @sso_provider, oidc_configuration: @oidc_configuration %>
+  <% end %>
+<% end %>

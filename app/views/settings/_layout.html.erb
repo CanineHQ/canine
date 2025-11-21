@@ -39,6 +39,12 @@
               Credentials
             <% end %>
           </li>
+          <li class="<%= 'underline' if current_page?(sso_provider_path) || current_page?(new_sso_provider_path) || current_page?(edit_sso_provider_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to sso_provider_path do %>
+              <iconify-icon icon="lucide:shield-check" ></iconify-icon>
+              Authentication
+            <% end %>
+          </li>
           <% if Flipper.enabled?(:stack_manager, current_account) %>
           <li class="<%= 'underline' if controller_name == 'stack_managers' %>" style="text-underline-offset: 0.25rem;">
             <%= link_to stack_manager_path do %>

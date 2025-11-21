@@ -41,13 +41,27 @@
           <%= f.submit "Sign in", class: "btn btn-primary w-full" %>
         </div>
       <% end %>
-      <% unless Rails.application.config.local_mode %>
-
+      <% if defined?(@sso_provider) && @sso_provider.present? %>
         <div class="flex items-center my-4">
           <div class="flex-grow border-t border-gray-600"></div>
           <span class="mx-4 text-gray-500">OR</span>
           <div class="flex-grow border-t border-gray-600"></div>
         </div>
+
+        <%= button_to "Sign in with #{@sso_provider.name}",
+                      user_oidc_omniauth_authorize_path(sso_provider_id: @sso_provider.id),
+                      class: "btn btn-outline w-full",
+                      data: { turbo: false } %>
+      <% end %>
+
+      <% unless Rails.application.config.local_mode %>
+        <% unless defined?(@sso_provider) && @sso_provider.present? %>
+          <div class="flex items-center my-4">
+            <div class="flex-grow border-t border-gray-600"></div>
+            <span class="mx-4 text-gray-500">OR</span>
+            <div class="flex-grow border-t border-gray-600"></div>
+          </div>
+        <% end %>
         <%= render "devise/shared/links" %>
       <% end %>
     </div>

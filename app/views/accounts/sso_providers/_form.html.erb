@@ -1,0 +1,98 @@
+<%= form_with model: sso_provider, url: sso_provider.persisted? ? sso_provider_path : sso_provider_path do |form| %>
+  <%= render "shared/error_messages", resource: form.object %>
+
+  <div class="form-control mt-4 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Provider Name</span>
+    </label>
+    <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "e.g., Company SSO" %>
+    <label class="label">
+      <span class="label-text-alt">A friendly name for this SSO provider</span>
+    </label>
+  </div>
+
+  <div class="form-control mt-1 w-full max-w-sm">
+    <label class="label cursor-pointer justify-start gap-2">
+      <%= form.check_box :enabled, class: "checkbox checkbox-primary" %>
+      <span class="label-text">Enable this provider</span>
+    </label>
+  </div>
+
+  <div class="divider">OIDC Configuration</div>
+
+  <%= fields_for :oidc_configuration, oidc_configuration do |oidc_form| %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Issuer URL <span class="text-error">*</span></span>
+      </label>
+      <%= oidc_form.text_field :issuer, class: "input input-bordered", required: true, placeholder: "https://your-idp.com" %>
+      <label class="label">
+        <span class="label-text-alt">The base URL of your OIDC provider</span>
+      </label>
+    </div>
+
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Client ID <span class="text-error">*</span></span>
+      </label>
+      <%= oidc_form.text_field :client_id, class: "input input-bordered", required: true %>
+    </div>
+
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Client Secret <span class="text-error">*</span></span>
+      </label>
+      <%= oidc_form.password_field :client_secret, class: "input input-bordered", required: true %>
+    </div>
+
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Scopes</span>
+      </label>
+      <%= oidc_form.text_field :scopes, class: "input input-bordered", placeholder: "openid email profile" %>
+      <label class="label">
+        <span class="label-text-alt">Space-separated list of scopes (defaults to "openid email profile")</span>
+      </label>
+    </div>
+
+    <details class="collapse collapse-arrow bg-base-200 mt-4 max-w-sm">
+      <summary class="collapse-title font-medium">
+        Advanced Settings (Optional)
+      </summary>
+      <div class="collapse-content space-y-4">
+        <div class="form-control mt-1 w-full">
+          <label class="label">
+            <span class="label-text">Authorization Endpoint</span>
+          </label>
+          <%= oidc_form.text_field :authorization_endpoint, class: "input input-bordered", placeholder: "Auto-discovered if not set" %>
+        </div>
+
+        <div class="form-control mt-1 w-full">
+          <label class="label">
+            <span class="label-text">Token Endpoint</span>
+          </label>
+          <%= oidc_form.text_field :token_endpoint, class: "input input-bordered", placeholder: "Auto-discovered if not set" %>
+        </div>
+
+        <div class="form-control mt-1 w-full">
+          <label class="label">
+            <span class="label-text">UserInfo Endpoint</span>
+          </label>
+          <%= oidc_form.text_field :userinfo_endpoint, class: "input input-bordered", placeholder: "Auto-discovered if not set" %>
+        </div>
+
+        <div class="form-control mt-1 w-full">
+          <label class="label">
+            <span class="label-text">JWKS URI</span>
+          </label>
+          <%= oidc_form.text_field :jwks_uri, class: "input input-bordered", placeholder: "Auto-discovered if not set" %>
+        </div>
+      </div>
+    </details>
+  <% end %>
+
+  <div class="form-footer mt-6">
+    <%= form.submit sso_provider.persisted? ? "Update Provider" : "Create Provider", class: "btn btn-primary" %>
+    <%= link_to "Cancel", sso_provider_path, class: "btn btn-outline" %>
+  </div>
+<% end %>

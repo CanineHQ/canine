@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :accounts, only: [ :create ] do
     collection do
       resources :account_users, only: %i[create index destroy], module: :accounts
+      resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts
     end
     member do
       get :switch

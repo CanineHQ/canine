@@ -40,6 +40,7 @@ class Users::SessionsController < Devise::SessionsController
   def account_login
     self.resource = resource_class.new(sign_in_params)
     clean_up_passwords(resource)
+    @sso_provider = @account.sso_provider if @account.sso_enabled?
     if @account.stack_manager&.portainer?
       render "devise/sessions/portainer"
     else

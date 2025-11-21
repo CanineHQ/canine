@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_21_024136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -375,6 +375,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "oidc_configurations", force: :cascade do |t|
+    t.string "issuer", null: false
+    t.string "client_id", null: false
+    t.string "client_secret", null: false
+    t.string "authorization_endpoint"
+    t.string "token_endpoint"
+    t.string "userinfo_endpoint"
+    t.string "jwks_uri"
+    t.string "scopes", default: "openid email profile"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "project_add_ons", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.bigint "add_on_id", null: false
@@ -477,6 +490,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
     t.index ["project_id"], name: "index_services_on_project_id"
   end
 
+  create_table "sso_providers", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "configuration_type", null: false
+    t.bigint "configuration_id", null: false
+    t.string "name", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_sso_providers_on_account_id", unique: true
+    t.index ["configuration_type", "configuration_id"], name: "index_sso_providers_on_configuration"
+  end
+
   create_table "stack_managers", force: :cascade do |t|
     t.string "provider_url", null: false
     t.integer "stack_manager_type", default: 0, null: false
@@ -544,6 +569,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
+  add_foreign_key "sso_providers", "accounts"
   add_foreign_key "stack_managers", "accounts"
   add_foreign_key "volumes", "projects"
 end
