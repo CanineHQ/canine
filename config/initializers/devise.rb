@@ -287,7 +287,8 @@ Devise.setup do |config|
   require Rails.root.join('lib', 'devise', 'strategies', 'ldap_authenticatable')
 
   config.warden do |manager|
-    manager.strategies.add(:ldap_authenticatable, Devise::Strategies::LdapAuthenticatable)
+    puts "Adding LDAP authenticatable strategy"
+    manager.strategies.add(:ldap_authenticatable, Devise::Strategies::LDAPAuthenticatable)
   end
 
   # ==> Mountable engine configurations

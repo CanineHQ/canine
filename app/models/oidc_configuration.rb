@@ -16,4 +16,5 @@
 #
 class OIDCConfiguration < ApplicationRecord
   has_one :sso_provider, as: :configuration, dependent: :destroy
+  has_one :account, through: :sso_provider
 end

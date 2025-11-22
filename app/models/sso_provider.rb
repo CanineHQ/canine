@@ -31,6 +31,6 @@ class SSOProvider < ApplicationRecord
   end
 
   def ldap?
-    configuration_type == "LdapConfiguration"
+    configuration_type == "LDAPConfiguration"
   end
 end

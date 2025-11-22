@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_21_024136) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_21_043926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -329,6 +329,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_21_024136) do
   create_table "inbound_webhooks", force: :cascade do |t|
     t.text "body"
     t.integer "status", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "ldap_configurations", force: :cascade do |t|
+    t.string "host", null: false
+    t.integer "port", default: 389, null: false
+    t.integer "encryption", null: false
+    t.string "base_dn", null: false
+    t.string "bind_dn"
+    t.string "bind_password"
+    t.string "uid_attribute", default: "uid", null: false
+    t.string "email_attribute", default: "mail"
+    t.string "name_attribute", default: "cn"
+    t.string "filter"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

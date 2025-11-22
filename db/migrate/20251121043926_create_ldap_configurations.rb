@@ -1,9 +1,9 @@
-class CreateLdapConfigurations < ActiveRecord::Migration[7.2]
+class CreateLDAPConfigurations < ActiveRecord::Migration[7.2]
   def change
     create_table :ldap_configurations do |t|
       t.string :host, null: false
       t.integer :port, default: 389, null: false
-      t.string :encryption, default: "plain"
+      t.integer :encryption, null: false
       t.string :base_dn, null: false
       t.string :bind_dn
       t.string :bind_password

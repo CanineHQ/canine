@@ -1,13 +1,50 @@
 <%= settings_layout do %>
   <%= turbo_frame_tag "sso_provider" do %>
     <div class="font-lg font-bold mt-4">
-      Add OIDC Provider
+      Add <%= @provider_type == "ldap" ? "LDAP" : "OIDC" %> Provider
     </div>
 
     <div class="text-sm text-gray-500 mt-2 mb-4">
-      Configure an OpenID Connect (OIDC) provider for SSO authentication. This will allow users to sign in using your organization's identity provider.
+      <% if @provider_type == "ldap" %>
+        Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
+      <% else %>
+        Configure an OpenID Connect (OIDC) provider for SSO authentication. This will allow users to sign in using your organization's identity provider.
+      <% end %>
     </div>
 
-    <%= render "accounts/sso_providers/form", sso_provider: @sso_provider, oidc_configuration: @oidc_configuration %>
+    <%= form_with model: @sso_provider, url: sso_provider_path do |form| %>
+      <%= hidden_field_tag :provider_type, @provider_type %>
+      <%= render "shared/error_messages", resource: form.object %>
+
+      <div class="form-control mt-4 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Provider Name</span>
+        </label>
+        <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "e.g., Company SSO" %>
+        <label class="label">
+          <span class="label-text-alt">A friendly name for this SSO provider</span>
+        </label>
+      </div>
+
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label cursor-pointer justify-start gap-2">
+          <%= form.check_box :enabled, class: "checkbox checkbox-primary" %>
+          <span class="label-text">Enable this provider</span>
+        </label>
+      </div>
+
+      <div class="divider"><%= @provider_type == "ldap" ? "LDAP" : "OIDC" %> Configuration</div>
+
+      <% if @provider_type == "ldap" %>
+        <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
+      <% else %>
+        <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
+      <% end %>
+
+      <div class="form-footer mt-6">
+        <%= form.submit "Create Provider", class: "btn btn-primary" %>
+        <%= link_to "Cancel", sso_provider_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

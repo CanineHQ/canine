@@ -1,14 +1,32 @@
+# == Schema Information
+#
+# Table name: ldap_configurations
+#
+#  id              :bigint           not null, primary key
+#  base_dn         :string           not null
+#  bind_dn         :string
+#  bind_password   :string
+#  email_attribute :string           default("mail")
+#  encryption      :integer          not null
+#  filter          :string
+#  host            :string           not null
+#  name_attribute  :string           default("cn")
+#  port            :integer          default(389), not null
+#  uid_attribute   :string           default("uid"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
 FactoryBot.define do
   factory :ldap_configuration do
-    host { "MyString" }
-    port { 1 }
-    encryption { "MyString" }
-    base_dn { "MyString" }
-    bind_dn { "MyString" }
-    bind_password { "MyString" }
-    uid_attribute { "MyString" }
-    email_attribute { "MyString" }
-    name_attribute { "MyString" }
-    filter { "MyString" }
+    host { "ldap.example.com" }
+    port { 389 }
+    encryption { "plain" }
+    base_dn { "ou=users,dc=example,dc=com" }
+    bind_dn { "cn=admin,dc=example,dc=com" }
+    bind_password { "password" }
+    uid_attribute { "uid" }
+    email_attribute { "mail" }
+    name_attribute { "cn" }
+    filter { nil }
   end
 end

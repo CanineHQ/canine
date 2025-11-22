@@ -10,7 +10,7 @@
             <div>
               <h3 class="text-lg font-semibold"><%= @sso_provider.name %></h3>
               <div class="flex gap-2 mt-2">
-                <span class="badge badge-outline">OIDC</span>
+                <span class="badge badge-outline"><%= @sso_provider.ldap? ? "LDAP" : "OIDC" %></span>
                 <% if @sso_provider.enabled %>
                   <span class="badge badge-success">Enabled</span>
                 <% else %>
@@ -24,21 +24,40 @@
             </div>
           </div>
 
-          <% if @oidc_configuration %>
+          <% if @configuration %>
             <div class="divider"></div>
             <div class="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span class="text-gray-500">Issuer:</span>
-                <div class="font-mono"><%= @oidc_configuration.issuer %></div>
-              </div>
-              <div>
-                <span class="text-gray-500">Client ID:</span>
-                <div class="font-mono"><%= @oidc_configuration.client_id %></div>
-              </div>
-              <div>
-                <span class="text-gray-500">Scopes:</span>
-                <div class="font-mono"><%= @oidc_configuration.scopes || "openid email profile" %></div>
-              </div>
+              <% if @sso_provider.oidc? %>
+                <div>
+                  <span class="text-gray-500">Issuer:</span>
+                  <div class="font-mono"><%= @configuration.issuer %></div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Client ID:</span>
+                  <div class="font-mono"><%= @configuration.client_id %></div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Scopes:</span>
+                  <div class="font-mono"><%= @configuration.scopes || "openid email profile" %></div>
+                </div>
+              <% else %>
+                <div>
+                  <span class="text-gray-500">Host:</span>
+                  <div class="font-mono"><%= @configuration.host %>:<%= @configuration.port %></div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Base DN:</span>
+                  <div class="font-mono"><%= @configuration.base_dn %></div>
+                </div>
+                <div>
+                  <span class="text-gray-500">UID Attribute:</span>
+                  <div class="font-mono"><%= @configuration.uid_attribute %></div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Encryption:</span>
+                  <div class="font-mono"><%= @configuration.encryption.titleize %></div>
+                </div>
+              <% end %>
             </div>
           <% end %>
         </div>
@@ -49,7 +68,10 @@
         <span>No SSO provider configured for this account.</span>
       </div>
 
-      <%= link_to "+ Add OIDC Provider", new_sso_provider_path, class: "btn btn-primary btn-sm" %>
+      <div class="flex gap-2">
+        <%= link_to "+ Add OIDC Provider", new_sso_provider_path(provider_type: "oidc"), class: "btn btn-primary btn-sm" %>
+        <%= link_to "+ Add LDAP Provider", new_sso_provider_path(provider_type: "ldap"), class: "btn btn-primary btn-sm" %>
+      </div>
     <% end %>
   <% end %>
 <% end %>
