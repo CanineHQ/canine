@@ -68,6 +68,7 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resources :api_tokens, only: %i[index new create destroy]
   resources :projects do
     member do
       post :restart
@@ -143,6 +144,9 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "async_render" => "async_renderer#async_render"
+
+  get "/api-docs", to: "docs#index"
+  get "/swagger", to: "docs#swagger"
 
   get "/calculator", to: "static#calculator"
   # Public marketing homepage
