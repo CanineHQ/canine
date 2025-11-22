@@ -114,9 +114,12 @@ gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
 
-gem "opentelemetry-sdk", "~> 1.5"
-gem "opentelemetry-exporter-otlp", "~> 0.29"
-gem "opentelemetry-instrumentation-rails", "~> 0.32"
-gem "opentelemetry-instrumentation-active_job", "~> 0.8"
-gem "opentelemetry-instrumentation-http", "~> 0.23"
-gem "opentelemetry-instrumentation-pg", "~> 0.29"
+gem "opentelemetry-api", "~> 1.7.0"
+gem "opentelemetry-sdk", "~> 1.10.0"
+gem "opentelemetry-metrics-sdk", "~> 0.11.1"
+gem "opentelemetry-exporter-otlp", "~> 0.31.1"
+gem "opentelemetry-exporter-otlp-metrics", "~> 0.6.1"
+gem "opentelemetry-instrumentation-rails", "~> 0.39.1"
+gem "opentelemetry-instrumentation-active_job", "~> 0.10.1"
+gem "opentelemetry-instrumentation-http", "~> 0.27.0"
+gem "opentelemetry-instrumentation-pg", "~> 0.33.0"
