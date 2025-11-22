@@ -3,6 +3,7 @@
     <!-- head -->
     <thead>
       <tr>
+        <th>Name</th>
         <th>API Token</th>
         <th>Last Used</th>
         <th>Expires At</th>
@@ -12,6 +13,7 @@
     <tbody>
       <% current_user.api_tokens.order(created_at: :desc).each do |api_token| %>
         <tr>
+          <td><%= api_token.name %></td>
           <td>
             <% if api_token.created_at == api_token.updated_at %>
               <div class="cursor-pointer flex items-center gap-2" data-controller="clipboard" data-clipboard-text="<%= api_token.access_token %>">

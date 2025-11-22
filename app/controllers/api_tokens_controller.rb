@@ -23,6 +23,6 @@ class ApiTokensController < ApplicationController
   private
 
   def api_token_params
-    params.require(:api_token).permit(:expires_at)
+    params.require(:api_token).permit(:name, :expires_at)
   end
 end
