@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -488,6 +488,38 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
     t.index ["account_id"], name: "index_stack_managers_on_account_id", unique: true
   end
 
+  create_table "team_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "team_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id"], name: "index_team_memberships_on_team_id"
+    t.index ["user_id", "team_id"], name: "index_team_memberships_on_user_id_and_team_id", unique: true
+    t.index ["user_id"], name: "index_team_memberships_on_user_id"
+  end
+
+  create_table "team_resources", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.string "resourceable_type", null: false
+    t.bigint "resourceable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["resourceable_type", "resourceable_id"], name: "index_team_resources_on_resourceable"
+    t.index ["team_id", "resourceable_type", "resourceable_id"], name: "index_team_resources_on_team_and_resourceable", unique: true
+    t.index ["team_id"], name: "index_team_resources_on_team_id"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.bigint "account_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_teams_on_account_id_and_name", unique: true
+    t.index ["account_id"], name: "index_teams_on_account_id"
+    t.index ["slug"], name: "index_teams_on_slug", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -545,5 +577,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_091324) do
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
   add_foreign_key "stack_managers", "accounts"
+  add_foreign_key "team_memberships", "teams"
+  add_foreign_key "team_memberships", "users"
+  add_foreign_key "team_resources", "teams"
+  add_foreign_key "teams", "accounts"
   add_foreign_key "volumes", "projects"
 end

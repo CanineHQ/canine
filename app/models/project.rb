@@ -32,6 +32,7 @@
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
+  include TeamAccessible
   broadcasts_refreshes
   belongs_to :cluster
   has_one :account, through: :cluster

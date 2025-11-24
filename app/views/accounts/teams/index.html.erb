@@ -1,0 +1,55 @@
+<%= settings_layout do %>
+  <%= content_for :title, "Team Members" %>
+  <%= turbo_stream_from [:teams, current_account] %>
+
+  <div>
+    <div>
+      <h2 class="text-2xl font-bold">Team Members</h2>
+      <div class="flex text-sm">
+        <div class="flex items-center gap-1">
+          <iconify-icon icon="lucide:building"></iconify-icon>
+          <%= current_account.name %>
+        </div>
+        <div class="flex items-center ml-4 gap-1">
+          <iconify-icon icon="lucide:users"></iconify-icon>
+          <%= current_account.users.count %> Member<%= "s" if current_account.users.count != 1 %>
+        </div>
+        <div class="flex items-center ml-4 gap-1">
+          <iconify-icon icon="lucide:shield"></iconify-icon>
+          <%= current_account.teams.count %> Team<%= "s" if current_account.teams.count != 1 %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div role="tablist" class="tabs tabs-bordered mt-5">
+      <%= link_to account_users_path, role: "tab", class: "tab" do %>
+        Members
+      <% end %>
+      <%= link_to teams_path, role: "tab", class: "tab tab-active" do %>
+        Teams
+      <% end %>
+    </div>
+
+    <div class="mt-5">
+      <div aria-label="Card" class="card card-bordered bg-base-100">
+        <div class="card-body">
+          <div class="text-right px-5 pt-5">
+            <%= link_to new_team_path, class: "btn btn-primary btn-sm" do %>
+              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+              <span class="hidden sm:inline">Create Team</span>
+            <% end %>
+          </div>
+
+          <div>
+            <%= tag.div id: ("teams" if @pagy.page == 1) do %>
+              <%= render "accounts/teams/list", teams: @teams, cached: true %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render 'shared/pagination', pagy: @pagy %>
+  </div>
+<% end %>

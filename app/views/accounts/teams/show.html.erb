@@ -1,0 +1,151 @@
+<%= settings_layout do %>
+  <%= content_for :title, @team.name %>
+  <%= turbo_stream_from [:team_memberships, @team] %>
+
+  <div>
+    <div class="mb-6">
+      <div class="flex justify-between items-start">
+        <div>
+          <h2 class="text-2xl font-bold"><%= @team.name %></h2>
+          <div class="flex text-sm">
+            <div class="flex items-center gap-1">
+              <iconify-icon icon="lucide:building"></iconify-icon>
+              <%= current_account.name %>
+            </div>
+            <div class="flex items-center ml-4 gap-1">
+              <iconify-icon icon="lucide:users"></iconify-icon>
+              <%= @team.users.count %> Member<%= "s" if @team.users.count != 1 %>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <%= link_to edit_team_path(@team), class: "btn btn-ghost btn-sm" do %>
+            <iconify-icon icon="lucide:pencil" height="16"></iconify-icon>
+            Edit
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Members Section -->
+    <div class="mt-5">
+      <div aria-label="Card" class="card card-bordered bg-base-100">
+        <div class="card-body">
+          <div class="flex justify-between items-center px-5 pt-5">
+            <h3 class="text-lg font-semibold">Team Members</h3>
+            <button class="btn btn-primary btn-sm" onclick="add_team_member_modal.showModal()">
+              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+              <span class="hidden sm:inline">Add User</span>
+            </button>
+          </div>
+
+          <div>
+            <%= tag.div id: ("team_memberships" if @pagy.page == 1) do %>
+              <%= render "accounts/teams/team_memberships_list", team_memberships: @team_memberships, cached: true %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render 'shared/pagination', pagy: @pagy %>
+
+    <!-- Team Resources Section -->
+    <div class="mt-5">
+      <div aria-label="Card" class="card card-bordered bg-base-100">
+        <div class="card-body">
+          <div class="flex justify-between items-center px-5 pt-5">
+            <h3 class="text-lg font-semibold">Team Resources</h3>
+            <button class="btn btn-primary btn-sm" onclick="add_team_resource_modal.showModal()">
+              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+              <span class="hidden sm:inline">Grant Access</span>
+            </button>
+          </div>
+
+          <div>
+            <%= render "accounts/teams/team_resources_list", team: @team, cached: true %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Team Member Modal -->
+  <dialog aria-label="Modal" class="modal" id="add_team_member_modal">
+    <div class="modal-box max-w-2xl">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div class="mb-4 w-full text-xl font-bold">Add User to <%= @team.name %></div>
+      <div>
+        <div class="form-control mt-1 w-full"
+             data-controller="team-member-search"
+             data-team-member-search-team-id-value="<%= @team.slug %>"
+             data-team-member-search-add-url-value="<%= team_team_memberships_path(@team) %>">
+          <label class="label">
+            <span class="label-text">Search for a user</span>
+          </label>
+          <div class="relative">
+            <input type="text"
+                   placeholder="Type to search by name or email..."
+                   class="input input-bordered w-full focus:outline-offset-0" />
+          </div>
+          <label class="label">
+            <span class="label-text-alt">Start typing to search for users in your account.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Add Team Resource Modal -->
+  <dialog aria-label="Modal" class="modal" id="add_team_resource_modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div class="mb-4 w-full text-xl font-bold">Grant Resource Access to <%= @team.name %></div>
+      <div>
+        <%= form_with(url: team_team_resources_path(@team)) do |form| %>
+          <div class="form-control mt-1 w-full">
+            <label class="label">
+              <span class="label-text">Resource Type</span>
+            </label>
+            <%= form.select :resourceable_type,
+                [["Cluster", "Cluster"], ["Project", "Project"], ["Add-on", "AddOn"]],
+                { prompt: "Select resource type" },
+                class: "select select-bordered w-full focus:outline-offset-0",
+                data: { action: "change->team-resource#updateResourceOptions" } %>
+          </div>
+
+          <div class="form-control mt-1 w-full">
+            <label class="label">
+              <span class="label-text">Resource</span>
+            </label>
+            <%= form.select :resourceable_id,
+                [],
+                { prompt: "Select a resource" },
+                class: "select select-bordered w-full focus:outline-offset-0",
+                id: "resourceable_id_select" %>
+            <label class="label">
+              <span class="label-text-alt">Grant access to a specific resource.</span>
+            </label>
+          </div>
+          <div class="form-footer">
+            <%= form.button "Grant Access", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+<% end %>

@@ -1,0 +1,39 @@
+<%= settings_layout do %>
+  <%= content_for :title, "Edit Team" %>
+
+  <div>
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold">Edit Team</h2>
+      <div class="flex text-sm">
+        <div class="flex items-center gap-1">
+          <iconify-icon icon="lucide:building"></iconify-icon>
+          <%= current_account.name %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div aria-label="Card" class="card card-bordered bg-base-100">
+        <div class="card-body">
+          <%= form_with(model: @team, url: team_path(@team), method: :patch) do |form| %>
+            <div class="form-control mt-1 w-full">
+              <label class="label">
+                <span class="label-text">Team Name</span>
+              </label>
+              <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0" %>
+              <% if @team.errors[:name].any? %>
+                <label class="label">
+                  <span class="label-text-alt text-error"><%= @team.errors[:name].first %></span>
+                </label>
+              <% end %>
+            </div>
+            <div class="form-footer mt-6">
+              <%= link_to "Cancel", team_path(@team), class: "btn btn-ghost" %>
+              <%= form.button "Update Team", class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
