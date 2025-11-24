@@ -18,7 +18,7 @@ RSpec.describe AddOns::VisibleToUser do
         result = described_class.execute(user: user, account: account)
 
         expect(result).to be_success
-        expect(result.add_ons).to match_array([add_on1, add_on2])
+        expect(result.add_ons).to match_array([ add_on1, add_on2 ])
       end
     end
 
@@ -52,7 +52,7 @@ RSpec.describe AddOns::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.add_ons).to eq([add_on1])
+          expect(result.add_ons).to eq([ add_on1 ])
         end
       end
 
@@ -70,7 +70,7 @@ RSpec.describe AddOns::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.add_ons).to match_array([add_on4, add_on5])
+          expect(result.add_ons).to match_array([ add_on4, add_on5 ])
         end
       end
 
@@ -88,7 +88,7 @@ RSpec.describe AddOns::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.add_ons).to match_array([add_on1, add_on4])
+          expect(result.add_ons).to match_array([ add_on1, add_on4 ])
         end
       end
 
@@ -104,7 +104,7 @@ RSpec.describe AddOns::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.add_ons).to match_array([add_on1, add_on2])
+          expect(result.add_ons).to match_array([ add_on1, add_on2 ])
         end
       end
     end

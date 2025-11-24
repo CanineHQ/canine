@@ -4,26 +4,23 @@ RSpec.describe Projects::VisibleToUser do
   let(:account) { create(:account) }
   let(:user) { create(:user) }
   let!(:account_user) { create(:account_user, account:, user:) }
+  let!(:cluster) { create(:cluster, account:) }
+  let!(:project1) { create(:project, cluster:, account:) }
+  let!(:project2) { create(:project, cluster:, account:) }
 
   describe '.execute' do
     context 'when account has no teams' do
       it 'returns all projects in the account' do
-        cluster = create(:cluster, account:)
-        project1 = create(:project, cluster:)
-        project2 = create(:project, cluster:)
-
         result = described_class.execute(user: user, account: account)
 
         expect(result).to be_success
-        expect(result.projects).to match_array([project1, project2])
+        expect(result.projects).to match_array([ project1, project2 ])
       end
     end
 
     context 'when account has teams' do
       let(:team) { create(:team, account: account) }
       let(:other_team) { create(:team, account: account) }
-      let!(:project1) { create(:project, cluster: cluster) }
-      let!(:project2) { create(:project, cluster: cluster) }
       let!(:project3) { create(:project, cluster: cluster) }
 
       context 'when user is not in any teams' do
@@ -45,7 +42,7 @@ RSpec.describe Projects::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.projects).to eq([project1])
+          expect(result.projects).to eq([ project1 ])
         end
       end
 
@@ -63,7 +60,7 @@ RSpec.describe Projects::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.projects).to match_array([project4, project5])
+          expect(result.projects).to match_array([ project4, project5 ])
         end
       end
 
@@ -81,7 +78,7 @@ RSpec.describe Projects::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.projects).to match_array([project1, project4])
+          expect(result.projects).to match_array([ project1, project4 ])
         end
       end
 
@@ -97,7 +94,7 @@ RSpec.describe Projects::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.projects).to match_array([project1, project2])
+          expect(result.projects).to match_array([ project1, project2 ])
         end
       end
     end
