@@ -17,7 +17,7 @@ RSpec.describe Clusters::VisibleToUser do
         result = described_class.execute(user: user, account: account)
 
         expect(result).to be_success
-        expect(result.clusters).to match_array([cluster1, cluster2])
+        expect(result.clusters).to match_array([ cluster1, cluster2 ])
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Clusters::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.clusters).to eq([cluster1])
+          expect(result.clusters).to eq([ cluster1 ])
         end
       end
 
@@ -67,7 +67,7 @@ RSpec.describe Clusters::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.clusters).to match_array([cluster1, cluster2])
+          expect(result.clusters).to match_array([ cluster1, cluster2 ])
         end
       end
 
@@ -83,7 +83,7 @@ RSpec.describe Clusters::VisibleToUser do
           result = described_class.execute(user: user, account: account)
 
           expect(result).to be_success
-          expect(result.clusters).to eq([cluster1])
+          expect(result.clusters).to eq([ cluster1 ])
         end
       end
     end
