@@ -6,7 +6,8 @@ class ProjectsController < ApplicationController
   # GET /projects
   def index
     sortable_column = params[:sort] || "created_at"
-    @pagy, @projects = pagy(current_account.projects.order(sortable_column => "asc"))
+    projects = Projects::VisibleToUser.execute(user: current_user, account: current_account).projects
+    @pagy, @projects = pagy(projects.order(sortable_column => "asc"))
 
     # Uncomment to authorize with Pundit
     # authorize @projects
@@ -86,7 +87,8 @@ class ProjectsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_project
-    @project = current_account.projects.find(params[:id])
+    projects = Projects::VisibleToUser.execute(user: current_user, account: current_account).projects
+    @project = projects.find(params[:id])
 
     # Uncomment to authorize with Pundit
     # authorize @project
