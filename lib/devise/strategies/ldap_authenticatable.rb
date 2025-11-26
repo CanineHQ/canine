@@ -4,6 +4,7 @@ module Devise
   module Strategies
     class LDAPAuthenticatable < Authenticatable
       def valid?
+        puts "Validating ldap authenticatable"
         true
       end
 
@@ -26,12 +27,15 @@ module Devise
           if ldap.bind
             # LDAP authentication successful, find or create user
             email = construct_email(username, ldap_configuration)
-            user = User.find_or_create_by(email: email) do |user|
-              password = SecureRandom.hex(32)
-              user.password = password
-              user.password_confirmation = password
-
-              AccountUser.create!(account: ldap_configuration.account, user:)
+            # Determine the groups
+            groups = get_group_information(username)
+            ActiveRecord::Base.transaction do
+              user = User.find_or_create_by!(email: email) do |user|
+                password = SecureRandom.hex(32)
+                user.password = password
+                user.password_confirmation = password
+              end
+              AccountUser.find_or_create_by!(account: ldap_configuration.account, user:)
             end
             success!(user)
           else
@@ -54,14 +58,16 @@ module Devise
       def find_ldap_configuration
         # Find the LDAP configuration for the account
         # This could be based on email domain or a selection during login
-        account_id = session[:ldap_account_id] || params[:account_id]
-
-        if account_id
-          sso_provider = SSOProvider.find_by(account_id: account_id, enabled: true)
-          return sso_provider.configuration if sso_provider&.ldap?
-        else
-          raise "No account ID provided"
+        account = Account.friendly.find(params[:slug])
+        unless account.sso_enabled?
+          raise "SSO is not enabled for this account"
         end
+
+        sso_provider = account.sso_provider
+        unless sso_provider.ldap?
+          raise "Account does not support LDAP authentication"
+        end
+        return sso_provider.configuration 
       end
 
       def build_user_dn(ldap_config, username)
@@ -76,6 +82,17 @@ module Devise
         # Otherwise, construct email using mail_domain from config if available
         domain = ldap_config.try(:mail_domain) || ldap_config.host
         "#{username}@#{domain}"
+      end
+
+      def get_group_information(user)
+        return [
+          {
+            name: "developers",
+          },
+          {
+            name: "administrators",
+          },
+        ]
       end
 
       def find_or_create_account_for_ldap(ldap_config)

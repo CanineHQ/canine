@@ -52,4 +52,8 @@ class Account < ApplicationRecord
   def sso_enabled?
     sso_provider&.enabled?
   end
+
+  def custom_login?
+    return stack_manager&.stack&.provides_authentication? || sso_enabled?
+  end
 end
