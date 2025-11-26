@@ -70,7 +70,6 @@ class Project < ApplicationRecord
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
 
-  validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end
@@ -94,12 +93,6 @@ class Project < ApplicationRecord
   def project_fork_cluster_id_is_owned_by_account
     if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)
       errors.add(:project_fork_cluster_id, "must be owned by the account")
-    end
-  end
-
-  def name_is_unique_to_cluster
-    if cluster.namespaces.include?(name)
-      errors.add(:name, "must be unique to this cluster")
     end
   end
 

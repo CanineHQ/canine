@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Projects::ValidateNamespace do
+RSpec.describe Namespaced::ValidateNamespace do
   let(:cluster) { create(:cluster) }
   let(:user) { create(:user) }
   let(:k8_client) { instance_double(K8::Client) }
@@ -23,7 +23,7 @@ RSpec.describe Projects::ValidateNamespace do
         end
 
         it 'fails' do
-          expect(described_class.execute(project:, user: user)).to be_failure
+          expect(described_class.execute(namespaced: project, user:)).to be_failure
         end
       end
 
@@ -35,7 +35,7 @@ RSpec.describe Projects::ValidateNamespace do
         end
 
         it 'succeeds' do
-          expect(described_class.execute(project:, user:)).to be_success
+          expect(described_class.execute(namespaced: project, user:)).to be_success
         end
       end
     end
@@ -56,7 +56,7 @@ RSpec.describe Projects::ValidateNamespace do
         end
 
         it 'succeeds' do
-          expect(described_class.execute(project: project, user: user)).to be_success
+          expect(described_class.execute(namespaced: project, user: user)).to be_success
         end
       end
 
@@ -71,7 +71,7 @@ RSpec.describe Projects::ValidateNamespace do
           end
 
           it 'fails with error message' do
-            result = described_class.execute(project: project, user: user)
+            result = described_class.execute(namespaced: project, user: user)
             expect(result).to be_failure
             expect(result.message).to include("already exists")
           end
@@ -83,7 +83,7 @@ RSpec.describe Projects::ValidateNamespace do
           end
 
           it 'succeeds' do
-            result = described_class.execute(project: project, user: user)
+            result = described_class.execute(namespaced: project, user: user)
             expect(result).to be_success
           end
         end

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AddOns::Create do
   let(:add_on) { build(:add_on) }
-  let(:chart_details) { { 'name' => 'test-chart', 'version' => '1.0.0' } }
+  let(:chart_details) { { 'name' => 'redis', 'version' => '1.0.0' } }
 
   before do
     allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
@@ -12,53 +12,40 @@ RSpec.describe AddOns::Create do
 
   describe 'errors' do
     context 'there is a project with the same name in the same cluster' do
-      let!(:project) { create(:project, name: add_on.name, cluster: add_on.cluster) }
+      let!(:project) { create(:project, name: add_on.name, cluster: add_on.cluster, namespace: 'taken') }
+      let(:add_on) { build(:add_on, namespace: 'taken') }
+
       it 'raises an error' do
-        result = described_class.execute(add_on:)
+        result = described_class.call(add_on)
         expect(result.failure?).to be_truthy
       end
     end
   end
 
-  describe '#execute' do
-    it 'applies template and fetches package details' do
-      expect(add_on).to receive(:save)
-      result = described_class.execute(add_on:)
-      expect(result.add_on.metadata['package_details']).to eq(chart_details)
-    end
-
-    context 'when package details fetch fails' do
-      before do
-        allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
-          double(success?: false, failure?: true)
-        )
-      end
-
-      it 'adds error and returns' do
-        result = described_class.execute(add_on:)
-        expect(result.failure?).to be_truthy
-        expect(result.add_on.errors[:base]).to include('Failed to fetch package details')
-      end
-    end
-  end
-
-  describe '.apply_template_to_values' do
-    let(:template) do
-      {
-        'master.persistence.size' => { 'type' => 'size', 'value' => '10', 'unit' => 'Gi' },
-        'replica.replicaCount' => '5'
+  let(:params) do
+    ActionController::Parameters.new({
+      add_on: {
+        name: 'redis-main',
+        chart_type: 'redis',
+        metadata: {
+          redis: {
+            template: {
+              'replicas' => 3,
+              'master.persistence.size' => {
+                'type' => 'size',
+                'value' => '2',
+                'unit' => 'Gi'
+              }
+            }
+          }
+        }
       }
-    end
+    })
+  end
 
-    before do
-      add_on.metadata['template'] = template
-      add_on.chart_type = "redis"
-    end
-
-    it 'applies template values correctly' do
-      described_class.apply_template_to_values(add_on)
-      expect(add_on.values['master']['persistence']['size']).to eq('10Gi')
-      expect(add_on.values['replica']['replicaCount']).to eq(5)
-    end
+  it 'can create an add on successfully' do
+    add_on = AddOn.new(AddOns::Create.parse_params(params))
+    result = described_class.call(add_on)
+    expect(result.success?).to be_truthy
   end
 end

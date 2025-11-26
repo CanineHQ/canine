@@ -37,12 +37,12 @@ require 'rails_helper'
 
 RSpec.describe Project, type: :model do
   let(:cluster) { create(:cluster) }
-  let(:project) { build(:project, cluster: cluster, account: cluster.account) }
+  let(:project) { build(:project, cluster:, account: cluster.account, namespace: "taken") }
 
   describe 'validations' do
     context 'when name is not unique to the cluster' do
       before do
-        create(:project, name: project.name, cluster: cluster)
+        create(:project, name: project.name, cluster:, namespace: "taken")
       end
 
       it 'is not valid' do
