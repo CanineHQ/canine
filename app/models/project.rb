@@ -9,7 +9,9 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
+#  namespace                      :string           not null
 #  postdeploy_command             :text
 #  postdestroy_command            :text
 #  predeploy_command              :text
@@ -32,6 +34,7 @@
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
+  include Namespaced
   broadcasts_refreshes
   belongs_to :cluster
   has_one :account, through: :cluster
@@ -53,6 +56,8 @@ class Project < ApplicationRecord
   has_one :project_fork_cluster, class_name: "Cluster", foreign_key: :id, primary_key: :project_fork_cluster_id
 
   validates :name, presence: true,
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+  validates :namespace, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :branch, presence: true
   validates :repository_url, presence: true,

@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: <%= service.name %>
-  namespace: <%= project.name %>
+  namespace: <%= project.namespace %>
   labels:
     caninemanaged: 'true'
     app: <%= service.name %>

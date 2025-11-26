@@ -6,6 +6,8 @@ module Projects
     def self.create_params(params)
       params.require(:project).permit(
         :name,
+        :namespace,
+        :managed_namespace,
         :repository_url,
         :branch,
         :cluster_id,
@@ -68,7 +70,8 @@ module Projects
         steps << Projects::ValidateGitRepository
       end
 
-      steps << Projects::ValidateNamespaceAvailability
+      steps << Projects::SetUpNamespace
+      steps << Projects::ValidateNamespace
       steps << Projects::InitializeBuildPacks
       steps << Projects::Save
 

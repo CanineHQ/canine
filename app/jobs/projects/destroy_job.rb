@@ -14,9 +14,11 @@ class Projects::DestroyJob < ApplicationJob
   end
 
   def delete_namespace(project, user)
-    client = K8::Client.new(K8::Connection.new(project.cluster, user))
-    if (namespace = client.get_namespaces.find { |n| n.metadata.name == project.name }).present?
-      client.delete_namespace(namespace.metadata.name)
+    if project.managed_namespace
+      client = K8::Client.new(K8::Connection.new(project.cluster, user))
+      if (namespace = client.get_namespaces.find { |n| n.metadata.name == project.namespace }).present?
+        client.delete_namespace(namespace.metadata.name)
+      end
     end
   end
 

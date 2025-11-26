@@ -2,16 +2,18 @@
 #
 # Table name: add_ons
 #
-#  id         :bigint           not null, primary key
-#  chart_type :string           not null
-#  chart_url  :string
-#  metadata   :jsonb
-#  name       :string           not null
-#  status     :integer          default("installing"), not null
-#  values     :jsonb
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
+#  id                :bigint           not null, primary key
+#  chart_type        :string           not null
+#  chart_url         :string
+#  managed_namespace :boolean          default(TRUE)
+#  metadata          :jsonb
+#  name              :string           not null
+#  namespace         :string           not null
+#  status            :integer          default("installing"), not null
+#  values            :jsonb
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  cluster_id        :bigint           not null
 #
 # Indexes
 #
@@ -24,6 +26,7 @@
 #
 class AddOn < ApplicationRecord
   include Loggable
+  include Namespaced
   belongs_to :cluster
   has_one :account, through: :cluster
 

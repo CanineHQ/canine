@@ -1,0 +1,30 @@
+<div data-controller="expandable-optional-input">
+  <div>
+    <a data-action="expandable-optional-input#show" class="btn btn-ghost">
+      + Add namespace configuration
+    </a>
+  </div>
+  <div data-expandable-optional-input-target="container">
+    <%= render(FormFieldComponent.new(
+      label: "Namespace",
+      description: "The namespace your application is deployed to."
+    )) do %>
+      <%= form.text_field :namespace, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+      <label class="label">
+        <span class="label-text-alt">If this is left blank, a namespace will be created automatically.</span>
+      </label>
+
+      <div class="mt-3 form-control rounded-lg bg-base-200 p-2 px-4">
+        <label class="label mt-1">
+          <div class="label-text cursor-pointer">
+            Automatically create namespace
+          </div>
+          <%= form.check_box :managed_namespace, class: "checkbox" %>
+        </label>
+      </div>
+      <label class="label">
+        <span class="label-text-alt">Canine will automatically create a namespace when the project is deployed.</span>
+      </label>
+    <% end %>
+  </div>
+</div>
