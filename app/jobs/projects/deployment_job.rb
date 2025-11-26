@@ -11,7 +11,7 @@ class Projects::DeploymentJob < ApplicationJob
     project = deployment.project
     connection = K8::Connection.new(project, user, allow_anonymous: true)
     kubectl = create_kubectl(deployment, connection)
-    kubectl.register_after_apply do |yaml_content|
+    kubectl.register_before_apply do |yaml_content|
       deployment.add_manifest(yaml_content)
     end
 
