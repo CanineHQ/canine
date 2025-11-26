@@ -11,7 +11,12 @@ class K8::Kubectl
       raise "Kubeconfig is required"
     end
     @runner = runner
+    @before_apply_blocks = []
     @after_apply_blocks = []
+  end
+
+  def register_before_apply(&block)
+    @before_apply_blocks << block
   end
 
   def register_after_apply(&block)
@@ -19,6 +24,10 @@ class K8::Kubectl
   end
 
   def apply_yaml(yaml_content)
+    @before_apply_blocks.each do |block|
+      block.call(yaml_content)
+    end
+
     with_kube_config do |kubeconfig_file|
       # Create a temporary file for the YAML content
       Tempfile.open([ "k8s", ".yaml" ]) do |yaml_file|

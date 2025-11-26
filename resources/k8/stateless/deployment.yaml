@@ -21,6 +21,9 @@ spec:
       labels:
         app: <%= service.name %>
     spec:
+      <% if service.pod_yaml.present? %>
+<%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
+      <% end %>
       containers:
       - name: <%= project.name %>
         image: <%= project.container_image_reference %>
@@ -93,7 +96,4 @@ spec:
         persistentVolumeClaim:
           claimName: <%= volume.name %>
       <% end %>
-      <% end %>
-      <% if service.pod_yaml.present? %>
-<%= service.pod_yaml.to_yaml_raw %>
       <% end %>
