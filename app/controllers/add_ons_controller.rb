@@ -5,9 +5,6 @@ class AddOnsController < ApplicationController
   # GET /add_ons
   def index
     @pagy, @add_ons = pagy(current_account.add_ons)
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_ons
   end
 
   def search
@@ -26,9 +23,6 @@ class AddOnsController < ApplicationController
   # GET /add_ons/new
   def new
     @add_on = AddOn.new
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
   end
 
   # GET /add_ons/1/edit
@@ -41,8 +35,7 @@ class AddOnsController < ApplicationController
   def create
     result = AddOns::Create.execute(add_on: AddOn.new(add_on_params))
     @add_on = result.add_on
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
+    authorize @add_on
 
     respond_to do |format|
       if result.success?
@@ -119,6 +112,7 @@ class AddOnsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
     @add_on = current_account.add_ons.find(params[:id])
+    authorize @add_on
     @service = K8::Helm::Service.create_from_add_on(K8::Connection.new(@add_on, current_user))
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path
@@ -140,8 +134,5 @@ class AddOnsController < ApplicationController
       metadata: {},
       values: {}
     )
-
-    # Uncomment to use Pundit permitted attributes
-    # params.require(:add_on).permit(policy(@add_on).permitted_attributes)
   end
 end

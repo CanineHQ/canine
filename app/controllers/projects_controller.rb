@@ -7,9 +7,6 @@ class ProjectsController < ApplicationController
   def index
     sortable_column = params[:sort] || "created_at"
     @pagy, @projects = pagy(current_account.projects.order(sortable_column => "asc"))
-
-    # Uncomment to authorize with Pundit
-    # authorize @projects
   end
 
   def restart
@@ -30,9 +27,6 @@ class ProjectsController < ApplicationController
   # GET /projects/new
   def new
     @project = Project.new
-
-    # Uncomment to authorize with Pundit
-    # authorize @project
   end
 
   # GET /projects/1/edit
@@ -44,6 +38,7 @@ class ProjectsController < ApplicationController
     result = Projects::Create.call(params, current_user)
 
     @project = result.project
+    authorize @project
     respond_to do |format|
       if result.success?
         format.html { redirect_to @project, notice: "Project was successfully created." }
@@ -87,9 +82,7 @@ class ProjectsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_project
     @project = current_account.projects.find(params[:id])
-
-    # Uncomment to authorize with Pundit
-    # authorize @project
+    authorize @project
   rescue ActiveRecord::RecordNotFound
     redirect_to projects_path
   end
