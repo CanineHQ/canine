@@ -27,8 +27,11 @@ class AddOns::Create
 
   extend LightService::Organizer
 
-  def self.call(add_on)
-    with(add_on:).reduce(
+  def self.call(add_on, user)
+    with(add_on:, user:).reduce(
+      AddOns::Create::ToNamespaced,
+      Namespaced::SetUpNamespace,
+      Namespaced::ValidateNamespace,
       AddOns::ApplyTemplateToValues,
       AddOns::SetPackageDetails,
       AddOns::Save

@@ -40,7 +40,7 @@ class AddOnsController < ApplicationController
   # POST /add_ons or /add_ons.json
   def create
     params = AddOns::Create.parse_params(params)
-    result = AddOns::Create.execute(add_on: AddOn.new(params))
+    result = AddOns::Create.call(AddOn.new(params), user)
     @add_on = result.add_on
     # Uncomment to authorize with Pundit
     # authorize @add_on
