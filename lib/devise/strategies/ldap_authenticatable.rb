@@ -85,6 +85,7 @@ module Devise
       end
 
       def get_group_information(user)
+        # ldap.search(base: "ou=Groups,dc=example,dc=org", filter: Net::LDAP::Filter.eq("memberUid", user_dn))
         return [
           {
             name: "developers",
