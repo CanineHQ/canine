@@ -40,7 +40,7 @@
           placeholder: "# Example:\ncontainers:\n  - name: sidecar\n    image: nginx:latest\nvolumes:\n  - name: cache\n    emptyDir: {}",
           class: "textarea textarea-bordered font-mono text-sm w-full",
           data: { yaml_editor_target: "textarea" },
-          value: @service.pod_yaml.present? ? @service.pod_yaml.to_yaml : "" %>
+          value: @service.pod_yaml.present? ? @service.pod_yaml.to_yaml_raw : "" %>
         <div data-yaml-editor-target="editor"></div>
         <label class="label">
           <span class="label-text-alt">Enter valid YAML for pod template spec fields</span>
