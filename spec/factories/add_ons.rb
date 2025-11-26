@@ -30,6 +30,8 @@ FactoryBot.define do
     chart_url { 'bitnami/redis' }
     chart_type { "helm_chart" }
     sequence(:name) { |n| "example-addon-#{n}" }
+    sequence(:namespace) { |n| "example-addon-#{n}" }
+    managed_namespace { true }
     status { :installing }
     values { {} }
     metadata { { "package_details" => { "repository" => { "name" => "bitnami", "url" => "https://bitnami.com/charts" } } } }
