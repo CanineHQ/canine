@@ -75,5 +75,5 @@ spec:
           <% end %>
           <% end %>
           <% if service.pod_yaml.present? %>
-<%= service.pod_yaml %>
+<%= service.pod_yaml.to_yaml_raw %>
           <% end %>
