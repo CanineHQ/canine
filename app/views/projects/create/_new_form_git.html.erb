@@ -32,16 +32,6 @@
       <% end %>
 
       <%= render(FormFieldComponent.new(
-        label: "Namespace",
-        description: "The namespace your application is deployed to."
-      )) do %>
-        <%= form.text_field :namespace, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
-        <label class="label">
-          <span class="label-text-alt">If this is left blank, a namespace will be created automatically.</span>
-        </label>
-      <% end %>
-
-      <%= render(FormFieldComponent.new(
         label: "Git Credentials",
         description: "The credentials to use to connect to your Git repository"
       )) do %>

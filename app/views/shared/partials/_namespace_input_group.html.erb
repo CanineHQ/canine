@@ -4,12 +4,12 @@
       + Add namespace configuration
     </a>
   </div>
-  <div data-expandable-optional-input-target="container">
+  <div data-expandable-optional-input-target="container" data-controller="namespace-input-group">
     <%= render(FormFieldComponent.new(
       label: "Namespace",
       description: "The namespace your application is deployed to."
     )) do %>
-      <%= form.text_field :namespace, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+      <%= form.text_field :namespace, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true %>
       <label class="label">
         <span class="label-text-alt">If this is left blank, a namespace will be created automatically.</span>
       </label>
@@ -19,7 +19,7 @@
           <div class="label-text cursor-pointer">
             Automatically create namespace
           </div>
-          <%= form.check_box :managed_namespace, class: "checkbox" %>
+          <%= form.check_box :managed_namespace, class: "checkbox", data: { action: "namespace-input-group#toggleManagedNamespace" } %>
         </label>
       </div>
       <label class="label">
