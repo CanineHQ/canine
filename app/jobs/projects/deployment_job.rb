@@ -16,7 +16,9 @@ class Projects::DeploymentJob < ApplicationJob
     end
 
     # Create namespace
-    apply_namespace(project, kubectl)
+    if project.managed_namespace?
+      apply_namespace(project, kubectl)
+    end
 
     # Upload container registry secrets
     upload_registry_secrets(kubectl, deployment)

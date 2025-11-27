@@ -1,7 +1,9 @@
 class Projects::DestroyJob < ApplicationJob
   def perform(project, user)
     project.destroying!
-    delete_namespace(project, user)
+    if project.managed_namespace
+      delete_namespace(project, user)
+    end
 
     # Delete the github webhook for the project IF there are no more projects that refer to that repository
     # TODO: This might have overlapping repository urls across different providers.
@@ -14,11 +16,9 @@ class Projects::DestroyJob < ApplicationJob
   end
 
   def delete_namespace(project, user)
-    if project.managed_namespace
-      client = K8::Client.new(K8::Connection.new(project.cluster, user))
-      if (namespace = client.get_namespaces.find { |n| n.metadata.name == project.namespace }).present?
-        client.delete_namespace(namespace.metadata.name)
-      end
+    client = K8::Client.new(K8::Connection.new(project.cluster, user))
+    if (namespace = client.get_namespaces.find { |n| n.metadata.name == project.namespace }).present?
+      client.delete_namespace(namespace.metadata.name)
     end
   end
 
