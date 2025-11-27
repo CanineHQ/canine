@@ -6,8 +6,9 @@ class Services::Update
 
   executed do |context|
     context.service.update(Service.permitted_params(context.params))
-    if context.service.cron_job?
-      context.service.cron_schedule.update(context.params[:service][:cron_schedule].permit(:schedule))
+    if context.service.cron_job? && context.params[:service][:cron_schedule].present?
+      context.service.cron_schedule.update(
+        context.params[:service][:cron_schedule].permit(:schedule))
     end
     context.service.updated!
   end
