@@ -9,7 +9,9 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
+#  namespace                      :string           not null
 #  postdeploy_command             :text
 #  postdestroy_command            :text
 #  predeploy_command              :text
@@ -32,6 +34,7 @@
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
+  include Namespaced
   broadcasts_refreshes
   belongs_to :cluster
   has_one :account, through: :cluster
@@ -54,6 +57,8 @@ class Project < ApplicationRecord
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+  validates :namespace, presence: true,
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :branch, presence: true
   validates :repository_url, presence: true,
                             format: {
@@ -64,8 +69,8 @@ class Project < ApplicationRecord
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
+  validates_uniqueness_of :name, scope: :cluster_id
 
-  validate :name_is_unique_to_cluster, on: :create
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end
@@ -89,12 +94,6 @@ class Project < ApplicationRecord
   def project_fork_cluster_id_is_owned_by_account
     if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)
       errors.add(:project_fork_cluster_id, "must be owned by the account")
-    end
-  end
-
-  def name_is_unique_to_cluster
-    if cluster.namespaces.include?(name)
-      errors.add(:name, "must be unique to this cluster")
     end
   end
 

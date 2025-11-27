@@ -16,7 +16,9 @@ class Projects::DeploymentJob < ApplicationJob
     end
 
     # Create namespace
-    apply_namespace(project, kubectl)
+    if project.managed_namespace?
+      apply_namespace(project, kubectl)
+    end
 
     # Upload container registry secrets
     upload_registry_secrets(kubectl, deployment)
@@ -108,11 +110,11 @@ class Projects::DeploymentJob < ApplicationJob
   end
 
   def kill_one_off_containers(project, kubectl)
-    kubectl.call("-n #{project.name} delete pods -l oneoff=true")
+    kubectl.call("-n #{project.namespace} delete pods -l oneoff=true")
   end
 
   def apply_namespace(project, kubectl)
-    @logger.info("Creating namespace: #{project.name}", color: :yellow)
+    @logger.info("Creating namespace: #{project.namespace}", color: :yellow)
     namespace_yaml = K8::Namespace.new(project).to_yaml
     kubectl.apply_yaml(namespace_yaml)
   end
@@ -124,7 +126,7 @@ class Projects::DeploymentJob < ApplicationJob
     kubectl = K8::Kubectl.new(connection)
 
     resources_to_sweep.each do |resource_type|
-      results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.name}"))
+      results = YAML.safe_load(kubectl.call("get #{resource_type.downcase} -o yaml -n #{project.namespace}"))
       results['items'].each do |resource|
         if @marked_resources.select do |r|
           r.is_a?(K8::Stateless.const_get(resource_type))
@@ -132,7 +134,7 @@ class Projects::DeploymentJob < ApplicationJob
           applied_resource.name == resource['metadata']['name']
         end && resource.dig('metadata', 'labels', 'caninemanaged') == 'true'
           @logger.info("Deleting #{resource_type}: #{resource['metadata']['name']}", color: :yellow)
-          kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.name}")
+          kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{project.namespace}")
         end
       end
     end
@@ -150,7 +152,7 @@ class Projects::DeploymentJob < ApplicationJob
 
   def restart_deployment(service, kubectl)
     @logger.info("Restarting deployment: #{service.name}", color: :yellow)
-    kubectl.call("-n #{service.project.name} rollout restart deployment/#{service.name}")
+    kubectl.call("-n #{service.project.namespace} rollout restart deployment/#{service.name}")
   end
 
   def upload_registry_secrets(kubectl, deployment)

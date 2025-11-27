@@ -18,6 +18,14 @@
 #  updated_at              :datetime         not null
 #  project_id              :bigint           not null
 #
+# Indexes
+#
+#  index_services_on_project_id  (project_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_id => projects.id)
+#
 require 'rails_helper'
 
 RSpec.describe Service, type: :model do

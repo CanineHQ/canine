@@ -89,8 +89,8 @@ class ClustersController < ApplicationController
         %w[services deployments ingress cronjobs].each do |resource|
           yaml_content = K8::Kubectl.new(
             K8::Connection.new(@cluster, current_user)
-          ).call("get #{resource} -n #{project.name} -o yaml")
-          export(@cluster.name, project.name, yaml_content, zio)
+          ).call("get #{resource} -n #{project.namespace} -o yaml")
+          export(@cluster.name, project.namespace, yaml_content, zio)
         end
       end
     end

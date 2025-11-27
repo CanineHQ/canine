@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: <%= name %>
-  namespace: <%= project.name %>
+  namespace: <%= project.namespace %>
   labels:
     caninemanaged: 'true'
   annotations:

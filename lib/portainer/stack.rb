@@ -60,7 +60,7 @@ class Portainer::Stack
   def logs_url(service, pod_name)
     service = service.name
     container = service.project.name
-    namespace = service.project.name
+    namespace = service.project.namespace
     cluster = service.project.cluster
 
     "/#{cluster.external_id}/kubernetes/applications/#{namespace}/#{service}/#{pod_name}/#{container}/logs"
