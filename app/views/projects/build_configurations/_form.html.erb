@@ -67,22 +67,34 @@
           <span class="label-text-alt">Select a credential that gives access to a container registry</span>
         </label>
       </div>
-      <div class="form-control mt-1 mb-2 w-full max-w-md">
-        <label class="label">
-          <span class="label-text">Image repository</span>
-        </label>
-        <%= bc_form.text_field(
-          :image_repository,
-          class: "input input-bordered w-full focus:outline-offset-0",
-          value: build_configuration.image_repository,
-          placeholder: "namespace/repo",
-          pattern: "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]/[a-zA-Z0-9._-]+",
-          title: "Must be in the format 'namespace/repo'"
-        ) %>
-        <label class="label">
-          <span class="label-text-alt">If this is left blank, a container registry will be automatically created for you.</span>
-        </label>
+
+      <div data-controller="expandable-optional-input">
+        <div>
+          <a data-action="expandable-optional-input#show" class="btn btn-ghost">
+            + Choose custom image registry
+          </a>
+        </div>
+
+        <div data-expandable-optional-input-target="container">
+          <div class="form-control mt-1 mb-2 w-full max-w-md">
+            <label class="label">
+              <span class="label-text">Image repository</span>
+            </label>
+            <%= bc_form.text_field(
+              :image_repository,
+              class: "input input-bordered w-full focus:outline-offset-0",
+              value: build_configuration.image_repository,
+              placeholder: "namespace/repo",
+              pattern: "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]/[a-zA-Z0-9._-]+",
+              title: "Must be in the format 'namespace/repo'"
+            ) %>
+            <label class="label">
+              <span class="label-text-alt">If this is left blank, a container registry will be automatically created for you.</span>
+            </label>
+          </div>
+        </div>
       </div>
+
       <div class="form-control mt-4">
         <label class="label mb-2">
           <span class="label-text">Build method</span>

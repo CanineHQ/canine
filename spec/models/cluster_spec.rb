@@ -29,8 +29,8 @@ RSpec.describe Cluster, type: :model do
     let!(:add_on) { create(:add_on, cluster: cluster) }
 
     it 'returns the reserved namespaces and project/add_on names' do
-      expect(cluster.namespaces).to include(project.name)
-      expect(cluster.namespaces).to include(add_on.name)
+      expect(cluster.namespaces).to include(project.namespace)
+      expect(cluster.namespaces).to include(add_on.namespace)
     end
   end
 end

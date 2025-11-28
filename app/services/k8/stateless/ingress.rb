@@ -15,7 +15,7 @@ class K8::Stateless::Ingress < K8::Base
     return nil unless @service.domains.any?
     return nil unless @service.allow_public_networking?
 
-    kubectl.call("get certificate #{certificate_name} -n #{@project.name} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+    kubectl.call("get certificate #{certificate_name} -n #{@project.namespace} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
   end
 
   def certificate_name
@@ -25,7 +25,7 @@ class K8::Stateless::Ingress < K8::Base
   def get_ingress
     result = kubectl.call('get ingresses -o yaml')
     results = YAML.safe_load(result)
-    results['items'].find { |r| r['metadata']['name'] == "#{@service.project.name}-ingress" }
+    results['items'].find { |r| r['metadata']['name'] == "#{@service.project.namespace}-ingress" }
   end
 
   def self.ip_address(client)

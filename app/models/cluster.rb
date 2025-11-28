@@ -59,7 +59,7 @@ class Cluster < ApplicationRecord
   ]
 
   def namespaces
-    RESERVED_NAMESPACES + projects.pluck(:name) + add_ons.pluck(:name)
+    RESERVED_NAMESPACES + projects.pluck(:namespace) + add_ons.pluck(:namespace)
   end
 
   def create_build_cloud!(attributes = {})

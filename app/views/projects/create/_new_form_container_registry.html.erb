@@ -55,6 +55,8 @@
       )) do %>
         <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
       <% end %>
+
+      <%= render "shared/partials/namespace_input_group", form: %>
     </div>
 
     <div class="form-footer">

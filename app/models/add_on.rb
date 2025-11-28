@@ -2,16 +2,18 @@
 #
 # Table name: add_ons
 #
-#  id         :bigint           not null, primary key
-#  chart_type :string           not null
-#  chart_url  :string
-#  metadata   :jsonb
-#  name       :string           not null
-#  status     :integer          default("installing"), not null
-#  values     :jsonb
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
+#  id                :bigint           not null, primary key
+#  chart_type        :string           not null
+#  chart_url         :string
+#  managed_namespace :boolean          default(TRUE)
+#  metadata          :jsonb
+#  name              :string           not null
+#  namespace         :string           not null
+#  status            :integer          default("installing"), not null
+#  values            :jsonb
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  cluster_id        :bigint           not null
 #
 # Indexes
 #
@@ -25,6 +27,7 @@
 class AddOn < ApplicationRecord
   include Loggable
   include TeamAccessible
+  include Namespaced
   belongs_to :cluster
   has_one :account, through: :cluster
 
@@ -40,9 +43,9 @@ class AddOn < ApplicationRecord
   validates :chart_type, presence: true
   validate :chart_type_exists
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
-  validate :name_is_unique_to_cluster, on: :create
   validates_presence_of :chart_url
   validate :has_package_details, if: :helm_chart?
+  validates_uniqueness_of :name, scope: :cluster_id
 
   after_update_commit do
     broadcast_replace_later_to [ self, :install_stage ], target: dom_id(self, :install_stage), partial: "add_ons/install_stage", locals: { add_on: self }
@@ -55,12 +58,6 @@ class AddOn < ApplicationRecord
 
   def install_stage
     metadata['install_stage'] || 0
-  end
-
-  def name_is_unique_to_cluster
-    if cluster.namespaces.include?(name)
-      errors.add(:name, "must be unique to this cluster")
-    end
   end
 
   def has_package_details

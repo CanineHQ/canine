@@ -4,6 +4,9 @@
     <div>
       <h2 class="text-2xl font-bold">General</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
+      <% unless @project.managed_namespace %>
+      <%= render "shared/partials/namespace_show", namespaced: @project %>
+      <% end %>
       <%= render "edit_form", project: @project %>
     </div>
 

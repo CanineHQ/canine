@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
     t.datetime "updated_at", null: false
     t.jsonb "values", default: {}
     t.string "chart_url"
+    t.string "namespace", null: false
+    t.boolean "managed_namespace", default: true
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
   end
@@ -333,6 +335,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ldap_configurations", force: :cascade do |t|
+    t.string "host", null: false
+    t.integer "port", default: 389, null: false
+    t.integer "encryption", null: false
+    t.string "base_dn", null: false
+    t.string "bind_dn"
+    t.string "bind_password"
+    t.string "uid_attribute", default: "uid", null: false
+    t.string "email_attribute", default: "mail"
+    t.string "name_attribute", default: "cn"
+    t.string "filter"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "log_outputs", force: :cascade do |t|
     t.bigint "loggable_id", null: false
     t.string "loggable_type", null: false
@@ -373,6 +390,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+  end
+
+  create_table "oidc_configurations", force: :cascade do |t|
+    t.string "issuer", null: false
+    t.string "client_id", null: false
+    t.string "client_secret", null: false
+    t.string "authorization_endpoint"
+    t.string "token_endpoint"
+    t.string "userinfo_endpoint"
+    t.string "jwks_uri"
+    t.string "scopes", default: "openid email profile"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "project_add_ons", force: :cascade do |t|
@@ -427,6 +457,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
     t.text "postdestroy_command"
     t.bigint "project_fork_cluster_id"
     t.integer "project_fork_status", default: 0
+    t.string "namespace", null: false
+    t.boolean "managed_namespace", default: true
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
   end
 
@@ -475,6 +507,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
     t.text "description"
     t.jsonb "pod_yaml"
     t.index ["project_id"], name: "index_services_on_project_id"
+  end
+
+  create_table "sso_providers", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "configuration_type", null: false
+    t.bigint "configuration_id", null: false
+    t.string "name", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_sso_providers_on_account_id", unique: true
+    t.index ["configuration_type", "configuration_id"], name: "index_sso_providers_on_configuration"
   end
 
   create_table "stack_managers", force: :cascade do |t|
@@ -576,6 +620,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_22_230641) do
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
+  add_foreign_key "sso_providers", "accounts"
   add_foreign_key "stack_managers", "accounts"
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "team_memberships", "users"
