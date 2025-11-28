@@ -40,6 +40,7 @@ Rails.application.routes.draw do
   end
   get "/privacy", to: "static#privacy"
   get "/terms", to: "static#terms"
+  get "/comparison/canine-vs-:competitor", to: "comparisons#show", as: :comparison
 
   authenticated :user do
     root to: "projects#index", as: :user_root

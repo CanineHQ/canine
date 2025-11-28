@@ -1,0 +1,108 @@
+comparisons:
+  - slug: dokploy
+    name: Dokploy
+    tagline: "Enterprise-grade Kubernetes vs Single-server Docker"
+    description: "Both Canine and Dokploy are open-source deployment platforms, but they take fundamentally different approaches to infrastructure."
+    features:
+      - name: Deployment Method
+        canine: Kubernetes & Helm charts
+        competitor: Docker Compose on a single VPS
+      - name: Third-Party Applications
+        canine: Anything supported in Artifact Hub
+        competitor: Limited built-in templates
+      - name: Git Integration
+        canine: GitHub and GitLab webhooks
+        competitor: GitHub integration
+      - name: Permissions
+        canine: Full RBAC via Portainer integration
+        competitor: Basic user management
+      - name: SSL Certificates
+        canine: Automatically managed via cert-manager
+        competitor: Automatic via Traefik
+      - name: Build Options
+        canine: Bring your own Dockerfile or use Buildpacks
+        competitor: Dockerfile or Nixpacks
+    summary:
+      canine_best_for: "Teams needing production-grade infrastructure, horizontal scaling, and high availability"
+      competitor_best_for: "Solo developers or small projects wanting simple single-server deployments"
+
+  - slug: coolify
+    name: Coolify
+    tagline: "Kubernetes orchestration vs Docker-based PaaS"
+    description: "Coolify is a popular self-hosted PaaS alternative to Heroku. Here's how it compares to Canine's Kubernetes-native approach."
+    features:
+      - name: Deployment Method
+        canine: Kubernetes & Helm charts
+        competitor: Docker/Docker Swarm on VPS
+      - name: Third-Party Applications
+        canine: Anything supported in Artifact Hub
+        competitor: One-click app templates
+      - name: Git Integration
+        canine: GitHub and GitLab webhooks
+        competitor: GitHub/GitLab/Bitbucket support
+      - name: Permissions
+        canine: Full RBAC via Portainer integration
+        competitor: Basic team management
+      - name: SSL Certificates
+        canine: Automatically managed via cert-manager
+        competitor: Automatic via Let's Encrypt
+      - name: Build Options
+        canine: Bring your own Dockerfile or use Buildpacks
+        competitor: Dockerfile or Nixpacks
+    summary:
+      canine_best_for: "Teams wanting Kubernetes benefits without the complexity, enterprise-grade deployments"
+      competitor_best_for: "Developers wanting a simple Heroku alternative with minimal infrastructure knowledge"
+
+  - slug: railway
+    name: Railway
+    tagline: "Self-hosted Kubernetes vs Managed PaaS"
+    description: "Railway is a managed cloud platform. Canine gives you similar developer experience with full infrastructure control."
+    features:
+      - name: Deployment Method
+        canine: Kubernetes & Helm charts
+        competitor: Proprietary deployment system
+      - name: Third-Party Applications
+        canine: Anything supported in Artifact Hub
+        competitor: Railway templates only
+      - name: Git Integration
+        canine: GitHub and GitLab webhooks
+        competitor: GitHub integration
+      - name: Permissions
+        canine: Full RBAC via Portainer integration
+        competitor: Team-based access controls
+      - name: SSL Certificates
+        canine: Automatically managed via cert-manager
+        competitor: Automatic SSL
+      - name: Build Options
+        canine: Bring your own Dockerfile or use Buildpacks
+        competitor: Nixpacks or Dockerfile
+    summary:
+      canine_best_for: "Teams wanting Railway-like DX with full infrastructure ownership and cost control"
+      competitor_best_for: "Developers wanting zero infrastructure management and instant deployments"
+
+  - slug: render
+    name: Render
+    tagline: "Self-hosted Kubernetes vs Managed Cloud"
+    description: "Render offers a managed cloud platform. Canine provides similar capabilities on your own infrastructure."
+    features:
+      - name: Deployment Method
+        canine: Kubernetes & Helm charts
+        competitor: Proprietary deployment system
+      - name: Third-Party Applications
+        canine: Anything supported in Artifact Hub
+        competitor: Render blueprints only
+      - name: Git Integration
+        canine: GitHub and GitLab webhooks
+        competitor: GitHub/GitLab integration
+      - name: Permissions
+        canine: Full RBAC via Portainer integration
+        competitor: Team-based access controls
+      - name: SSL Certificates
+        canine: Automatically managed via cert-manager
+        competitor: Automatic SSL
+      - name: Build Options
+        canine: Bring your own Dockerfile or use Buildpacks
+        competitor: Dockerfile or native runtimes
+    summary:
+      canine_best_for: "Teams needing cost efficiency, compliance control, and infrastructure ownership"
+      competitor_best_for: "Teams wanting managed infrastructure without operational overhead"
