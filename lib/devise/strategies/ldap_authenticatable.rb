@@ -28,7 +28,7 @@ module Devise
             # LDAP authentication successful, find or create user
             email = construct_email(username, ldap_configuration)
             # Determine the groups
-            groups = get_group_information(username)
+            groups = get_group_information(ldap, user_dn)
             ActiveRecord::Base.transaction do
               user = User.find_or_create_by!(email: email) do |user|
                 password = SecureRandom.hex(32)
@@ -84,7 +84,8 @@ module Devise
         "#{username}@#{domain}"
       end
 
-      def get_group_information(user)
+      def get_group_information(ldap, user_dn)
+        debugger
         # ldap.search(base: "ou=Groups,dc=example,dc=org", filter: Net::LDAP::Filter.eq("memberUid", user_dn))
         return [
           {
