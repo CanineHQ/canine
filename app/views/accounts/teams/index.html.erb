@@ -32,24 +32,9 @@
     </div>
 
     <div class="mt-5">
-      <div aria-label="Card" class="card card-bordered bg-base-100">
-        <div class="card-body">
-          <div class="text-right px-5 pt-5">
-            <%= link_to new_team_path, class: "btn btn-primary btn-sm" do %>
-              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-              <span class="hidden sm:inline">Create Team</span>
-            <% end %>
-          </div>
-
-          <div>
-            <%= tag.div id: ("teams" if @pagy.page == 1) do %>
-              <%= render "accounts/teams/list", teams: @teams, cached: true %>
-            <% end %>
-          </div>
-        </div>
-      </div>
+      <%= tag.div id: "teams" do %>
+        <%= render "accounts/teams/list", teams: @teams %>
+      <% end %>
     </div>
-
-    <%= render 'shared/pagination', pagy: @pagy %>
   </div>
 <% end %>

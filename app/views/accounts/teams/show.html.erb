@@ -3,6 +3,18 @@
   <%= turbo_stream_from [:team_memberships, @team] %>
 
   <div>
+    <div class="breadcrumbs text-sm mb-4">
+      <ul>
+        <li>
+          <%= link_to teams_path, class: "inline-flex items-center gap-1" do %>
+            <iconify-icon icon="lucide:users" height="14"></iconify-icon>
+            Teams
+          <% end %>
+        </li>
+        <li><%= @team.name %></li>
+      </ul>
+    </div>
+
     <div class="mb-6">
       <div class="flex justify-between items-start">
         <div>
@@ -54,16 +66,10 @@
     <div class="mt-5">
       <div aria-label="Card" class="card card-bordered bg-base-100">
         <div class="card-body">
-          <div class="flex justify-between items-center px-5 pt-5">
-            <h3 class="text-lg font-semibold">Team Resources</h3>
-            <button class="btn btn-primary btn-sm" onclick="add_team_resource_modal.showModal()">
-              <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-              <span class="hidden sm:inline">Grant Access</span>
-            </button>
-          </div>
-
-          <div>
-            <%= render "accounts/teams/team_resources_list", team: @team, cached: true %>
+          <div class="px-5 pt-5" data-controller="turbo-tabs">
+            <h3 class="text-lg font-semibold mb-4">Team Resources</h3>
+            <%= render "accounts/teams/resource_tabs", team: @team, tab: @tab %>
+            <%= render "accounts/teams/resource_content", team: @team, tab: @tab %>
           </div>
         </div>
       </div>
@@ -103,45 +109,104 @@
     </form>
   </dialog>
 
-  <!-- Add Team Resource Modal -->
-  <dialog aria-label="Modal" class="modal" id="add_team_resource_modal">
+  <!-- Add Cluster Modal -->
+  <dialog aria-label="Modal" class="modal" id="add_cluster_modal">
     <div class="modal-box">
       <form method="dialog">
         <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
           <iconify-icon icon="lucide:x" height="16"></iconify-icon>
         </button>
       </form>
-      <div class="mb-4 w-full text-xl font-bold">Grant Resource Access to <%= @team.name %></div>
+      <div class="mb-4 w-full text-xl font-bold">Add Cluster to <%= @team.name %></div>
       <div>
-        <%= form_with(url: team_team_resources_path(@team)) do |form| %>
-          <div class="form-control mt-1 w-full">
-            <label class="label">
-              <span class="label-text">Resource Type</span>
-            </label>
-            <%= form.select :resourceable_type,
-                [["Cluster", "Cluster"], ["Project", "Project"], ["Add-on", "AddOn"]],
-                { prompt: "Select resource type" },
-                class: "select select-bordered w-full focus:outline-offset-0",
-                data: { action: "change->team-resource#updateResourceOptions" } %>
+        <div class="form-control mt-1 w-full"
+             data-controller="team-resource-search"
+             data-team-resource-search-url-value="<%= clusters_path %>"
+             data-team-resource-search-add-url-value="<%= team_team_resources_path(@team) %>"
+             data-team-resource-search-resource-type-value="Cluster"
+             data-team-resource-search-turbo-frame-value="team_resources_<%= @team.id %>">
+          <label class="label">
+            <span class="label-text">Search for a cluster</span>
+          </label>
+          <div class="relative">
+            <input type="text"
+                   placeholder="Type to search clusters..."
+                   class="input input-bordered w-full focus:outline-offset-0" />
           </div>
+          <label class="label">
+            <span class="label-text-alt text-warning">Adding a cluster will enable all projects and add-ons within that cluster.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
-          <div class="form-control mt-1 w-full">
-            <label class="label">
-              <span class="label-text">Resource</span>
-            </label>
-            <%= form.select :resourceable_id,
-                [],
-                { prompt: "Select a resource" },
-                class: "select select-bordered w-full focus:outline-offset-0",
-                id: "resourceable_id_select" %>
-            <label class="label">
-              <span class="label-text-alt">Grant access to a specific resource.</span>
-            </label>
+  <!-- Add Project Modal -->
+  <dialog aria-label="Modal" class="modal" id="add_project_modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div class="mb-4 w-full text-xl font-bold">Add Project to <%= @team.name %></div>
+      <div>
+        <div class="form-control mt-1 w-full"
+             data-controller="team-resource-search"
+             data-team-resource-search-url-value="<%= projects_path %>"
+             data-team-resource-search-add-url-value="<%= team_team_resources_path(@team) %>"
+             data-team-resource-search-resource-type-value="Project"
+             data-team-resource-search-turbo-frame-value="team_resources_<%= @team.id %>">
+          <label class="label">
+            <span class="label-text">Search for a project</span>
+          </label>
+          <div class="relative">
+            <input type="text"
+                   placeholder="Type to search projects..."
+                   class="input input-bordered w-full focus:outline-offset-0" />
           </div>
-          <div class="form-footer">
-            <%= form.button "Grant Access", class: "btn btn-primary" %>
+          <label class="label">
+            <span class="label-text-alt">Grant this team access to the selected project.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <!-- Add Add-on Modal -->
+  <dialog aria-label="Modal" class="modal" id="add_addon_modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div class="mb-4 w-full text-xl font-bold">Add Add-on to <%= @team.name %></div>
+      <div>
+        <div class="form-control mt-1 w-full"
+             data-controller="team-resource-search"
+             data-team-resource-search-url-value="<%= add_ons_path %>"
+             data-team-resource-search-add-url-value="<%= team_team_resources_path(@team) %>"
+             data-team-resource-search-resource-type-value="AddOn"
+             data-team-resource-search-turbo-frame-value="team_resources_<%= @team.id %>">
+          <label class="label">
+            <span class="label-text">Search for an add-on</span>
+          </label>
+          <div class="relative">
+            <input type="text"
+                   placeholder="Type to search add-ons..."
+                   class="input input-bordered w-full focus:outline-offset-0" />
           </div>
-        <% end %>
+          <label class="label">
+            <span class="label-text-alt">Grant this team access to the selected add-on.</span>
+          </label>
+        </div>
       </div>
     </div>
     <form method="dialog" class="modal-backdrop">

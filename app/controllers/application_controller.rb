@@ -23,6 +23,12 @@ class ApplicationController < ActionController::Base
     end
     helper_method :current_account
 
+    def current_account_user
+      return nil unless user_signed_in? && current_account
+      @current_account_user ||= AccountUser.find_by(user: current_user, account: current_account)
+    end
+    helper_method :current_account_user
+
     def time_ago(t)
       if t.present?
         "#{time_ago_in_words(t)} ago"

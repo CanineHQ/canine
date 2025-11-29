@@ -4,12 +4,19 @@ module AddOns
   class VisibleToUser
     extend LightService::Action
 
-    expects :user, :account
+    expects :account_user
     promises :add_ons
 
     executed do |context|
-      user = context.user
-      account = context.account
+      account_user = context.account_user
+      user = account_user.user
+      account = account_user.account
+
+      # Admins can see all add_ons in the account
+      if account_user.admin?
+        context.add_ons = AddOn.joins(:cluster).where(clusters: { account_id: account.id })
+        next context
+      end
 
       # If account has no teams, user can see all add_ons
       if account.teams.empty?

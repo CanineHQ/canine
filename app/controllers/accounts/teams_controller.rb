@@ -8,6 +8,7 @@ class Accounts::TeamsController < ApplicationController
 
   def show
     @pagy, @team_memberships = pagy(@team.team_memberships)
+    @tab = params[:tab] || "clusters"
   end
 
   def new

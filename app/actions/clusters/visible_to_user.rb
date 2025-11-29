@@ -4,12 +4,19 @@ module Clusters
   class VisibleToUser
     extend LightService::Action
 
-    expects :user, :account
+    expects :account_user
     promises :clusters
 
     executed do |context|
-      user = context.user
-      account = context.account
+      account_user = context.account_user
+      user = account_user.user
+      account = account_user.account
+
+      # Admins can see all clusters in the account
+      if account_user.admin?
+        context.clusters = Cluster.where(account_id: account.id)
+        next context
+      end
 
       # If account has no teams, user can see all clusters
       if account.teams.empty?

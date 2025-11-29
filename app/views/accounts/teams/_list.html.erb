@@ -1,40 +1,55 @@
-<div class="overflow-auto">
-  <table class="table mt-2 rounded-box" data-component="table">
-    <thead>
-      <tr>
-        <th>
-          <span class="text-sm font-medium text-base-content/80">Name</span>
-        </th>
-        <th>
-          <span class="text-sm font-medium text-base-content/80">Members</span>
-        </th>
-        <th>
-          <span class="text-sm font-medium text-base-content/80">Resources</span>
-        </th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% teams.each do |team| %>
-        <tr class="cursor-pointer hover:bg-base-200/40" onclick="window.location='<%= team_path(team) %>'">
-          <td>
-            <div class="font-medium"><%= team.name %></div>
-          </td>
-          <td>
-            <div class="font-medium"><%= team.users.count %></div>
-          </td>
-          <td>
-            <div class="font-medium"><%= team.team_resources.count %></div>
-          </td>
-          <td>
-            <div class="text-sm capitalize">
-              <%= button_to team_path(team), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
-                <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<% if teams.empty? %>
+  <%= render "accounts/teams/empty" %>
+<% else %>
+  <div aria-label="Card" class="card card-bordered bg-base-100">
+    <div class="card-body">
+      <div class="text-right px-5 pt-5">
+        <%= link_to new_team_path, class: "btn btn-primary btn-sm" do %>
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          <span class="hidden sm:inline">Create Team</span>
+        <% end %>
+      </div>
+
+      <div class="overflow-auto">
+        <table class="table mt-2 rounded-box" data-component="table">
+          <thead>
+            <tr>
+              <th>
+                <span class="text-sm font-medium text-base-content/80">Name</span>
+              </th>
+              <th>
+                <span class="text-sm font-medium text-base-content/80">Members</span>
+              </th>
+              <th>
+                <span class="text-sm font-medium text-base-content/80">Resources</span>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% teams.each do |team| %>
+              <tr class="cursor-pointer hover:bg-base-200/40" onclick="window.location='<%= team_path(team) %>'">
+                <td>
+                  <div class="font-medium"><%= team.name %></div>
+                </td>
+                <td>
+                  <div class="font-medium"><%= team.users.count %></div>
+                </td>
+                <td>
+                  <div class="font-medium"><%= team.team_resources.count %></div>
+                </td>
+                <td>
+                  <div class="text-sm capitalize">
+                    <%= button_to team_path(team), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
+                      <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
