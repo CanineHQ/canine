@@ -124,6 +124,7 @@ class AddOnsController < ApplicationController
     add_ons = AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons
     @add_on = add_ons.find(params[:id])
     @service = K8::Helm::Service.create_from_add_on(K8::Connection.new(@add_on, current_user))
+    authorize @add_on
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path
   end

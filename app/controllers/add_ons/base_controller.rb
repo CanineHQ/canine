@@ -20,6 +20,7 @@ class AddOns::BaseController < ApplicationController
 
   def set_add_on
     @add_on = current_account.add_ons.find(params[:add_on_id])
+    authorize @add_on
     set_service
   end
 end

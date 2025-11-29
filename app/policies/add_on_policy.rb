@@ -18,6 +18,9 @@ class AddOnPolicy < ApplicationPolicy
   end
 
   def destroy?
+  end
+
+  def default?
     visible_to_user?
   end
 
