@@ -22,6 +22,7 @@
 #
 class Cluster < ApplicationRecord
   include Loggable
+  include TeamAccessible
   broadcasts_refreshes
   belongs_to :account
 

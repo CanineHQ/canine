@@ -8,7 +8,13 @@ class ClustersController < ApplicationController
   # GET /clusters
   def index
     sortable_column = params[:sort] || "created_at"
-    @pagy, @clusters = pagy(current_account.clusters.order(sortable_column => "asc"))
+    clusters = Clusters::List.call(account_user: current_account_user, params: params).clusters
+    @pagy, @clusters = pagy(clusters.order(sortable_column => "asc"))
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @clusters.map { |c| { id: c.id, name: c.name } } }
+    end
 
     # Uncomment to authorize with Pundit
     # authorize @clusters
@@ -171,7 +177,8 @@ class ClustersController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_cluster
-    @cluster = current_account.clusters.find(params[:id])
+    clusters = Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
+    @cluster = clusters.find(params[:id])
 
     # Uncomment to authorize with Pundit
     # authorize @cluster

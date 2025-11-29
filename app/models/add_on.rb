@@ -26,6 +26,7 @@
 #
 class AddOn < ApplicationRecord
   include Loggable
+  include TeamAccessible
   include Namespaced
   belongs_to :cluster
   has_one :account, through: :cluster

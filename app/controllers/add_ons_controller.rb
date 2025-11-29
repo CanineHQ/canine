@@ -4,7 +4,13 @@ class AddOnsController < ApplicationController
 
   # GET /add_ons
   def index
-    @pagy, @add_ons = pagy(current_account.add_ons)
+    add_ons = AddOns::List.call(account_user: current_account_user, params: params).add_ons
+    @pagy, @add_ons = pagy(add_ons)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @add_ons.map { |a| { id: a.id, name: a.name } } }
+    end
 
     # Uncomment to authorize with Pundit
     # authorize @add_ons
@@ -119,7 +125,8 @@ class AddOnsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
-    @add_on = current_account.add_ons.find(params[:id])
+    add_ons = AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons
+    @add_on = add_ons.find(params[:id])
     @service = K8::Helm::Service.create_from_add_on(K8::Connection.new(@add_on, current_user))
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path

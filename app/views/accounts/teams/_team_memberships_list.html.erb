@@ -1,0 +1,34 @@
+<div class="overflow-auto">
+  <table class="table mt-2 rounded-box" data-component="table">
+    <thead>
+      <tr>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Name</span>
+        </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Email</span>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% team_memberships.each do |team_membership| %>
+        <tr class="hover:bg-base-200/40">
+          <td>
+            <div class="font-medium"><%= team_membership.user.name %></div>
+          </td>
+          <td>
+            <div class="font-medium"><%= team_membership.user.email %></div>
+          </td>
+          <td>
+            <div class="text-sm capitalize">
+              <%= button_to team_team_membership_path(team_membership.team, team_membership), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
+                <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

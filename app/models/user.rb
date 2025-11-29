@@ -33,6 +33,8 @@ class User < ApplicationRecord
   has_many :account_users, dependent: :destroy
   has_many :accounts, through: :account_users, dependent: :destroy
   has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id", dependent: :destroy
+  has_many :team_memberships, dependent: :destroy
+  has_many :teams, through: :team_memberships
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
