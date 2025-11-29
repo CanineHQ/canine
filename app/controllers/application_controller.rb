@@ -52,4 +52,8 @@ class ApplicationController < ActionController::Base
       flash[:alert] = "The requested resource could not be found."
       redirect_to root_path
     end
+
+    def pundit_user
+      current_account_user
+    end
 end

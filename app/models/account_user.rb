@@ -3,6 +3,7 @@
 # Table name: account_users
 #
 #  id         :bigint           not null, primary key
+#  role       :integer          default("member"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  account_id :bigint           not null
@@ -22,7 +23,13 @@ class AccountUser < ApplicationRecord
   belongs_to :user
   belongs_to :account
 
-  def admin?
-    account.owner_id == user_id
+  enum :role, { owner: 0, admin: 1, member: 2 }
+
+  def admin_or_owner?
+    owner? || admin?
+  end
+
+  def destroyable?
+    !owner?
   end
 end

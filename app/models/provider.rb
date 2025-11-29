@@ -15,14 +15,18 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  external_id         :string
+#  sso_provider_id     :bigint
 #  user_id             :bigint           not null
 #
 # Indexes
 #
-#  index_providers_on_user_id  (user_id)
+#  index_providers_on_sso_provider_id          (sso_provider_id)
+#  index_providers_on_sso_provider_id_and_uid  (sso_provider_id,uid) UNIQUE WHERE (sso_provider_id IS NOT NULL)
+#  index_providers_on_user_id                  (user_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (sso_provider_id => sso_providers.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class Provider < ApplicationRecord

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.bigint "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 2, null: false
     t.index ["account_id"], name: "index_account_users_on_account_id"
     t.index ["user_id"], name: "index_account_users_on_user_id"
   end
@@ -166,6 +167,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.bigint "service_id", null: false
     t.string "schedule", null: false
     t.index ["service_id"], name: "index_cron_schedules_on_service_id"
+  end
+
+  create_table "deployment_configurations", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "deployment_method", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_deployment_configurations_on_project_id"
   end
 
   create_table "deployments", force: :cascade do |t|
@@ -346,6 +355,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.string "email_attribute", default: "mail"
     t.string "name_attribute", default: "cn"
     t.string "filter"
+    t.boolean "allow_anonymous_reads", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -401,6 +411,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.string "userinfo_endpoint"
     t.string "jwks_uri"
     t.string "scopes", default: "openid email profile"
+    t.string "uid_claim", default: "sub", null: false
+    t.string "email_claim", default: "email"
+    t.string "name_claim", default: "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -476,6 +489,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.datetime "last_used_at"
     t.string "registry_url"
     t.string "external_id"
+    t.bigint "sso_provider_id"
+    t.index ["sso_provider_id", "uid"], name: "index_providers_on_sso_provider_id_and_uid", unique: true, where: "(sso_provider_id IS NOT NULL)"
+    t.index ["sso_provider_id"], name: "index_providers_on_sso_provider_id"
     t.index ["user_id"], name: "index_providers_on_user_id"
   end
 
@@ -515,6 +531,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.bigint "configuration_id", null: false
     t.string "name", null: false
     t.boolean "enabled", default: true, null: false
+    t.integer "team_provisioning_mode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_sso_providers_on_account_id", unique: true
@@ -608,6 +625,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
+  add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_add_ons", "add_ons"
@@ -618,6 +636,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
   add_foreign_key "project_forks", "projects", column: "parent_project_id"
   add_foreign_key "projects", "clusters"
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
+  add_foreign_key "providers", "sso_providers"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
   add_foreign_key "sso_providers", "accounts"

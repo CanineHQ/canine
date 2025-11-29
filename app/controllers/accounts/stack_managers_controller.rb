@@ -1,6 +1,7 @@
 module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
+    before_action :authorize_account, except: [ :verify_url, :check_reachable ]
     before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable ]
 
@@ -137,6 +138,10 @@ module Accounts
 
     def set_stack
       @stack ||= current_account.stack_manager&.stack&.connect(current_user)
+    end
+
+    def authorize_account
+      authorize current_account, :update?
     end
   end
 end
