@@ -7,7 +7,7 @@ class K8::Stateless::Service < K8::Base
   end
 
   def internal_url
-    "#{name}.#{project.name}.svc.cluster.local:80"
+    "#{name}.#{project.namespace}.svc.cluster.local:80"
   end
 
   def name

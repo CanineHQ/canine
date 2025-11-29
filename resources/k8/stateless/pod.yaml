@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: <%= name %>
-  namespace: <%= project.name %>
+  namespace: <%= project.namespace %>
   labels:
     caninemanaged: 'true'
     oneoff: 'true'

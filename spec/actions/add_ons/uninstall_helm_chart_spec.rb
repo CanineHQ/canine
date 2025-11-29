@@ -18,6 +18,23 @@ RSpec.describe AddOns::UninstallHelmChart do
   end
 
   describe '#execute' do
+    context 'with an unmanaged namespace' do
+      let(:add_on) { create(:add_on, managed_namespace: false) }
+      it 'does not delete the namespace' do
+        expect(client).not_to receive(:delete_namespace)
+        described_class.execute(connection:)
+      end
+    end
+
+    context 'with a managed namespace' do
+      it 'deletes the namespace' do
+        allow(client).to receive(:get_namespaces).and_return([ OpenStruct.new(metadata: OpenStruct.new(name: add_on.namespace)) ])
+        expect(client).to receive(:delete_namespace)
+
+        described_class.execute(connection:)
+      end
+    end
+
     it 'uninstalls the helm chart successfully' do
       expect(add_on).to receive(:uninstalled!)
       expect(add_on).to receive(:destroy!)

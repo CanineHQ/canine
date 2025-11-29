@@ -48,7 +48,7 @@ export default class extends Controller {
 
   createDropdown() {
     const dropdown = document.createElement('ul')
-    dropdown.className = 'hidden absolute z-10 w-full mt-1 menu bg-base-200 block rounded-box shadow-lg max-h-[300px] overflow-y-auto'
+    dropdown.className = 'hidden absolute z-10 w-full mt-1 menu bg-neutral block rounded-box shadow-lg max-h-[300px] overflow-y-auto'
     return dropdown
   }
 

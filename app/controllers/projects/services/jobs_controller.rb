@@ -7,7 +7,7 @@ class Projects::Services::JobsController < Projects::Services::BaseController
     job_name = "#{@service.name}-manual-#{timestamp}"
     kubectl = K8::Kubectl.new(active_connection)
     kubectl.call(
-      "-n #{@project.name} create job #{job_name} --from=cronjob/#{@service.name}"
+      "-n #{@project.namespace} create job #{job_name} --from=cronjob/#{@service.name}"
     )
     render partial: "projects/services/show", locals: { service: @service, tab: "cron-jobs" }, layout: false
   end
@@ -16,7 +16,7 @@ class Projects::Services::JobsController < Projects::Services::BaseController
     job_name = params[:id]
     kubectl = K8::Kubectl.new(active_connection)
     kubectl.call(
-      "-n #{@project.name} delete job #{job_name}"
+      "-n #{@project.namespace} delete job #{job_name}"
     )
 
     render partial: "projects/services/show", locals: { service: @service, tab: "cron-jobs" }, layout: false

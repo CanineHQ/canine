@@ -1,0 +1,24 @@
+<div>
+  <div class="flex flex-row items-end">
+    <div>
+      <div><label>Namespace</label></div>
+      <div class="flex flex-row items-center">
+        <input value="<%= namespaced.namespace %>" class="input input-bordered w-full focus:outline-offset-0" readonly />
+        <div class="mx-2 font-medium text-lg">/</div>
+      </div>
+    </div>
+    <div>
+      <div><label>Name</label></div>
+      <input value="<%= namespaced.name %>"  class="input input-bordered w-full focus:outline-offset-0" readonly />
+    </div>
+  </div>
+  <label class="label">
+    <span class="label-text-alt">
+    <% if namespaced.managed_namespace %>
+      This namespace is managed by Canine. If the <%= namespaced.class.to_s.titleize %> is deleted, the namespace will be deleted.
+    <% else %>
+      This namespace is managed by Canine. If the <%= namespaced.class.to_s.titleize %> is deleted, the namespace will not be deleted.
+    <% end %>
+    </span>
+  </label>
+</div>

@@ -1,0 +1,49 @@
+<div class="card card-bordered bg-base-100">
+  <div class="card-body text-center py-16">
+    <div class="flex flex-col items-center gap-6">
+      <h2 class="text-3xl font-bold">Organize access with teams</h2>
+      <p class="text-base-content/70 max-w-2xl">
+        Teams let you group members and control which resources they can access. Perfect for managing permissions as your organization scales.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8 max-w-4xl">
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center">
+            <iconify-icon icon="lucide:shield-check" class="text-2xl text-primary"></iconify-icon>
+          </div>
+          <h3 class="font-semibold text-lg">Granular permissions</h3>
+          <p class="text-base-content/70 text-sm">
+            Assign clusters, projects, and add-ons to specific teams. Members only see what they need.
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center">
+            <iconify-icon icon="lucide:user-plus" class="text-2xl text-primary"></iconify-icon>
+          </div>
+          <h3 class="font-semibold text-lg">Simple onboarding</h3>
+          <p class="text-base-content/70 text-sm">
+            Add someone to a team and they instantly get access to all the right resources. No manual setup required.
+          </p>
+        </div>
+
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center">
+            <iconify-icon icon="lucide:folder-tree" class="text-2xl text-primary"></iconify-icon>
+          </div>
+          <h3 class="font-semibold text-lg">Scale with confidence</h3>
+          <p class="text-base-content/70 text-sm">
+            Structure teams by role, project, or however works best. Easily adjust as your organization evolves.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-8">
+        <%= link_to new_team_path, class: "btn btn-primary" do %>
+          <iconify-icon icon="lucide:plus"></iconify-icon>
+          Create your first team
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

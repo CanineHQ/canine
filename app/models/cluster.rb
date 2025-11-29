@@ -22,6 +22,7 @@
 #
 class Cluster < ApplicationRecord
   include Loggable
+  include TeamAccessible
   broadcasts_refreshes
   belongs_to :account
 
@@ -58,7 +59,7 @@ class Cluster < ApplicationRecord
   ]
 
   def namespaces
-    RESERVED_NAMESPACES + projects.pluck(:name) + add_ons.pluck(:name)
+    RESERVED_NAMESPACES + projects.pluck(:namespace) + add_ons.pluck(:namespace)
   end
 
   def create_build_cloud!(attributes = {})

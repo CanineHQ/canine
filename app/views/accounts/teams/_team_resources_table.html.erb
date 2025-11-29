@@ -1,0 +1,37 @@
+<% resources = team.team_resources.where(resourceable_type: resource_type) %>
+<div class="overflow-auto">
+  <table class="table mt-2 rounded-box" data-component="table">
+    <thead>
+      <tr>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">Name</span>
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if resources.empty? %>
+        <tr>
+          <td colspan="2" class="text-center text-base-content/50 py-8">
+            No <%= resource_type.underscore.humanize.downcase.pluralize %> assigned to this team yet.
+          </td>
+        </tr>
+      <% else %>
+        <% resources.each do |team_resource| %>
+          <tr class="hover:bg-base-200/40">
+            <td>
+              <div class="font-medium"><%= team_resource.resourceable.name %></div>
+            </td>
+            <td>
+              <div class="text-sm capitalize">
+                <%= button_to team_team_resource_path(team, team_resource), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
+                  <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
