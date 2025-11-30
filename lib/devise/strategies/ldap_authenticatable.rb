@@ -67,7 +67,7 @@ module Devise
         unless sso_provider.ldap?
           raise "Account does not support LDAP authentication"
         end
-        return sso_provider.configuration 
+        sso_provider.configuration
       end
 
       def build_user_dn(ldap_config, username)
@@ -78,7 +78,7 @@ module Devise
       def construct_email(username, ldap_config)
         # If username is already an email, use it as-is
         return username if username.include?('@')
-        
+
         # Otherwise, construct email using mail_domain from config if available
         domain = ldap_config.try(:mail_domain) || ldap_config.host
         "#{username}@#{domain}"
@@ -87,13 +87,13 @@ module Devise
       def get_group_information(ldap, user_dn)
         debugger
         # ldap.search(base: "ou=Groups,dc=example,dc=org", filter: Net::LDAP::Filter.eq("memberUid", user_dn))
-        return [
+        [
           {
-            name: "developers",
+            name: "developers"
           },
           {
-            name: "administrators",
-          },
+            name: "administrators"
+          }
         ]
       end
 
