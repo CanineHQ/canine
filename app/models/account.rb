@@ -27,6 +27,7 @@ class Account < ApplicationRecord
   has_many :users, through: :account_users
   has_one :stack_manager, dependent: :destroy
   has_one :sso_provider, dependent: :destroy
+  has_many :teams, dependent: :destroy
 
   has_many :clusters, dependent: :destroy
   has_many :build_clouds, through: :clusters

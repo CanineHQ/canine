@@ -6,7 +6,13 @@ class ProjectsController < ApplicationController
   # GET /projects
   def index
     sortable_column = params[:sort] || "created_at"
-    @pagy, @projects = pagy(current_account.projects.order(sortable_column => "asc"))
+    projects = Projects::List.call(account_user: current_account_user, params: params).projects
+    @pagy, @projects = pagy(projects.order(sortable_column => "asc"))
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @projects.map { |p| { id: p.id, name: p.name } } }
+    end
 
     # Uncomment to authorize with Pundit
     # authorize @projects
@@ -86,7 +92,8 @@ class ProjectsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_project
-    @project = current_account.projects.find(params[:id])
+    projects = Projects::VisibleToUser.execute(account_user: current_account_user).projects
+    @project = projects.find(params[:id])
 
     # Uncomment to authorize with Pundit
     # authorize @project

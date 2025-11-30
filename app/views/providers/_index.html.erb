@@ -29,7 +29,7 @@
           </td>
           <td>
             <% if provider.access_token %>
-            <%= provider.access_token.first(6) %><%= "*" * [10, provider.access_token.length - 12].min %><%= provider.access_token.last(6) %>
+            <%= provider.access_token.first(4) %><%= "*" * [0, [10, provider.access_token.length - 6].min].max %><%= provider.access_token.last(2) %>
             <% else %>
               <span class="text-gray-500">
                 N/A

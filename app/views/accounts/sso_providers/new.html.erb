@@ -33,6 +33,16 @@
         </label>
       </div>
 
+      <div class="form-control mt-4 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Team Provisioning Mode</span>
+        </label>
+        <%= form.select :team_provisioning_mode, SSOProvider.team_provisioning_modes.keys.map { |k| [k.titleize, k] }, {}, class: "select select-bordered" %>
+        <label class="label">
+          <span class="label-text-alt">How teams are provisioned for SSO users</span>
+        </label>
+      </div>
+
       <div class="divider"><%= @provider_type == "ldap" ? "LDAP" : "OIDC" %> Configuration</div>
 
       <% if @provider_type == "ldap" %>

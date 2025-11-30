@@ -5,6 +5,7 @@ class CreateSSOProviders < ActiveRecord::Migration[7.2]
       t.references :configuration, polymorphic: true, null: false
       t.string :name, null: false
       t.boolean :enabled, default: true, null: false
+      t.integer :team_provisioning_mode, null: false
 
       t.timestamps
     end

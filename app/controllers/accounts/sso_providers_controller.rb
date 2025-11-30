@@ -94,7 +94,7 @@ module Accounts
     private
 
     def sso_provider_params
-      params.require(:sso_provider).permit(:name, :enabled)
+      params.require(:sso_provider).permit(:name, :enabled, :team_provisioning_mode)
     end
 
     def oidc_configuration_params

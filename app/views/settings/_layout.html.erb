@@ -27,7 +27,7 @@
               Profile
             <% end %>
           </li>
-          <li class="<%= 'underline' if current_page?(account_users_path) %>" style="text-underline-offset: 0.25rem;">
+          <li class="<%= 'underline' if current_page?(account_users_path) || controller_name == 'teams' %>" style="text-underline-offset: 0.25rem;">
             <%= link_to account_users_path do %>
               <iconify-icon icon="lucide:users" ></iconify-icon>
               Team Members

@@ -12,7 +12,7 @@ class AddOns::UninstallHelmChart
     end
 
     client = K8::Client.new(connection)
-    if (namespace = client.get_namespaces.find { |n| n.metadata.name == add_on.name }).present?
+    if add_on.managed_namespace? && (namespace = client.get_namespaces.find { |n| n.metadata.name == add_on.namespace }).present?
       client.delete_namespace(namespace.metadata.name)
     end
 

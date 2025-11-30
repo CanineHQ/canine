@@ -2,14 +2,15 @@
 #
 # Table name: sso_providers
 #
-#  id                 :bigint           not null, primary key
-#  configuration_type :string           not null
-#  enabled            :boolean          default(TRUE), not null
-#  name               :string           not null
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  account_id         :bigint           not null
-#  configuration_id   :bigint           not null
+#  id                     :bigint           not null, primary key
+#  configuration_type     :string           not null
+#  enabled                :boolean          default(TRUE), not null
+#  name                   :string           not null
+#  team_provisioning_mode :integer          not null
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  account_id             :bigint           not null
+#  configuration_id       :bigint           not null
 #
 # Indexes
 #
