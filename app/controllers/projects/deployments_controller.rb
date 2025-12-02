@@ -27,10 +27,14 @@ class Projects::DeploymentsController < Projects::BaseController
       current_user:,
       skip_build: params[:skip_build] == "true"
     )
-    if result.success?
-      redirect_to @project, notice: "Deploying project #{@project.name}. <a class='underline' href='#{project_deployment_path(@project, result.build)}'>Follow deployment</a>".html_safe
-    else
-      redirect_to @project, alert: "Failed to deploy project"
+    respond_to do |format|
+      if result.success?
+        format.html { redirect_to @project, notice: "Deploying project #{@project.name}. <a class='underline' href='#{project_deployment_path(@project, result.build)}'>Follow deployment</a>".html_safe }
+        format.json { render json: { message: "Deploying project #{@project.name}." }, status: :ok }
+      else
+        format.html { redirect_to @project, alert: "Failed to deploy project" }
+        format.json { render json: { message: "Failed to deploy project" }, status: :unprocessable_entity }
+      end
     end
   end
 

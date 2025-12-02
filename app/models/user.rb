@@ -42,6 +42,7 @@ class User < ApplicationRecord
   has_many :projects, through: :accounts
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts
+  has_many :api_tokens, dependent: :destroy
   attr_readonly :admin
 
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
