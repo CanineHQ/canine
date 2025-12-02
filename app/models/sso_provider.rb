@@ -34,10 +34,6 @@ class SSOProvider < ApplicationRecord
   }
 
 
-  def oidc?
-    configuration_type == "OIDCConfiguration"
-  end
-
   def ldap?
     configuration_type == "LDAPConfiguration"
   end

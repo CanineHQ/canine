@@ -7,11 +7,7 @@ module SSOProviders
     promises :configuration
 
     executed do |context|
-      context.configuration = if context.provider_type == "ldap"
-        LDAPConfiguration.new(context.configuration_params)
-      else
-        OIDCConfiguration.new(context.configuration_params)
-      end
+      context.configuration = LDAPConfiguration.new(context.configuration_params)
     end
   end
 end

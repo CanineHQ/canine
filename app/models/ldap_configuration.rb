@@ -29,6 +29,8 @@ class LDAPConfiguration < ApplicationRecord
   validates :port, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :base_dn, presence: true
   validates :uid_attribute, presence: true
+  validates_presence_of :reader_dn, if: :allow_anonymous_reads?
+  validates_presence_of :reader_password, if: :allow_anonymous_reads?
 
   # Returns encryption method as symbol for Net::LDAP
   # Encryption options: plain (no encryption), simple_tls (LDAPS), start_tls (STARTTLS)

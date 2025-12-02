@@ -1,19 +1,14 @@
 <%= settings_layout do %>
   <%= turbo_frame_tag "sso_provider" do %>
     <div class="font-lg font-bold mt-4">
-      Add <%= @provider_type == "ldap" ? "LDAP" : "OIDC" %> Provider
+      Add LDAP Provider
     </div>
 
     <div class="text-sm text-gray-500 mt-2 mb-4">
-      <% if @provider_type == "ldap" %>
-        Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
-      <% else %>
-        Configure an OpenID Connect (OIDC) provider for SSO authentication. This will allow users to sign in using your organization's identity provider.
-      <% end %>
+      Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
     </div>
 
     <%= form_with model: @sso_provider, url: sso_provider_path do |form| %>
-      <%= hidden_field_tag :provider_type, @provider_type %>
       <%= render "shared/error_messages", resource: form.object %>
 
       <div class="form-control mt-4 w-full max-w-sm">
@@ -43,13 +38,9 @@
         </label>
       </div>
 
-      <div class="divider"><%= @provider_type == "ldap" ? "LDAP" : "OIDC" %> Configuration</div>
+      <div class="divider">LDAP Configuration</div>
 
-      <% if @provider_type == "ldap" %>
-        <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
-      <% else %>
-        <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
-      <% end %>
+      <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
 
       <div class="form-footer mt-6">
         <%= form.submit "Create Provider", class: "btn btn-primary" %>

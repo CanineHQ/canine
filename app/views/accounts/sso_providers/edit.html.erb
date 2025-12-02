@@ -5,7 +5,7 @@
     </div>
 
     <div class="text-sm text-gray-500 mt-2 mb-4">
-      Update your <%= @sso_provider.ldap? ? "LDAP" : "OIDC" %> provider configuration.
+      Update your LDAP provider configuration.
     </div>
 
     <%= form_with model: @sso_provider, url: sso_provider_path do |form| %>
@@ -38,13 +38,9 @@
         </label>
       </div>
 
-      <div class="divider"><%= @sso_provider.ldap? ? "LDAP" : "OIDC" %> Configuration</div>
+      <div class="divider">LDAP Configuration</div>
 
-      <% if @sso_provider.ldap? %>
-        <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
-      <% else %>
-        <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
-      <% end %>
+      <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
 
       <div class="form-footer mt-6">
         <%= form.submit "Update Provider", class: "btn btn-primary" %>

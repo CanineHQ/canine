@@ -275,10 +275,6 @@ Devise.setup do |config|
   config.omniauth :github, ENV["OMNIAUTH_GITHUB_PUBLIC_KEY"], ENV["OMNIAUTH_GITHUB_PRIVATE_KEY"], scope: "user,repo,write:packages,read:org"
   config.omniauth :developer if Rails.env.test?
 
-  # Dynamic OIDC provider
-  require Rails.root.join("lib/omniauth/strategies/dynamic_oidc")
-  config.omniauth :oidc, strategy_class: OmniAuth::Strategies::DynamicOIDC
-
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
