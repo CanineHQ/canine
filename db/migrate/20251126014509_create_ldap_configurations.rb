@@ -12,8 +12,6 @@ class CreateLDAPConfigurations < ActiveRecord::Migration[7.2]
       t.string :name_attribute, default: "cn"
       t.string :filter
       t.boolean :allow_anonymous_reads, default: false
-      t.string :reader_dn
-      t.string :reader_password
 
       t.timestamps
     end

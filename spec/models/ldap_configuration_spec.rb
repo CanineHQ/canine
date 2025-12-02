@@ -13,8 +13,6 @@
 #  host                  :string           not null
 #  name_attribute        :string           default("cn")
 #  port                  :integer          default(389), not null
-#  reader_dn             :string
-#  reader_password       :string
 #  uid_attribute         :string           default("uid"), not null
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
