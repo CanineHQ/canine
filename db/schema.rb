@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_26_014509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -346,6 +346,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.string "email_attribute", default: "mail"
     t.string "name_attribute", default: "cn"
     t.string "filter"
+    t.boolean "allow_anonymous_reads", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -390,19 +391,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
-  end
-
-  create_table "oidc_configurations", force: :cascade do |t|
-    t.string "issuer", null: false
-    t.string "client_id", null: false
-    t.string "client_secret", null: false
-    t.string "authorization_endpoint"
-    t.string "token_endpoint"
-    t.string "userinfo_endpoint"
-    t.string "jwks_uri"
-    t.string "scopes", default: "openid email profile"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "project_add_ons", force: :cascade do |t|
@@ -515,6 +503,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014503) do
     t.bigint "configuration_id", null: false
     t.string "name", null: false
     t.boolean "enabled", default: true, null: false
+    t.integer "team_provisioning_mode", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_sso_providers_on_account_id", unique: true

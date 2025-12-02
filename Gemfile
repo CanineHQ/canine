@@ -82,6 +82,7 @@ gem "pagy", "~> 9.4"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth_openid_connect", "~> 0.8"
 
 gem "annotate", "~> 3.2"
 
@@ -113,3 +114,5 @@ gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
 gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
+
+gem "net-ldap", "~> 0.20.0"

@@ -274,14 +274,17 @@ Devise.setup do |config|
   # TODO (chris): add digital ocean?
   config.omniauth :github, ENV["OMNIAUTH_GITHUB_PUBLIC_KEY"], ENV["OMNIAUTH_GITHUB_PRIVATE_KEY"], scope: "user,repo,write:packages,read:org"
   config.omniauth :developer if Rails.env.test?
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
   #
-  # config.warden do |manager|
-  #   manager.intercept_401 = false
-  #   manager.default_strategies(scope: :user).unshift :some_external_strategy
-  # end
+  # Load custom LDAP authentication strategy
+  require Rails.root.join('lib', 'devise', 'strategies', 'ldap_authenticatable')
+
+  config.warden do |manager|
+    manager.strategies.add(:ldap_authenticatable, Devise::Strategies::LDAPAuthenticatable)
+  end
 
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine

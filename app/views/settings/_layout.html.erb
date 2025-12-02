@@ -1,6 +1,6 @@
 <div class="flex flex-row gap-x-4 items-stretch">
   <div class="w-64 space-y-4">
-    <% if current_account.stack_manager.present? && current_account.stack_manager.stack.provides_authentication? %>
+    <% if (current_account.stack_manager.present? && current_account.stack_manager.stack.provides_authentication?) || current_account.sso_provider.present? %>
     <div class="rounded bg-base-200 pl-4 pr-2 py-4">
       <h3 class="text-sm font-semibold mb-3">Account Login URL</h3>
       <div class="flex items-center gap-2 mb-2">
@@ -37,6 +37,12 @@
             <%= link_to providers_path do %>
               <iconify-icon icon="lucide:key-round" ></iconify-icon>
               Credentials
+            <% end %>
+          </li>
+          <li class="<%= 'underline' if current_page?(sso_provider_path) || current_page?(new_sso_provider_path) || current_page?(edit_sso_provider_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to sso_provider_path do %>
+              <iconify-icon icon="lucide:shield-check" ></iconify-icon>
+              Authentication
             <% end %>
           </li>
           <% if Flipper.enabled?(:stack_manager, current_account) %>
