@@ -3,6 +3,47 @@ require 'devise/strategies/authenticatable'
 module Devise
   module Strategies
     class LDAPAuthenticatable < Authenticatable
+      def self.fetch_group_membership(ldap_configuration, user_dn)
+        unless ldap_configuration.reader_dn.present? && ldap_configuration.reader_password.present?
+          return []
+        end
+
+        reader_ldap = Net::LDAP.new(
+          host: ldap_configuration.host,
+          port: ldap_configuration.port,
+          encryption: ldap_configuration.encryption_method,
+          auth: {
+            method: :simple,
+            username: ldap_configuration.reader_dn,
+            password: ldap_configuration.reader_password
+          }
+        )
+
+        unless reader_ldap.bind
+          Rails.logger.warn "LDAP reader bind failed: #{reader_ldap.get_operation_result.message}"
+          return []
+        end
+
+        groups = []
+
+        # Search for groups where the user is a member
+        # Try both member (DN-based) and memberUid (username-based) attributes
+        member_filter = Net::LDAP::Filter.eq("member", user_dn)
+        member_uid_filter = Net::LDAP::Filter.eq("memberUid", user_dn.split(",").first.split("=").last)
+        group_filter = Net::LDAP::Filter.eq("objectClass", "groupOfNames") |
+                       Net::LDAP::Filter.eq("objectClass", "groupOfUniqueNames") |
+                       Net::LDAP::Filter.eq("objectClass", "posixGroup")
+
+        combined_filter = group_filter & (member_filter | member_uid_filter)
+
+        reader_ldap.search(base: ldap_configuration.base_dn, filter: combined_filter) do |entry|
+          groups << { name: entry.cn.first }
+        end
+
+        Rails.logger.info "Found #{groups.size} LDAP groups for user #{user_dn}"
+        groups
+      end
+
       def valid?
         puts "Validating ldap authenticatable"
         true
@@ -28,7 +69,7 @@ module Devise
             # LDAP authentication successful, find or create user
             email = construct_email(username, ldap_configuration)
             # Determine the groups
-            groups = get_group_information(ldap, user_dn)
+            groups = self.class.fetch_group_membership(ldap_configuration, user_dn)
             ActiveRecord::Base.transaction do
               user = User.find_or_create_by!(email: email) do |user|
                 password = SecureRandom.hex(32)
@@ -82,19 +123,6 @@ module Devise
         # Otherwise, construct email using mail_domain from config if available
         domain = ldap_config.try(:mail_domain) || ldap_config.host
         "#{username}@#{domain}"
-      end
-
-      def get_group_information(ldap, user_dn)
-        debugger
-        # ldap.search(base: "ou=Groups,dc=example,dc=org", filter: Net::LDAP::Filter.eq("memberUid", user_dn))
-        [
-          {
-            name: "developers"
-          },
-          {
-            name: "administrators"
-          }
-        ]
       end
 
       def find_or_create_account_for_ldap(ldap_config)
