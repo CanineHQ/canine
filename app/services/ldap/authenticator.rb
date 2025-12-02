@@ -198,7 +198,7 @@ module LDAP
 
     def fetch_group_membership(user_entry)
       reader_ldap = build_reader_connection
-    
+
       unless reader_ldap.bind
         if config.allow_anonymous_reads?
           logger.warn "LDAP group lookup: anonymous/reader bind failed: #{reader_ldap.get_operation_result.message}"
@@ -207,55 +207,54 @@ module LDAP
         end
         return []
       end
-    
+
       groups = []
-    
+
       # From the entry
       dn_from_entry = user_entry.dn
-    
+
       uid_attr = config.uid_attribute.presence || 'uid'
       uid_val  = Array(user_entry[uid_attr]).first
-    
+
       # This is the DN your groups seem to be using:
       #   uid=czhu,dc=example,dc=org
       dn_from_uid = if uid_val.present?
         "#{uid_attr}=#{uid_val},#{config.base_dn}"
       end
-    
+
       member_filters = []
-    
+
       # Try DN from entry (cn=... case)
       member_filters << Net::LDAP::Filter.eq('member', dn_from_entry) if dn_from_entry.present?
-    
+
       # Try DN built from uid (uid=... case – this is the one that works for you)
       member_filters << Net::LDAP::Filter.eq('member', dn_from_uid) if dn_from_uid.present?
-    
+
       # Try memberUid=uid (posixGroup style)
       member_filters << Net::LDAP::Filter.eq('memberUid', uid_val) if uid_val.present?
-    
+
       # If for some reason we have no filters, bail out
       return [] if member_filters.empty?
-    
+
       member_filter = member_filters.reduce do |memo, f|
         memo | f
       end
-    
+
       group_filter  = Net::LDAP::Filter.eq('objectClass', 'groupOfNames') |
                       Net::LDAP::Filter.eq('objectClass', 'groupOfUniqueNames') |
                       Net::LDAP::Filter.eq('objectClass', 'posixGroup')
-    
+
       combined_filter = group_filter & member_filter
-    
+
       reader_ldap.search(base: config.base_dn, filter: combined_filter) do |entry|
         groups << { name: entry.cn.first }
       end
-    
+
       logger.info "Found #{groups.size} LDAP groups for user #{dn_from_entry}"
       groups
     rescue => e
       logger.error "LDAP group lookup error for #{dn_from_entry}: #{e.class}: #{e.message}"
       []
     end
-
   end
 end

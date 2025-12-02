@@ -29,7 +29,7 @@ class SSOProvider < ApplicationRecord
 
   enum :team_provisioning_mode, {
     disabled: 0,
-    just_in_time: 1,
+    just_in_time: 1
     # scim: 2
   }
 

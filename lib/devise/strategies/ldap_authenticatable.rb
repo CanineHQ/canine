@@ -8,16 +8,16 @@ module Devise
         # basic shape check
         user_params = params[:user]
         return false unless user_params.is_a?(ActionController::Parameters) || user_params.is_a?(Hash)
-      
+
         username = user_params[:username].presence
         password = user_params[:password].presence
-      
+
         return false if username.blank? || password.blank?
-      
+
         # make sure this slug maps to an LDAP-enabled account
         begin
           account = Account.friendly.find(params[:slug])
-      
+
           return false unless account&.sso_enabled?
           sso_provider = account.sso_provider
           return false unless sso_provider&.ldap?
@@ -25,7 +25,7 @@ module Devise
           # bad slug → this strategy is not applicable
           return false
         end
-      
+
         true
       end
 
