@@ -20,7 +20,7 @@ class Portainer::Stack
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
     else
-      raise "No access token found for user or stack manager. Please check your configuration."
+      raise Portainer::Client::MissingCredentialError, "Please add your Portainer API token in the Credentials settings."
     end
   end
 
@@ -42,7 +42,7 @@ class Portainer::Stack
   end
 
   def provides_authentication?
-    true
+    false
   end
 
   def provides_registries?

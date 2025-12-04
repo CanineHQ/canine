@@ -1,6 +1,7 @@
 <%= settings_layout do %>
   <h2 class="text-2xl font-bold">Credentials</h2>
   <hr class="mt-3 mb-4 border-t border-base-300" />
+
   <%= turbo_frame_tag "provider" do %>
     <%= render "providers/index" %>
     <div class="flex items-center gap-2">
@@ -15,5 +16,10 @@
         <% end %>
       <% end %>
     </div>
+  <% end %>
+
+  <% if current_account.stack_manager&.portainer? && current_account.stack_manager.enable_role_based_access_control? %>
+    <hr class="my-6 border-t border-base-300" />
+    <%= render "providers/portainer_token" %>
   <% end %>
 <% end %>

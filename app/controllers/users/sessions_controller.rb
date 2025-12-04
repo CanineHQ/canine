@@ -41,9 +41,7 @@ class Users::SessionsController < Devise::SessionsController
     self.resource = resource_class.new(sign_in_params)
     clean_up_passwords(resource)
     @sso_provider = @account.sso_provider if @account.sso_enabled?
-    if @account.stack_manager&.portainer?
-      render "devise/sessions/portainer"
-    elsif @account.sso_provider&.ldap?
+    if @account.sso_provider&.ldap?
       render "devise/sessions/ldap"
     else
       render :new
@@ -65,26 +63,6 @@ class Users::SessionsController < Devise::SessionsController
         self.resource = resource_class.new(sign_in_params)
         clean_up_passwords(self.resource)
         render "devise/sessions/ldap"
-      end
-    # If account has a stack manager, use Portainer authentication
-    elsif @account.stack_manager.present?
-      result = Portainer::Login.execute(
-        username: params[:user][:username],
-        password: params[:user][:password],
-        account: @account,
-      )
-
-      if result.success?
-        sign_in(result.user)
-        # Auto-associate user with account if they sign in through account URL
-        session[:account_id] = result.account.id
-
-        redirect_to after_sign_in_path_for(result.user), notice: "Logged in successfully"
-      else
-        flash[:alert] = result.message
-        self.resource = result.user || resource_class.new(sign_in_params)
-        clean_up_passwords(resource)
-        render 'devise/sessions/portainer'
       end
     else
       redirect_to new_user_session_path

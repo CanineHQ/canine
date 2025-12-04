@@ -56,6 +56,12 @@ class User < ApplicationRecord
     @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
   end
 
+  def needs_portainer_credential?(account)
+    account.stack_manager&.portainer? &&
+      account.stack_manager.enable_role_based_access_control? &&
+      portainer_jwt.blank?
+  end
+
   private
 
   def downcase_email

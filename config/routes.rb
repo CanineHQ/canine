@@ -34,8 +34,8 @@ Rails.application.routes.draw do
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url
-      post :verify_login
       post :check_reachable
+      post :verify_connectivity
       post :sync_clusters
       post :sync_registries
     end
@@ -74,6 +74,7 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
   resources :projects do
     member do
       post :restart
