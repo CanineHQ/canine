@@ -6,6 +6,12 @@
         <%= link_to "Sign up", new_user_registration_path, class: "underline" %> instead
       </div>
 
+      <% if @account&.stack_manager&.portainer? %>
+        <div class="flex justify-center mt-2">
+          <%= render "devise/sessions/portainer_badge", stack_manager: @account.stack_manager, logged_in: false %>
+        </div>
+      <% end %>
+
       <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
         <% if flash[:alert] %>
           <div class="alert alert-error mb-4">

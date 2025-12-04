@@ -23,14 +23,13 @@
 #
 class SSOProvider < ApplicationRecord
   belongs_to :account
-  belongs_to :configuration, polymorphic: true
+  belongs_to :configuration, polymorphic: true, dependent: :destroy
 
   validates :account_id, uniqueness: true
 
   enum :team_provisioning_mode, {
     disabled: 0,
     just_in_time: 1
-    # scim: 2
   }
 
 
