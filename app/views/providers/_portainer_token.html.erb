@@ -32,17 +32,7 @@
           </span>
         </label>
       </div>
-      <div class="flex gap-2">
-        <%= f.submit current_user.portainer_jwt.present? ? "Update Token" : "Save Token", class: "btn btn-primary" %>
-        <% if current_user.portainer_jwt.present? %>
-          <%= button_to portainer_token_path,
-              method: :delete,
-              class: "btn btn-outline btn-error",
-              data: { turbo_confirm: "Are you sure you want to remove your Portainer Access token?" } do %>
-            Remove Token
-          <% end %>
-        <% end %>
-      </div>
+      <%= f.submit current_user.portainer_jwt.present? ? "Update Token" : "Save Token", class: "btn btn-primary" %>
     <% end %>
   </div>
 <% end %>
