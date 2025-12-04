@@ -3,7 +3,7 @@
   data-controller="stack-manager--badge"
   data-stack-manager--badge-verify-url-value="<%= stack_manager.provider_url %>"
   data-stack-manager--badge-credentials-path-value="<%= providers_path %>"
-  data-stack-manager--badge-rbac-enabled-value="<%= stack_manager.enable_role_based_access_control? %>"
+  data-stack-manager--badge-rbac-enabled-value="<%= stack_manager.enable_role_based_access_control? && logged_in %>"
 >
   <div class="flex items-center justify-between">
     <%= link_to stack_manager.provider_url, target: "_blank", rel: "noopener", class: "group/badge inline-flex" do %>
