@@ -6,9 +6,9 @@
     </p>
 
     <% if current_user.portainer_jwt.present? %>
-      <div class="alert alert-success mb-4">
-        <iconify-icon icon="lucide:check-circle" height="20"></iconify-icon>
-        <span>Access token configured.</span>
+      <div class="flex items-center gap-2 text-sm text-success mb-4">
+        <iconify-icon icon="lucide:check-circle" height="16"></iconify-icon>
+        <span>Access token configured</span>
       </div>
     <% else %>
       <div class="alert alert-warning mb-4">
@@ -17,7 +17,7 @@
       </div>
     <% end %>
 
-    <%= form_with url: portainer_token_path, method: :patch, class: "space-y-4", data: { turbo_frame: "portainer_token" } do |f| %>
+    <%= form_with url: portainer_token_path, method: :patch, class: "space-y-4", data: { turbo: false } do |f| %>
       <div class="form-control w-full max-w-md">
         <label class="label">
           <span class="label-text">Token</span>
