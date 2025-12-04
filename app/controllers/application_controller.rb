@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   layout :determine_layout
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
 
   protected
     def current_account
@@ -51,5 +52,9 @@ class ApplicationController < ActionController::Base
     def record_not_found
       flash[:alert] = "The requested resource could not be found."
       redirect_to root_path
+    end
+
+    def missing_portainer_credential
+      redirect_to providers_path, alert: "Please add your Portainer API token to continue."
     end
 end

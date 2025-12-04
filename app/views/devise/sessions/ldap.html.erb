@@ -1,9 +1,16 @@
 <div class="flex justify-center items-center min-h-screen bg-base-200">
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
-      <p class="text-center text-sm text-gray-500 mt-2">
+      <h1 class="text-2xl font-bold text-center">Sign in</h1>
+      <div class="text-center text-sm">
         Sign in to access your account
-      </p>
+      </div>
+
+      <% if @account.stack_manager&.portainer? %>
+        <div class="flex justify-center mt-2">
+          <%= render "devise/sessions/portainer_badge", stack_manager: @account.stack_manager, logged_in: false %>
+        </div>
+      <% end %>
 
       <%= form_with(
         model: resource,

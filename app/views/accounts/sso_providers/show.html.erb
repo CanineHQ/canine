@@ -26,21 +26,21 @@
 
           <% if @configuration %>
             <div class="divider"></div>
-            <div class="grid grid-cols-2 gap-4 text-sm">
+            <div class="grid grid-cols-2 gap-4">
               <div>
-                <span class="text-gray-500">Host:</span>
+                <div class="text-sm font-medium text-base-content/70 mb-1">Host</div>
                 <div class="font-mono"><%= @configuration.host %>:<%= @configuration.port %></div>
               </div>
               <div>
-                <span class="text-gray-500">Base DN:</span>
+                <div class="text-sm font-medium text-base-content/70 mb-1">Base DN</div>
                 <div class="font-mono"><%= @configuration.base_dn %></div>
               </div>
               <div>
-                <span class="text-gray-500">UID Attribute:</span>
+                <div class="text-sm font-medium text-base-content/70 mb-1">UID Attribute</div>
                 <div class="font-mono"><%= @configuration.uid_attribute %></div>
               </div>
               <div>
-                <span class="text-gray-500">Encryption:</span>
+                <div class="text-sm font-medium text-base-content/70 mb-1">Encryption</div>
                 <div class="font-mono"><%= @configuration.encryption.titleize %></div>
               </div>
             </div>

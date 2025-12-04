@@ -9,8 +9,7 @@
     <div class="flex items-center justify-center">
       <%= render "devise/sessions/portainer_badge",
                  stack_manager: current_account.stack_manager,
-                 verification_method: "authentication",
-                 logout_on_unauthorized: true %>
+                 logged_in: true %>
     </div>
   <% end %>
   <div class="flex items-center justify-center">
