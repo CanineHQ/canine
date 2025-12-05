@@ -1,10 +1,9 @@
 class Users::SessionsController < Devise::SessionsController
-  layout 'homepage', only: [ :new, :create, :account_login, :account_create, :account_select ]
-  before_action :require_no_authentication, only: [ :account_login, :account_select ]
+  layout 'homepage', only: [ :new, :create, :account_login, :account_create ]
+  before_action :require_no_authentication, only: [ :account_login ]
   before_action :load_account_from_slug, only: [ :account_login, :account_create ]
 
   before_action :check_if_default_sign_in_allowed, only: [ :new ]
-  before_action :check_if_account_select_allowed, only: [ :account_select ]
 
   def new
     super
@@ -31,10 +30,6 @@ class Users::SessionsController < Devise::SessionsController
       end
       return
     end
-  end
-
-  def account_select
-    @accounts = Account.all.includes(:stack_manager)
   end
 
   def account_login
@@ -73,13 +68,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def check_if_default_sign_in_allowed
     if Rails.application.config.account_sign_in_only
-      redirect_to accounts_select_url
-    end
-  end
-
-  def check_if_account_select_allowed
-    unless Rails.application.config.account_sign_in_only
-      redirect_to new_user_session_path
+      redirect_to account_select_local_onboarding_index_path
     end
   end
 
