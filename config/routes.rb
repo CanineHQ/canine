@@ -1,9 +1,6 @@
 Rails.application.routes.draw do
   # Account-specific URL-based routes
   devise_scope :user do
-    if Rails.application.config.local_mode
-      get '/accounts/select', to: 'users/sessions#account_select'
-    end
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end
@@ -160,12 +157,16 @@ Rails.application.routes.draw do
           post :login
         end
       end
-      resources :onboarding, only: [ :index, :create ]
+      resources :onboarding, only: [ :index, :create ] do
+        collection do
+          get :account_select
+        end
+      end
     end
     if Rails.application.config.onboarding_methods.any?
       root to: "local/onboarding#index"
     else
-      root to: "projects#index"
+      root to: "local/onboarding#account_select"
     end
   else
     root to: "static#index"

@@ -5,6 +5,12 @@ class Local::OnboardingController < ApplicationController
   def index
   end
 
+  def account_select
+    redirect_to new_user_session_path unless Rails.application.config.account_sign_in_only
+
+    @accounts = Account.all.includes(:stack_manager)
+  end
+
   def create
     result = Portainer::Onboarding::Create.call(params)
 
