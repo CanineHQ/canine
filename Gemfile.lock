@@ -630,17 +630,7 @@ GEM
       faraday-follow_redirects
     sys-proctable (1.3.0)
       ffi (~> 1.1)
-    tailwindcss-rails (2.7.6)
-      railties (>= 7.0.0)
-    tailwindcss-rails (2.7.6-aarch64-linux)
-      railties (>= 7.0.0)
-    tailwindcss-rails (2.7.6-arm-linux)
-      railties (>= 7.0.0)
-    tailwindcss-rails (2.7.6-arm64-darwin)
-      railties (>= 7.0.0)
-    tailwindcss-rails (2.7.6-x86_64-darwin)
-      railties (>= 7.0.0)
-    tailwindcss-rails (2.7.6-x86_64-linux)
+    tailwindcss-rails (4.3.0)
       railties (>= 7.0.0)
     thor (1.4.0)
     tilt (2.4.0)
@@ -759,7 +749,7 @@ DEPENDENCIES
   sprockets-rails
   stimulus-rails
   sys-proctable (~> 1.3)
-  tailwindcss-rails (~> 2.7)
+  tailwindcss-rails (~> 4.3)
   turbo-rails
   tzinfo-data
   web-console
