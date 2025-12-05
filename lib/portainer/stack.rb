@@ -16,7 +16,7 @@ class Portainer::Stack
     if !stack_manager.enable_role_based_access_control && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
     elsif user.present? && user.portainer_jwt.present?
-      Portainer::Client::UserJWT.new(user.portainer_jwt)
+      Portainer::Client::AccessToken.new(user.portainer_jwt)
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
     else
