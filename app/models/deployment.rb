@@ -27,10 +27,7 @@ class Deployment < ApplicationRecord
   end
 
   def add_manifest(yaml)
-    manifest = YAML.safe_load(yaml)
-    kind = manifest["kind"]&.downcase
-    name = manifest.dig("metadata", "name")
-    manifest_key = "#{kind}/#{name}"
+    manifest_key = K8::Base.manifest_key(yaml)
 
     self.manifests ||= {}
     self.manifests[manifest_key] = yaml
