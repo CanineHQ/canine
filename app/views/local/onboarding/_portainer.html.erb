@@ -17,34 +17,26 @@
     <% end %>
 
     <%= render(FormFieldComponent.new(
-      label: "Portainer Configuration",
-      description: "The command to run to start the container."
-    )) do %>
-      <%= render "accounts/stack_managers/url", form: form %>
-    <% end %>
-
-    <%= render(FormFieldComponent.new(
-      label: "Portainer Credentials",
-      description: "We'll create the first user in this organization by connecting to your Portainer instance with your credentials."
+      label: "Admin User",
+      description: "Create the first admin user for this account."
     )) do %>
       <div class="form-group">
-        <%= form.label :username, "Portainer Username" %>
-        <%= form.text_field(
-          :username,
-          placeholder: "Enter your username",
-          name: "user[username]",
+        <%= form.label :email, "Email" %>
+        <%= form.email_field(
+          :email,
+          placeholder: "admin@example.com",
+          name: "user[email]",
           class: "input input-bordered w-full",
           required: true,
         ) %>
       </div>
       <div class="form-group" data-controller="toggle-password">
-        <%= form.label :password, "Portainer Password" %>
+        <%= form.label :password, "Password" %>
         <div class="flex items-center">
-          <%= form.text_field(
+          <%= form.password_field(
             :password,
             placeholder: "Enter your password",
             name: "user[password]",
-            type: "password",
             class: "input input-bordered w-full",
             required: true,
             data: { toggle_password_target: "input" },
@@ -55,6 +47,38 @@
         </div>
       </div>
     <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Portainer Configuration",
+      description: "Configure your Portainer instance URL and access token."
+    )) do %>
+      <%= render "accounts/stack_managers/url", form: form %>
+
+      <div data-controller="expandable-optional-input">
+        <div>
+          <a data-action="expandable-optional-input#show" class="btn btn-ghost">
+            + Add personal access token
+          </a>
+        </div>
+        <div data-expandable-optional-input-target="container">
+          <div class="form-group">
+            <%= form.label :personal_access_token, "Personal Access Token" %>
+            <%= form.text_field(
+              :personal_access_token,
+              name: "user[personal_access_token]",
+              placeholder: "Enter your personal access token",
+              class: "input input-bordered w-full",
+            ) %>
+            <div class="label">
+              <span class="label-text-alt text-gray-500">
+                If not provided, the account's access token will be used for your Portainer access.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary" %>
     </div>
