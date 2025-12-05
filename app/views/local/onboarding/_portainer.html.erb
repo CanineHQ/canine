@@ -18,7 +18,7 @@
 
     <%= render(FormFieldComponent.new(
       label: "Admin User",
-      description: "Create the first admin user for this account."
+      description: "Create the first admin user for this account. (You can configure SSO later.)"
     )) do %>
       <div class="form-group">
         <%= form.label :email, "Email" %>
@@ -59,6 +59,7 @@
           <a data-action="expandable-optional-input#show" class="btn btn-ghost">
             + Add personal access token
           </a>
+          <span>Hello world</span>
         </div>
         <div data-expandable-optional-input-target="container">
           <div class="form-group">

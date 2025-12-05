@@ -19,9 +19,7 @@ services:
       - "postgres:/var/lib/postgresql/data"
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/caninehq/canine:latest
     # Overrides default command so things don't shut down after the process ends.
     # command: sleep infinity
     depends_on:
@@ -39,9 +37,7 @@ services:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/caninehq/canine:latest
     command: bundle exec good_job start
     depends_on:
       - postgres
