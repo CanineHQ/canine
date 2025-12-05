@@ -8,7 +8,7 @@ x-shared-env: &shared-env
 
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-bookworm@sha256:878977a5fe8d75ba7eab7610e4cf7e0c8626a683d89b3f9da965b8ceba952a09
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -17,13 +17,11 @@ services:
       - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data"
-    networks:
-      - default
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/caninehq/canine:latest
+    # Overrides default command so things don't shut down after the process ends.
+    # command: sleep infinity
     depends_on:
       - postgres
     stdin_open: true
@@ -37,14 +35,9 @@ services:
       ACCOUNT_SIGN_IN_ONLY: "true"
     volumes:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
-    networks:
-      - default
-      - portainer_network
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/caninehq/canine:latest
     command: bundle exec good_job start
     depends_on:
       - postgres
@@ -53,18 +46,11 @@ services:
       LOCAL_MODE: "true"
     volumes:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
-    networks:
-      - default
-      - portainer_network
 
 volumes:
   postgres:
 
 networks:
-  # default local network for this compose file
   default:
-    name: canine_default   # optional; can omit to let compose auto-name
-  # external network created elsewhere
-  portainer_network:
+    name: portainer_network
     external: true
-
