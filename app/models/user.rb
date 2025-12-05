@@ -51,15 +51,15 @@ class User < ApplicationRecord
     providers.find_by(provider: "github")
   end
 
-  def portainer_jwt
-    return @portainer_jwt if @portainer_jwt
-    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
+  def portainer_access_token
+    return @portainer_access_token if @portainer_access_token
+    @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
   end
 
   def needs_portainer_credential?(account)
     account.stack_manager&.portainer? &&
       account.stack_manager.enable_role_based_access_control? &&
-      portainer_jwt.blank?
+      portainer_access_token.blank?
   end
 
   private

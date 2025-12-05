@@ -15,8 +15,8 @@ module Providers
       provider.access_token = token
       provider.save!
 
-      # Clear the cached portainer_jwt on the user
-      current_user.instance_variable_set(:@portainer_jwt, nil)
+      # Clear the cached portainer_access_token on the user
+      current_user.instance_variable_set(:@portainer_access_token, nil)
 
       redirect_to providers_path, notice: "Portainer API token saved successfully"
     end
@@ -25,7 +25,7 @@ module Providers
       provider = current_user.providers.find_by(provider: Provider::PORTAINER_PROVIDER)
 
       if provider&.destroy
-        current_user.instance_variable_set(:@portainer_jwt, nil)
+        current_user.instance_variable_set(:@portainer_access_token, nil)
         redirect_to providers_path, notice: "Portainer API token removed"
       else
         redirect_to providers_path, alert: "No Portainer API token found"

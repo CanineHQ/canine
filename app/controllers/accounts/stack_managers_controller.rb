@@ -22,7 +22,7 @@ module Accounts
         return
       end
 
-      if current_user.portainer_jwt.blank?
+      if current_user.portainer_access_token.blank?
         head :unauthorized
         return
       end

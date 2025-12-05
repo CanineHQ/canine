@@ -5,7 +5,7 @@
       This account is configured to use Portainer for cluster management.
     </p>
 
-    <% if current_user.portainer_jwt.present? %>
+    <% if current_user.portainer_access_token.present? %>
       <div class="flex items-center gap-2 text-sm text-success mb-4">
         <iconify-icon icon="lucide:check-circle" height="16"></iconify-icon>
         <span>Access token configured</span>
@@ -24,7 +24,7 @@
         </label>
         <%= f.text_field :portainer_token,
             value: "",
-            placeholder: current_user.portainer_jwt.present? ? "••••••••••••••••" : "Enter your Portainer Access token",
+            placeholder: current_user.portainer_access_token.present? ? "••••••••••••••••" : "Enter your Portainer Access token",
             class: "input input-bordered w-full" %>
         <label class="label flex justify-between" for="portainer_token">
           <span class="label-text-alt">
@@ -32,7 +32,7 @@
           </span>
         </label>
       </div>
-      <%= f.submit current_user.portainer_jwt.present? ? "Update Token" : "Save Token", class: "btn btn-primary" %>
+      <%= f.submit current_user.portainer_access_token.present? ? "Update Token" : "Save Token", class: "btn btn-primary" %>
     <% end %>
   </div>
 <% end %>
