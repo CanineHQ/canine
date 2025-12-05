@@ -8,7 +8,7 @@ x-shared-env: &shared-env
 
 services:
   postgres:
-    image: postgres:16-bookworm
+    image: postgres:16-bookworm@sha256:878977a5fe8d75ba7eab7610e4cf7e0c8626a683d89b3f9da965b8ceba952a09
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
