@@ -5,9 +5,11 @@ class Portainer::SyncRegistries
 
   executed do |context|
     clusters = context.stack_manager.account.clusters
-    context.stack_manager.stack.connect(context.user).sync_registries(
-      context.user,
-      clusters.first
-    )
+    if clusters.any?
+      context.stack_manager.stack.connect(context.user).sync_registries(
+        context.user,
+        clusters.first
+      )
+    end
   end
 end
