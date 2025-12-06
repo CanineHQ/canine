@@ -22,7 +22,7 @@ module Portainer
 
     def initialize(provider_url, jwt)
       @jwt = jwt
-      @provider_url = provider_url
+      @provider_url = provider_url.chomp("/")
     end
 
     def self.reachable?(provider_url)
