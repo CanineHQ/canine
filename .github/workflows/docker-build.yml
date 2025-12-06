@@ -2,9 +2,7 @@ name: Docker Build and Push
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main, chriszhu__build_docker_on_branch ]
   workflow_dispatch:
 
 jobs:
