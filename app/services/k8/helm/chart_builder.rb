@@ -5,6 +5,11 @@ class K8::Helm::ChartBuilder < K8::Base
     @chart_name = chart_name
     @logger = logger
     @resources = []
+    @before_install_callbacks = []
+  end
+
+  def register_before_install(&block)
+    @before_install_callbacks << block
   end
 
   def connect(connection)
@@ -18,11 +23,11 @@ class K8::Helm::ChartBuilder < K8::Base
 
   def chart_yaml
     <<-YAML
-    apiVersion: v2
-    name: <%= chart_name %>
-    version: 1.0.0
-    type: application
-    appVersion: "1.0.0"
+apiVersion: v2
+name: #{chart_name}
+version: 1.0.0
+type: application
+appVersion: "1.0.0"
     YAML
   end
 
@@ -36,12 +41,18 @@ class K8::Helm::ChartBuilder < K8::Base
       File.write(File.join(chart_directory, "Chart.yaml"), chart_yaml)
 
       resources.each do |resource|
+        yaml_content = resource.to_yaml
+        @before_install_callbacks.each { |callback| callback.call(yaml_content) }
         logger.info("Writing template #{resource.suggested_file_name}...")
-        File.write(File.join(chart_directory, "templates", resource.suggested_file_name), resource.to_yaml)
+        File.write(File.join(chart_directory, "templates", resource.suggested_file_name), yaml_content)
       end
 
       logger.info("Installing chart #{chart_name} in namespace #{namespace}...")
-      client.install(chart_name, chart_directory, namespace: namespace)
+      client.install(
+        chart_name,
+        chart_directory,
+        namespace: namespace,
+      )
     end
   end
 end

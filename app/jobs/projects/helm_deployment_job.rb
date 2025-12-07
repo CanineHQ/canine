@@ -3,26 +3,36 @@ class Projects::HelmDeploymentJob < ApplicationJob
   def perform(deployment, user)
     project = deployment.project
     connection = K8::Connection.new(project, user, allow_anonymous: true)
+    @kubectl = K8::Kubectl.new(connection)
+
     chart_builder = K8::Helm::ChartBuilder.new(
       project.name,
       deployment,
-    ).connect(
-      K8::Connection.new(project, user, allow_anonymous: true)
-    )
+    ).connect(connection)
+    chart_builder.register_before_install do |yaml_content|
+      deployment.add_manifest(yaml_content)
+    end
 
-    #chart_builder << apply_namespace(project)
+    apply_namespace(project) if project.managed_namespace?
     chart_builder << upload_registry_secrets(deployment)
     chart_builder << apply_config_map(project)
     chart_builder << apply_secrets(project)
 
     deploy_volumes(project, chart_builder)
-    #chart_builder << predeploy(project, connection)
+    predeploy(project, connection)
     deploy_services(project, chart_builder)
     chart_builder.install_chart(project.name)
+    kill_one_off_containers(project)
+    postdeploy(project, connection)
+
+    mark_services_healthy(project)
+    deployment.completed!
+    project.deployed!
   end
 
   def apply_namespace(project)
-    K8::Namespace.new(project)
+    namespace_yaml = K8::Namespace.new(project).to_yaml
+    @kubectl.apply_yaml(namespace_yaml)
   end
 
   def upload_registry_secrets(deployment)
@@ -73,5 +83,32 @@ class Projects::HelmDeploymentJob < ApplicationJob
         chart_builder << apply_ingress(service)
       end
     end
+  end
+
+  def mark_services_healthy(project)
+    project.services.each(&:healthy!)
+  end
+
+  def kill_one_off_containers(project)
+    @kubectl.call("-n #{project.namespace} delete pods -l oneoff=true")
+  end
+
+  def predeploy(project, connection)
+    return unless project.predeploy_command.present?
+
+    run_command(project.predeploy_command, project, "predeploy", connection)
+  end
+
+  def postdeploy(project, connection)
+    return unless project.postdeploy_command.present?
+
+    run_command(project.postdeploy_command, project, "postdeploy", connection)
+  end
+
+  def run_command(command, project, type, connection)
+    command_job = K8::Stateless::Command.new(project, type, command).connect(connection)
+    command_job.delete_if_exists!
+    @kubectl.apply_yaml(command_job.to_yaml)
+    command_job.wait_for_completion
   end
 end

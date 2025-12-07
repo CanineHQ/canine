@@ -78,7 +78,17 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
-  def install(name, chart_url, values: {}, namespace: 'default', dry_run: false)
+  def install(
+    name,
+    chart_url,
+    values: {},
+    namespace: 'default',
+    dry_run: false,
+    atomic: false,
+    wait: false,
+    history_max: nil,
+    timeout: DEFAULT_TIMEOUT
+  )
     return StandardError.new("Can't install helm chart if not connected") unless connected?
 
     with_kube_config do |kubeconfig_file|
@@ -88,7 +98,18 @@ class K8::Helm::Client
         values_file.write(values.to_yaml)
         values_file.flush
 
-        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace} --timeout=#{DEFAULT_TIMEOUT} #{dry_run ? '--dry-run' : ''}"
+        command_parts = [
+          "helm upgrade --install #{name} #{chart_url}",
+          "-f #{values_file.path}",
+          "--namespace #{namespace}",
+          "--timeout=#{timeout}"
+        ]
+        command_parts << "--dry-run" if dry_run
+        command_parts << "--atomic" if atomic
+        command_parts << "--wait" if wait
+        command_parts << "--history-max=#{history_max}" if history_max
+
+        command = command_parts.join(" ")
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status
