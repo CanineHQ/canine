@@ -1,0 +1,11 @@
+<div role="tablist" class="tabs tabs-bordered" data-turbo-tabs-target="tabs">
+  <%= link_to team_path(team, tab: 'clusters'), class: "tab #{'tab-active' if tab == 'clusters'}" do %>
+    Clusters
+  <% end %>
+  <%= link_to team_path(team, tab: 'projects'), class: "tab #{'tab-active' if tab == 'projects'}" do %>
+    Projects
+  <% end %>
+  <%= link_to team_path(team, tab: 'addons'), class: "tab #{'tab-active' if tab == 'addons'}" do %>
+    Add-ons
+  <% end %>
+</div>

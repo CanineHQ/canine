@@ -4,6 +4,10 @@ class Clusters::CreateNamespace
   expects :kubectl
 
   executed do |context|
-    context.kubectl.apply_yaml(K8::Namespace.new(Struct.new(:name).new(Clusters::Install::DEFAULT_NAMESPACE)).to_yaml)
+    context.kubectl.apply_yaml(
+      K8::Namespace.new(
+        Struct.new(:namespace).new(Clusters::Install::DEFAULT_NAMESPACE)
+      ).to_yaml
+    )
   end
 end

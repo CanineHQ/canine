@@ -33,6 +33,8 @@ class User < ApplicationRecord
   has_many :account_users, dependent: :destroy
   has_many :accounts, through: :account_users, dependent: :destroy
   has_many :owned_accounts, class_name: "Account", foreign_key: "owner_id", dependent: :destroy
+  has_many :team_memberships, dependent: :destroy
+  has_many :teams, through: :team_memberships
 
   has_many :providers, dependent: :destroy
   has_many :clusters, through: :accounts
@@ -49,9 +51,15 @@ class User < ApplicationRecord
     providers.find_by(provider: "github")
   end
 
-  def portainer_jwt
-    return @portainer_jwt if @portainer_jwt
-    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
+  def portainer_access_token
+    return @portainer_access_token if @portainer_access_token
+    @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
+  end
+
+  def needs_portainer_credential?(account)
+    account.stack_manager&.portainer? &&
+      account.stack_manager.enable_role_based_access_control? &&
+      portainer_access_token.blank?
   end
 
   private

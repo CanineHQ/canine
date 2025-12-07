@@ -1,0 +1,14 @@
+<%
+  badge_color = if status == :succeeded
+    "success"
+  elsif status == :failed
+    "error"
+  elsif status == :running
+    "info"
+  else
+    "warning"
+  end
+%>
+<div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+  <%= status.to_s.humanize %>
+</div>

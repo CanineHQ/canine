@@ -1,0 +1,51 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "sso_provider" do %>
+    <div class="font-lg font-bold mt-4">
+      Edit <%= @sso_provider.name %>
+    </div>
+
+    <div class="text-sm text-gray-500 mt-2 mb-4">
+      Update your LDAP provider configuration.
+    </div>
+
+    <%= form_with model: @sso_provider, url: sso_provider_path do |form| %>
+      <%= render "shared/error_messages", resource: form.object %>
+
+      <div class="form-control mt-4 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Provider Name</span>
+        </label>
+        <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "e.g., Company SSO" %>
+        <label class="label">
+          <span class="label-text-alt">A friendly name for this SSO provider</span>
+        </label>
+      </div>
+
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label cursor-pointer justify-start gap-2">
+          <%= form.check_box :enabled, class: "checkbox checkbox-primary" %>
+          <span class="label-text">Enable this provider</span>
+        </label>
+      </div>
+
+      <div class="form-control mt-4 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Team Provisioning Mode</span>
+        </label>
+        <%= form.select :team_provisioning_mode, SSOProvider.team_provisioning_modes.keys.map { |k| [k.titleize, k] }, {}, class: "select select-bordered" %>
+        <label class="label">
+          <span class="label-text-alt">How teams are provisioned for SSO users</span>
+        </label>
+      </div>
+
+      <div class="divider">LDAP Configuration</div>
+
+      <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
+
+      <div class="form-footer mt-6">
+        <%= form.submit "Update Provider", class: "btn btn-primary" %>
+        <%= link_to "Cancel", sso_provider_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

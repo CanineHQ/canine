@@ -11,7 +11,7 @@
   </div>
 
   <div class="form-group">
-    <%= form.label :access_token, "Access Token" %>
+    <%= form.label :access_token, "Account Access Token" %>
     <%= form.text_field(
       :access_token,
       name: "stack_manager[access_token]",
@@ -20,9 +20,12 @@
       required: true,
       data: { "stack-manager--url-input-target": "accessTokenInput", action: "blur->stack-manager--url-input#verifyUrl" },
     ) %>
-    <div class="hidden" data-stack-manager--url-input-target="accessTokenHelp">
-      <label class="label flex justify-between" for="access_token">
+    <div>
+      <label class="label" style="display: flex" for="access_token">
         <span class="label-text-alt">
+          This access token is used for all members of the account, to perform asynchronous Git deployments.
+        </span>
+        <span class="label-text-alt" class="hidden" data-stack-manager--url-input-target="accessTokenHelp">
           <a class="link link-primary" target="_blank" href="#">Get your access token in Portainer →</a>
         </span>
       </label>

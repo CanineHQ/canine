@@ -4,7 +4,13 @@ class AddOnsController < ApplicationController
 
   # GET /add_ons
   def index
-    @pagy, @add_ons = pagy(current_account.add_ons)
+    add_ons = AddOns::List.call(account_user: current_account_user, params: params).add_ons
+    @pagy, @add_ons = pagy(add_ons)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @add_ons.map { |a| { id: a.id, name: a.name } } }
+    end
 
     # Uncomment to authorize with Pundit
     # authorize @add_ons
@@ -39,7 +45,8 @@ class AddOnsController < ApplicationController
 
   # POST /add_ons or /add_ons.json
   def create
-    result = AddOns::Create.execute(add_on: AddOn.new(add_on_params))
+    add_on_params = AddOns::Create.parse_params(params)
+    result = AddOns::Create.call(AddOn.new(add_on_params), current_user)
     @add_on = result.add_on
     # Uncomment to authorize with Pundit
     # authorize @add_on
@@ -58,7 +65,7 @@ class AddOnsController < ApplicationController
 
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
-    @add_on.assign_attributes(add_on_params)
+    @add_on.assign_attributes(AddOns::Create.parse_params(params))
     result = AddOns::Update.execute(add_on: @add_on)
 
     respond_to do |format|
@@ -118,30 +125,10 @@ class AddOnsController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
-    @add_on = current_account.add_ons.find(params[:id])
+    add_ons = AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons
+    @add_on = add_ons.find(params[:id])
     @service = K8::Helm::Service.create_from_add_on(K8::Connection.new(@add_on, current_user))
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path
-  end
-
-  # Only allow a list of trusted parameters through.
-  def add_on_params
-    if params[:add_on][:values_yaml].present?
-      params[:add_on][:values] = YAML.safe_load(params[:add_on][:values_yaml])
-    end
-    if params[:add_on][:metadata].present?
-      params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
-    end
-    params.require(:add_on).permit(
-      :cluster_id,
-      :chart_type,
-      :chart_url,
-      :name,
-      metadata: {},
-      values: {}
-    )
-
-    # Uncomment to use Pundit permitted attributes
-    # params.require(:add_on).permit(policy(@add_on).permitted_attributes)
   end
 end

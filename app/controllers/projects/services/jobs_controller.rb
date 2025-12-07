@@ -5,11 +5,20 @@ class Projects::Services::JobsController < Projects::Services::BaseController
   def create
     timestamp = Time.current.strftime('%Y%m%d%H%M%S')
     job_name = "#{@service.name}-manual-#{timestamp}"
-    kubectl = K8::Kubectl.new(K8::Connection.new(@project.cluster, current_user))
+    kubectl = K8::Kubectl.new(active_connection)
     kubectl.call(
-      "-n #{@project.name} create job #{job_name} --from=cronjob/#{@service.name}"
+      "-n #{@project.namespace} create job #{job_name} --from=cronjob/#{@service.name}"
+    )
+    render partial: "projects/services/show", locals: { service: @service, tab: "cron-jobs" }, layout: false
+  end
+
+  def destroy
+    job_name = params[:id]
+    kubectl = K8::Kubectl.new(active_connection)
+    kubectl.call(
+      "-n #{@project.namespace} delete job #{job_name}"
     )
 
-    redirect_to project_services_path(@project), notice: "Job #{job_name} created."
+    render partial: "projects/services/show", locals: { service: @service, tab: "cron-jobs" }, layout: false
   end
 end

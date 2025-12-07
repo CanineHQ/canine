@@ -13,8 +13,8 @@ class Projects::ProcessesController < Projects::BaseController
 
   def show
     client = K8::Client.new(active_connection)
-    @logs = client.get_pod_log(params[:id], @project.name)
-    @pod_events = client.get_pod_events(params[:id], @project.name)
+    @logs = client.get_pod_log(params[:id], @project.namespace)
+    @pod_events = client.get_pod_events(params[:id], @project.namespace)
 
     respond_to do |format|
       format.html
@@ -30,7 +30,7 @@ class Projects::ProcessesController < Projects::BaseController
 
   def destroy
     client = K8::Client.new(active_connection)
-    client.delete_pod(params[:id], @project.name)
+    client.delete_pod(params[:id], @project.namespace)
     redirect_to project_processes_path(@project), notice: "Pod #{params[:id]} terminating..."
   end
 

@@ -1,9 +1,6 @@
 Rails.application.routes.draw do
   # Account-specific URL-based routes
   devise_scope :user do
-    if Rails.application.config.local_mode
-      get '/accounts/select', to: 'users/sessions#account_select'
-    end
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end
@@ -19,6 +16,12 @@ Rails.application.routes.draw do
   resources :accounts, only: [ :create ] do
     collection do
       resources :account_users, only: %i[create index destroy], module: :accounts
+      resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts
+      resources :teams, module: :accounts do
+        resources :team_memberships, only: %i[create destroy], module: :teams
+        resources :team_resources, only: %i[create destroy], module: :teams
+        resources :team_members_search, only: %i[index], module: :teams
+      end
     end
     member do
       get :switch
@@ -28,8 +31,8 @@ Rails.application.routes.draw do
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url
-      post :verify_login
       post :check_reachable
+      post :verify_connectivity
       post :sync_clusters
       post :sync_registries
     end
@@ -68,6 +71,7 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
   resources :projects do
     member do
       post :restart
@@ -80,7 +84,7 @@ Rails.application.routes.draw do
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update show], module: :projects do
       resource :resource_constraint, only: %i[show new create update destroy], module: :services
-      resources :jobs, only: %i[create], module: :services
+      resources :jobs, only: %i[show create destroy], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
           post :check_dns
@@ -153,12 +157,16 @@ Rails.application.routes.draw do
           post :login
         end
       end
-      resources :onboarding, only: [ :index, :create ]
+      resources :onboarding, only: [ :index, :create ] do
+        collection do
+          get :account_select
+        end
+      end
     end
     if Rails.application.config.onboarding_methods.any?
       root to: "local/onboarding#index"
     else
-      root to: "projects#index"
+      root to: "local/onboarding#account_select"
     end
   else
     root to: "static#index"

@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   layout :determine_layout
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
 
   protected
     def current_account
@@ -22,6 +23,12 @@ class ApplicationController < ActionController::Base
       @current_account
     end
     helper_method :current_account
+
+    def current_account_user
+      return nil unless user_signed_in? && current_account
+      @current_account_user ||= AccountUser.find_by(user: current_user, account: current_account)
+    end
+    helper_method :current_account_user
 
     def time_ago(t)
       if t.present?
@@ -45,5 +52,9 @@ class ApplicationController < ActionController::Base
     def record_not_found
       flash[:alert] = "The requested resource could not be found."
       redirect_to root_path
+    end
+
+    def missing_portainer_credential
+      redirect_to providers_path, alert: "Please add your Portainer API token to continue."
     end
 end

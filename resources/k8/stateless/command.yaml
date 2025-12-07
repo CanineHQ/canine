@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: <%= name %>
-  namespace: <%= project.name %>
+  namespace: <%= project.namespace %>
   labels:
     caninemanaged: 'true'
     app: <%= project.name %>

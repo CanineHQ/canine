@@ -11,16 +11,16 @@ RSpec.describe Portainer::Stack do
   let(:client) {
     Portainer::Client.new(
       stack_manager.provider_url,
-      Portainer::Client::UserJWT.new(account.owner.portainer_jwt),
+      Portainer::Client::UserJWT.new(account.owner.portainer_access_token),
     )
   }
   let(:portainer_stack) { described_class.new(stack_manager)._connect_with_client(client) }
 
   describe "#retrieve_access_token" do
-    it "returns user portainer_jwt when RBAC is enabled" do
+    it "returns user portainer_access_token when RBAC is enabled" do
       user = account.owner
       stack = described_class.new(stack_manager)
-      expect(stack.retrieve_access_token(user).token).to eq(user.portainer_jwt)
+      expect(stack.retrieve_access_token(user).token).to eq(user.portainer_access_token)
     end
 
     it "returns stack_manager access_token when RBAC is disabled" do
@@ -41,7 +41,7 @@ RSpec.describe Portainer::Stack do
   describe "#fetch_kubeconfig" do
     let(:kubeconfig_json) { File.read(Rails.root.join("spec/resources/integrations/portainer/config.json")) }
     let(:cluster) { create(:cluster, account:, external_id: "1") }
-    let(:client) { Portainer::Client.new(stack_manager.provider_url, Portainer::Client::UserJWT.new(account.owner.portainer_jwt)) }
+    let(:client) { Portainer::Client.new(stack_manager.provider_url, Portainer::Client::UserJWT.new(account.owner.portainer_access_token)) }
 
     before do
       allow(client).to receive(:get_kubernetes_config).and_return(JSON.parse(kubeconfig_json))

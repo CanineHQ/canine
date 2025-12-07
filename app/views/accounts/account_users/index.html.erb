@@ -17,6 +17,16 @@
       </div>
     </div>
 
+    <!-- Tabs -->
+    <div role="tablist" class="tabs tabs-bordered mt-5">
+      <%= link_to account_users_path, role: "tab", class: "tab tab-active" do %>
+        Members
+      <% end %>
+      <%= link_to teams_path, role: "tab", class: "tab" do %>
+        Teams
+      <% end %>
+    </div>
+
     <div class="mt-5">
       <div aria-label="Card" class="card card-bordered bg-base-100">
         <div class="card-body">

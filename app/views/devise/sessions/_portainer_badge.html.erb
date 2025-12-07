@@ -1,9 +1,9 @@
-<% verification_method ||= "url" %>
 <div
   class="border-t border-base-300/50 transition-all duration-300 group-hover:border-base-300"
   data-controller="stack-manager--badge"
-  data-stack-manager--badge-verification-method-value="<%= verification_method %>"
   data-stack-manager--badge-verify-url-value="<%= stack_manager.provider_url %>"
+  data-stack-manager--badge-credentials-path-value="<%= providers_path %>"
+  data-stack-manager--badge-rbac-enabled-value="<%= stack_manager.enable_role_based_access_control? && logged_in %>"
 >
   <div class="flex items-center justify-between">
     <%= link_to stack_manager.provider_url, target: "_blank", rel: "noopener", class: "group/badge inline-flex" do %>
@@ -15,7 +15,7 @@
           data-tip="Portainer is reachable"
           data-stack-manager--badge-target="verifyUrlSuccess"
         >
-          <iconify-icon icon="lucide:external-link" width="12" height="12" class="opacity-80 group-hover/badge:opacity-100 transition-opacity duration-200"></iconify-icon>
+          <iconify-icon icon="lucide:check-circle" width="12" height="12" class="text-green-400 opacity-80 group-hover/badge:opacity-100 transition-opacity duration-200"></iconify-icon>
         </div>
         <div
           class="tooltip tooltip-bottom flex hidden"
@@ -24,19 +24,19 @@
         >
           <iconify-icon icon="lucide:alert-circle" width="12" height="12" class="text-red-400 opacity-80 group-hover/badge:opacity-100 transition-opacity duration-200"></iconify-icon>
         </div>
-        <div
-          class="tooltip tooltip-bottom flex hidden"
-          data-tip="Your current login does not have access to this stack manager. Please logout and login with your portainer username and password."
-          data-stack-manager--badge-target="verifyUrlNotAllowed"
-        >
-          <iconify-icon icon="lucide:ban" width="12" height="12" class="text-red-400 opacity-80 group-hover/badge:opacity-100 transition-opacity duration-200"></iconify-icon>
-        </div>
         <iconify-icon
           icon="lucide:loader-2"
           width="12"
           height="12"
           class="opacity-80 animate-spin"
           data-stack-manager--badge-target="verifyUrlLoading"></iconify-icon>
+        <div
+          class="tooltip tooltip-bottom flex hidden"
+          data-tip="Access token is invalid. Please add or update your Portainer access token to continue"
+          data-stack-manager--badge-target="verifyUrlUnauthorized"
+        >
+          <iconify-icon icon="lucide:alert-triangle" width="12" height="12" class="text-red-400 opacity-80 group-hover/badge:opacity-100 transition-opacity duration-200"></iconify-icon>
+        </div>
       </div>
     <% end %>
   </div>
