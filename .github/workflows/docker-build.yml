@@ -2,7 +2,7 @@ name: Docker Build and Push
 
 on:
   push:
-    branches: [ main, chriszhu__build_docker_on_branch ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
