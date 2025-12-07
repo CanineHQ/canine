@@ -52,6 +52,10 @@ appVersion: "1.0.0"
         chart_name,
         chart_directory,
         namespace: namespace,
+        atomic: true,
+        timeout: "5m0s",
+        wait: true,
+        history_max: 10
       )
     end
   end

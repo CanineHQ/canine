@@ -78,6 +78,21 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
+  def build_install_command(name, chart_url, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:)
+    command_parts = [
+      "helm upgrade --install #{name} #{chart_url}",
+      "-f #{values_file_path}",
+      "--namespace #{namespace}",
+      "--timeout=#{timeout}"
+    ]
+    command_parts << "--dry-run" if dry_run
+    command_parts << "--atomic" if atomic
+    command_parts << "--wait" if wait
+    command_parts << "--history-max=#{history_max}" if history_max
+
+    command_parts.join(" ")
+  end
+
   def install(
     name,
     chart_url,
@@ -92,24 +107,21 @@ class K8::Helm::Client
     return StandardError.new("Can't install helm chart if not connected") unless connected?
 
     with_kube_config do |kubeconfig_file|
-      # Load the values.yaml file
-      # Create a temporary file with the values.yaml content
       Tempfile.create([ 'values', '.yaml' ]) do |values_file|
         values_file.write(values.to_yaml)
         values_file.flush
 
-        command_parts = [
-          "helm upgrade --install #{name} #{chart_url}",
-          "-f #{values_file.path}",
-          "--namespace #{namespace}",
-          "--timeout=#{timeout}"
-        ]
-        command_parts << "--dry-run" if dry_run
-        command_parts << "--atomic" if atomic
-        command_parts << "--wait" if wait
-        command_parts << "--history-max=#{history_max}" if history_max
-
-        command = command_parts.join(" ")
+        command = build_install_command(
+          name,
+          chart_url,
+          values_file_path: values_file.path,
+          namespace: namespace,
+          timeout: timeout,
+          dry_run: dry_run,
+          atomic: atomic,
+          wait: wait,
+          history_max: history_max
+        )
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status
