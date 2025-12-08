@@ -4,6 +4,11 @@
 
 @import "tippy.js/dist/tippy.css";
 @import 'tippy.js/themes/light.css';
+
+/* Tom Select */
+/*@import "tom-select/dist/css/tom-select.css";*/
+/*@import "select.css";*/
+
 @import "./main.css";
 @import "components/nav";
 @import "./forms.css";

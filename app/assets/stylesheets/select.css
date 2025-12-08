@@ -1,0 +1,372 @@
+/* Tom Select */
+
+select[multiple][data-controller="select"] {
+  @apply invisible;
+}
+
+.dropdown-input {
+  @apply !border-neutral-300 !bg-white !px-3 !py-2.5 text-sm placeholder:!text-neutral-500 dark:!border-neutral-600 dark:!bg-neutral-700 dark:!placeholder-neutral-300;
+}
+
+.plugin-dropdown_input.focus.dropdown-active .ts-control {
+  @apply !border-none;
+}
+
+.ts-dropdown-content {
+  @apply py-1.5;
+  max-height: 240px;
+  scroll-behavior: auto;
+}
+
+.ts-dropdown-content {
+  scrollbar-width: thin;
+  scrollbar-color: #a2a2a270 #7878780b;
+}
+
+.ts-dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ts-dropdown-content::-webkit-scrollbar-track {
+  background: #78787879;
+}
+
+.ts-dropdown-content::-webkit-scrollbar-thumb {
+  background-color: #a2a2a270;
+  border-radius: 3px;
+}
+
+.ts-control {
+  @apply flex min-h-[40px] w-full px-3 py-2 cursor-default rounded-lg border-0 text-base leading-6 text-neutral-900 shadow-sm ring-1 placeholder:text-neutral-500 ring-neutral-300 outline-hidden ring-inset focus:ring-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-300 dark:ring-neutral-600 dark:focus:ring-neutral-500;
+
+  &[disabled] {
+    @apply cursor-not-allowed bg-neutral-100 dark:bg-neutral-600;
+  }
+
+  &.error {
+    @apply border-red-400 outline-red-300 focus:outline-red-500 dark:border-red-600 dark:outline-red-500;
+  }
+}
+
+.plugin-dropdown_input .dropdown-input {
+  @apply outline-hidden;
+}
+
+/* Ensure items-placeholder is visible when no items are selected */
+.plugin-dropdown_input .items-placeholder {
+  display: block !important;
+}
+
+/* Only hide items-placeholder when items are actually selected */
+.plugin-dropdown_input.has-items .items-placeholder {
+  display: none !important;
+}
+
+/* Override the dropdown-active rule to keep placeholder visible when no items selected */
+.plugin-dropdown_input.dropdown-active:not(.has-items) .items-placeholder {
+  display: block !important;
+}
+
+.ts-dropdown .active.create {
+  @apply cursor-pointer bg-neutral-100 text-neutral-900 dark:bg-neutral-600 dark:text-white;
+}
+
+.loading-more-results {
+  @apply !cursor-default;
+}
+
+.disabled .ts-control {
+  cursor: not-allowed !important;
+}
+
+@media (min-width: 640px) {
+  .ts-control {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+.full .ts-control {
+  @apply dark:bg-neutral-700;
+}
+
+.ts-wrapper.single .ts-control,
+.ts-wrapper.single .ts-control input,
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply cursor-text;
+}
+
+.ts-dropdown [data-selectable] .highlight {
+  @apply bg-orange-500/20 dark:bg-yellow-500/20;
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply bg-white dark:bg-neutral-700;
+}
+
+.input-active {
+  @apply shadow rounded-lg ring-2 ring-inset ring-neutral-600 dark:ring-neutral-500;
+}
+
+.ts-wrapper {
+  @apply bg-white dark:bg-neutral-700 rounded-lg;
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply bg-transparent dark:bg-transparent;
+}
+
+.ts-control input {
+  @apply !m-0 bg-white text-base placeholder:text-neutral-500 read-only:!cursor-pointer dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-300;
+}
+
+@media (min-width: 640px) {
+  .ts-control input {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+.ts-wrapper:not(trix-toolbar .trix-input--dialog):not(.form-select).single .ts-control {
+  @apply !pr-8;
+}
+
+.ts-wrapper.plugin-remove_button .item {
+  @apply rounded-md;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  @apply rounded-r-lg border-none py-1 text-lg leading-none;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23737373'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+  @apply block size-4 bg-center bg-no-repeat;
+}
+
+/* Red remove button for flagged items */
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23991B1B'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23FCA5A5'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Add separate dark mode version */
+.dark {
+  .ts-wrapper.plugin-remove_button .item .remove::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23A1A1A1'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  font-size: 0 !important;
+  @apply my-0.5 mr-1 !ml-0.5 flex size-[18px] items-center justify-center rounded !border-0 !p-1 !leading-none text-neutral-500 dark:text-neutral-400 dark:hover:bg-neutral-700;
+}
+
+/* Red remove button styling for flagged items inside input */
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove {
+  @apply text-red-700 hover:bg-red-200 hover:text-red-900 dark:text-[#FCA5A5] dark:hover:bg-red-100/10 dark:hover:text-red-200;
+}
+
+/* Flag toggle button styling */
+.ts-wrapper.plugin-remove_button .item .flag-toggle {
+  @apply text-neutral-400 dark:text-neutral-400;
+}
+
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .flag-toggle {
+  @apply flex size-[18px] items-center justify-center rounded hover:bg-red-200 dark:hover:bg-red-100/10 text-red-800 dark:text-[#FCA5A5];
+}
+
+.ts-dropdown {
+  @apply z-40 m-0 overflow-hidden rounded-lg border border-t border-solid border-neutral-300 shadow-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-white;
+}
+
+.ts-dropdown .create {
+  @apply mx-1.5 cursor-default rounded-md px-2.5 py-2 text-sm dark:text-neutral-400;
+}
+
+.ts-dropdown [data-selectable].option,
+.ts-dropdown .no-results {
+  @apply mx-1.5 cursor-default rounded-md px-2.5 py-2 text-sm;
+}
+
+.ts-dropdown .option,
+.ts-dropdown [data-disabled],
+.ts-dropdown [data-disabled] [data-selectable].option {
+  @apply mx-1.5 cursor-not-allowed rounded-md px-2.5 py-2 text-sm;
+}
+
+.ts-dropdown [data-selectable].option,
+.ts-dropdown .ts-dropdown .create {
+  @apply cursor-pointer;
+}
+
+.ts-dropdown .active {
+  @apply bg-neutral-100 text-neutral-900 dark:bg-neutral-600 dark:text-white;
+}
+
+.ts-dropdown .spinner {
+  @apply h-auto w-auto;
+}
+
+.ts-dropdown .spinner:after {
+  @apply mt-1 mb-0 inline-block size-4 border-2 p-0;
+}
+
+.ts-wrapper:not(.form-control):not(.form-select).single .ts-control {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  print-color-adjust: exact;
+}
+
+/* Dark mode arrow for single select */
+.dark {
+  .ts-wrapper:not(.form-control):not(.form-select).single .ts-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+/* Add dropdown arrow to multiselect elements */
+.ts-wrapper:not(.form-control):not(.form-select).multi .ts-control {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 6l4-4 4 4M6 14l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.6rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  print-color-adjust: exact;
+  padding-right: 2rem !important;
+}
+
+/* Dark mode arrow for multiselect */
+.dark {
+  .ts-wrapper:not(.form-control):not(.form-select).multi .ts-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 6l4-4 4 4M6 14l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+.ts-wrapper.multi .ts-control > div {
+  @apply mr-1 inline-flex items-center justify-center rounded-md bg-neutral-100 px-2 text-xs leading-none font-medium text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
+}
+
+/* Ensure items don't overlap with the dropdown arrow */
+.ts-wrapper.multi.has-items .ts-control {
+  @apply !pt-[7px] !pr-8 !pb-[4px];
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item {
+  @apply cursor-grab;
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+  @apply !-ml-0.5 cursor-pointer border-none;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  @apply my-0.5 mr-1 !ml-0.5 flex size-[18px] items-center justify-center rounded border-0 text-lg leading-none text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-100/60 dark:hover:bg-neutral-700 dark:hover:text-neutral-100;
+}
+
+.ts-dropdown .optgroup-header {
+  @apply border-t border-neutral-300 bg-white font-semibold text-neutral-900 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100;
+}
+
+.ts-dropdown.plugin-optgroup_columns .optgroup {
+  height: fit-content;
+  @apply !mt-0;
+}
+
+.optgroup {
+  @apply mt-1.5 first:mt-0;
+}
+
+.dark .ts-dropdown.plugin-optgroup_columns .optgroup {
+  border-right: 1px solid #525252;
+}
+
+.ts-wrapper.multi.has-items .ts-control > input {
+  @apply !mb-[3px];
+}
+
+.tomselect-checkbox {
+  @apply !mr-0;
+}
+
+.input-hidden.focus {
+  @apply !rounded-lg border  border-neutral-300 dark:border-neutral-600;
+}
+
+/* Replace the previous attempt with this updated selector */
+select[data-select-disable-typing-value="true"] + .ts-wrapper .ts-control,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single .ts-control,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single .ts-control input,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single.input-active .ts-control {
+  @apply cursor-default;
+}
+
+.ts-dropdown-content.is-loading-more .option {
+  pointer-events: none !important;
+}
+
+/* Count display for multi-select */
+.ts-count-display {
+  @apply mr-auto !my-0.5 !bg-transparent !px-0 !text-sm !font-normal pointer-events-none;
+  display: none;
+}
+
+/* Hide count display when not active (explicit rule) */
+.ts-control:not(.count-active) .ts-count-display {
+  display: none !important;
+}
+
+/* Hide items and input when count is active */
+.ts-control.count-active .item {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep input technically visible for keyboard navigation but make it invisible */
+.ts-control.count-active input {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ensure proper spacing when count is displayed */
+.ts-wrapper.multi.has-items .ts-control:has(.ts-count-display) {
+  @apply !py-[5px];
+}
+
+/* External tags styles - hide tags inside control */
+.ts-control.external-tags-active .item {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Reset padding when external tags are active */
+.ts-wrapper.multi.has-items .ts-control.external-tags-active {
+  @apply !py-2;
+}
+
+/* Keep placeholder visible when external tags are active */
+.plugin-dropdown_input.has-items .ts-control.external-tags-active .items-placeholder {
+  display: block !important;
+}
+
+/* Reset input margins when external tags are active */
+.ts-wrapper.multi.has-items .ts-control.external-tags-active > input {
+  margin: 0 !important;
+}
