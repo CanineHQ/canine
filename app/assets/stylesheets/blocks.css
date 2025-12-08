@@ -1,0 +1,1200 @@
+.outline-hidden {
+  --tw-outline-style: none;
+  outline-style: none;
+}
+
+kbd {
+  @apply rounded-md border border-black/10 bg-white px-1 text-[11px] text-neutral-800 shadow-[0px_1.5px_0px_0px_rgba(0,0,0,0.05)] dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-200 dark:shadow-[0px_1px_0px_0px_rgba(255,255,255,0.1)];
+}
+
+/* Forms */
+
+label,
+.label {
+  @apply text-sm leading-6 font-medium text-neutral-700;
+  @apply dark:text-neutral-100;
+}
+
+.form-input[disabled] {
+  @apply cursor-not-allowed bg-neutral-200;
+}
+
+/* non-input elements (like the Stripe card form) can be styled to look like an input */
+div.form-control {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border-width: 1px;
+  padding-top: 0.5rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.form-control {
+  @apply block w-full rounded-lg bg-white border-0 px-3 py-2 text-base leading-6 text-neutral-900 shadow-sm ring-1 ring-neutral-300 outline-hidden ring-inset placeholder:text-neutral-500 focus:ring-2 focus:ring-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-300 dark:ring-neutral-600 dark:focus:ring-neutral-500;
+}
+
+@media (min-width: 640px) {
+  .form-control {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+.form-control[disabled] {
+  @apply cursor-not-allowed bg-neutral-100 dark:bg-neutral-600;
+}
+
+.form-control.error {
+  @apply border-red-400 ring-red-300 focus:ring-red-500 dark:border-red-600 dark:ring-red-500;
+}
+
+select:not([multiple]) {
+  @apply w-full appearance-none rounded-lg border-0 bg-white px-3 py-2 text-base leading-6 text-neutral-900 shadow-sm ring-1 ring-neutral-300 outline-hidden ring-inset focus:ring-2 focus:ring-neutral-600;
+
+  /* Custom dropdown arrow */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+@media (min-width: 640px) {
+  select:not([multiple]) {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+/* Dark mode styling for single select */
+.dark {
+  select:not([multiple]) {
+    @apply dark:bg-neutral-700 dark:text-white dark:ring-neutral-600 dark:focus:ring-neutral-500;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+select:not([multiple])[disabled] {
+  @apply cursor-not-allowed bg-neutral-100 opacity-75 ring-neutral-200 dark:bg-neutral-600 dark:ring-neutral-500;
+}
+
+select[multiple] {
+  @apply w-full rounded-lg rounded-r-none border-0 bg-white px-3 py-2.5 text-base leading-6 text-neutral-900 shadow-sm outline-1 -outline-offset-1 outline-neutral-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-neutral-600 dark:outline-neutral-600;
+  min-height: 120px;
+}
+
+select[multiple] option {
+  @apply rounded-md;
+}
+
+@media (min-width: 640px) {
+  select[multiple] {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+/* Dark mode styling for multiple select */
+.dark {
+  select[multiple] {
+    @apply dark:bg-neutral-700 dark:text-white dark:ring-neutral-600 dark:focus:ring-neutral-500;
+  }
+}
+
+select[multiple][disabled] {
+  @apply cursor-not-allowed bg-neutral-100 opacity-75 ring-neutral-200 dark:bg-neutral-600 dark:ring-neutral-500;
+}
+
+option {
+  @apply bg-white px-3 py-2 text-sm text-neutral-900 dark:bg-neutral-700 dark:text-neutral-100;
+}
+
+option:checked {
+  @apply bg-neutral-100 dark:bg-neutral-600;
+}
+
+option:hover {
+  @apply bg-neutral-50 dark:bg-neutral-600;
+}
+
+.caret {
+  @apply pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-neutral-800;
+}
+
+[type="checkbox"] {
+  @apply size-4 cursor-pointer appearance-none rounded-sm border border-neutral-300 bg-white checked:border-neutral-700 checked:bg-neutral-700 focus:outline-2 focus:outline-offset-2 focus:outline-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600 disabled:border-neutral-300 disabled:bg-neutral-100 disabled:checked:bg-neutral-100 dark:border-white/20 dark:bg-neutral-800 dark:checked:border-white/20 dark:checked:bg-neutral-900 dark:focus:outline-neutral-200 dark:focus-visible:outline-neutral-200 dark:disabled:border-neutral-500 dark:disabled:bg-neutral-400 dark:disabled:checked:bg-neutral-500 forced-colors:appearance-auto;
+}
+
+[type="checkbox"]:checked {
+  @apply text-white dark:text-neutral-800;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[type="checkbox"]:indeterminate {
+  @apply border-neutral-400 bg-neutral-500 dark:border-white/20 dark:bg-neutral-700;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cg fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' %3e%3cline x1='10.75' y1='6' x2='1.25' y2='6'%3e%3c/line%3e%3c/g%3e%3c/svg%3e");
+  background-size: 75% 75%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[type="checkbox"]:disabled {
+  @apply cursor-not-allowed border-neutral-300 bg-neutral-300 text-neutral-400 opacity-75 hover:text-neutral-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:text-neutral-500;
+}
+
+[type="checkbox"]:disabled:checked {
+  @apply border-neutral-300 dark:border-neutral-600 dark:bg-neutral-600;
+}
+
+[type="radio"] {
+  @apply size-4 cursor-pointer appearance-none rounded-full border border-neutral-300 bg-white checked:border-neutral-700 checked:bg-neutral-700 focus:outline-2 focus:outline-offset-2 focus:outline-neutral-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600 disabled:border-neutral-300 disabled:bg-neutral-100 disabled:checked:bg-neutral-100 dark:border-white/20 dark:bg-neutral-800 dark:checked:border-white/20 dark:checked:bg-neutral-900 dark:focus:outline-neutral-200 dark:focus-visible:outline-neutral-200 dark:disabled:border-neutral-500 dark:disabled:bg-neutral-400 dark:disabled:checked:bg-neutral-500 forced-colors:appearance-auto;
+}
+
+[type="radio"]:checked {
+  @apply text-white dark:text-neutral-800;
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[type="radio"]:disabled {
+  @apply cursor-not-allowed border-neutral-300 bg-neutral-300 text-neutral-400 opacity-75 hover:text-neutral-300 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:text-neutral-500;
+}
+
+[type="radio"]:disabled:checked {
+  @apply border-neutral-300 dark:border-neutral-600 dark:bg-neutral-600;
+}
+
+/* Datalist styling */
+input[list] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Replace default datalist arrow in WebKit browsers */
+input[list].replace-default-datalist-arrow::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
+input[list].replace-default-datalist-arrow {
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+}
+
+/* Dark mode datalist arrow */
+.dark {
+  input[list].replace-default-datalist-arrow {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+/* Tom Select */
+
+select[multiple][data-controller="select"] {
+  @apply invisible;
+}
+
+.dropdown-input {
+  @apply !border-neutral-300 !bg-white !px-3 !py-2.5 text-sm placeholder:!text-neutral-500 dark:!border-neutral-600 dark:!bg-neutral-700 dark:!placeholder-neutral-300;
+}
+
+.plugin-dropdown_input.focus.dropdown-active .ts-control {
+  @apply !border-none;
+}
+
+.ts-dropdown-content {
+  @apply py-1.5;
+  max-height: 240px;
+  scroll-behavior: auto;
+}
+
+.ts-dropdown-content {
+  scrollbar-width: thin;
+  scrollbar-color: #a2a2a270 #7878780b;
+}
+
+.ts-dropdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ts-dropdown-content::-webkit-scrollbar-track {
+  background: #78787879;
+}
+
+.ts-dropdown-content::-webkit-scrollbar-thumb {
+  background-color: #a2a2a270;
+  border-radius: 3px;
+}
+
+.ts-control {
+  @apply flex min-h-[40px] w-full px-3 py-2 cursor-default rounded-lg border-0 text-base leading-6 text-neutral-900 shadow-sm ring-1 placeholder:text-neutral-500 ring-neutral-300 outline-hidden ring-inset focus:ring-neutral-600 dark:bg-neutral-700 dark:text-white dark:placeholder-neutral-300 dark:ring-neutral-600 dark:focus:ring-neutral-500;
+
+  &[disabled] {
+    @apply cursor-not-allowed bg-neutral-100 dark:bg-neutral-600;
+  }
+
+  &.error {
+    @apply border-red-400 outline-red-300 focus:outline-red-500 dark:border-red-600 dark:outline-red-500;
+  }
+}
+
+.plugin-dropdown_input .dropdown-input {
+  @apply outline-hidden;
+}
+
+/* Ensure items-placeholder is visible when no items are selected */
+.plugin-dropdown_input .items-placeholder {
+  display: block !important;
+}
+
+/* Only hide items-placeholder when items are actually selected */
+.plugin-dropdown_input.has-items .items-placeholder {
+  display: none !important;
+}
+
+/* Override the dropdown-active rule to keep placeholder visible when no items selected */
+.plugin-dropdown_input.dropdown-active:not(.has-items) .items-placeholder {
+  display: block !important;
+}
+
+.ts-dropdown .active.create {
+  @apply cursor-pointer bg-neutral-100 text-neutral-900 dark:bg-neutral-600 dark:text-white;
+}
+
+.loading-more-results {
+  @apply !cursor-default;
+}
+
+.disabled .ts-control {
+  cursor: not-allowed !important;
+}
+
+@media (min-width: 640px) {
+  .ts-control {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+.full .ts-control {
+  @apply dark:bg-neutral-700;
+}
+
+.ts-wrapper.single .ts-control,
+.ts-wrapper.single .ts-control input,
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply cursor-text;
+}
+
+.ts-dropdown [data-selectable] .highlight {
+  @apply bg-orange-500/20 dark:bg-yellow-500/20;
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply bg-white dark:bg-neutral-700;
+}
+
+.input-active {
+  @apply shadow rounded-lg ring-2 ring-inset ring-neutral-600 dark:ring-neutral-500;
+}
+
+.ts-wrapper {
+  @apply bg-white dark:bg-neutral-700 rounded-lg;
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+  @apply bg-transparent dark:bg-transparent;
+}
+
+.ts-control input {
+  @apply !m-0 bg-white text-base placeholder:text-neutral-500 read-only:!cursor-pointer dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-300;
+}
+
+@media (min-width: 640px) {
+  .ts-control input {
+    font-size: 0.875rem; /* text-sm equivalent (14px) for larger screens */
+  }
+}
+
+.ts-wrapper:not(trix-toolbar .trix-input--dialog):not(.form-select).single .ts-control {
+  @apply !pr-8;
+}
+
+.ts-wrapper.plugin-remove_button .item {
+  @apply rounded-md;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  @apply rounded-r-lg border-none py-1 text-lg leading-none;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove::before {
+  content: "";
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23737373'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+  @apply block size-4 bg-center bg-no-repeat;
+}
+
+/* Red remove button for flagged items */
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23991B1B'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+}
+
+.dark .ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23FCA5A5'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Add separate dark mode version */
+.dark {
+  .ts-wrapper.plugin-remove_button .item .remove::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Ctitle%3Exmark%3C/title%3E%3Cg fill='%23A1A1A1'%3E%3Cpath d='m2.25,10.5c-.192,0-.384-.073-.53-.22-.293-.293-.293-.768,0-1.061L9.22,1.72c.293-.293.768-.293,1.061,0s.293.768,0,1.061l-7.5,7.5c-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3Cpath d='m9.75,10.5c-.192,0-.384-.073-.53-.22L1.72,2.78c-.293-.293-.293-.768,0-1.061s.768-.293,1.061,0l7.5,7.5c.293.293.293.768,0,1.061-.146.146-.338.22-.53.22Z' stroke-width='0'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+  }
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  font-size: 0 !important;
+  @apply my-0.5 mr-1 !ml-0.5 flex size-[18px] items-center justify-center rounded !border-0 !p-1 !leading-none text-neutral-500 dark:text-neutral-400 dark:hover:bg-neutral-700;
+}
+
+/* Red remove button styling for flagged items inside input */
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .remove {
+  @apply text-red-700 hover:bg-red-200 hover:text-red-900 dark:text-[#FCA5A5] dark:hover:bg-red-100/10 dark:hover:text-red-200;
+}
+
+/* Flag toggle button styling */
+.ts-wrapper.plugin-remove_button .item .flag-toggle {
+  @apply text-neutral-400 dark:text-neutral-400;
+}
+
+.ts-wrapper.plugin-remove_button .item[data-flag="true"] .flag-toggle {
+  @apply flex size-[18px] items-center justify-center rounded hover:bg-red-200 dark:hover:bg-red-100/10 text-red-800 dark:text-[#FCA5A5];
+}
+
+.ts-dropdown {
+  @apply z-40 m-0 overflow-hidden rounded-lg border border-t border-solid border-neutral-300 shadow-sm dark:border-neutral-600 dark:bg-neutral-800 dark:text-white;
+}
+
+.ts-dropdown .create {
+  @apply mx-1.5 cursor-default rounded-md px-2.5 py-2 text-sm dark:text-neutral-400;
+}
+
+.ts-dropdown [data-selectable].option,
+.ts-dropdown .no-results {
+  @apply mx-1.5 cursor-default rounded-md px-2.5 py-2 text-sm;
+}
+
+.ts-dropdown .option,
+.ts-dropdown [data-disabled],
+.ts-dropdown [data-disabled] [data-selectable].option {
+  @apply mx-1.5 cursor-not-allowed rounded-md px-2.5 py-2 text-sm;
+}
+
+.ts-dropdown [data-selectable].option,
+.ts-dropdown .ts-dropdown .create {
+  @apply cursor-pointer;
+}
+
+.ts-dropdown .active {
+  @apply bg-neutral-100 text-neutral-900 dark:bg-neutral-600 dark:text-white;
+}
+
+.ts-dropdown .spinner {
+  @apply h-auto w-auto;
+}
+
+.ts-dropdown .spinner:after {
+  @apply mt-1 mb-0 inline-block size-4 border-2 p-0;
+}
+
+.ts-wrapper:not(.form-control):not(.form-select).single .ts-control {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  print-color-adjust: exact;
+}
+
+/* Dark mode arrow for single select */
+.dark {
+  .ts-wrapper:not(.form-control):not(.form-select).single .ts-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+/* Add dropdown arrow to multiselect elements */
+.ts-wrapper:not(.form-control):not(.form-select).multi .ts-control {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 6l4-4 4 4M6 14l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.6rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  print-color-adjust: exact;
+  padding-right: 2rem !important;
+}
+
+/* Dark mode arrow for multiselect */
+.dark {
+  .ts-wrapper:not(.form-control):not(.form-select).multi .ts-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23A1A1AA' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 6l4-4 4 4M6 14l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+.ts-wrapper.multi .ts-control > div {
+  @apply mr-1 inline-flex items-center justify-center rounded-md bg-neutral-100 px-2 text-xs leading-none font-medium text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
+}
+
+/* Ensure items don't overlap with the dropdown arrow */
+.ts-wrapper.multi.has-items .ts-control {
+  @apply !pt-[7px] !pr-8 !pb-[4px];
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item {
+  @apply cursor-grab;
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+  @apply !-ml-0.5 cursor-pointer border-none;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+  @apply my-0.5 mr-1 !ml-0.5 flex size-[18px] items-center justify-center rounded border-0 text-lg leading-none text-neutral-900/60 hover:text-neutral-900 dark:text-neutral-100/60 dark:hover:bg-neutral-700 dark:hover:text-neutral-100;
+}
+
+.ts-dropdown .optgroup-header {
+  @apply border-t border-neutral-300 bg-white font-semibold text-neutral-900 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100;
+}
+
+.ts-dropdown.plugin-optgroup_columns .optgroup {
+  height: fit-content;
+  @apply !mt-0;
+}
+
+.optgroup {
+  @apply mt-1.5 first:mt-0;
+}
+
+.dark .ts-dropdown.plugin-optgroup_columns .optgroup {
+  border-right: 1px solid #525252;
+}
+
+.ts-wrapper.multi.has-items .ts-control > input {
+  @apply !mb-[3px];
+}
+
+.tomselect-checkbox {
+  @apply !mr-0;
+}
+
+.input-hidden.focus {
+  @apply !rounded-lg border  border-neutral-300 dark:border-neutral-600;
+}
+
+/* Replace the previous attempt with this updated selector */
+select[data-select-disable-typing-value="true"] + .ts-wrapper .ts-control,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single .ts-control,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single .ts-control input,
+select[data-select-disable-typing-value="true"] + .ts-wrapper.single.input-active .ts-control {
+  @apply cursor-default;
+}
+
+.ts-dropdown-content.is-loading-more .option {
+  pointer-events: none !important;
+}
+
+/* Count display for multi-select */
+.ts-count-display {
+  @apply mr-auto !my-0.5 !bg-transparent !px-0 !text-sm !font-normal pointer-events-none;
+  display: none;
+}
+
+/* Hide count display when not active (explicit rule) */
+.ts-control:not(.count-active) .ts-count-display {
+  display: none !important;
+}
+
+/* Hide items and input when count is active */
+.ts-control.count-active .item {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Keep input technically visible for keyboard navigation but make it invisible */
+.ts-control.count-active input {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ensure proper spacing when count is displayed */
+.ts-wrapper.multi.has-items .ts-control:has(.ts-count-display) {
+  @apply !py-[5px];
+}
+
+/* External tags styles - hide tags inside control */
+.ts-control.external-tags-active .item {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Reset padding when external tags are active */
+.ts-wrapper.multi.has-items .ts-control.external-tags-active {
+  @apply !py-2;
+}
+
+/* Keep placeholder visible when external tags are active */
+.plugin-dropdown_input.has-items .ts-control.external-tags-active .items-placeholder {
+  display: block !important;
+}
+
+/* Reset input margins when external tags are active */
+.ts-wrapper.multi.has-items .ts-control.external-tags-active > input {
+  margin: 0 !important;
+}
+
+/* Emoji picker */
+
+em-emoji-picker {
+  --color-border-over: rgba(0, 0, 0, 0.1);
+  --color-border: rgba(0, 0, 0, 0.05);
+  --font-family: "Inter", sans-serif;
+  --rgb-accent: 155, 155, 155;
+
+  position: absolute;
+  z-index: 1000;
+  max-width: 400px;
+  min-width: 318px;
+  resize: horizontal;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  em-emoji-picker {
+    max-width: 80vw;
+  }
+}
+
+.dark {
+  em-emoji-picker {
+    border: 1px solid #353535;
+    --color-border: rgba(12, 12, 12, 0.8) !important;
+  }
+}
+
+/* Shoelace Neutral styles */
+:root {
+  --sl-color-primary-50: var(--sl-color-neutral-50) !important;
+  --sl-color-primary-100: var(--sl-color-neutral-100) !important;
+  --sl-color-primary-200: var(--sl-color-neutral-200) !important;
+  --sl-color-primary-300: var(--sl-color-neutral-300) !important;
+  --sl-color-primary-400: var(--sl-color-neutral-400) !important;
+  --sl-color-primary-500: var(--sl-color-neutral-500) !important;
+  --sl-color-primary-600: var(--sl-color-neutral-600) !important;
+  --sl-color-primary-700: var(--sl-color-neutral-700) !important;
+  --sl-color-primary-800: var(--sl-color-neutral-800) !important;
+  --sl-color-primary-900: var(--sl-color-neutral-900) !important;
+  --sl-color-primary-950: var(--sl-color-neutral-950) !important;
+
+  --sl-input-focus-ring-color: hsla(0, 0%, 81%, 0.4) !important;
+
+  --sl-border-radius-medium: 0.5rem !important;
+  --sl-border-radius-large: 0.75rem !important;
+}
+
+/* air-datepicker */
+
+.air-datepicker {
+  --adp-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --adp-font-size: 14px;
+  --adp-width: 246px;
+  --adp-z-index: 40;
+  --adp-padding: 4px;
+  --adp-grid-areas: "nav" "body" "timepicker" "buttons";
+  --adp-transition-duration: 0.3s;
+  --adp-transition-ease: ease-out;
+  --adp-transition-offset: 8px;
+  --adp-background-color: #fff;
+  --adp-background-color-hover: #f0f0f0;
+  --adp-background-color-active: #eaeaea;
+  --adp-background-color-in-range: rgba(16, 16, 16, 0.1);
+  --adp-background-color-in-range-focused: rgba(236, 236, 236, 0.2);
+  --adp-background-color-selected-other-month-focused: #f1f1f1;
+  --adp-background-color-selected-other-month: #e6e6e6;
+  --adp-color: #4a4a4a;
+  --adp-color-secondary: #9c9c9c;
+  --adp-accent-color: #0a0a0a;
+  --adp-color-current-date: var(--adp-accent-color);
+  --adp-color-other-month: #dedede;
+  --adp-color-disabled: #aeaeae;
+  --adp-color-disabled-in-range: #939393;
+  --adp-color-other-month-hover: #c5c5c5;
+  --adp-border-color: rgba(0, 0, 0, 0.1);
+  --adp-border-color-inner: #efefef;
+  --adp-border-radius: 8px;
+  --adp-border-color-inline: #d7d7d7;
+  --adp-nav-height: 32px;
+  --adp-nav-arrow-color: var(--adp-color-secondary);
+  --adp-nav-action-size: 32px;
+  --adp-nav-color-secondary: var(--adp-color-secondary);
+  --adp-day-name-color: #464646;
+  --adp-day-name-color-hover: #f1f1f1;
+  --adp-day-cell-width: 1fr;
+  --adp-day-cell-height: 32px;
+  --adp-month-cell-height: 42px;
+  --adp-year-cell-height: 56px;
+  --adp-pointer-size: 10px;
+  --adp-poiner-border-radius: 2px;
+  --adp-pointer-offset: 14px;
+  --adp-cell-border-radius: 4px;
+  --adp-cell-background-color-hover: var(--adp-background-color-hover);
+  --adp-cell-background-color-selected: #1d1d1d;
+  --adp-cell-background-color-selected-hover: #303030;
+  --adp-cell-background-color-in-range: rgba(38, 38, 38, 0.1);
+  --adp-cell-background-color-in-range-hover: rgba(44, 44, 44, 0.2);
+  --adp-cell-border-color-in-range: var(--adp-cell-background-color-selected);
+  --adp-btn-height: 32px;
+  --adp-btn-color: var(--adp-accent-color);
+  --adp-btn-color-hover: var(--adp-color);
+  --adp-btn-border-radius: var(--adp-border-radius);
+  --adp-btn-background-color-hover: var(--adp-background-color-hover);
+  --adp-btn-background-color-active: var(--adp-background-color-active);
+  --adp-time-track-height: 1px;
+  --adp-time-track-color: #dedede;
+  --adp-time-track-color-hover: #b1b1b1;
+  --adp-time-thumb-size: 12px;
+  --adp-time-padding-inner: 10px;
+  --adp-time-day-period-color: var(--adp-color-secondary);
+  --adp-mobile-font-size: 16px;
+  --adp-mobile-nav-height: 40px;
+  --adp-mobile-width: 320px;
+  --adp-mobile-day-cell-height: 38px;
+  --adp-mobile-month-cell-height: 48px;
+  --adp-mobile-year-cell-height: 64px;
+}
+.air-datepicker-overlay {
+  --adp-overlay-background-color: rgba(0, 0, 0, 0.3);
+  --adp-overlay-transition-duration: 0.3s;
+  --adp-overlay-transition-ease: ease-out;
+  --adp-overlay-z-index: 99;
+}
+
+.air-datepicker-cell.-selected-.-day- {
+  color: #ffffff; /* Ensure selected cell text is also light in dark mode */
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-selected-.-year- {
+  color: #ffffff; /* Ensure selected cell text is also light in dark mode */
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-selected-.-month- {
+  color: #ffffff; /* Ensure selected cell text is also light in dark mode */
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-selected- {
+  color: #ffffff; /* Ensure selected cell text is also light in dark mode */
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-selected-.-current- {
+  color: #ffffff; /* Ensure selected cell text is also light in dark mode */
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-current- {
+  border: 1px solid #bdbdbd !important;
+}
+
+.air-datepicker-cell.-selected-.-day-.-other-month- {
+  color: #cccccc; /* Ensure selected cell text is also light in dark mode */
+  background: #7e7e7e;
+}
+
+.dark {
+  .air-datepicker {
+    --adp-background-color: #2d2d2d; /* Dark background */
+    --adp-background-color-hover: #3a3a3a;
+    --adp-background-color-active: #4a4a4a;
+    --adp-background-color-in-range: rgba(196, 196, 196, 0.2);
+    --adp-background-color-in-range-focused: rgba(196, 196, 196, 0.3);
+    --adp-background-color-selected-other-month-focused: #333;
+    --adp-background-color-selected-other-month: #444;
+    --adp-color: #e0e0e0; /* Light text color */
+    --adp-color-secondary: #a0a0a0;
+    --adp-accent-color: #ffffff; /* A light accent color for dark mode */
+    --adp-color-other-month: #555;
+    --adp-color-disabled: #777;
+    --adp-color-disabled-in-range: #888;
+    --adp-color-other-month-hover: #666;
+    --adp-border-color: #ffffff1a; /* Lighter border for dark mode */
+    --adp-border-color-inner: #444;
+    --adp-border-color-inline: #444444;
+    --adp-nav-arrow-color: var(--adp-color-secondary);
+    --adp-day-name-color: #c0c0c0;
+    --adp-day-name-color-hover: #3a3a3a;
+    --adp-cell-background-color-hover: var(--adp-background-color-hover);
+    --adp-cell-background-color-selected: #ffffff;
+    --adp-cell-background-color-selected-hover: #e9e9e9;
+    --adp-cell-background-color-in-range: rgba(175, 175, 175, 0.2);
+    --adp-cell-background-color-in-range-hover: rgba(169, 169, 169, 0.3);
+    --adp-btn-color: var(--adp-accent-color);
+    --adp-btn-color-hover: var(--adp-color);
+    --adp-btn-background-color-hover: var(--adp-background-color-hover);
+    --adp-btn-background-color-active: var(--adp-background-color-active);
+    --adp-time-track-color: #555;
+    --adp-time-track-color-hover: #777;
+    --adp-time-day-period-color: var(--adp-color-secondary);
+  }
+
+  .air-datepicker-overlay {
+    --adp-overlay-background-color: rgba(255, 255, 255, 0.1); /* Lighter overlay for dark mode */
+  }
+
+  .air-datepicker-cell.-selected-.-day- {
+    color: #1d1d1d; /* Ensure selected cell text is also light in dark mode */
+    background: var(--adp-cell-background-color-selected);
+  }
+
+  .air-datepicker-cell.-selected-.-year- {
+    color: #1d1d1d; /* Ensure selected cell text is also light in dark mode */
+    background: var(--adp-cell-background-color-selected);
+  }
+
+  .air-datepicker-cell.-selected-.-month- {
+    color: #1d1d1d; /* Ensure selected cell text is also light in dark mode */
+    background: var(--adp-cell-background-color-selected);
+  }
+
+  .air-datepicker-cell.-selected- {
+    color: #1d1d1d; /* Ensure selected cell text is also light in dark mode */
+    background: var(--adp-cell-background-color-selected);
+  }
+
+  .air-datepicker-cell.-selected-.-current- {
+    color: #1d1d1d; /* Ensure selected cell text is also light in dark mode */
+    background: var(--adp-cell-background-color-selected);
+  }
+
+  .air-datepicker-cell.-current- {
+    border: 1px solid #505050 !important;
+  }
+
+  .air-datepicker-cell.-selected-.-day-.-other-month- {
+    color: #cccccc; /* Ensure selected cell text is also light in dark mode */
+    background: #7e7e7e;
+  }
+}
+
+.air-datepicker--navigation {
+  width: 100%;
+}
+.air-datepicker--pointer {
+  opacity: 0;
+}
+.air-datepicker {
+  background: var(--adp-background-color);
+  border: 1px solid var(--adp-border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--adp-border-radius);
+  box-sizing: content-box;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, max-content);
+  grid-template-areas: var(--adp-grid-areas);
+  font-family: var(--adp-font-family), sans-serif;
+  font-size: var(--adp-font-size);
+  color: var(--adp-color);
+  width: var(--adp-width);
+  position: absolute;
+  transition: opacity var(--adp-transition-duration) var(--adp-transition-ease),
+    transform var(--adp-transition-duration) var(--adp-transition-ease);
+  z-index: var(--adp-z-index);
+}
+
+.air-datepicker-cell.-selected- {
+  color: #1d1d1d;
+  border: none;
+  background: var(--adp-cell-background-color-selected);
+}
+
+.air-datepicker-cell.-disabled- {
+  cursor: not-allowed;
+}
+
+/* Add a new rule for dark mode selected cells if needed, or adjust the general .air-datepicker-cell.-selected- inside the dark mode media query */
+.dark {
+  .air-datepicker-cell.-selected- {
+    color: #e0e0e0; /* Example: light text for selected cells in dark mode */
+    /* background: var(--adp-cell-background-color-selected); Is already set within .air-datepicker dark vars */
+  }
+}
+
+/* Time-only picker styles */
+.air-datepicker.only-timepicker .air-datepicker--navigation {
+  display: none;
+}
+
+.air-datepicker.only-timepicker .air-datepicker--content {
+  display: none;
+}
+
+.air-datepicker.only-timepicker .air-datepicker--time {
+  border-top: none;
+}
+
+/* Scrollbar */
+
+.small-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #a2a2a270 #7878780b;
+}
+
+.small-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.small-scrollbar::-webkit-scrollbar-track {
+  background: #7878780b;
+}
+
+.small-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a2a2a270;
+  border-radius: 3px;
+}
+
+/* Hide scrollbar for scroll area component */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Scroll Area Fade Effects - Register custom properties for animation */
+@property --fade-start-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --fade-end-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --fade-start-x-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --fade-end-x-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --fade-start-y-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+@property --fade-end-y-opacity {
+  syntax: '<number>';
+  initial-value: 1;
+  inherits: false;
+}
+
+/* Scroll Area Fade Effects */
+.scroll-fade-x {
+  --fade-start-opacity: 1;
+  --fade-end-opacity: 1;
+  --fade-size: 25px;
+
+  mask-image:
+    linear-gradient(to right,
+      hsl(0 0% 0% / var(--fade-start-opacity)),
+      black var(--fade-size),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-opacity))
+    );
+  -webkit-mask-image:
+    linear-gradient(to right,
+      hsl(0 0% 0% / var(--fade-start-opacity)),
+      black var(--fade-size),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-opacity))
+    );
+
+  transition: --fade-start-opacity 300ms ease-out, --fade-end-opacity 300ms ease-out;
+}
+
+.scroll-fade-y {
+  --fade-start-opacity: 1;
+  --fade-end-opacity: 1;
+  --fade-size: 40px;
+
+  mask-image:
+    linear-gradient(to bottom,
+      hsl(0 0% 0% / var(--fade-start-opacity)),
+      black var(--fade-size),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-opacity))
+    );
+  -webkit-mask-image:
+    linear-gradient(to bottom,
+      hsl(0 0% 0% / var(--fade-start-opacity)),
+      black var(--fade-size),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-opacity))
+    );
+
+  transition: --fade-start-opacity 300ms ease-out, --fade-end-opacity 300ms ease-out;
+}
+
+.scroll-fade-both {
+  --fade-start-x-opacity: 1;
+  --fade-end-x-opacity: 1;
+  --fade-start-y-opacity: 1;
+  --fade-end-y-opacity: 1;
+  --fade-size: 40px;
+  --fade-top-offset: 0px; /* Offset from top to skip header areas */
+  --fade-left-offset: 0px; /* Offset from left to skip sticky columns */
+
+  mask-image:
+    linear-gradient(to right,
+      black var(--fade-left-offset),
+      hsl(0 0% 0% / var(--fade-start-x-opacity)) var(--fade-left-offset),
+      black calc(var(--fade-left-offset) + var(--fade-size)),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-x-opacity))
+    ),
+    linear-gradient(to bottom,
+      black var(--fade-top-offset),
+      hsl(0 0% 0% / var(--fade-start-y-opacity)) var(--fade-top-offset),
+      black calc(var(--fade-top-offset) + var(--fade-size)),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-y-opacity))
+    );
+  -webkit-mask-image:
+    linear-gradient(to right,
+      black var(--fade-left-offset),
+      hsl(0 0% 0% / var(--fade-start-x-opacity)) var(--fade-left-offset),
+      black calc(var(--fade-left-offset) + var(--fade-size)),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-x-opacity))
+    ),
+    linear-gradient(to bottom,
+      black var(--fade-top-offset),
+      hsl(0 0% 0% / var(--fade-start-y-opacity)) var(--fade-top-offset),
+      black calc(var(--fade-top-offset) + var(--fade-size)),
+      black calc(100% - var(--fade-size)),
+      hsl(0 0% 0% / var(--fade-end-y-opacity))
+    );
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+
+  transition: --fade-start-x-opacity 300ms ease-out, --fade-end-x-opacity 300ms ease-out,
+              --fade-start-y-opacity 300ms ease-out, --fade-end-y-opacity 300ms ease-out;
+}
+
+/* Update fade opacity when scrolled - fade appears when there's overflow */
+[data-overflow-x-start] .scroll-fade-x,
+[data-overflow-x-start] .scroll-fade-both {
+  --fade-start-opacity: 0;
+  --fade-start-x-opacity: 0;
+}
+
+[data-overflow-x-end] .scroll-fade-x,
+[data-overflow-x-end] .scroll-fade-both {
+  --fade-end-opacity: 0;
+  --fade-end-x-opacity: 0;
+}
+
+[data-overflow-y-start] .scroll-fade-y,
+[data-overflow-y-start] .scroll-fade-both {
+  --fade-start-opacity: 0;
+  --fade-start-y-opacity: 0;
+}
+
+[data-overflow-y-end] .scroll-fade-y,
+[data-overflow-y-end] .scroll-fade-both {
+  --fade-end-opacity: 0;
+  --fade-end-y-opacity: 0;
+}
+
+/* Cursor pointer for buttons */
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Toast Notifications */
+.toast-item {
+  @apply absolute w-full left-0 select-none;
+  z-index: var(--toast-z-index, 100);
+
+  /* Position based on data attributes */
+  top: var(--toast-top, auto);
+  bottom: var(--toast-bottom, auto);
+  transform: var(--toast-transform, translateY(0));
+  scale: var(--toast-scale, 100%);
+  opacity: var(--toast-opacity, 1);
+
+  /* Separate transitions for better control - like Sonner */
+  transition: transform 400ms ease, opacity 400ms ease, scale 400ms ease, top 400ms ease, bottom 400ms ease,
+    height 200ms ease;
+}
+
+/* Initial hidden state for enter animation */
+.toast-item[data-mounted="false"] {
+  opacity: 0;
+}
+
+.toast-item[data-mounted="false"][data-position*="bottom"] {
+  transform: translateY(100%);
+}
+
+.toast-item[data-mounted="false"][data-position*="top"] {
+  transform: translateY(-100%);
+}
+
+/* Removed state for exit animation */
+.toast-item[data-removed="true"] {
+  opacity: 0;
+  scale: 95%;
+  pointer-events: none;
+}
+
+/* In stacked mode, removed toasts should slide away */
+.toast-item[data-removed="true"][data-expanded="false"][data-position*="bottom"] {
+  transform: translateY(calc(var(--toast-index) * 14px + 5%));
+}
+
+.toast-item[data-removed="true"][data-expanded="false"][data-position*="top"] {
+  transform: translateY(calc(-1 * (var(--toast-index) * 14px + 5%)));
+}
+
+/* Overflow toasts (removed due to limit) slide in opposite direction */
+.toast-item[data-removed="true"][data-overflow="true"][data-expanded="false"][data-position*="bottom"] {
+  transform: translateY(calc(-1 * (var(--toast-index) * 14px + 25%)));
+  scale: 78%;
+}
+
+.toast-item[data-removed="true"][data-overflow="true"][data-expanded="false"][data-position*="top"] {
+  transform: translateY(calc(var(--toast-index) * 14px + 25%));
+  scale: 78%;
+}
+
+/* Pointer events based on visibility */
+.toast-item[data-visible="false"] {
+  pointer-events: none;
+}
+
+/* Expanded mode styles */
+.toast-item[data-expanded="true"] {
+  --toast-scale: 100%;
+  height: var(--initial-height);
+}
+
+.toast-item[data-expanded="true"][data-position*="bottom"] {
+  --toast-top: auto;
+  --toast-bottom: var(--toast-offset, 0px);
+  --toast-transform: translateY(0);
+}
+
+.toast-item[data-expanded="true"][data-position*="top"] {
+  --toast-top: var(--toast-offset, 0px);
+  --toast-bottom: auto;
+  --toast-transform: translateY(0);
+}
+
+/* Stacked mode styles */
+.toast-item[data-expanded="false"][data-front="true"] {
+  --toast-scale: 100%;
+  --toast-opacity: 1;
+  height: var(--initial-height);
+}
+
+.toast-item[data-expanded="false"][data-front="true"][data-position*="bottom"] {
+  --toast-top: auto;
+  --toast-bottom: 0px;
+  --toast-transform: translateY(0);
+}
+
+.toast-item[data-expanded="false"][data-front="true"][data-position*="top"] {
+  --toast-top: 0px;
+  --toast-bottom: auto;
+  --toast-transform: translateY(0);
+}
+
+/* Non-front toasts in stack - Sonner approach */
+.toast-item[data-expanded="false"]:not([data-front="true"]) {
+  height: var(--front-toast-height);
+  overflow: hidden;
+  --toast-scale: calc(100% - (var(--toast-index) * 6%));
+  display: flex;
+  flex-direction: column;
+}
+
+.toast-item[data-expanded="false"]:not([data-front="true"])[data-position*="bottom"] {
+  --toast-top: auto;
+  --toast-bottom: 0px;
+  --toast-transform: translateY(calc(-1 * var(--toast-index) * 14px));
+  justify-content: flex-start; /* Content at top, bottom gets cut */
+}
+
+.toast-item[data-expanded="false"]:not([data-front="true"])[data-position*="top"] {
+  --toast-top: 0px;
+  --toast-bottom: auto;
+  --toast-transform: translateY(calc(var(--toast-index) * 14px));
+  justify-content: flex-end; /* Content at bottom, top gets cut */
+}
+
+/* Hidden toasts (beyond 3rd) */
+.toast-item[data-expanded="false"][data-visible="false"] {
+  --toast-opacity: 0;
+  --toast-scale: 82%;
+}
+
+.toast-item[data-expanded="false"][data-visible="false"][data-position*="bottom"] {
+  --toast-top: auto;
+  --toast-bottom: -200px;
+  --toast-transform: translateY(0);
+}
+
+.toast-item[data-expanded="false"][data-visible="false"][data-position*="top"] {
+  --toast-top: -200px;
+  --toast-bottom: auto;
+  --toast-transform: translateY(0);
+}
