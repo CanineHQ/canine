@@ -49,7 +49,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the hostname IP' do
-        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "1.2.3.4", type: :ip_address })
+        expect(described_class.infer_expected_dns(ingress, connection)).to(eq({ value: "1.2.3.4", type: :ip_address }))
       end
     end
   end
