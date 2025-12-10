@@ -47,7 +47,6 @@ class Networks::CheckDns
     # TODO
     expected_dns = infer_expected_dns(context.ingress, context.connection)
     context.ingress.service.domains.each do |domain|
-      # If the expected DNS record is an IP address, 
       if expected_dns[:type] == :ip_address
         ip_addresses = Resolv::DNS.open do |dns|
           dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|
