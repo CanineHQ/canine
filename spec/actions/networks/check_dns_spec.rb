@@ -8,25 +8,25 @@ RSpec.describe Networks::CheckDns do
   let(:connection) { K8::Connection.new(cluster, user) }
   let(:ingress) { K8::Stateless::Ingress.new(service).connect(connection) }
 
-  describe '.infer_expected_ip' do
+  describe '.infer_expected_dns' do
     context 'when ingress returns public IP' do
       before do
-        allow(ingress).to receive(:ip_address).and_return('8.8.8.8')
+        allow(ingress).to receive(:hostname).and_return({ value: '8.8.8.8', type: :ip_address })
       end
 
       it 'returns the IP' do
-        expect(described_class.infer_expected_ip(ingress, connection)).to eq('8.8.8.8')
+        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "8.8.8.8", type: :ip_address })
       end
     end
 
     context 'when ingress returns private IP' do
       before do
-        allow(ingress).to receive(:ip_address).and_return('10.0.0.1')
+        allow(ingress).to receive(:hostname).and_return({ value: '10.0.0.1', type: :ip_address })
         allow(Resolv).to receive(:getaddress).with('example.com').and_return('1.2.3.4')
       end
 
       it 'resolves and returns public IP' do
-        expect(described_class.infer_expected_ip(ingress, connection)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "1.2.3.4", type: :ip_address })
       end
     end
 
@@ -45,11 +45,11 @@ RSpec.describe Networks::CheckDns do
       end
 
       before do
-        allow(ingress).to receive(:ip_address).and_return('10.0.0.1')
+        allow(ingress).to receive(:hostname).and_return({ value: '1.2.3.4', type: :ip_address })
       end
 
       it 'returns the hostname IP' do
-        expect(described_class.infer_expected_ip(ingress, connection)).to eq('1.2.3.4')
+        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "1.2.3.4", type: :ip_address })
       end
     end
   end

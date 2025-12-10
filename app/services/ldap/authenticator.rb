@@ -224,8 +224,6 @@ module LDAP
       "#{username}@#{domain}"
     end
 
-    # ---------------- GROUP MEMBERSHIP ----------------
-
     def fetch_group_membership(user_entry)
       reader_ldap = build_reader_connection
 
@@ -270,7 +268,7 @@ module LDAP
         memo | f
       end
 
-      group_filter  = Net::LDAP::Filter.eq('objectClass', 'groupOfNames') |
+      group_filter = Net::LDAP::Filter.eq('objectClass', 'groupOfNames') |
                       Net::LDAP::Filter.eq('objectClass', 'groupOfUniqueNames') |
                       Net::LDAP::Filter.eq('objectClass', 'posixGroup')
 

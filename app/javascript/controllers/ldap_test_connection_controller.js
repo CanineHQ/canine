@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["button", "result"]
 
   async test(event) {
-    debugger
     event.preventDefault()
 
     const form = this.element.closest("form")
