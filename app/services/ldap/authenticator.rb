@@ -21,9 +21,34 @@ module LDAP
 
     # Public API
     # ----------
-    # call(username:, password:) -> Result
+    # test_connection -> Result (tests bind credentials only)
+    # call(username:, password:) -> Result (full authentication)
     #
-    def call(username:, password:)
+    def test_connection
+      # Validate required configuration
+      if config.host.blank?
+        return Result.new(success?: false, error_message: "Host is required")
+      end
+
+      if config.bind_dn.blank? && !config.allow_anonymous_reads?
+        return Result.new(success?: false, error_message: "Bind DN and password are required when anonymous reads are disabled")
+      end
+
+      reader_ldap = build_reader_connection
+
+      if reader_ldap.bind
+        Result.new(success?: true, error_message: nil)
+      else
+        msg = "LDAP bind failed: #{reader_ldap.get_operation_result.message}"
+        @logger.warn msg
+        Result.new(success?: false, error_message: msg)
+      end
+    rescue => e
+      @logger.error "LDAP test connection: unexpected error - #{e.class}: #{e.message}"
+      Result.new(success?: false, error_message: e.message)
+    end
+
+    def call(username:, password:, fetch_groups:)
       # 1) Bind as reader (service account or anonymous)
       reader_ldap = build_reader_connection
 
@@ -54,9 +79,13 @@ module LDAP
       end
 
       # 4) Successful LDAP auth → map attributes, fetch groups
-      email  = resolve_email(entry, username)
-      name   = resolve_name(entry, username)
-      groups = fetch_group_membership(entry)
+      email = resolve_email(entry, username)
+      name = resolve_name(entry, username)
+      if fetch_groups
+        groups = fetch_group_membership(entry)
+      else
+        groups = []
+      end
 
       Result.new(
         success?: true,
@@ -99,6 +128,7 @@ module LDAP
         # No way to bind safely
         # Let caller see failure via bind result
         logger.info "LDAP: no reader credentials and anonymous reads disabled"
+        raise "LDAP: no reader credentials and anonymous reads disabled"
       end
 
       Net::LDAP.new(options)
@@ -194,8 +224,6 @@ module LDAP
       "#{username}@#{domain}"
     end
 
-    # ---------------- GROUP MEMBERSHIP ----------------
-
     def fetch_group_membership(user_entry)
       reader_ldap = build_reader_connection
 
@@ -240,7 +268,7 @@ module LDAP
         memo | f
       end
 
-      group_filter  = Net::LDAP::Filter.eq('objectClass', 'groupOfNames') |
+      group_filter = Net::LDAP::Filter.eq('objectClass', 'groupOfNames') |
                       Net::LDAP::Filter.eq('objectClass', 'groupOfUniqueNames') |
                       Net::LDAP::Filter.eq('objectClass', 'posixGroup')
 

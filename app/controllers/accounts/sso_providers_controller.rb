@@ -60,6 +60,24 @@ module Accounts
       end
     end
 
+    def test_connection
+      ldap_configuration = LDAPConfiguration.new(ldap_configuration_params)
+      result = LDAP::Authenticator.new(ldap_configuration).test_connection
+
+      if result.success?
+        render turbo_stream: turbo_stream.replace(
+          "ldap_test_connection_result",
+          partial: "accounts/sso_providers/ldap/connection_success"
+        )
+      else
+        render turbo_stream: turbo_stream.replace(
+          "ldap_test_connection_result",
+          partial: "accounts/sso_providers/ldap/connection_failed",
+          locals: { error_message: result.error_message }
+        )
+      end
+    end
+
     private
 
     def sso_provider_params

@@ -3,15 +3,20 @@ class Networks::CheckDns
   expects :ingress, :connection
 
   class << self
-    def infer_expected_ip(ingress, connection)
+    def infer_expected_dns(ingress, connection)
       ingress.connect(connection)
-      ip = ingress.ip_address
+      dns_record = ingress.hostname
 
-      if is_private_ip?(ip)
+      if dns_record[:type] == :ip_address && is_private_ip?(dns_record[:value])
         cluster = ingress.service.project.cluster
-        ip = infer_public_ip_from_cluster(connection)
+        # This only works if it is a single node cluster like k3s
+        public_ip = infer_public_ip_from_cluster(connection)
+        dns_record = {
+          value: public_ip,
+          type: :ip_address
+        }
       end
-      ip
+      dns_record
     end
 
     def is_private_ip?(ip)
@@ -40,7 +45,7 @@ class Networks::CheckDns
 
   executed do |context|
     # TODO
-    expected_ip = infer_expected_ip(context.ingress, context.connection)
+    expected_ip = infer_expected_dns(context.ingress, context.connection)
     context.ingress.service.domains.each do |domain|
       ip_addresses = Resolv::DNS.open do |dns|
         dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|
