@@ -33,7 +33,17 @@ class K8::Stateless::Ingress < K8::Base
     if service.nil?
       raise "Ingress-nginx-controller service not installed"
     end
-    service.status.loadBalancer.ingress[0].ip
+    if service.status.loadBalancer.ingress[0].ip
+      {
+        ip: service.status.loadBalancer.ingress[0].ip,
+        record_type: :a_record
+      }
+    else
+      {
+        ip: service.status.loadBalancer.ingress[0].hostname,
+        record_type: :cname_record
+      }
+    end
   end
 
   def ip_address

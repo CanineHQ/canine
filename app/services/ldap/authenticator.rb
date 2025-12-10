@@ -23,7 +23,7 @@ module LDAP
     # ----------
     # call(username:, password:) -> Result
     #
-    def call(username:, password:)
+    def call(username:, password:, fetch_groups:)
       # 1) Bind as reader (service account or anonymous)
       reader_ldap = build_reader_connection
 
@@ -56,7 +56,11 @@ module LDAP
       # 4) Successful LDAP auth → map attributes, fetch groups
       email  = resolve_email(entry, username)
       name   = resolve_name(entry, username)
-      groups = fetch_group_membership(entry)
+      if fetch_groups
+        groups = fetch_group_membership(entry)
+      else
+        groups = []
+      end
 
       Result.new(
         success?: true,
