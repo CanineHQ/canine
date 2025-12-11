@@ -57,7 +57,7 @@ export default class extends Controller {
 
   createDropdown() {
     const dropdown = document.createElement('ul')
-    dropdown.className = 'hidden z-50 menu bg-neutral rounded-box shadow-lg max-h-[300px] overflow-y-auto'
+    dropdown.className = 'hidden z-50 bg-neutral rounded-box shadow-lg max-h-[300px] overflow-y-auto'
     dropdown.style.position = 'absolute'
     dropdown.style.top = '0'
     dropdown.style.left = '0'
@@ -130,7 +130,7 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = results.map((item, index) => `
-      <li class="cursor-pointer hover:bg-base-300 p-2" data-index="${index}">
+      <li class="cursor-pointer p-2 hover:bg-base-300" data-index="${index}">
         ${this.renderItem(item)}
       </li>
     `).join('')
