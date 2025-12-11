@@ -1,6 +1,17 @@
 <%= form_with model: provider do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
   <%= form.hidden_field :provider, value: params[:provider_type] %>
+  <% if params[:provider_type] == Provider::GITHUB_PROVIDER || params[:provider_type] == Provider::GITLAB_PROVIDER %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Host URL <span class="text-gray-400">(optional, for Enterprise)</span></span>
+      </label>
+      <%= form.text_field :registry_url, class: "input input-bordered", placeholder: params[:provider_type] == Provider::GITHUB_PROVIDER ? "https://github.example.com" : "https://gitlab.example.com" %>
+      <label class="label">
+        <span class="label-text-alt text-gray-400">Leave blank for <%= params[:provider_type] == Provider::GITHUB_PROVIDER ? "github.com" : "gitlab.com" %></span>
+      </label>
+    </div>
+  <% end %>
   <% if params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER || form.object.provider == Provider::CUSTOM_REGISTRY_PROVIDER %>
     <div data-controller="registry-selector">
       <div class="form-control mt-1 w-full max-w-sm">
