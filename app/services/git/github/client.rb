@@ -12,6 +12,14 @@ class Git::Github::Client < Git::Client
     )
   end
 
+  def self.build_client(access_token:, api_base_url: nil)
+    client_options = { access_token: }
+    if api_base_url && api_base_url != "https://api.github.com"
+      client_options[:api_endpoint] = "#{api_base_url}/api/v3/"
+    end
+    Octokit::Client.new(client_options)
+  end
+
   def commits(branch)
     client.commits(repository_url, branch).map do |commit|
       Git::Common::Commit.new(
@@ -29,11 +37,7 @@ class Git::Github::Client < Git::Client
   end
 
   def initialize(access_token:, repository_url:, api_base_url: nil)
-    client_options = { access_token: }
-    if api_base_url && api_base_url != "https://api.github.com"
-      client_options[:api_endpoint] = "#{api_base_url}/api/v3/"
-    end
-    @client = Octokit::Client.new(client_options)
+    @client = self.class.build_client(access_token:, api_base_url:)
     @repository_url = repository_url
   end
 

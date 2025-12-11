@@ -6,11 +6,10 @@ class Providers::CreateGithubProvider
   promises :provider
 
   executed do |context|
-    client_options = { access_token: context.provider.access_token }
-    if context.provider.enterprise?
-      client_options[:api_endpoint] = "#{context.provider.api_base_url}/api/v3/"
-    end
-    client = Octokit::Client.new(client_options)
+    client = Git::Github::Client.build_client(
+      access_token: context.provider.access_token,
+      api_base_url: context.provider.api_base_url
+    )
     username = client.user[:login]
     context.provider.auth = {
       info: {

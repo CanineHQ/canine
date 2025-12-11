@@ -1,6 +1,10 @@
 class Integrations::Github::RepositoriesController < ApplicationController
   def index
-    client = Octokit::Client.new(access_token: current_account.github_provider.access_token)
+    provider = current_account.github_provider
+    client = Git::Github::Client.build_client(
+      access_token: provider.access_token,
+      api_base_url: provider.api_base_url
+    )
     if params[:q].present?
       client.auto_paginate = true
       @repositories = client.repos(current_account.github_username)
