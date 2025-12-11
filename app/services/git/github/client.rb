@@ -4,9 +4,11 @@ class Git::Github::Client < Git::Client
   attr_accessor :client, :repository_url
 
   def self.from_project(project)
+    provider = project.project_credential_provider.provider
     new(
-      access_token: project.project_credential_provider.access_token,
-      repository_url: project.repository_url
+      access_token: provider.access_token,
+      repository_url: project.repository_url,
+      api_base_url: provider.api_base_url
     )
   end
 
@@ -26,8 +28,12 @@ class Git::Github::Client < Git::Client
     end
   end
 
-  def initialize(access_token:, repository_url:)
-    @client = Octokit::Client.new(access_token:)
+  def initialize(access_token:, repository_url:, api_base_url: nil)
+    client_options = { access_token: }
+    if api_base_url && api_base_url != "https://api.github.com"
+      client_options[:api_endpoint] = "#{api_base_url}/api/v3/"
+    end
+    @client = Octokit::Client.new(client_options)
     @repository_url = repository_url
   end
 

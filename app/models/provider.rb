@@ -28,8 +28,10 @@
 class Provider < ApplicationRecord
   attr_accessor :username_param
   GITHUB_PROVIDER = "github"
+  GITHUB_API_BASE = "https://api.github.com"
   CUSTOM_REGISTRY_PROVIDER = "container_registry"
   GITLAB_PROVIDER = "gitlab"
+  GITLAB_API_BASE = "https://gitlab.com"
   GIT_TYPE = "git"
   REGISTRY_TYPE = "registry"
   PROVIDER_TYPES = {
@@ -81,6 +83,20 @@ class Provider < ApplicationRecord
 
   def gitlab?
     provider == GITLAB_PROVIDER
+  end
+
+  def enterprise?
+    (github? || gitlab?) && registry_url.present?
+  end
+
+  def api_base_url
+    if registry_url.present?
+      registry_url.chomp("/")
+    elsif github?
+      GITHUB_API_BASE
+    elsif gitlab?
+      GITLAB_API_BASE
+    end
   end
 
   def twitter_refresh_token!(token); end

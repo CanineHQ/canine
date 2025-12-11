@@ -12,16 +12,19 @@ RSpec.describe Providers::CreateGitlabProvider do
     JSON.parse(File.read(Rails.root.join('spec/resources/integrations/gitlab/user.json')))
   end
 
+  let(:gitlab_pat_api_url) { "#{provider.api_base_url}/api/v4/personal_access_tokens/self" }
+  let(:gitlab_user_api_url) { "#{provider.api_base_url}/api/v4/user" }
+
   describe '.execute' do
     context 'when the access token is valid and has correct scopes' do
       before do
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
+        stub_request(:get, gitlab_pat_api_url)
           .to_return(
             status: 200,
             body: personal_access_tokens_data.to_json,
             headers: { 'Content-Type' => 'application/json' }
           )
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_USER_API_URL)
+        stub_request(:get, gitlab_user_api_url)
           .to_return(
             status: 200,
             body: user_data.to_json,
@@ -38,7 +41,7 @@ RSpec.describe Providers::CreateGitlabProvider do
 
     context 'when the access token is invalid' do
       before do
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
+        stub_request(:get, gitlab_pat_api_url)
           .to_return(
             status: 401,
             body: { error: "Unauthorized" }.to_json,
@@ -60,7 +63,7 @@ RSpec.describe Providers::CreateGitlabProvider do
       before do
         error_response = personal_access_tokens_data.deep_dup
         error_response["scopes"] = []
-        stub_request(:get, Providers::CreateGitlabProvider::GITLAB_PAT_API_URL)
+        stub_request(:get, gitlab_pat_api_url)
           .to_return(
             status: 200,
             body: error_response.to_json,
