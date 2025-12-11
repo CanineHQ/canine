@@ -168,15 +168,17 @@
       </div>
     </div>
   </div>
-  <div class="mx-4 hidden rounded bg-base-200 px-3 py-4 lg:block">
-    <p class="text-center text-base font-medium">Need Help?</p>
-    <p class="mt-3 text-center text-sm">Join our Discord server!</p>
-    <div class="mt-3 text-center">
-      <%= link_to "https://discord.gg/68YthskqEz", class: "btn btn-primary btn-sm" do %>
-        Join Discord <iconify-icon icon="ic:baseline-discord" height="16"></iconify-icon>
-      <% end %>
+  <% if ENV['DISCORD_INVITE_URL'].present? %>
+    <div class="mx-4 hidden rounded bg-base-200 px-3 py-4 lg:block">
+      <p class="text-center text-base font-medium">Need Help?</p>
+      <p class="mt-3 text-center text-sm">Join our Discord server!</p>
+      <div class="mt-3 text-center">
+        <%= link_to ENV['DISCORD_INVITE_URL'], class: "btn btn-primary btn-sm" do %>
+          Join Discord <iconify-icon icon="ic:baseline-discord" height="16"></iconify-icon>
+        <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>
 <!-- Start: Click Outside Modal -->
 <dialog aria-label="Modal" class="modal" id="click_outside_modal_2">

@@ -5,10 +5,12 @@
         <span class="sr-only">GitHub</span>
         <iconify-icon icon="simple-icons:github" height="24"></iconify-icon>
       </a>
-      <a href="https://discord.gg/68YthskqEz" class="text-gray-400 hover:text-gray-500">
-        <span class="sr-only">Discord</span>
-        <iconify-icon icon="skill-icons:discord" height="24"></iconify-icon>
-      </a>
+      <% if ENV['DISCORD_INVITE_URL'].present? %>
+        <a href="<%= ENV['DISCORD_INVITE_URL'] %>" class="text-gray-400 hover:text-gray-500">
+          <span class="sr-only">Discord</span>
+          <iconify-icon icon="skill-icons:discord" height="24"></iconify-icon>
+        </a>
+      <% end %>
     </div>
     <div class="mt-8 md:order-1 md:mt-0">
       <p class="text-center text-xs leading-5 text-gray-500">© 2024 Canine, Inc. All rights reserved.</p>
