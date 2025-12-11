@@ -16,13 +16,13 @@
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
           <td>
-          <%= provider.provider %>
-          <br />
-          <% if provider.container_registry? %>
-            <span class="text-gray-500">
-              <%= provider.registry_url %>
-            </span>
-          <% end %>
+            <%= provider.provider.titleize %>
+            <% if provider.registry_url.present? %>
+              <br />
+              <span class="text-gray-500 text-sm">
+                <%= provider.registry_url %>
+              </span>
+            <% end %>
           </td>
           <td>
             <%= render "providers/show", provider: %>
