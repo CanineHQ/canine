@@ -22,9 +22,6 @@
             <% end %>
             permissions.
           </div>
-          <div class="mt-2 text-sm text-gray-500">
-            For GitHub Enterprise, enter your server's host URL below.
-          </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
           <%= link_to "Find your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500 " %>
           <div class="mt-2">
@@ -33,9 +30,6 @@
               <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
             <% end %>
             permissions.
-          </div>
-          <div class="mt-2 text-sm text-gray-500">
-            For GitLab Enterprise/Self-Managed, enter your server's host URL below.
           </div>
         <% end %>
       </div>
