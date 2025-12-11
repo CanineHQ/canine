@@ -15,7 +15,7 @@ class Scheduled::CheckHealthJob < ApplicationJob
           else
             service.status = :unhealthy
           end
-        rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNREFUSED, SocketError, HTTParty::Error, OpenSSL::SSL::SSLError => e
+        rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, HTTParty::Error, OpenSSL::SSL::SSLError => e
           Rails.logger.warn("Health check failed for #{service.name}: #{e.class} - #{e.message}")
           service.status = :unhealthy
         end
