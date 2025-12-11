@@ -9,13 +9,13 @@
 
     <%= render "projects/services/telepresence_guide", cluster: @project.cluster, url: "http://#{service.internal_url}" %>
   </div>
-  <div>
-    <h2 class="text-xl font-bold">Public Networking</h2>
-    <hr class="mt-3 mb-4 border-t border-base-300" />
-    <% if service.allow_public_networking? %>
+  <% if service.allow_public_networking? %>
+    <div>
+      <h2 class="text-xl font-bold">Public Networking</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

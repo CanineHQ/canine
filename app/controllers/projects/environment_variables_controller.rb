@@ -30,7 +30,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
       @project.updated!
 
       if @project.current_deployment.present?
-        Projects::DeploymentJob.perform_later(@project.current_deployment)
+        Projects::DeploymentJob.perform_later(@project.current_deployment, current_user)
         @project.events.create(user: current_user, eventable: @project.last_build, event_action: :update)
         redirect_to project_environment_variables_path(@project),
                     notice: "Restarting services with new environment variables."
@@ -47,7 +47,7 @@ class Projects::EnvironmentVariablesController < Projects::BaseController
     @environment_variable = @project.environment_variables.find(params[:id])
     @environment_variable.destroy
     if @project.current_deployment.present?
-      Projects::DeploymentJob.perform_later(@project.current_deployment)
+      Projects::DeploymentJob.perform_later(@project.current_deployment, current_user)
     end
     render turbo_stream: turbo_stream.remove("environment_variable_#{@environment_variable.id}")
   end

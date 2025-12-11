@@ -7,7 +7,7 @@ class Async::K8::CertificateStatusViewModel < Async::BaseViewModel
   end
 
   def initial_render
-    "Certificate Status: <div class='loading loading-spinner loading-sm'></div>"
+    "<div class='flex items-center gap-2'>Certificate Status: <div class='loading loading-spinner loading-sm'></div></div>"
   end
 
   def connection
@@ -15,12 +15,12 @@ class Async::K8::CertificateStatusViewModel < Async::BaseViewModel
   end
   def async_render
     template = <<-HTML
-      <div>
+      <div class="flex items-center gap-2">
         Certificate Status:
         <% if K8::Stateless::Ingress.new(service).connect(connection).certificate_status %>
-          <span class="text-success ml-2 font-semibold">Issued</span>
+          <span class="text-success font-semibold">Issued</span>
         <% else %>
-          <span class="text-warning ml-2 font-semibold">Issuing</span>
+          <span class="text-warning font-semibold">Issuing</span>
         <% end %>
       </div>
     HTML

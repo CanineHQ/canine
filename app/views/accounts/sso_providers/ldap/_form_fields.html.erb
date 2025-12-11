@@ -107,4 +107,16 @@
       </div>
     </div>
   </details>
+
+  <div class="mt-6 mb-4" data-controller="ldap-test-connection">
+    <button type="button"
+            class="btn btn-outline btn-sm"
+            data-action="click->ldap-test-connection#test"
+            data-ldap-test-connection-target="button">
+      <iconify-icon icon="lucide:plug" height="16"></iconify-icon>
+      Test Connection
+    </button>
+    <%= turbo_frame_tag "ldap_test_connection_result", class: "block mt-3", data: { ldap_test_connection_target: "result" } do %>
+    <% end %>
+  </div>
 <% end %>
