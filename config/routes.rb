@@ -5,6 +5,10 @@ Rails.application.routes.draw do
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end
 
+  # OIDC authentication routes
+  get '/accounts/:slug/auth/oidc', to: 'accounts/oidc#authorize', as: :oidc_auth
+  get '/accounts/:slug/auth/oidc/callback', to: 'accounts/oidc#callback', as: :oidc_callback
+
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
     Avo::Engine.routes.draw do

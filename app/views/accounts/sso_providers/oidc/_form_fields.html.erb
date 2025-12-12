@@ -1,0 +1,121 @@
+<%= render "accounts/sso_providers/oidc/redirect_uri_info" %>
+
+<%= fields_for :oidc_configuration, oidc_configuration do |oidc_form| %>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(
+      label: "Issuer URL",
+      description: "The OIDC provider's issuer URL (used for discovery)"
+    )) do %>
+      <%= oidc_form.text_field :issuer, class: "input input-bordered w-full", required: true, placeholder: "https://auth.example.com" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Client ID",
+      description: "OAuth 2.0 client identifier"
+    )) do %>
+      <%= oidc_form.text_field :client_id, class: "input input-bordered w-full", required: true, placeholder: "your-client-id" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Client Secret",
+      description: "OAuth 2.0 client secret"
+    )) do %>
+      <%= oidc_form.password_field :client_secret, class: "input input-bordered w-full", required: true %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Scopes",
+      description: "Space-separated list of scopes to request"
+    )) do %>
+      <%= oidc_form.text_field :scopes, class: "input input-bordered w-full", placeholder: "openid email profile" %>
+      <label class="label">
+        <span class="label-text-alt">Default: openid email profile</span>
+      </label>
+    <% end %>
+  </div>
+
+  <details class="collapse collapse-arrow bg-base-200 mt-8">
+    <summary class="collapse-title font-medium">
+      Advanced Settings (Optional)
+    </summary>
+    <div class="collapse-content">
+      <div class="alert mt-4 mb-6">
+        <iconify-icon icon="lucide:info" class="mr-1"></iconify-icon>
+        <span class="text-sm">Leave these blank to use OIDC discovery. Only fill in if your provider doesn't support discovery.</span>
+      </div>
+
+      <div class="space-y-8">
+        <%= render(FormFieldComponent.new(
+          label: "Authorization Endpoint",
+          description: "URL for authorization requests"
+        )) do %>
+          <%= oidc_form.text_field :authorization_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/authorize" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Token Endpoint",
+          description: "URL for token requests"
+        )) do %>
+          <%= oidc_form.text_field :token_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/oauth/token" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "UserInfo Endpoint",
+          description: "URL for fetching user information"
+        )) do %>
+          <%= oidc_form.text_field :userinfo_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/userinfo" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "JWKS URI",
+          description: "URL for JSON Web Key Set"
+        )) do %>
+          <%= oidc_form.text_field :jwks_uri, class: "input input-bordered w-full", placeholder: "https://auth.example.com/.well-known/jwks.json" %>
+        <% end %>
+      </div>
+
+      <div class="divider">Claim Mappings</div>
+
+      <div class="space-y-8">
+        <%= render(FormFieldComponent.new(
+          label: "UID Claim",
+          description: "Claim used as user identifier"
+        )) do %>
+          <%= oidc_form.text_field :uid_claim, class: "input input-bordered w-full", placeholder: "sub" %>
+          <label class="label">
+            <span class="label-text-alt">Default: sub</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Email Claim",
+          description: "Claim used for email address"
+        )) do %>
+          <%= oidc_form.text_field :email_claim, class: "input input-bordered w-full", placeholder: "email" %>
+          <label class="label">
+            <span class="label-text-alt">Default: email</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Name Claim",
+          description: "Claim used for display name"
+        )) do %>
+          <%= oidc_form.text_field :name_claim, class: "input input-bordered w-full", placeholder: "name" %>
+          <label class="label">
+            <span class="label-text-alt">Default: name</span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </details>
+<% end %>

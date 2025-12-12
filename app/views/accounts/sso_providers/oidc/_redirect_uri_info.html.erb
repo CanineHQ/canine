@@ -1,0 +1,8 @@
+<div class="alert mb-4">
+  <iconify-icon icon="lucide:info" class="mr-2"></iconify-icon>
+  <div>
+    <div class="font-medium">Redirect URI</div>
+    <div class="text-sm mt-1">Configure this redirect URI in your OIDC provider:</div>
+    <code class="block mt-2 text-xs bg-base-300 p-2 rounded break-all select-all"><%= oidc_callback_url(slug: current_account.slug) %></code>
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_26_014509) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_11_151950) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -391,6 +391,22 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_014509) do
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_noticed_notifications_on_event_id"
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
+  end
+
+  create_table "oidc_configurations", force: :cascade do |t|
+    t.string "issuer", null: false
+    t.string "client_id", null: false
+    t.string "client_secret", null: false
+    t.string "authorization_endpoint"
+    t.string "token_endpoint"
+    t.string "userinfo_endpoint"
+    t.string "jwks_uri"
+    t.string "scopes", default: "openid email profile"
+    t.string "uid_claim", default: "sub", null: false
+    t.string "email_claim", default: "email"
+    t.string "name_claim", default: "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "project_add_ons", force: :cascade do |t|

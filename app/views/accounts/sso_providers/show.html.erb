@@ -10,7 +10,11 @@
             <div>
               <h3 class="text-lg font-semibold"><%= @sso_provider.name %></h3>
               <div class="flex gap-2 mt-2">
-                <span class="badge badge-outline">LDAP</span>
+                <% if @sso_provider.ldap? %>
+                  <span class="badge badge-outline">LDAP</span>
+                <% elsif @sso_provider.oidc? %>
+                  <span class="badge badge-outline">OIDC</span>
+                <% end %>
                 <% if @sso_provider.enabled %>
                   <span class="badge badge-success">Enabled</span>
                 <% else %>
@@ -26,24 +30,46 @@
 
           <% if @configuration %>
             <div class="divider"></div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <div class="text-sm font-medium text-base-content/70 mb-1">Host</div>
-                <div class="font-mono"><%= @configuration.host %>:<%= @configuration.port %></div>
+            <% if @sso_provider.ldap? %>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Host</div>
+                  <div class="font-mono"><%= @configuration.host %>:<%= @configuration.port %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Base DN</div>
+                  <div class="font-mono"><%= @configuration.base_dn %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">UID Attribute</div>
+                  <div class="font-mono"><%= @configuration.uid_attribute %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Encryption</div>
+                  <div class="font-mono"><%= @configuration.encryption.titleize %></div>
+                </div>
               </div>
-              <div>
-                <div class="text-sm font-medium text-base-content/70 mb-1">Base DN</div>
-                <div class="font-mono"><%= @configuration.base_dn %></div>
+            <% elsif @sso_provider.oidc? %>
+              <%= render "accounts/sso_providers/oidc/redirect_uri_info" %>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Issuer</div>
+                  <div class="font-mono text-sm break-all"><%= @configuration.issuer %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Client ID</div>
+                  <div class="font-mono text-sm"><%= @configuration.client_id %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Scopes</div>
+                  <div class="font-mono text-sm"><%= @configuration.scopes %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">UID Claim</div>
+                  <div class="font-mono text-sm"><%= @configuration.uid_claim %></div>
+                </div>
               </div>
-              <div>
-                <div class="text-sm font-medium text-base-content/70 mb-1">UID Attribute</div>
-                <div class="font-mono"><%= @configuration.uid_attribute %></div>
-              </div>
-              <div>
-                <div class="text-sm font-medium text-base-content/70 mb-1">Encryption</div>
-                <div class="font-mono"><%= @configuration.encryption.titleize %></div>
-              </div>
-            </div>
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -54,7 +80,8 @@
       </div>
 
       <div class="flex gap-2">
-        <%= link_to "+ Add LDAP Provider", new_sso_provider_path, class: "btn btn-primary btn-sm" %>
+        <%= link_to "+ Add LDAP Provider", new_sso_provider_path(provider_type: "ldap"), class: "btn btn-primary btn-sm" %>
+        <%= link_to "+ Add OIDC Provider", new_sso_provider_path(provider_type: "oidc"), class: "btn btn-primary btn-sm" %>
       </div>
     <% end %>
   <% end %>
