@@ -8,6 +8,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
 require 'rspec/rails'
+require 'factory_bot_rails'
 require 'support/webmock'
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -34,6 +35,8 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
   end
