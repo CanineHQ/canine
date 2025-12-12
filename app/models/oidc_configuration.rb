@@ -27,7 +27,7 @@ class OIDCConfiguration < ApplicationRecord
   validates :uid_claim, presence: true
 
   def discovery_url
-    "#{issuer.chomp('/')}/.well-known/openid-configuration"
+    URI.join(issuer, ".well-known/openid-configuration").to_s
   end
 
   def uses_discovery?

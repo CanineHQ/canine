@@ -26,7 +26,7 @@
       label: "Client Secret",
       description: "OAuth 2.0 client secret"
     )) do %>
-      <%= oidc_form.password_field :client_secret, class: "input input-bordered w-full", required: true %>
+      <%= oidc_form.text_field :client_secret, type: "password", class: "input input-bordered w-full", required: true %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>

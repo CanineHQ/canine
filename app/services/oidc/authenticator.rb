@@ -86,8 +86,6 @@ module OIDC
 
     def extract_claims(id_token, access_token)
       if id_token.present?
-        # Decode JWT without verification for now (verification should be added for production)
-        # The ID token contains the user claims
         payload = decode_jwt(id_token)
         return payload if payload.is_a?(Result)
         payload
@@ -100,14 +98,32 @@ module OIDC
     end
 
     def decode_jwt(token)
-      # Simple JWT decode (without signature verification - should add JWKS verification for production)
-      parts = token.split(".")
-      return Result.new(success?: false, error_message: "Invalid JWT format") if parts.length < 2
+      jwks = fetch_jwks
+      decoded = JWT.decode(token, nil, true, {
+        algorithms: %w[RS256 RS384 RS512 ES256 ES384 ES512],
+        jwks: jwks,
+        iss: config.issuer,
+        aud: config.client_id,
+        verify_iss: true,
+        verify_aud: true
+      })
+      decoded.first
+    rescue JWT::DecodeError => e
+      @logger.error "OIDC auth: JWT decode error - #{e.message}"
+      Result.new(success?: false, error_message: "Invalid token: #{e.message}")
+    end
 
-      payload = Base64.urlsafe_decode64(parts[1] + "=" * (4 - parts[1].length % 4))
-      JSON.parse(payload)
-    rescue => e
-      Result.new(success?: false, error_message: "Failed to decode JWT: #{e.message}")
+    def fetch_jwks
+      return @jwks_cache if @jwks_cache
+
+      jwks_uri = config.jwks_uri.presence || discover_endpoint("jwks_uri")
+      response = HTTP.get(jwks_uri)
+
+      unless response.status.success?
+        raise JWT::DecodeError, "Failed to fetch JWKS from #{jwks_uri}"
+      end
+
+      @jwks_cache = JWT::JWK::Set.new(JSON.parse(response.body.to_s))
     end
 
     def fetch_userinfo(access_token)

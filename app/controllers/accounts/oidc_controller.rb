@@ -4,8 +4,8 @@ module Accounts
     before_action :load_account
 
     def authorize
-      oidc_config = @account.sso_provider&.configuration
-      unless oidc_config.is_a?(OIDCConfiguration)
+      oidc_configuration = @account.sso_provider&.configuration
+      unless oidc_configuration.is_a?(OIDCConfiguration)
         redirect_to account_sign_in_path(@account.slug), alert: "OIDC is not configured for this account"
         return
       end
@@ -15,8 +15,8 @@ module Accounts
       session[:oidc_state] = state
 
       # Build authorization URL
-      auth_url = build_authorization_url(oidc_config, state)
-      redirect_to auth_url, allow_other_host: true
+      authorization_url = build_authorization_url(oidc_configuration, state)
+      redirect_to authorization_url, allow_other_host: true
     end
 
     def callback
@@ -26,9 +26,9 @@ module Accounts
         return
       end
 
-      oidc_config = @account.sso_provider&.configuration
+      oidc_configuration = @account.sso_provider&.configuration
 
-      unless oidc_config.is_a?(OIDCConfiguration)
+      unless oidc_configuration.is_a?(OIDCConfiguration)
         redirect_to root_path, alert: "OIDC is not configured"
         return
       end
@@ -39,7 +39,7 @@ module Accounts
       end
 
       # Exchange code for tokens
-      result = OIDC::Authenticator.new(oidc_config).authenticate(
+      result = OIDC::Authenticator.new(oidc_configuration).authenticate(
         code: params[:code],
         redirect_uri: oidc_callback_url(slug: @account.slug)
       )
@@ -51,26 +51,15 @@ module Accounts
 
       # Create or find user
       sso_provider = @account.sso_provider
-      if sso_provider.just_in_time_team_provisioning_mode?
-        ar_result = ActiveRecord::Base.transaction do
-          SSO::SyncUserTeams.call(
-            email: result.email,
-            team_names: result.groups || [],
-            account: @account,
-            sso_provider: sso_provider,
-            uid: result.uid,
-            name: result.name
-          )
-        end
-      else
-        ar_result = SSO::CreateUserInAccount.execute(
-          email: result.email,
-          account: @account,
-          sso_provider: sso_provider,
-          uid: result.uid,
-          name: result.name
-        )
-      end
+      ar_result = SSO::SyncUserTeams.call(
+        email: result.email,
+        team_names: result.groups || [],
+        account: @account,
+        sso_provider: sso_provider,
+        uid: result.uid,
+        name: result.name,
+        create_teams: sso_provider.just_in_time_team_provisioning_mode?
+      )
 
       if ar_result.failure?
         redirect_to account_sign_in_path(@account.slug), alert: "Failed to create user account"
@@ -94,22 +83,22 @@ module Accounts
       redirect_to root_path, alert: "Account not found"
     end
 
-    def build_authorization_url(oidc_config, state)
+    def build_authorization_url(oidc_configuration, state)
       params = {
         response_type: "code",
-        client_id: oidc_config.client_id,
+        client_id: oidc_configuration.client_id,
         redirect_uri: oidc_callback_url(slug: @account.slug),
-        scope: oidc_config.scopes,
+        scope: oidc_configuration.scopes,
         state: state
       }
 
-      auth_endpoint = oidc_config.authorization_endpoint.presence || discover_authorization_endpoint(oidc_config)
+      auth_endpoint = oidc_configuration.authorization_endpoint.presence || discover_authorization_endpoint(oidc_configuration)
       "#{auth_endpoint}?#{params.to_query}"
     end
 
-    def discover_authorization_endpoint(oidc_config)
+    def discover_authorization_endpoint(oidc_configuration)
       # Fetch from OIDC discovery document
-      discovery_url = oidc_config.discovery_url
+      discovery_url = oidc_configuration.discovery_url
       response = HTTP.get(discovery_url)
       if response.status.success?
         JSON.parse(response.body.to_s)["authorization_endpoint"]

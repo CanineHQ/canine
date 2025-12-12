@@ -20,6 +20,7 @@
                 <% else %>
                   <span class="badge badge-ghost">Disabled</span>
                 <% end %>
+                <span class="badge badge-info"><%= @sso_provider.sso_users_count %> <%= "user".pluralize(@sso_provider.sso_users_count) %></span>
               </div>
             </div>
             <div class="flex gap-2">

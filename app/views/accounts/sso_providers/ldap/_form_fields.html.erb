@@ -54,7 +54,7 @@
       label: "Bind Password",
       description: "Password for the bind DN"
     )) do %>
-      <%= ldap_form.password_field :bind_password, class: "input input-bordered w-full" %>
+      <%= ldap_form.text_field :bind_password, type: "password", class: "input input-bordered w-full" %>
     <% end %>
   </div>
 

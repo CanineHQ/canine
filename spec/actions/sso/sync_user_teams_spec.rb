@@ -13,7 +13,8 @@ RSpec.describe SSO::SyncUserTeams do
         team_names: [ { name: 'Existing' }, { name: 'NewTeam' } ],
         account: account,
         sso_provider: sso_provider,
-        uid: 'user-uid-123'
+        uid: 'user-uid-123',
+        create_teams: true
       )
 
       expect(result).to be_success
@@ -36,7 +37,8 @@ RSpec.describe SSO::SyncUserTeams do
         team_names: [ { name: 'KeepTeam' } ],
         account: account,
         sso_provider: sso_provider,
-        uid: 'existing-uid'
+        uid: 'existing-uid',
+        create_teams: true
       )
 
       expect(result).to be_success
@@ -58,7 +60,8 @@ RSpec.describe SSO::SyncUserTeams do
         team_names: [],
         account: account,
         sso_provider: sso_provider,
-        uid: 'existing-uid'
+        uid: 'existing-uid',
+        create_teams: true
       )
 
       expect(result).to be_success
