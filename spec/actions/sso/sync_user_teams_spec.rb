@@ -2,12 +2,19 @@ require 'rails_helper'
 
 RSpec.describe SSO::SyncUserTeams do
   let(:account) { create(:account) }
+  let(:sso_provider) { create(:sso_provider, account: account) }
 
   describe '.call' do
     it 'creates user, teams, and team memberships' do
       create(:team, account: account, name: 'Existing')
 
-      result = described_class.call('new@example.com', [ { name: 'Existing' }, { name: 'NewTeam' } ], account)
+      result = described_class.call(
+        email: 'new@example.com',
+        team_names: [ { name: 'Existing' }, { name: 'NewTeam' } ],
+        account: account,
+        sso_provider: sso_provider,
+        uid: 'user-uid-123'
+      )
 
       expect(result).to be_success
       expect(result.user.email).to eq('new@example.com')
@@ -22,8 +29,15 @@ RSpec.describe SSO::SyncUserTeams do
       create(:team_membership, user: user, team: team_to_keep)
       create(:team_membership, user: user, team: team_to_remove)
       create(:account_user, account: account, user: user)
+      create(:provider, user: user, sso_provider: sso_provider, uid: 'existing-uid', provider: sso_provider.name)
 
-      result = described_class.call('existing@example.com', [ { name: 'KeepTeam' } ], account)
+      result = described_class.call(
+        email: 'existing@example.com',
+        team_names: [ { name: 'KeepTeam' } ],
+        account: account,
+        sso_provider: sso_provider,
+        uid: 'existing-uid'
+      )
 
       expect(result).to be_success
       expect(result.user.teams.reload).to contain_exactly(team_to_keep)
@@ -37,8 +51,15 @@ RSpec.describe SSO::SyncUserTeams do
       create(:team_membership, user: user, team: team_in_account)
       create(:team_membership, user: user, team: team_in_other)
       create(:account_user, account: account, user: user)
+      create(:provider, user: user, sso_provider: sso_provider, uid: 'existing-uid', provider: sso_provider.name)
 
-      result = described_class.call('existing@example.com', [], account)
+      result = described_class.call(
+        email: 'existing@example.com',
+        team_names: [],
+        account: account,
+        sso_provider: sso_provider,
+        uid: 'existing-uid'
+      )
 
       expect(result).to be_success
       expect(user.teams.reload).to contain_exactly(team_in_other)

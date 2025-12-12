@@ -53,12 +53,22 @@ module Accounts
       sso_provider = @account.sso_provider
       if sso_provider.just_in_time_team_provisioning_mode?
         ar_result = ActiveRecord::Base.transaction do
-          SSO::SyncUserTeams.call(result.email, result.groups || [], @account)
+          SSO::SyncUserTeams.call(
+            email: result.email,
+            team_names: result.groups || [],
+            account: @account,
+            sso_provider: sso_provider,
+            uid: result.uid,
+            name: result.name
+          )
         end
       else
         ar_result = SSO::CreateUserInAccount.execute(
           email: result.email,
-          account: @account
+          account: @account,
+          sso_provider: sso_provider,
+          uid: result.uid,
+          name: result.name
         )
       end
 

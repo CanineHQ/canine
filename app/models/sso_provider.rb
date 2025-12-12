@@ -24,6 +24,7 @@
 class SSOProvider < ApplicationRecord
   belongs_to :account
   belongs_to :configuration, polymorphic: true, dependent: :destroy
+  has_many :providers, dependent: :nullify
 
   validates :account_id, uniqueness: true
 

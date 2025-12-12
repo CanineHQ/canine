@@ -15,14 +15,18 @@
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #  external_id         :string
+#  sso_provider_id     :bigint
 #  user_id             :bigint           not null
 #
 # Indexes
 #
-#  index_providers_on_user_id  (user_id)
+#  index_providers_on_sso_provider_id          (sso_provider_id)
+#  index_providers_on_sso_provider_id_and_uid  (sso_provider_id,uid) UNIQUE WHERE (sso_provider_id IS NOT NULL)
+#  index_providers_on_user_id                  (user_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (sso_provider_id => sso_providers.id)
 #  fk_rails_...  (user_id => users.id)
 #
 class Provider < ApplicationRecord
@@ -44,8 +48,10 @@ class Provider < ApplicationRecord
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
   scope :has_container_registry, -> { where(provider: [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ]) }
+  scope :non_sso, -> { where(sso_provider_id: nil) }
 
   belongs_to :user
+  belongs_to :sso_provider, class_name: "SSOProvider", optional: true
 
   Devise.omniauth_configs.keys.each do |provider|
     scope provider, -> { where(provider: provider) }

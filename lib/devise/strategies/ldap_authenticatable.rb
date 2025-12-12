@@ -54,12 +54,22 @@ module Devise
         if sso_provider.just_in_time_team_provisioning_mode?
           groups = result.groups
           ar_result = ActiveRecord::Base.transaction do
-            SSO::SyncUserTeams.call(email, groups, ldap_configuration.account)
+            SSO::SyncUserTeams.call(
+              email: email,
+              team_names: groups,
+              account: ldap_configuration.account,
+              sso_provider: sso_provider,
+              uid: result.user_dn,
+              name: result.name
+            )
           end
         else
           ar_result = SSO::CreateUserInAccount.execute(
             email: email,
             account: ldap_configuration.account,
+            sso_provider: sso_provider,
+            uid: result.user_dn,
+            name: result.name
           )
         end
 

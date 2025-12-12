@@ -23,9 +23,10 @@
 #
 FactoryBot.define do
   factory :sso_provider do
-    account { nil }
-    configuration { nil }
-    name { "MyString" }
-    enabled { false }
+    account
+    configuration { association :oidc_configuration }
+    name { "Test SSO Provider" }
+    enabled { true }
+    team_provisioning_mode { :disabled }
   end
 end
