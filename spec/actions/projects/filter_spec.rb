@@ -6,7 +6,7 @@ RSpec.describe Projects::Filter do
     api = create(:project, cluster: cluster, account: cluster.account, name: 'api-service')
     create(:project, cluster: cluster, account: cluster.account, name: 'web-frontend')
 
-    expect(described_class.execute(params: { q: 'API' }, projects: Project.all).projects).to eq([api])
+    expect(described_class.execute(params: { q: 'API' }, projects: Project.all).projects).to eq([ api ])
     expect(described_class.execute(params: { q: '' }, projects: Project.all).projects.count).to eq(2)
   end
 end
