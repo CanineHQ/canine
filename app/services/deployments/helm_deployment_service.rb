@@ -18,6 +18,18 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     complete_deployment!
   end
 
+  def uninstall
+    setup_connection
+    setup_helm_client
+
+    predestroy
+    @helm_client.uninstall(@project.name, namespace: @project.namespace)
+    postdestroy
+
+    delete_namespace if @project.managed_namespace?
+    @logger.info("Uninstalled #{@project.name}", color: :green)
+  end
+
   private
 
   def setup_chart_builder
@@ -67,5 +79,9 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
 
   def mark_services_healthy
     @project.services.each(&:healthy!)
+  end
+
+  def setup_helm_client
+    @helm_client = K8::Helm::Client.connect(@connection, Cli::RunAndLog.new(@logger))
   end
 end

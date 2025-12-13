@@ -26,6 +26,17 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
     @deployment.failed!
   end
 
+  def uninstall
+    setup_connection
+
+    predestroy
+    delete_all_resources
+    postdestroy
+
+    delete_namespace if @project.managed_namespace?
+    @logger.info("Uninstalled #{@project.name}", color: :green)
+  end
+
   private
 
   def setup_connection
@@ -91,6 +102,15 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
           kubectl.call("delete #{resource_type.downcase} #{resource['metadata']['name']} -n #{@project.namespace}")
         end
       end
+    end
+  end
+
+  def delete_all_resources
+    resources_to_delete = DEPLOYABLE_RESOURCES.reject { |r| [ "Pv" ].include?(r) }
+
+    resources_to_delete.each do |resource_type|
+      @logger.info("Deleting all #{resource_type} resources with label caninemanaged=true", color: :yellow)
+      @kubectl.call("delete #{resource_type.downcase} -l caninemanaged=true -n #{@project.namespace}")
     end
   end
 end

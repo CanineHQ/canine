@@ -1,5 +1,13 @@
 class Deployments::BaseDeploymentService
+  class DeploymentFailure < StandardError; end
+
   DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Ingress Pv Pvc].freeze
+
+  def self.for_project(project, user)
+    service = allocate
+    service.send(:initialize_for_project, project, user)
+    service
+  end
 
   def initialize(deployment, user)
     @deployment = deployment
@@ -13,6 +21,13 @@ class Deployments::BaseDeploymentService
   end
 
   private
+
+  def initialize_for_project(project, user)
+    @deployment = nil
+    @user = user
+    @project = project
+    @logger = Rails.logger
+  end
 
   def setup_connection
     @connection = K8::Connection.new(@project, @user, allow_anonymous: true)
@@ -72,5 +87,22 @@ class Deployments::BaseDeploymentService
   def complete_deployment!
     @deployment.completed!
     @project.deployed!
+  end
+
+  def predestroy
+    return unless @project.predestroy_command.present?
+
+    run_command(@project.predestroy_command, "predestroy")
+  end
+
+  def postdestroy
+    return unless @project.postdestroy_command.present?
+
+    run_command(@project.postdestroy_command, "postdestroy")
+  end
+
+  def delete_namespace
+    @logger.info("Deleting namespace: #{@project.namespace}", color: :yellow)
+    @kubectl.call("delete namespace #{@project.namespace}")
   end
 end

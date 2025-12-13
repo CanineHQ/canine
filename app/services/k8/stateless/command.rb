@@ -29,7 +29,7 @@ class K8::Stateless::Command < K8::Base
       sleep(3.0)
       retries += 1
       if retries > 30
-        raise Deployments::DeploymentFailure, "Predeploy command `#{command}` took too long to complete"
+        raise Deployments::BaseDeploymentService::DeploymentFailure, "Predeploy command `#{command}` took too long to complete"
       end
     end
   end
@@ -37,7 +37,7 @@ class K8::Stateless::Command < K8::Base
   def done?
     _statuses = statuses
     if _statuses.include?("Failed") || _statuses.include?("ActiveDeadlineExceeded")
-      raise Deployments::DeploymentFailure, "Predeploy command `#{command}` failed"
+      raise Deployments::BaseDeploymentService::DeploymentFailure, "Predeploy command `#{command}` failed"
     end
     _statuses.include?("Complete")
   end
