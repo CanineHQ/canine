@@ -8,13 +8,13 @@
         </div>
         <div class="form-control form-group">
           <%= form.label :command %>
-          <%= form.text_field :command, class: "input input-bordered w-full", required: false %>
+          <%= form.text_field :command, class: "input input-bordered w-full font-mono text-sm", required: false %>
         </div>
         <% if service.cron_job? %>
           <div class="form-control form-group">
             <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
               <%= cron_schedule_form.label :schedule %>
-              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full font-mono text-sm", placeholder: "0 0 * * *", value: service.cron_schedule.schedule %>
             <% end %>
           </div>
         <% end %>

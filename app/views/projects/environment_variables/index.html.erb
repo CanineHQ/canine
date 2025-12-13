@@ -26,7 +26,7 @@
           <%= form_with(url: project_environment_variables_path(@project), method: :post) do |form| %>
             <%= form.text_area(
               :text_content,
-              class: "textarea textarea-bordered w-full",
+              class: "textarea textarea-bordered w-full font-mono text-sm",
               placeholder: "KEY1=value1\nKEY2=value2",
               rows: 6,
               data: {

@@ -76,7 +76,7 @@
 
         <div class="form-group">
           <%= form.label :command %>
-          <%= form.text_field :command, class: "input input-bordered w-full max-w-sm", required: false %>
+          <%= form.text_field :command, class: "input input-bordered w-full max-w-sm font-mono text-sm", required: false %>
           <label class="label">
             <span class="label-text-alt">Optional: A blank command will run the default command from the Dockerfile</span>
           </label>
@@ -114,7 +114,7 @@
             <h3 class="text-lg font-bold">Cron job</h3>
             <%= form.fields_for :cron_schedule do |cron_schedule_form| %>
               <%= cron_schedule_form.label :schedule %>
-              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-sm", placeholder: "0 0 * * *" %>
+              <%= cron_schedule_form.text_field :schedule, class: "input input-bordered w-full max-w-sm font-mono text-sm", placeholder: "0 0 * * *" %>
             <% end %>
             <label class="label">
               <span class="label-text-alt">Use <a href="https://crontab.guru/" target="_blank">crontab.guru</a> to schedule your cron job</span>
