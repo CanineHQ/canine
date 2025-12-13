@@ -22,12 +22,12 @@ class MockChartBuilder
   end
 end
 
-RSpec.describe Projects::HelmDeploymentJob do
+RSpec.describe Deployments::HelmDeploymentService do
   let(:project) { create(:project) }
   let(:build) { create(:build, project: project) }
   let(:deployment) { create(:deployment, build: build) }
   let(:user) { project.account.owner }
-  let(:job) { described_class.new }
+  let(:service_instance) { described_class.new(deployment, user) }
   let(:mock_chart_builder) { MockChartBuilder.new }
 
   let!(:web_service) do
@@ -61,7 +61,7 @@ RSpec.describe Projects::HelmDeploymentJob do
       double(failure?: false, docker_config_json: '{}')
     )
 
-    job.perform(deployment, user)
+    service_instance.deploy
   end
 
   def find_resource(kind, name = nil)
