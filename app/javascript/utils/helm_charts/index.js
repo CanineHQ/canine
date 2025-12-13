@@ -23,7 +23,7 @@ export async function getDefaultValues(
 export function helmChartHeader(packageData) {
   const logoImageUrl = getLogoImageUrl(packageData);
   return `
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4 max-w-lg">
         <img src="${logoImageUrl}" alt="${packageData.name}" class="h-16 w-16">
         <div class="flex-1">
           <div class="flex items-center justify-between mb-1">
@@ -41,7 +41,7 @@ export function helmChartHeader(packageData) {
                 ${packageData.stars}
               </span>` : ''}
           </div>
-          <p class="text-sm text-base-content/70 mb-2">${packageData.description}</p>
+          <p class="text-sm text-base-content/70 mb-2 line-clamp-2">${packageData.description}</p>
           <div class="flex gap-4 text-xs text-base-content/70">
             <div class="flex items-center gap-1">
               <iconify-icon icon="lucide:globe"></iconify-icon>
