@@ -1,46 +1,58 @@
 <%= settings_layout do %>
   <%= turbo_frame_tag "sso_provider" do %>
     <div class="font-lg font-bold mt-4">
-      Add LDAP Provider
+      Add <%= @provider_type == "oidc" ? "OIDC" : "LDAP" %> Provider
     </div>
 
     <div class="text-sm text-gray-500 mt-2 mb-4">
-      Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
+      <% if @provider_type == "oidc" %>
+        Configure an OpenID Connect provider for SSO authentication. This will allow users to sign in using your identity provider.
+      <% else %>
+        Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
+      <% end %>
     </div>
 
-    <%= form_with model: @sso_provider, url: sso_provider_path do |form| %>
+    <div class="tabs tabs-boxed mb-4 max-w-sm">
+      <%= link_to "LDAP", new_sso_provider_path(provider_type: "ldap"), class: "tab #{@provider_type == 'ldap' ? 'tab-active' : ''}" %>
+      <%= link_to "OIDC", new_sso_provider_path(provider_type: "oidc"), class: "tab #{@provider_type == 'oidc' ? 'tab-active' : ''}" %>
+    </div>
+
+    <%= form_with model: @sso_provider, url: sso_provider_path(provider_type: @provider_type) do |form| %>
       <%= render "shared/error_messages", resource: form.object %>
 
-      <div class="form-control mt-4 w-full max-w-sm">
-        <label class="label">
-          <span class="label-text">Provider Name</span>
-        </label>
-        <%= form.text_field :name, class: "input input-bordered", required: true, placeholder: "e.g., Company SSO" %>
-        <label class="label">
-          <span class="label-text-alt">A friendly name for this SSO provider</span>
-        </label>
-      </div>
+      <div class="space-y-8">
+        <%= render(FormFieldComponent.new(
+          label: "Provider Name",
+          description: "A friendly name for this SSO provider"
+        )) do %>
+          <%= form.text_field :name, class: "input input-bordered w-full", required: true, placeholder: "e.g., Company SSO" %>
+          <label class="label">
+            <span class="label-text-alt">* Required</span>
+          </label>
+        <% end %>
 
-      <div class="form-control mt-1 w-full max-w-sm">
-        <label class="label cursor-pointer justify-start gap-2">
+        <%= render(FormFieldComponent.new(
+          label: "Enabled",
+          description: "Enable or disable this SSO provider"
+        )) do %>
           <%= form.check_box :enabled, class: "checkbox checkbox-primary" %>
-          <span class="label-text">Enable this provider</span>
-        </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Team Provisioning Mode",
+          description: "How teams are provisioned for SSO users"
+        )) do %>
+          <%= form.select :team_provisioning_mode, SSOProvider.team_provisioning_modes.keys.map { |k| [k.titleize, k] }, {}, class: "select select-bordered w-full" %>
+        <% end %>
       </div>
 
-      <div class="form-control mt-4 w-full max-w-sm">
-        <label class="label">
-          <span class="label-text">Team Provisioning Mode</span>
-        </label>
-        <%= form.select :team_provisioning_mode, SSOProvider.team_provisioning_modes.keys.map { |k| [k.titleize, k] }, {}, class: "select select-bordered" %>
-        <label class="label">
-          <span class="label-text-alt">How teams are provisioned for SSO users</span>
-        </label>
-      </div>
-
-      <div class="divider">LDAP Configuration</div>
-
-      <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
+      <% if @provider_type == "oidc" %>
+        <div class="divider">OIDC Configuration</div>
+        <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
+      <% else %>
+        <div class="divider">LDAP Configuration</div>
+        <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
+      <% end %>
 
       <div class="form-footer mt-6">
         <%= form.submit "Create Provider", class: "btn btn-primary" %>

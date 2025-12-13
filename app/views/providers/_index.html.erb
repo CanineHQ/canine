@@ -12,7 +12,7 @@
       </tr>
     </thead>
     <tbody>
-      <% current_user.providers.each do |provider| %>
+      <% current_user.providers.non_sso.each do |provider| %>
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
           <td>

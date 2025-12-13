@@ -116,3 +116,5 @@ gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
 
 gem "net-ldap", "~> 0.20.0"
+
+gem "jwt", "~> 2.9"

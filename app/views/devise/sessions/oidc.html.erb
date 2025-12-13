@@ -1,0 +1,40 @@
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h1 class="text-2xl font-bold text-center">Sign in</h1>
+      <div class="text-center text-sm">
+        Sign in to access your account
+      </div>
+
+      <% if @account.stack_manager&.portainer? %>
+        <div class="flex justify-center mt-2">
+          <%= render "devise/sessions/portainer_badge", stack_manager: @account.stack_manager, logged_in: false %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-error mb-4 mt-4">
+          <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
+          <span><%= flash[:alert] %></span>
+        </div>
+      <% end %>
+
+      <div class="mt-6">
+        <%= link_to oidc_auth_path(@account.slug), class: "btn btn-primary w-full", data: { turbo: false } do %>
+          <iconify-icon icon="lucide:log-in" height="18"></iconify-icon>
+          Sign in with <%= @sso_provider.name %>
+        <% end %>
+      </div>
+
+      <div class="divider">New to <%= @account.name %>?</div>
+
+      <p class="text-center text-sm">
+        Contact your account administrator to get access
+      </p>
+
+      <div class="mt-4 text-center">
+        <%= link_to "Back to main login", new_user_session_path, class: "link link-primary text-sm" %>
+      </div>
+    </div>
+  </div>
+</div>
