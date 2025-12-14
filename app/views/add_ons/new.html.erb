@@ -107,7 +107,7 @@
         </div>
 
         <div class="form-footer">
-          <%= form.button "Create Add On", class: "btn btn-primary" %>
+          <%= form.button "Create Add On", class: "btn btn-primary", data: { turbo_submits_with: "Creating..." } %>
 
           <% if form.object.new_record? %>
             <%= link_to t("cancel"), add_ons_path, class: "btn btn-secondary" %>

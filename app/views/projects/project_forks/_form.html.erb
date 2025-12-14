@@ -26,6 +26,6 @@
     <% end %>
   </div>
   <div class="form-footer">
-    <%= form.submit "Save", class: "btn btn-primary" %>
+    <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
   </div>
 <% end %>
