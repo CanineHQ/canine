@@ -10,7 +10,7 @@
       <div class="flex flex-row justify-between">
         <div>
           <button class="btn btn-neutral btn-outline" type="button" data-action="environment-variables#add">Add new environment variable</button>
-          <%= form.submit "Save", class: "btn btn-primary" %>
+          <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
         </div>
         <%= link_to "Download as .env", download_project_environment_variables_path(@project), class: "btn btn-outline", target: "_blank" %>
       </div>
@@ -34,7 +34,7 @@
                 'textarea-autogrow-resize-debounce-delay-value': "500"
               }
             ) %>
-            <%= form.submit "Add variables", class: "btn btn-primary" %>
+            <%= form.submit "Add variables", class: "btn btn-primary", data: { turbo_submits_with: "Adding..." } %>
           <% end %>
         </div>
       </div>

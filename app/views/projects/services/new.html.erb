@@ -124,7 +124,7 @@
       </div>
 
       <div class="form-footer">
-        <%= form.button "Submit", class: "btn btn-primary", data: { turbo: "false" } %>
+        <%= form.button "Submit", class: "btn btn-primary", data: { turbo: "false", disable_with: "Submitting..." } %>
         <%= link_to "Cancel", project_services_path(@project), class: "btn btn-outline" %>
       </div>
     <% end %>

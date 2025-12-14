@@ -70,7 +70,7 @@
         <label class="label mb-2">
           <span class="label-text">Build driver</span>
         </label>
-        <%= render "shared/partials/radio_selector", selected: build_configuration.driver, options: [
+        <%= render "shared/partials/radio_selector", selected: build_configuration.driver || (Rails.application.config.local_mode ? "docker" : "cloud"), options: [
           {
             icon: "skill-icons:docker",
             name: "project[build_configuration][driver]",
@@ -81,7 +81,7 @@
           {
             icon: "/images/logo-compact.webp",
             name: "project[build_configuration][driver]",
-            label: "Canine Cloud",
+            label: "Canine Cloud (recommended)",
             value: "cloud",
             description: "We'll build the images for you on our servers, for free."
           },
@@ -102,7 +102,7 @@
         <label class="label mb-2">
           <span class="label-text">Build method</span>
         </label>
-        <%= render "shared/partials/radio_selector", selected: build_configuration.build_type, options: [
+        <%= render "shared/partials/radio_selector", selected: build_configuration.build_type || "dockerfile", options: [
           {
             icon: "skill-icons:docker",
             name: "project[build_configuration][build_type]",

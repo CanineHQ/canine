@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["radio", "partial"]
   
   connect() {
-    //this.toggle()
+    this.toggle()
   }
 
   toggle() {
