@@ -43,6 +43,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
+    @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
   end
 
   # POST /projects or /projects.json

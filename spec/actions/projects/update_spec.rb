@@ -129,6 +129,30 @@ RSpec.describe Projects::Update do
       end
     end
 
+    context 'with project_credential_provider_attributes' do
+      let(:new_provider) { create(:provider, :github, user:) }
+      let(:params) do
+        ActionController::Parameters.new({
+          project: {
+            name: 'updated-name',
+            project_credential_provider_attributes: {
+              provider_id: new_provider.id
+            }
+          }
+        })
+      end
+
+      subject { described_class.call(project, params) }
+
+      it 'updates the project credential provider' do
+        original_provider_id = project.project_credential_provider.provider_id
+        result = subject
+        expect(result).to be_success
+        expect(project.project_credential_provider.reload.provider_id).to eq(new_provider.id)
+        expect(project.project_credential_provider.provider_id).not_to eq(original_provider_id)
+      end
+    end
+
     context 'with invalid parameters' do
       let(:params) do
         ActionController::Parameters.new({
