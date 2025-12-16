@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
     t.bigint "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 2, null: false
     t.index ["account_id"], name: "index_account_users_on_account_id"
     t.index ["user_id"], name: "index_account_users_on_user_id"
   end
@@ -88,12 +89,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
 
   create_table "api_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
+    t.string "name", null: false
     t.string "access_token", null: false
     t.datetime "last_used_at"
     t.datetime "expires_at"
-    t.jsonb "scopes", default: [], null: false, array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["access_token"], name: "index_api_tokens_on_access_token", unique: true
     t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
@@ -177,6 +179,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
     t.bigint "service_id", null: false
     t.string "schedule", null: false
     t.index ["service_id"], name: "index_cron_schedules_on_service_id"
+  end
+
+  create_table "deployment_configurations", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.integer "deployment_method", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_deployment_configurations_on_project_id"
   end
 
   create_table "deployments", force: :cascade do |t|
@@ -628,6 +638,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
   add_foreign_key "builds", "projects"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
+  add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "project_add_ons", "add_ons"
