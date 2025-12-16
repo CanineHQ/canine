@@ -86,6 +86,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "access_token", null: false
+    t.datetime "last_used_at"
+    t.datetime "expires_at"
+    t.jsonb "scopes", default: [], null: false, array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
   create_table "build_clouds", force: :cascade do |t|
     t.bigint "cluster_id", null: false
     t.string "namespace", default: "canine-k8s-builder", null: false
@@ -608,6 +619,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_215414) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
   add_foreign_key "build_configurations", "projects"

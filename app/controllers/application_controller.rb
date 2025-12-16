@@ -15,6 +15,24 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
 
+  def authenticate_user!(opts = {})
+    if request.headers["X-API-Key"].present?
+      authenticate_with_api_token!
+    else
+      super
+    end
+  end
+
+  def authenticate_with_api_token!
+    token = request.headers["X-API-Key"]
+    api_token = ApiToken.find_by(access_token: token)
+    if api_token.present?
+      @current_user = api_token.user
+    else
+      render json: { error: "Invalid API token" }, status: :unauthorized
+    end
+  end
+
   protected
     def current_account
       return nil unless user_signed_in?

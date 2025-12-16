@@ -298,6 +298,9 @@ GEM
       bindata
       faraday (~> 2.0)
       faraday-follow_redirects
+    json-schema (5.2.2)
+      addressable (~> 2.8)
+      bigdecimal (~> 3.1)
     jsonpath (1.1.5)
       multi_json
     jwt (2.9.1)
@@ -399,10 +402,6 @@ GEM
       logger
       rack (>= 2.2.3)
       rack-protection
-    omniauth-digitalocean (0.3.2)
-      multi_json (~> 1.15)
-      omniauth (~> 2.0)
-      omniauth-oauth2 (~> 1.0)
     omniauth-github (2.0.1)
       omniauth (~> 2.0)
       omniauth-oauth2 (~> 1.8)
@@ -546,6 +545,14 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.4)
+    rswag-api (2.16.0)
+      activesupport (>= 5.2, < 8.1)
+      railties (>= 5.2, < 8.1)
+    rswag-specs (2.16.0)
+      activesupport (>= 5.2, < 8.1)
+      json-schema (>= 2.2, < 6.0)
+      railties (>= 5.2, < 8.1)
+      rspec-core (>= 2.14)
     rubocop (1.79.2)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -733,7 +740,6 @@ DEPENDENCIES
   octokit (~> 10.0)
   oj (~> 3.16)
   omniauth (~> 2.1)
-  omniauth-digitalocean (~> 0.3.2)
   omniauth-github (~> 2.0)
   omniauth-gitlab (~> 4.1)
   omniauth-rails_csrf_protection (~> 1.0)
@@ -749,6 +755,8 @@ DEPENDENCIES
   redcarpet (~> 3.6)
   responders!
   rspec-rails (~> 8.0)
+  rswag-api (~> 2.10, >= 2.10.1)
+  rswag-specs
   rubocop-rails-omakase
   rubyzip (~> 3.2)
   sassc-rails (~> 2.1)
