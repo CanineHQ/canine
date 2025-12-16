@@ -111,11 +111,19 @@ class Provider < ApplicationRecord
     update!(last_used_at: Time.current)
   end
 
+  def abbreviated_access_token
+    token = read_attribute(:access_token)
+    return "" if token.blank?
+
+    middle_stars = "*" * [ 0, [ 10, token.length - 6 ].min ].max
+    "#{token.first(4)}#{middle_stars}#{token.last(2)}"
+  end
+
   def friendly_name
     if container_registry?
-      "#{registry_url} (#{username})"
+      "#{registry_url} (#{username}) - #{abbreviated_access_token}"
     else
-      "#{provider.titleize} (#{username})"
+      "#{provider.titleize} (#{username}) - #{abbreviated_access_token}"
     end
   end
 

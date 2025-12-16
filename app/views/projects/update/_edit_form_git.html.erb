@@ -1,13 +1,34 @@
 <%= form_with(model: project) do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
   <div class="space-y-4">
-    <%= render(FormFieldComponent.new(label: "Repository path")) do %>
+    <%= render(FormFieldComponent.new(label: "Git Repository")) do %>
       <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
       <div class="form-control mt-1 w-full">
         <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
             <%= render "providers/provider", provider: project.project_credential_provider.provider %>
           </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <%= form.fields_for(:project_credential_provider) do |fields| %>
+          <label class="label">
+            <span class="label-text">Credentials</span>
+          </label>
+          <%= fields.select(
+            :provider_id,
+            options_for_select(
+              @selectable_providers.map { |provider| [provider.friendly_name, provider.id] },
+              selected: project.project_credential_provider.provider_id,
+              disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id)
+            ),
+            {},
+            { class: "select select-bordered w-full" }
+          ) %>
+        <% end %>
+        <div class="label">
+          <span class="label-text-alt"></span>
+          <span class="label-text-alt"><%= link_to "+ Add Credentials", providers_path, class: "hover:underline", target: "_blank" %></span>
         </div>
       </div>
     <% end %>

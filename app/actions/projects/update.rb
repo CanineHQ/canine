@@ -6,6 +6,7 @@ module Projects
 
     def self.call(project, params)
       build_configuration = handle_build_configuration(project, params)
+      handle_project_credential_provider(project, params)
 
       with(
         project:,
@@ -15,6 +16,13 @@ module Projects
         Projects::UpdateSave,
         Projects::UpdateBuildPacks
       )
+    end
+
+    def self.handle_project_credential_provider(project, params)
+      provider_params = params[:project][:project_credential_provider_attributes]
+      return unless provider_params.present? && provider_params[:provider_id].present?
+
+      project.project_credential_provider.provider_id = provider_params[:provider_id]
     end
 
     def self.handle_build_configuration(project, params)
