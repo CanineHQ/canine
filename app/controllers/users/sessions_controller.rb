@@ -1,10 +1,9 @@
 class Users::SessionsController < Devise::SessionsController
-  layout 'homepage', only: [ :new, :create, :account_login, :account_create, :account_select ]
-  before_action :require_no_authentication, only: [ :account_login, :account_select ]
+  layout 'homepage', only: [ :new, :create, :account_login, :account_create ]
+  before_action :require_no_authentication, only: [ :account_login ]
   before_action :load_account_from_slug, only: [ :account_login, :account_create ]
 
   before_action :check_if_default_sign_in_allowed, only: [ :new ]
-  before_action :check_if_account_select_allowed, only: [ :account_select ]
 
   def new
     super
@@ -19,7 +18,7 @@ class Users::SessionsController < Devise::SessionsController
     super do
       # If the account has a stack manager that provides authentication,
       # redirect to the custom account login URL after logout
-      redirect_url = if account&.stack_manager&.stack&.provides_authentication?
+      redirect_url = if account.custom_login?
         account_sign_in_path(account.slug)
       else
         root_path
@@ -33,41 +32,39 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  def account_select
-    @accounts = Account.all.includes(:stack_manager)
-  end
-
   def account_login
     self.resource = resource_class.new(sign_in_params)
     clean_up_passwords(resource)
-    if @account.stack_manager&.portainer?
-      render "devise/sessions/portainer"
+    @sso_provider = @account.sso_provider if @account.sso_enabled?
+
+    if @account.sso_provider&.ldap?
+      render "devise/sessions/ldap"
+    elsif @account.sso_provider&.oidc?
+      render "devise/sessions/oidc"
     else
       render :new
     end
   end
 
   def account_create
-    # If account has a stack manager, use Portainer authentication
-    if @account.stack_manager.present?
-      result = Portainer::Login.execute(
-        username: params[:user][:username],
-        password: params[:user][:password],
-        account: @account,
-      )
+    # If account has SSO provider with LDAP, use LDAP authentication
+    if @account.sso_provider&.ldap?
+      session[:ldap_account_id] = @account.id
+      resource = warden.authenticate(:ldap_authenticatable, scope: :user)
 
-      if result.success?
-        sign_in(result.user)
-        # Auto-associate user with account if they sign in through account URL
-        session[:account_id] = result.account.id
-
-        redirect_to after_sign_in_path_for(result.user), notice: "Logged in successfully"
+      if resource
+        sign_in(resource)
+        session[:account_id] = @account.id
+        redirect_to after_sign_in_path_for(resource), notice: "Logged in successfully"
       else
-        flash[:alert] = result.message
-        self.resource = result.user || resource_class.new(sign_in_params)
-        clean_up_passwords(resource)
-        render 'devise/sessions/portainer'
+        flash[:alert] = "Invalid email or password"
+        self.resource = resource_class.new(sign_in_params)
+        clean_up_passwords(self.resource)
+        render "devise/sessions/ldap"
       end
+    elsif @account.sso_provider&.oidc?
+      # OIDC uses a redirect flow, so this shouldn't be called directly
+      redirect_to account_sign_in_path(@account.slug)
     else
       redirect_to new_user_session_path
     end
@@ -77,13 +74,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def check_if_default_sign_in_allowed
     if Rails.application.config.account_sign_in_only
-      redirect_to accounts_select_url
-    end
-  end
-
-  def check_if_account_select_allowed
-    unless Rails.application.config.account_sign_in_only
-      redirect_to new_user_session_path
+      redirect_to account_select_local_onboarding_index_path
     end
   end
 

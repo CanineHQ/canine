@@ -10,12 +10,12 @@
       <%= render "projects/services/resource_constraints/form", form: form, resource_constraint: %>
       <% if resource_constraint.persisted? %>
         <div class="form-footer mt-6">
-          <%= form.submit "Update Resource Constraints", class: "btn btn-primary" %>
+          <%= form.submit "Update Resource Constraints", class: "btn btn-primary", data: { turbo_submits_with: "Updating..." } %>
         </div>
       <% else %>
         <div class="form-footer mt-6">
           <%= link_to "Cancel", project_service_resource_constraint_path(service.project, service), class: "btn btn-outline" %>
-          <%= form.submit "Create Resource Constraints", class: "btn btn-primary" %>
+          <%= form.submit "Create Resource Constraints", class: "btn btn-primary", data: { turbo_submits_with: "Creating..." } %>
         </div>
       <% end %>
     <% end %>

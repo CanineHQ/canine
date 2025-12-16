@@ -1,0 +1,11 @@
+<%= turbo_frame_tag "ldap_test_connection_result", class: "block mt-3", data: { ldap_test_connection_target: "result" } do %>
+  <div class="flex flex-col gap-1">
+    <div class="flex items-center gap-2 text-error">
+      <iconify-icon icon="lucide:x-circle" height="16"></iconify-icon>
+      <span>Connection failed</span>
+    </div>
+    <% if local_assigns[:error_message].present? %>
+      <span class="text-sm text-base-content/70"><%= error_message %></span>
+    <% end %>
+  </div>
+<% end %>

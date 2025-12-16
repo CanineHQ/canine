@@ -62,4 +62,11 @@ class StaticController < ApplicationController
   def calculator
     @prices = JSON.parse(File.read(File.join(Rails.root, 'public', 'resources', 'prices.json')))
   end
+
+  def docs
+  end
+
+  def swagger
+    render plain: File.read(Rails.root.join('swagger', 'v1', 'swagger.yaml')), layout: false
+  end
 end

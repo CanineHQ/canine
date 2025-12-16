@@ -18,10 +18,11 @@ module Portainer
     class ConnectionError < StandardError; end
     class PermissionDeniedError < StandardError; end
     class AuthenticationError < StandardError; end
+    class MissingCredentialError < StandardError; end
 
     def initialize(provider_url, jwt)
       @jwt = jwt
-      @provider_url = provider_url
+      @provider_url = provider_url.chomp("/")
     end
 
     def self.reachable?(provider_url)
@@ -78,7 +79,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 
@@ -130,7 +131,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 
@@ -140,7 +141,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 

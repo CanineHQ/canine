@@ -26,6 +26,8 @@ class Account < ApplicationRecord
   has_many :account_users, dependent: :destroy
   has_many :users, through: :account_users
   has_one :stack_manager, dependent: :destroy
+  has_one :sso_provider, dependent: :destroy
+  has_many :teams, dependent: :destroy
 
   has_many :clusters, dependent: :destroy
   has_many :build_clouds, through: :clusters
@@ -46,5 +48,13 @@ class Account < ApplicationRecord
 
   def github_provider
     @_github_account ||= owner.providers.find_by(provider: "github")
+  end
+
+  def sso_enabled?
+    sso_provider&.enabled?
+  end
+
+  def custom_login?
+    sso_enabled?
   end
 end

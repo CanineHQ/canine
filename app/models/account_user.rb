@@ -21,4 +21,8 @@
 class AccountUser < ApplicationRecord
   belongs_to :user
   belongs_to :account
+
+  def admin?
+    account.owner_id == user_id
+  end
 end

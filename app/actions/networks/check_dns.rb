@@ -3,15 +3,20 @@ class Networks::CheckDns
   expects :ingress, :connection
 
   class << self
-    def infer_expected_ip(ingress, connection)
+    def infer_expected_dns(ingress, connection)
       ingress.connect(connection)
-      ip = ingress.ip_address
+      dns_record = ingress.hostname
 
-      if is_private_ip?(ip)
+      if dns_record[:type] == :ip_address && is_private_ip?(dns_record[:value])
         cluster = ingress.service.project.cluster
-        ip = infer_public_ip_from_cluster(connection)
+        # This only works if it is a single node cluster like k3s
+        public_ip = infer_public_ip_from_cluster(connection)
+        dns_record = {
+          value: public_ip,
+          type: :ip_address
+        }
       end
-      ip
+      dns_record
     end
 
     def is_private_ip?(ip)
@@ -40,18 +45,31 @@ class Networks::CheckDns
 
   executed do |context|
     # TODO
-    expected_ip = infer_expected_ip(context.ingress, context.connection)
+    expected_dns = infer_expected_dns(context.ingress, context.connection)
     context.ingress.service.domains.each do |domain|
-      ip_addresses = Resolv::DNS.open do |dns|
-        dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|
-          resource.address
+      if expected_dns[:type] == :ip_address
+        ip_addresses = Resolv::DNS.open do |dns|
+          dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|
+            resource.address
+          end
         end
-      end
 
-      if ip_addresses.any? && ip_addresses.first.to_s == expected_ip
-        domain.update(status: :dns_verified)
+        if ip_addresses.any? && ip_addresses.first.to_s == expected_dns[:value]
+          domain.update(status: :dns_verified)
+        else
+          domain.update(status: :dns_incorrect, status_reason: "DNS record (#{ip_addresses.first || "empty"}) does not match expected IP address (#{expected_dns[:value]})")
+        end
       else
-        domain.update(status: :dns_incorrect, status_reason: "DNS record (#{ip_addresses.first}) does not match expected IP address (#{expected_ip})")
+        hostnames = Resolv::DNS.open do |dns|
+          dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::CNAME).map do |resource|
+            resource.name
+          end
+        end
+        if hostnames.any? && hostnames.first.to_s == expected_dns[:value]
+          domain.update(status: :dns_verified)
+        else
+          domain.update(status: :dns_incorrect, status_reason: "DNS record (#{hostnames.first || "empty"}) does not match expected hostname (#{expected_dns[:value]})")
+        end
       end
     end
   end

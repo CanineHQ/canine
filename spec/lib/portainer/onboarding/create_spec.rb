@@ -1,19 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Portainer::Onboarding::Create do
-  let(:jwt) { 'test-jwt-token' }
   let(:params) do
     ActionController::Parameters.new(
       account: { name: 'testorg' },
-      user: { username: username, password: 'testpassword' },
-      stack_manager: { provider_url: 'https://test.portainer.io' },
+      user: { email: 'admin@example.com', password: 'password123' },
+      stack_manager: { provider_url: 'https://test.portainer.io', access_token: 'test-token' },
     )
   end
 
-  let(:username) { 'testuser' }
-
   before do
-    allow(Portainer::Client).to receive(:authenticate).and_return(Portainer::Data::User.new(id: 1, username:, jwt:))
     allow(described_class).to receive(:post_create).and_return([])
   end
 
@@ -30,14 +26,27 @@ RSpec.describe Portainer::Onboarding::Create do
         Rails.application.config.cluster_mode = original_cluster_mode
       end
 
-      it 'creates a user with admin privileges' do
+      it 'creates a user with admin privileges and uses account access token when no personal token provided' do
         result = described_class.call(params)
 
         expect(result).to be_success
         expect(result.user).to be_persisted
-        expect(result.user.email).to eq('testuser@test.portainer.io')
+        expect(result.user.email).to eq('admin@example.com')
         expect(result.user.admin).to be true
         expect(result.account.stack_manager).to be_persisted
+        expect(result.user.providers.find_by(provider: 'portainer').access_token).to eq('test-token')
+      end
+
+      it 'uses personal access token when provided' do
+        params_with_personal_token = ActionController::Parameters.new(
+          account: { name: 'testorg' },
+          user: { email: 'admin2@example.com', password: 'password123', personal_access_token: 'personal-token' },
+          stack_manager: { provider_url: 'https://test2.portainer.io', access_token: 'account-token' },
+        )
+        result = described_class.call(params_with_personal_token)
+
+        expect(result).to be_success
+        expect(result.user.providers.find_by(provider: 'portainer').access_token).to eq('personal-token')
       end
     end
 
@@ -52,87 +61,11 @@ RSpec.describe Portainer::Onboarding::Create do
         Rails.application.config.cloud_mode = original_cloud_mode
         Rails.application.config.cluster_mode = original_cluster_mode
       end
+
       it 'fails with an error message' do
         result = described_class.call(params)
 
         expect(result).to be_failure
-      end
-    end
-
-    context 'when Portainer authentication fails' do
-      around do |example|
-        original_cloud_mode = Rails.application.config.cloud_mode
-        original_cluster_mode = Rails.application.config.cluster_mode
-        Rails.application.config.cluster_mode = true
-        Rails.application.config.cloud_mode = false
-        example.run
-      ensure
-        Rails.application.config.cloud_mode = original_cloud_mode
-        Rails.application.config.cluster_mode = original_cluster_mode
-      end
-
-      before do
-        allow(Portainer::Client).to receive(:authenticate).and_raise(Portainer::Client::AuthenticationError.new('Invalid username or password'))
-      end
-
-      it 'fails with invalid username or password message' do
-        result = described_class.call(params)
-
-        expect(result).to be_failure
-        expect(result.message).to eq('Invalid username or password')
-      end
-
-      it 'does not create a user' do
-        expect {
-          described_class.call(params)
-        }.not_to change(User, :count)
-      end
-
-      it 'does not create an account' do
-        expect {
-          described_class.call(params)
-        }.not_to change(Account, :count)
-      end
-
-      it 'does not create a stack manager' do
-        expect {
-          described_class.call(params)
-        }.not_to change(StackManager, :count)
-      end
-    end
-
-    context 'when Portainer authentication raises an exception' do
-      around do |example|
-        original_cloud_mode = Rails.application.config.cloud_mode
-        original_cluster_mode = Rails.application.config.cluster_mode
-        Rails.application.config.cluster_mode = true
-        Rails.application.config.cloud_mode = false
-        example.run
-      ensure
-        Rails.application.config.cloud_mode = original_cloud_mode
-        Rails.application.config.cluster_mode = original_cluster_mode
-      end
-
-      before do
-        allow(Portainer::Client).to receive(:authenticate).and_raise(StandardError, 'Connection failed')
-      end
-
-      it 'raises the exception' do
-        expect {
-          described_class.call(params)
-        }.to raise_error(StandardError, 'Connection failed')
-      end
-
-      it 'does not create a user' do
-        expect {
-          described_class.call(params) rescue nil
-        }.not_to change(User, :count)
-      end
-
-      it 'does not create an account' do
-        expect {
-          described_class.call(params) rescue nil
-        }.not_to change(Account, :count)
       end
     end
   end

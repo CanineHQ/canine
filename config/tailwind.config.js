@@ -28,6 +28,9 @@ module.exports = {
         sm: "13px",
         base: "15px",
       },
+      fontFamily: {
+        body: ["DM Sans", "sans-serif"],
+      },
     },
     container: {
       center: true,
@@ -39,9 +42,6 @@ module.exports = {
         "xl": "5rem",
         "2xl": "6rem",
       },
-    },
-    fontFamily: {
-      body: ["DM Sans", "sans-serif"],
     },
   },
   darkMode: "class",

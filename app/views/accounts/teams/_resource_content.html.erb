@@ -1,0 +1,29 @@
+<%= turbo_frame_tag("team_resources_#{team.id}", data: { turbo_tabs_target: "content" }) do %>
+  <div class="pt-4">
+    <% if tab == "clusters" %>
+      <div class="flex justify-end mb-2">
+        <button class="btn btn-primary btn-sm" onclick="add_cluster_modal.showModal()">
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          <span class="hidden sm:inline">Add Cluster</span>
+        </button>
+      </div>
+      <%= render "accounts/teams/team_resources_table", team: team, resource_type: "Cluster" %>
+    <% elsif tab == "projects" %>
+      <div class="flex justify-end mb-2">
+        <button class="btn btn-primary btn-sm" onclick="add_project_modal.showModal()">
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          <span class="hidden sm:inline">Add Project</span>
+        </button>
+      </div>
+      <%= render "accounts/teams/team_resources_table", team: team, resource_type: "Project" %>
+    <% elsif tab == "addons" %>
+      <div class="flex justify-end mb-2">
+        <button class="btn btn-primary btn-sm" onclick="add_addon_modal.showModal()">
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          <span class="hidden sm:inline">Add Add-on</span>
+        </button>
+      </div>
+      <%= render "accounts/teams/team_resources_table", team: team, resource_type: "AddOn" %>
+    <% end %>
+  </div>
+<% end %>

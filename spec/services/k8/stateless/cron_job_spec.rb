@@ -60,7 +60,7 @@ RSpec.describe K8::Stateless::CronJob do
     before do
       kubectl = instance_double(K8::Kubectl)
       allow(K8::Kubectl).to receive(:new).and_return(kubectl)
-      allow(kubectl).to receive(:call).with("get jobs -n #{project.name} -o json").and_return(job_response)
+      allow(kubectl).to receive(:call).with("get jobs -n #{project.namespace} -o json").and_return(job_response)
     end
 
     it 'returns job runs for the service' do

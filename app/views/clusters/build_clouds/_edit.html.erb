@@ -122,7 +122,7 @@
                       data: { turbo_frame: dom_id(cluster, "build_cloud") } do %>
             Cancel
           <% end %>
-          <%= form.submit "Save Configuration", class: "btn btn-primary" %>
+          <%= form.submit "Save Configuration", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
         </div>
       <% end %>
 

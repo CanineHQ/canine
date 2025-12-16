@@ -22,23 +22,39 @@
         <% end %>
       </div>
     <% end %>
-    <div class="text-sm">
+    <div class="text-sm flex flex-row">
       <%= link_to project.link_to_view, target: "_blank" do %>
         <% if project.git? %>
-          <% if project.github? %>
-            <iconify-icon icon="lucide:github"></iconify-icon>
-          <% elsif project.gitlab? %>
-            <iconify-icon icon="lucide:gitlab"></iconify-icon>
-          <% end %>
-          <span class="underline mr-2"><%= project.repository_url %></span>
-          <iconify-icon icon="lucide:git-branch"></iconify-icon>
-          <span class="underline"><%= project.branch %></span>
+          <div class="flex flex-row items-center gap-1">
+            <% if project.github? %>
+              <iconify-icon icon="lucide:github"></iconify-icon>
+            <% elsif project.gitlab? %>
+              <iconify-icon icon="lucide:gitlab"></iconify-icon>
+            <% end %>
+            <span class="underline mr-2"><%= project.repository_url %></span>
+            <iconify-icon icon="lucide:git-branch"></iconify-icon>
+            <span class="underline"><%= project.branch %></span>
+          </div>
         <% else %>
-          <iconify-icon icon="logos:docker-icon"></iconify-icon>
-          <span class="underline"><%= project.repository_url %></span>
+          <div class="flex flex-row items-center gap-1">
+            <iconify-icon icon="logos:docker-icon"></iconify-icon>
+            <span class="underline"><%= project.repository_url %></span>
+          </div>
         <% end %>
       <% end %>
-      <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon> <%= link_to project.cluster.name, project.cluster, target: "_blank", class: "underline" %></span>
+
+      <%= link_to(
+        project.cluster,
+        target: "_blank",
+        class: "underline",
+      ) do %>
+        <div class="ml-6 flex flex-row items-center gap-1">
+          <iconify-icon icon="devicon:kubernetes"></iconify-icon>
+          <div><%= project.cluster.name %></div>
+          <div><iconify-icon icon="lucide:slash"></iconify-icon></div>
+          <div><%= project.namespace %></div>
+        </div>
+      <% end %>
     </div>
   </div>
   <div class="flex flex-col self-stretch mt-4 lg:mt-0">

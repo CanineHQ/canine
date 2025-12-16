@@ -1,0 +1,38 @@
+<%= turbo_frame_tag "portainer_token" do %>
+  <div class="mb-4">
+    <h3 class="text-lg font-semibold mb-2">Portainer Access Token</h3>
+    <p class="text-sm text-base-content/70 mb-4">
+      This account is configured to use Portainer for cluster management.
+    </p>
+
+    <% if current_user.portainer_access_token.present? %>
+      <div class="flex items-center gap-2 text-sm text-success mb-4">
+        <iconify-icon icon="lucide:check-circle" height="16"></iconify-icon>
+        <span>Access token configured</span>
+      </div>
+    <% else %>
+      <div class="alert alert-warning mb-4">
+        <iconify-icon icon="lucide:alert-triangle" height="20"></iconify-icon>
+        <span>No Access token configured. You won't be able to access cluster features until you add one.</span>
+      </div>
+    <% end %>
+
+    <%= form_with url: portainer_token_path, method: :patch, class: "space-y-4", data: { turbo: false } do |f| %>
+      <div class="form-control w-full max-w-md">
+        <label class="label">
+          <span class="label-text">Token</span>
+        </label>
+        <%= f.text_field :portainer_token,
+            value: "",
+            placeholder: current_user.portainer_access_token.present? ? "••••••••••••••••" : "Enter your Portainer Access token",
+            class: "input input-bordered w-full" %>
+        <label class="label flex justify-between" for="portainer_token">
+          <span class="label-text-alt">
+            <%= link_to "Get your access token in Portainer →", "#{current_account.stack_manager.provider_url}/#!/account", target: "_blank", class: "link link-primary" %>
+          </span>
+        </label>
+      </div>
+      <%= f.submit current_user.portainer_access_token.present? ? "Update Token" : "Save Token", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+<% end %>

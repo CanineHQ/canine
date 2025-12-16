@@ -80,8 +80,8 @@ gem "noticed", "~> 2.9"
 gem "octokit", "~> 10.0"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
-gem "omniauth-digitalocean", "~> 0.3.2"
 gem "omniauth-github", "~> 2.0"
+gem "omniauth_openid_connect", "~> 0.8"
 gem "omniauth-gitlab", "~> 4.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "pagy", "~> 9.4"
@@ -101,3 +101,7 @@ gem "tailwindcss-rails", "~> 2.7"
 gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
+
+gem "net-ldap", "~> 0.20.0"
+
+gem "jwt", "~> 2.9"

@@ -1,9 +1,9 @@
 class Git::Client
   def self.from_provider(provider:, repository_url:)
     if provider.github?
-      Git::Github::Client.new(access_token: provider.access_token, repository_url:)
+      Git::Github::Client.new(access_token: provider.access_token, repository_url:, api_base_url: provider.api_base_url)
     elsif provider.gitlab?
-      Git::Gitlab::Client.new(access_token: provider.access_token, repository_url:)
+      Git::Gitlab::Client.new(access_token: provider.access_token, repository_url:, api_base_url: provider.api_base_url)
     else
       raise "Unsupported Git provider: #{provider}"
     end

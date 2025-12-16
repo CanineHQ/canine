@@ -24,7 +24,7 @@
     <% end %>
 
     <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
-      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0" %>
+      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm" %>
     <% end %>
 
     <% if Flipper.enabled?(:build_configuration, current_account) %>
@@ -35,7 +35,7 @@
   </div>
 
   <div class="form-footer">
-    <%= form.button "Submit", class: "btn btn-primary" %>
+    <%= form.button "Submit", class: "btn btn-primary", data: { turbo_submits_with: "Submitting..." } %>
 
     <% if form.object.new_record? %>
       <%= link_to t("cancel"), projects_path, class: "btn btn-secondary" %>

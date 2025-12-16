@@ -8,7 +8,8 @@ x-shared-env: &shared-env
 
 services:
   postgres:
-    image: postgres:16
+    restart: unless-stopped
+    image: postgres:16-bookworm@sha256:878977a5fe8d75ba7eab7610e4cf7e0c8626a683d89b3f9da965b8ceba952a09
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -17,15 +18,20 @@ services:
       - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      retries: 5
+      start_period: 20s
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    restart: unless-stopped
+    image: ghcr.io/caninehq/canine:latest
     # Overrides default command so things don't shut down after the process ends.
     # command: sleep infinity
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     stdin_open: true
     tty: true
     ports:
@@ -39,12 +45,12 @@ services:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    restart: unless-stopped
+    image: ghcr.io/caninehq/canine:latest
     command: bundle exec good_job start
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       <<: *shared-env
       LOCAL_MODE: "true"

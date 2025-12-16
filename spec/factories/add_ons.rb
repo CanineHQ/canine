@@ -2,16 +2,18 @@
 #
 # Table name: add_ons
 #
-#  id         :bigint           not null, primary key
-#  chart_type :string           not null
-#  chart_url  :string
-#  metadata   :jsonb
-#  name       :string           not null
-#  status     :integer          default("installing"), not null
-#  values     :jsonb
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
+#  id                :bigint           not null, primary key
+#  chart_type        :string           not null
+#  chart_url         :string
+#  managed_namespace :boolean          default(TRUE)
+#  metadata          :jsonb
+#  name              :string           not null
+#  namespace         :string           not null
+#  status            :integer          default("installing"), not null
+#  values            :jsonb
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  cluster_id        :bigint           not null
 #
 # Indexes
 #
@@ -28,6 +30,8 @@ FactoryBot.define do
     chart_url { 'bitnami/redis' }
     chart_type { "helm_chart" }
     sequence(:name) { |n| "example-addon-#{n}" }
+    sequence(:namespace) { |n| "example-addon-#{n}" }
+    managed_namespace { true }
     status { :installing }
     values { {} }
     metadata { { "package_details" => { "repository" => { "name" => "bitnami", "url" => "https://bitnami.com/charts" } } } }

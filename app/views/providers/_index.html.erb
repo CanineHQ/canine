@@ -12,24 +12,24 @@
       </tr>
     </thead>
     <tbody>
-      <% current_user.providers.each do |provider| %>
+      <% current_user.providers.non_sso.each do |provider| %>
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
           <td>
-          <%= provider.provider %>
-          <br />
-          <% if provider.container_registry? %>
-            <span class="text-gray-500">
-              <%= provider.registry_url %>
-            </span>
-          <% end %>
+            <%= provider.provider.titleize %>
+            <% if provider.registry_url.present? %>
+              <br />
+              <span class="text-gray-500 text-sm">
+                <%= provider.registry_url %>
+              </span>
+            <% end %>
           </td>
           <td>
             <%= render "providers/show", provider: %>
           </td>
           <td>
             <% if provider.access_token %>
-            <%= provider.access_token.first(6) %><%= "*" * [10, provider.access_token.length - 12].min %><%= provider.access_token.last(6) %>
+            <%= provider.access_token.first(4) %><%= "*" * [0, [10, provider.access_token.length - 6].min].max %><%= provider.access_token.last(2) %>
             <% else %>
               <span class="text-gray-500">
                 N/A

@@ -9,6 +9,6 @@ class K8::Stateless::Deployment < K8::Base
   end
 
   def restart
-    kubectl.call("rollout restart deployment/#{service.name} -n #{project.name}")
+    kubectl.call("rollout restart deployment/#{service.name} -n #{project.namespace}")
   end
 end

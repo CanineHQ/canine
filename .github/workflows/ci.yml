@@ -53,9 +53,18 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          CI: true
         run: |
           bin/rails db:test:prepare
           bin/bundle exec rspec --exclude-pattern spec/system/local/**/*_spec.rb
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+          if-no-files-found: ignore
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4

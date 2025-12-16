@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { computePosition, autoUpdate, flip, shift, offset, size } from "@floating-ui/dom"
 import { debounce } from "../../utils"
 
 /**
@@ -26,9 +27,9 @@ export default class extends Controller {
     // Disable browser autocomplete
     this.input.setAttribute('autocomplete', 'off')
 
-    // Create dropdown
+    // Create dropdown and append to the appropriate container
     this.dropdown = this.createDropdown()
-    this.element.appendChild(this.dropdown)
+    this.getDropdownContainer().appendChild(this.dropdown)
 
     // Bind search handler with debounce
     this.searchHandler = debounce(this.performSearch.bind(this), this.getDebounceDelay())
@@ -37,6 +38,8 @@ export default class extends Controller {
     // Handle click outside to close dropdown
     this.clickOutsideHandler = this.handleClickOutside.bind(this)
     document.addEventListener('click', this.clickOutsideHandler)
+
+    this.cleanupAutoUpdate = null
   }
 
   disconnect() {
@@ -44,12 +47,50 @@ export default class extends Controller {
       this.input.removeEventListener('input', this.searchHandler)
     }
     document.removeEventListener('click', this.clickOutsideHandler)
+    if (this.cleanupAutoUpdate) {
+      this.cleanupAutoUpdate()
+    }
+    if (this.dropdown && this.dropdown.parentNode) {
+      this.dropdown.parentNode.removeChild(this.dropdown)
+    }
   }
 
   createDropdown() {
     const dropdown = document.createElement('ul')
-    dropdown.className = 'hidden absolute z-10 w-full mt-1 menu bg-base-200 block rounded-box shadow-lg max-h-[300px] overflow-y-auto'
+    dropdown.className = 'hidden z-50 bg-neutral rounded-box shadow-lg max-h-[300px] overflow-y-auto'
+    dropdown.style.position = 'absolute'
+    dropdown.style.top = '0'
+    dropdown.style.left = '0'
     return dropdown
+  }
+
+  getDropdownContainer() {
+    // Check if we're inside a modal and append there to maintain stacking context
+    const modal = this.element.closest('.modal, [role="dialog"], dialog')
+    return modal || document.body
+  }
+
+  updatePosition() {
+    computePosition(this.input, this.dropdown, {
+      placement: 'bottom-start',
+      middleware: [
+        offset(4),
+        flip({ fallbackPlacements: ['top-start'] }),
+        shift({ padding: 8 }),
+        size({
+          apply({ rects, elements }) {
+            Object.assign(elements.floating.style, {
+              minWidth: `${rects.reference.width}px`
+            })
+          }
+        })
+      ]
+    }).then(({ x, y }) => {
+      Object.assign(this.dropdown.style, {
+        left: `${x}px`,
+        top: `${y}px`
+      })
+    })
   }
 
   getInputElement() {
@@ -89,7 +130,7 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = results.map((item, index) => `
-      <li class="cursor-pointer hover:bg-base-300 p-2" data-index="${index}">
+      <li class="cursor-pointer p-2 hover:bg-base-300" data-index="${index}">
         ${this.renderItem(item)}
       </li>
     `).join('')
@@ -121,11 +162,26 @@ export default class extends Controller {
 
   showDropdown() {
     this.dropdown.classList.remove('hidden')
+    this.updatePosition()
+
+    // Set up auto-update to keep position in sync during scroll/resize
+    if (this.cleanupAutoUpdate) {
+      this.cleanupAutoUpdate()
+    }
+    this.cleanupAutoUpdate = autoUpdate(this.input, this.dropdown, () => {
+      this.updatePosition()
+    })
   }
 
   hideDropdown() {
     this.dropdown.classList.add('hidden')
     this.dropdown.innerHTML = ''
+
+    // Clean up auto-update listener
+    if (this.cleanupAutoUpdate) {
+      this.cleanupAutoUpdate()
+      this.cleanupAutoUpdate = null
+    }
   }
 
   showLoading() {
@@ -157,7 +213,7 @@ export default class extends Controller {
   }
 
   handleClickOutside(event) {
-    if (!this.element.contains(event.target)) {
+    if (!this.element.contains(event.target) && !this.dropdown.contains(event.target)) {
       this.hideDropdown()
     }
   }

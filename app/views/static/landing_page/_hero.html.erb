@@ -14,15 +14,17 @@
     <div class="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-[#80caff] to-[#4f46e5] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
   </div>
   <div class="mx-auto max-w-7xl px-6 pb-24 pt-2 sm:pb-40 lg:flex lg:px-8 lg:pt-4 justify-center">
-    <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-4xl lg:pt-2">
-      <div class="mb-4 lg:mb-20">
-        <%= link_to "https://discord.gg/68YthskqEz", class: "btn btn-ghost btn-sm lg:btn-md" do %>
-          <span class="lg:inline">Join us on Discord</span> <iconify-icon icon="skill-icons:discord" height="20"></iconify-icon>
-        <% end %>
-      </div>
+    <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-4xl lg:pt-2 <%= 'pt-4 lg:pt-20' unless ENV['DISCORD_INVITE_URL'].present? %>">
+      <% if ENV['DISCORD_INVITE_URL'].present? %>
+        <div class="mb-4 lg:mb-20">
+          <%= link_to ENV['DISCORD_INVITE_URL'], class: "btn btn-ghost btn-sm lg:btn-md" do %>
+            <span class="lg:inline">Join us on Discord</span> <iconify-icon icon="skill-icons:discord" height="20"></iconify-icon>
+          <% end %>
+        </div>
+      <% end %>
       <%= render "static/landing_page/announcement" %>
       <img class="h-[70px]" src="/images/logo-full.webp" alt="Canine">
-      <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">A modern, open source alternative to Heroku</h1>
+      <h1 class="mt-10 text-4xl font-bold tracking-tight text-white sm:text-6xl">A Developer-friendly PaaS for your Kubernetes</h1>
       <p class="mt-6 text-lg leading-8 text-gray-300">Canine is an open source deployment platform that makes it easy to deploy and manage your applications.</p>
       <div class="mt-10 flex items-center gap-x-6">
         <%= link_to "Get started", new_user_registration_path, class: "rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400" %>

@@ -9,7 +9,9 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
+#  namespace                      :string           not null
 #  postdeploy_command             :text
 #  postdestroy_command            :text
 #  predeploy_command              :text
@@ -35,12 +37,12 @@ require 'rails_helper'
 
 RSpec.describe Project, type: :model do
   let(:cluster) { create(:cluster) }
-  let(:project) { build(:project, cluster: cluster, account: cluster.account) }
+  let(:project) { build(:project, cluster:, account: cluster.account, namespace: "taken") }
 
   describe 'validations' do
     context 'when name is not unique to the cluster' do
       before do
-        create(:project, name: project.name, cluster: cluster)
+        create(:project, name: project.name, cluster:, namespace: "taken")
       end
 
       it 'is not valid' do

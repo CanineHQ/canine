@@ -94,13 +94,13 @@ if [ -t 0 ]; then  # Only prompt if running in interactive terminal
     port=${port:-3456}
 fi
 
-echo "Building Docker images..."
+echo "Pulling latest Docker images..."
+
+# Pull latest images and start docker compose
+docker compose pull
 echo " [OK]"
 
 echo "Starting Canine on port $port..."
-
-# Start docker compose in the background
-docker compose build
 PORT=$port DOCKER_SOCKET="$DOCKER_SOCKET" docker compose up -d
 
 # Function to check if port is ready

@@ -9,7 +9,9 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
+#  namespace                      :string           not null
 #  postdeploy_command             :text
 #  postdestroy_command            :text
 #  predeploy_command              :text
@@ -36,6 +38,8 @@ FactoryBot.define do
     cluster
     account
     sequence(:name) { |n| "example-project-#{n}" }
+    sequence(:namespace) { |n| "example-project-#{n}" }
+    managed_namespace { true }
     repository_url { "owner/repository" }
     status { :creating }
     autodeploy { true }
