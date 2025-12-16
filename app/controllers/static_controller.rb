@@ -1,6 +1,7 @@
 class StaticController < ApplicationController
   INSTALL_SCRIPT = "curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/install/install.sh | bash"
   skip_before_action :authenticate_user!
+  layout false, only: %i[docs swagger]
   ILLUSTRATIONS = [
     {
       src: "/images/illustrations/design_2.webp",

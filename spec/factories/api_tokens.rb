@@ -23,6 +23,7 @@
 FactoryBot.define do
   factory :api_token do
     user
+    name { "API Token" }
     expires_at { nil }
     last_used_at { nil }
   end
