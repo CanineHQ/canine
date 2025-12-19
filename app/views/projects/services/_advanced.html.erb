@@ -48,7 +48,7 @@
       </div>
 
       <div class="form-footer mt-6 flex gap-2">
-        <%= form.submit @service.pod_yaml.present? ? "Update Pod Template" : "Save Pod Template", class: "btn btn-primary" %>
+        <%= form.submit @service.pod_yaml.present? ? "Update Pod Template" : "Save Pod Template", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
         <button type="button"
                 class="btn btn-outline"
                 data-action="click->content-toggle#cancelEdit">

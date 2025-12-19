@@ -1,6 +1,6 @@
 <%= form_with model: provider do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
-  <%= form.hidden_field :provider, value: params[:provider_type] %>
+  <%= form.hidden_field :provider, value: params[:provider_type] || form.object.provider %>
   <% if params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER || form.object.provider == Provider::CUSTOM_REGISTRY_PROVIDER %>
     <div data-controller="registry-selector">
       <div class="form-control mt-1 w-full max-w-sm">
@@ -57,6 +57,27 @@
     </label>
     <%= form.text_field :access_token, class: "input input-bordered", required: true %>
   </div>
+
+  <% provider_type = params[:provider_type] || form.object.provider %>
+  <% if provider_type == Provider::GITHUB_PROVIDER || provider_type == Provider::GITLAB_PROVIDER %>
+    <% provider_name = provider_type == Provider::GITHUB_PROVIDER ? "GitHub" : "GitLab" %>
+    <div data-controller="expandable-optional-input">
+      <div>
+        <a data-action="expandable-optional-input#show" class="btn btn-ghost btn-sm mt-2">
+          + Add custom hostname
+        </a>
+      </div>
+      <div data-expandable-optional-input-target="container" class="form-control mt-1 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Host URL</span>
+        </label>
+        <%= form.text_field :registry_url, class: "input input-bordered", placeholder: provider_type == Provider::GITHUB_PROVIDER ? "https://github.example.com" : "https://gitlab.example.com" %>
+        <label class="label">
+          <span class="label-text-alt text-gray-400">Enter your <%= provider_name %> Enterprise server URL</span>
+        </label>
+      </div>
+    </div>
+  <% end %>
 
   <div class="form-footer">
     <%= form.submit "Save", class: "btn btn-primary" %>

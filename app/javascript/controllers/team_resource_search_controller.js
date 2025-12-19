@@ -25,9 +25,9 @@ export default class extends AsyncSearchDropdownController {
 
   renderItem(resource) {
     return `
-      <div class="flex items-center gap-2">
-        <div class="flex-1">
-          <div class="font-medium">${this.escapeHtml(resource.name)}</div>
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="flex-1 min-w-0">
+          <div class="font-medium truncate">${this.escapeHtml(resource.name)}</div>
         </div>
       </div>
     `

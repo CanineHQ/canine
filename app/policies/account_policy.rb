@@ -19,11 +19,10 @@ class AccountPolicy < ApplicationPolicy
 
   private
 
-  def belongs_to_account?
-    user&.account_id == record.id
-  end
+  def account_admin?
+    return false unless record
 
-  def admin_or_owner?
-    belongs_to_account? && user&.admin_or_owner?
+    account_user = AccountUser.find_by(user: user, account: record)
+    account_user&.admin?
   end
 end

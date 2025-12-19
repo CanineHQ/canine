@@ -1,12 +1,13 @@
 Rails.application.routes.draw do
   # Account-specific URL-based routes
   devise_scope :user do
-    if Rails.application.config.local_mode
-      get '/accounts/select', to: 'users/sessions#account_select'
-    end
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end
+
+  # OIDC authentication routes
+  get '/accounts/:slug/auth/oidc', to: 'accounts/oidc#authorize', as: :oidc_auth
+  get '/accounts/:slug/auth/oidc/callback', to: 'accounts/oidc#callback', as: :oidc_callback
 
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
@@ -19,6 +20,9 @@ Rails.application.routes.draw do
   resources :accounts, only: [ :create ] do
     collection do
       resources :account_users, only: %i[create index destroy], module: :accounts
+      resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
+        post :test_connection
+      end
       resources :teams, module: :accounts do
         resources :team_memberships, only: %i[create destroy], module: :teams
         resources :team_resources, only: %i[create destroy], module: :teams
@@ -33,8 +37,8 @@ Rails.application.routes.draw do
   resource :stack_manager, only: %i[show new create edit update destroy], controller: 'accounts/stack_managers' do
     collection do
       post :verify_url
-      post :verify_login
       post :check_reachable
+      post :verify_connectivity
       post :sync_clusters
       post :sync_registries
     end
@@ -73,6 +77,8 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resources :api_tokens, only: %i[index new create destroy]
+  resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
   resources :projects do
     member do
       post :restart
@@ -149,6 +155,9 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "async_render" => "async_renderer#async_render"
 
+  get "/api-docs", to: "static#docs"
+  get "/swagger", to: "static#swagger"
+
   get "/calculator", to: "static#calculator"
   # Public marketing homepage
   if Rails.application.config.local_mode
@@ -158,12 +167,16 @@ Rails.application.routes.draw do
           post :login
         end
       end
-      resources :onboarding, only: [ :index, :create ]
+      resources :onboarding, only: [ :index, :create ] do
+        collection do
+          get :account_select
+        end
+      end
     end
     if Rails.application.config.onboarding_methods.any?
       root to: "local/onboarding#index"
     else
-      root to: "projects#index"
+      root to: "local/onboarding#account_select"
     end
   else
     root to: "static#index"

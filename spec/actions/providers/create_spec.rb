@@ -22,7 +22,7 @@ RSpec.describe Providers::Create do
       let(:provider) { build(:provider, :github) }
       context 'when the access token is valid' do
         before do
-          allow(Octokit::Client).to receive(:new).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo', 'write:packages' ]))
+          allow(Git::Github::Client).to receive(:build_client).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo', 'write:packages' ]))
         end
 
         it 'sets the provider auth info' do
@@ -37,7 +37,7 @@ RSpec.describe Providers::Create do
 
       context 'when the access token is invalid' do
         before do
-          allow(Octokit::Client).to receive(:new).and_raise(Octokit::Unauthorized)
+          allow(Git::Github::Client).to receive(:build_client).and_raise(Octokit::Unauthorized)
         end
 
         it 'adds an error to the provider' do
@@ -48,7 +48,7 @@ RSpec.describe Providers::Create do
 
       context 'when the scopes are invalid' do
         before do
-          allow(Octokit::Client).to receive(:new).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo' ]))
+          allow(Git::Github::Client).to receive(:build_client).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo' ]))
         end
 
         it 'fails the context with an invalid scopes message' do

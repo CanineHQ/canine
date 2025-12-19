@@ -2,33 +2,8 @@ module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
     before_action :authorize_account, except: [ :verify_url, :check_reachable ]
-    before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
+    before_action :set_stack_manager, only: [ :show, :edit, :update, :destroy, :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable ]
-
-    def _verify_stack(stack)
-      if stack.authenticated?
-        head :ok
-      else
-        head :unauthorized
-      end
-    end
-
-    def verify_login
-      stack_manager = current_account.stack_manager
-      if stack_manager.nil?
-        head :not_found
-      end
-
-      # If the user is not having an email domain end in the
-      # portainer stack url, don't log them out, just return a different unauthorized.
-      if !stack_manager.is_user?(current_user)
-        head :method_not_allowed
-        return
-      end
-
-      stack = stack_manager.stack.connect(current_user, allow_anonymous: false)
-      _verify_stack(stack)
-    end
 
     def check_reachable
       url = params[:stack_manager][:url]
@@ -37,6 +12,30 @@ module Accounts
         return
       end
       head :ok
+    end
+
+    def verify_connectivity
+      stack_manager = current_account.stack_manager
+      if stack_manager.nil?
+        head :not_found
+        return
+      end
+
+      if current_user.portainer_access_token.blank?
+        head :unauthorized
+        return
+      end
+
+      stack = stack_manager.stack.connect(current_user, allow_anonymous: false)
+      if stack.authenticated?
+        head :ok
+      else
+        head :unauthorized
+      end
+    rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError
+      head :unauthorized
+    rescue Portainer::Client::ConnectionError
+      head :bad_gateway
     end
 
     def verify_url
@@ -60,7 +59,6 @@ module Accounts
     end
 
     def show
-      @stack_manager = current_account.stack_manager
     end
 
     def new
@@ -78,13 +76,10 @@ module Accounts
     end
 
     def edit
-      @stack_manager = current_account.stack_manager
       redirect_to new_stack_manager_path unless @stack_manager
     end
 
     def update
-      @stack_manager = current_account.stack_manager
-
       if @stack_manager.update(stack_manager_params)
         redirect_to stack_manager_path, notice: "Stack manager was successfully updated."
       else
@@ -93,7 +88,6 @@ module Accounts
     end
 
     def destroy
-      @stack_manager = current_account.stack_manager
       @stack_manager.destroy!
       redirect_to stack_manager_path, notice: "Stack manager was successfully removed."
     end
@@ -136,8 +130,24 @@ module Accounts
       )
     end
 
+    def set_stack_manager
+      @stack_manager = current_account.stack_manager
+    end
+
+    def authorize_account_admin
+      authorize current_account, :manage_stack_manager?
+    end
+
     def set_stack
-      @stack ||= current_account.stack_manager&.stack&.connect(current_user)
+      @stack ||= @stack_manager&.stack&.connect(current_user)
+    end
+
+    def _verify_stack(stack)
+      if stack.authenticated?
+        head :ok
+      else
+        head :unauthorized
+      end
     end
 
     def authorize_account

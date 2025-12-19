@@ -1,0 +1,42 @@
+<div class="overflow-x-auto mb-4">
+  <table class="table">
+    <!-- head -->
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>API Token</th>
+        <th>Last Used</th>
+        <th>Expires At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% current_user.api_tokens.order(created_at: :desc).each do |api_token| %>
+        <tr>
+          <td><%= api_token.name %></td>
+          <td>
+            <% if api_token.created_at == api_token.updated_at %>
+              <div class="cursor-pointer flex items-center gap-2" data-controller="clipboard" data-clipboard-text="<%= api_token.access_token %>">
+                <%= api_token.access_token %>
+                <iconify-icon icon="lucide:clipboard" height="16"></iconify-icon>
+              </div>
+              <span class="text-gray-500">(You can only see this once)</span>
+              <% api_token.touch(:updated_at) %>
+            <% else %>
+              <%= api_token.access_token.first(4) %><%= "*" * [8, api_token.access_token.length - 16].min %><%= api_token.access_token.last(4) %>
+            <% end %>
+          </td>
+          <td>
+            <%= (api_token.last_used_at.strftime("%b %d, %Y") if api_token.last_used_at) || "Never" %>
+          </td>
+          <td>
+            <%= (api_token.expires_at.strftime("%b %d, %Y") if api_token.expires_at) || "Never" %>
+          </td>
+          <td>
+            <%= link_to "Delete", api_token, method: :delete, class: "btn btn-error btn-sm" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

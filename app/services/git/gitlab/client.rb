@@ -1,19 +1,25 @@
 class Git::Gitlab::Client < Git::Client
-  GITLAB_API_BASE = "https://gitlab.com/api/v4"
   GITLAB_WEBHOOK_SECRET = ENV["GITLAB_WEBHOOK_SECRET"]
-  attr_accessor :access_token, :repository_url
+  attr_accessor :access_token, :repository_url, :api_base_url
 
   def self.from_project(project)
-    raise "Project is not a GitLab project" unless project.project_credential_provider.provider.gitlab?
+    provider = project.project_credential_provider.provider
+    raise "Project is not a GitLab project" unless provider.gitlab?
     new(
-      access_token: project.project_credential_provider.access_token,
-      repository_url: project.repository_url
+      access_token: provider.access_token,
+      repository_url: project.repository_url,
+      api_base_url: provider.api_base_url
     )
   end
 
-  def initialize(access_token:, repository_url:)
+  def initialize(access_token:, repository_url:, api_base_url: nil)
     @access_token = access_token
     @repository_url = repository_url
+    @api_base_url = api_base_url || "https://gitlab.com"
+  end
+
+  def gitlab_api_base
+    "#{@api_base_url}/api/v4"
   end
 
   def repository_exists?
@@ -22,7 +28,7 @@ class Git::Gitlab::Client < Git::Client
 
   def commits(branch)
     response = HTTParty.get(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/commits?ref=#{branch}",
+      "#{gitlab_api_base}/projects/#{encoded_url}/repository/commits?ref=#{branch}",
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     unless response.success?
@@ -53,7 +59,7 @@ class Git::Gitlab::Client < Git::Client
       return
     end
     response = HTTParty.post(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/hooks",
+      "#{gitlab_api_base}/projects/#{encoded_url}/hooks",
       headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
       body: {
         url: Rails.application.routes.url_helpers.inbound_webhooks_gitlab_index_url,
@@ -71,7 +77,7 @@ class Git::Gitlab::Client < Git::Client
 
   def webhooks
     response = HTTParty.get(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/hooks",
+      "#{gitlab_api_base}/projects/#{encoded_url}/hooks",
       headers: { "Authorization" => "Bearer #{access_token}" },
       format: :json
     )
@@ -84,7 +90,7 @@ class Git::Gitlab::Client < Git::Client
   def repository
     @repository ||= begin
       project_response = HTTParty.get(
-        "#{GITLAB_API_BASE}/projects/#{encoded_url}",
+        "#{gitlab_api_base}/projects/#{encoded_url}",
         headers: { "Authorization" => "Bearer #{access_token}" }
       )
     end
@@ -105,7 +111,7 @@ class Git::Gitlab::Client < Git::Client
   def remove_webhook!
     if webhook_exists?
       HTTParty.delete(
-        "#{GITLAB_API_BASE}/projects/#{encoded_url}/hooks/#{webhook['id']}",
+        "#{gitlab_api_base}/projects/#{encoded_url}/hooks/#{webhook['id']}",
         headers: { "Authorization" => "Bearer #{access_token}" }
       )
     end
@@ -113,7 +119,7 @@ class Git::Gitlab::Client < Git::Client
 
   def pull_requests
     HTTParty.get(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/merge_requests",
+      "#{gitlab_api_base}/projects/#{encoded_url}/merge_requests",
       headers: { "Authorization" => "Bearer #{access_token}" }
     ).map do |row|
       Git::Common::PullRequest.new(
@@ -131,7 +137,7 @@ class Git::Gitlab::Client < Git::Client
 
   def pull_request_status(pr_number)
     response = HTTParty.get(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/merge_requests/#{pr_number}",
+      "#{gitlab_api_base}/projects/#{encoded_url}/merge_requests/#{pr_number}",
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     return 'not_found' unless response.success?
@@ -141,7 +147,7 @@ class Git::Gitlab::Client < Git::Client
 
   def get_file(file_path, branch)
     response = HTTParty.get(
-      "#{GITLAB_API_BASE}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
+      "#{gitlab_api_base}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     response.success? ? Git::Common::File.new(file_path, response.body, branch) : nil

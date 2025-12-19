@@ -1,0 +1,63 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "sso_provider" do %>
+    <div class="font-lg font-bold mt-4">
+      Add <%= @provider_type == "oidc" ? "OIDC" : "LDAP" %> Provider
+    </div>
+
+    <div class="text-sm text-gray-500 mt-2 mb-4">
+      <% if @provider_type == "oidc" %>
+        Configure an OpenID Connect provider for SSO authentication. This will allow users to sign in using your identity provider.
+      <% else %>
+        Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
+      <% end %>
+    </div>
+
+    <div class="tabs tabs-boxed mb-4 max-w-sm">
+      <%= link_to "LDAP", new_sso_provider_path(provider_type: "ldap"), class: "tab #{@provider_type == 'ldap' ? 'tab-active' : ''}" %>
+      <%= link_to "OIDC", new_sso_provider_path(provider_type: "oidc"), class: "tab #{@provider_type == 'oidc' ? 'tab-active' : ''}" %>
+    </div>
+
+    <%= form_with model: @sso_provider, url: sso_provider_path(provider_type: @provider_type) do |form| %>
+      <%= render "shared/error_messages", resource: form.object %>
+
+      <div class="space-y-8">
+        <%= render(FormFieldComponent.new(
+          label: "Provider Name",
+          description: "A friendly name for this SSO provider"
+        )) do %>
+          <%= form.text_field :name, class: "input input-bordered w-full", required: true, placeholder: "e.g., Company SSO" %>
+          <label class="label">
+            <span class="label-text-alt">* Required</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Enabled",
+          description: "Enable or disable this SSO provider"
+        )) do %>
+          <%= form.check_box :enabled, class: "checkbox checkbox-primary" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Team Provisioning Mode",
+          description: "How teams are provisioned for SSO users"
+        )) do %>
+          <%= form.select :team_provisioning_mode, SSOProvider.team_provisioning_modes.keys.map { |k| [k.titleize, k] }, {}, class: "select select-bordered w-full" %>
+        <% end %>
+      </div>
+
+      <% if @provider_type == "oidc" %>
+        <div class="divider">OIDC Configuration</div>
+        <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
+      <% else %>
+        <div class="divider">LDAP Configuration</div>
+        <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>
+      <% end %>
+
+      <div class="form-footer mt-6">
+        <%= form.submit "Create Provider", class: "btn btn-primary" %>
+        <%= link_to "Cancel", sso_provider_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

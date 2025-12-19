@@ -35,6 +35,7 @@ group :development, :test do
   gem "simplecov", require: false
   gem "pry", "~> 0.15.2"
   gem "rspec-rails", "~> 8.0"
+  gem 'rswag-specs'
   gem "factory_bot_rails"
   gem "webmock"
 
@@ -59,57 +60,48 @@ group :test do
   gem 'shoulda-matchers', '~> 6.5'
 end
 
+gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
+gem "annotate", "~> 3.2"
+gem "avo", "~> 3.25"
+gem "cron2english", "~> 0.1.7"
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"
-gem "friendly_id", "~> 5.4"
-gem "jsbundling-rails"
-gem "name_of_person", github: "basecamp/name_of_person"
-gem "noticed", "~> 2.9"
-gem "omniauth-github", "~> 2.0"
-gem "pretender", "~> 0.6.0"
-gem "pundit", "~> 2.5"
-gem "good_job", "~> 4.12"
-gem "sitemap_generator", "~> 6.1"
-gem "responders", github: "heartcombo/responders", branch: "main"
 gem "dotenv", "~> 3.1"
+gem "friendly_id", "~> 5.4"
+gem "good_job", "~> 4.12"
+gem "httparty", "~> 0.23.2"
 gem "image_processing", "~> 1.13"
+gem "jsbundling-rails"
 gem "k8s-ruby", "~> 0.17.2"
 gem "kubeclient", "~> 4.12"
 gem "light-service", "~> 0.20.0"
+gem "name_of_person", github: "basecamp/name_of_person"
+gem "noticed", "~> 2.9"
 gem "octokit", "~> 10.0"
-gem "omniauth-digitalocean", "~> 0.3.2"
-gem "pagy", "~> 9.4"
 gem "oj", "~> 3.16"
 gem "omniauth", "~> 2.1"
-gem "omniauth-rails_csrf_protection", "~> 1.0"
-
-gem "annotate", "~> 3.2"
-
-gem "rack", "~> 3.1"
-
-gem "tailwindcss-rails", "~> 2.7"
-
-gem "httparty", "~> 0.23.2"
-
-gem "redcarpet", "~> 3.6"
-
-gem "rubyzip", "~> 3.2"
-
-gem "sassc-rails", "~> 2.1"
-
-gem "cron2english", "~> 0.1.7"
-
-gem "avo", "~> 3.25"
-
-gem "sentry-ruby", "~> 5.28"
-gem "sentry-rails", "~> 5.27"
-
-gem "sys-proctable", "~> 1.3"
-
+gem "omniauth-github", "~> 2.0"
+gem "omniauth_openid_connect", "~> 0.8"
 gem "omniauth-gitlab", "~> 4.1"
-
-gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
-
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "pagy", "~> 9.4"
+gem "pretender", "~> 0.6.0"
+gem "pundit", "~> 2.5"
+gem "rack", "~> 3.1"
+gem "redcarpet", "~> 3.6"
+gem 'rswag-api', '~> 2.10', '>= 2.10.1'
+gem "responders", github: "heartcombo/responders", branch: "main"
+gem "rubyzip", "~> 3.2"
+gem "sassc-rails", "~> 2.1"
+gem "sentry-rails", "~> 5.27"
+gem "sentry-ruby", "~> 5.28"
+gem "sitemap_generator", "~> 6.1"
+gem "sys-proctable", "~> 1.3"
+gem "tailwindcss-rails", "~> 2.7"
 gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
+
+gem "net-ldap", "~> 0.20.0"
+
+gem "jwt", "~> 2.9"

@@ -3,22 +3,16 @@
   <%= turbo_stream_from [:team_memberships, @team] %>
 
   <div>
-    <div class="breadcrumbs text-sm mb-4">
-      <ul>
-        <li>
-          <%= link_to teams_path, class: "inline-flex items-center gap-1" do %>
-            <iconify-icon icon="lucide:users" height="14"></iconify-icon>
-            Teams
-          <% end %>
-        </li>
-        <li><%= @team.name %></li>
-      </ul>
-    </div>
-
     <div class="mb-6">
       <div class="flex justify-between items-start">
         <div>
-          <h2 class="text-2xl font-bold"><%= @team.name %></h2>
+          <h2 class="text-2xl font-bold flex items-center gap-2">
+            <%= link_to teams_path, class: "text-base-content/60 hover:text-base-content" do %>
+              Teams
+            <% end %>
+            <span class="text-base-content/40">/</span>
+            <%= @team.name %>
+          </h2>
           <div class="flex text-sm">
             <div class="flex items-center gap-1">
               <iconify-icon icon="lucide:building"></iconify-icon>

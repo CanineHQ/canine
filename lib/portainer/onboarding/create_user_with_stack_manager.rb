@@ -1,31 +1,26 @@
 class Portainer::Onboarding::CreateUserWithStackManager
   extend LightService::Action
-  expects :portainer_user, :username, :account_name, :provider_url, :access_token, :enable_role_based_access_control
+  expects :account_name, :provider_url, :access_token, :enable_role_based_access_control,
+          :email, :password, :personal_access_token
   promises :user, :account, :stack_manager
 
   executed do |context|
-    password = Devise.friendly_token
-    hostname = URI.parse(context.provider_url).host
     ActiveRecord::Base.transaction do
       context.user = User.find_or_initialize_by(
-        email: context.username + "@#{hostname}",
+        email: context.email,
       )
       context.user.assign_attributes(
-        password:,
-        password_confirmation: password,
+        password: context.password,
+        password_confirmation: context.password,
       )
       if context.user.new_record?
         context.user.write_attribute(:admin, true)
       end
       context.user.save!
 
-      provider = context.user.providers.find_or_initialize_by(provider: "portainer")
-      provider.auth = {
-        info: {
-          username: context.portainer_user.username
-        }
-      }.to_json
-      provider.access_token = context.portainer_user.jwt
+      portainer_access_token = context.personal_access_token.presence || context.access_token
+      provider = context.user.providers.find_or_initialize_by(provider: Provider::PORTAINER_PROVIDER)
+      provider.access_token = portainer_access_token
       provider.save!
 
       context.account = Account.create!(owner: context.user, name: context.account_name)

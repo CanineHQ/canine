@@ -1,7 +1,7 @@
 module Users
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
-    before_action :set_provider, except: [ :failure ]
-    before_action :set_user, except: [ :failure ]
+    before_action :set_provider
+    before_action :set_user
 
     attr_reader :provider, :user
 

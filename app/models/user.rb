@@ -42,6 +42,7 @@ class User < ApplicationRecord
   has_many :projects, through: :accounts
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts
+  has_many :api_tokens, dependent: :destroy
   attr_readonly :admin
 
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
@@ -51,9 +52,15 @@ class User < ApplicationRecord
     providers.find_by(provider: "github")
   end
 
-  def portainer_jwt
-    return @portainer_jwt if @portainer_jwt
-    @portainer_jwt = providers.find_by(provider: "portainer")&.access_token
+  def portainer_access_token
+    return @portainer_access_token if @portainer_access_token
+    @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
+  end
+
+  def needs_portainer_credential?(account)
+    account.stack_manager&.portainer? &&
+      account.stack_manager.enable_role_based_access_control? &&
+      portainer_access_token.blank?
   end
 
   private

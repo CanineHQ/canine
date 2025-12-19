@@ -16,14 +16,19 @@ class ProjectsController < ApplicationController
 
     # Uncomment to authorize with Pundit
     # authorize @projects
+    #
   end
 
   def restart
     result = Projects::Restart.execute(connection: K8::Connection.new(@project, current_user))
-    if result.success?
-      redirect_to project_url(@project), notice: "All services have been restarted"
-    else
-      redirect_to project_url(@project), alert: "Failed to restart all services"
+    respond_to do |format|
+      if result.success?
+        format.html { redirect_to project_url(@project), notice: "All services have been restarted" }
+        format.json { render json: { message: "All services have been restarted" }, status: :ok }
+      else
+        format.html { redirect_to project_url(@project), alert: "Failed to restart all services" }
+        format.json { render json: { message: "Failed to restart all services" }, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -40,6 +45,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1/edit
   def edit
+    @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
   end
 
   # POST /projects or /projects.json

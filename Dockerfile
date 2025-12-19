@@ -26,17 +26,30 @@ ENV RAILS_ENV="production" \
 FROM base AS build
 
 # Install packages needed to build gems
+ARG KUBECTL_VERSION=v1.31.0
+ARG HELM_VERSION=v3.16.3
+ARG TARGETOS
+ARG TARGETARCH
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config && \
-    curl -k -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -k -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+    curl -k -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl && \
     chmod +x ./kubectl && \
     mv ./kubectl /usr/local/bin/kubectl && \
-    curl -k -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
-    chmod +x get_helm.sh && \
-    ./get_helm.sh && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/v2.21.1/telepresence-linux-amd64 -o /usr/local/bin/telepresence && \
+RUN set -eux; \
+    os="${TARGETOS:-linux}"; \
+    arch="${TARGETARCH:-amd64}"; \
+    url="https://get.helm.sh/helm-${HELM_VERSION}-${os}-${arch}.tar.gz"; \
+    curl -fsSLO "$url"; \
+    curl -fsSLO "${url}.sha256sum"; \
+    sha256sum -c "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum"; \
+    tar -xzf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz"; \
+    install -m 0755 "${os}-${arch}/helm" /usr/local/bin/helm; \
+    rm -rf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz" "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum" "${os}-${arch}"
+
+ARG TELEPRESENCE_VERSION=v2.21.1
+RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/${TELEPRESENCE_VERSION}/telepresence-linux-${TARGETARCH} -o /usr/local/bin/telepresence && \
     chmod a+x /usr/local/bin/telepresence
 
 # Install pack CLI for Cloud Native Buildpacks
