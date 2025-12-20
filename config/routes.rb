@@ -65,7 +65,7 @@ Rails.application.routes.draw do
   resources :add_ons do
     collection do
       get :search
-      get :default_values
+      get :metadata
     end
     member do
       post :restart

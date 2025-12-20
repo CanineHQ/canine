@@ -118,4 +118,54 @@ class K8::Helm::Client
     output = runner.(command)
     output
   end
+
+  def self.get_values_schema(chart_url)
+    result = AddOns::HelmChartDetails.execute(chart_url: chart_url)
+    return {} if result.failure?
+
+    package = result.response
+    repository = package['repository']
+
+    values_yaml = get_default_values_yaml(
+      repository_name: repository['name'],
+      repository_url: repository['url'],
+      chart_name: package['name']
+    )
+    return {} if values_yaml.blank?
+
+    parsed = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ])
+    flatten_to_schema(parsed)
+  rescue Psych::SyntaxError => e
+    Rails.logger.error("Failed to parse values.yaml: #{e.message}")
+    {}
+  end
+
+  def self.flatten_to_schema(obj, prefix = '')
+    schema = {}
+    return schema unless obj.is_a?(Hash)
+
+    obj.each do |key, value|
+      full_key = prefix.present? ? "#{prefix}.#{key}" : key.to_s
+
+      case value
+      when Hash
+        schema[full_key] = 'object'
+        schema.merge!(flatten_to_schema(value, full_key)) unless value.empty?
+      when Array
+        schema[full_key] = 'array'
+      when TrueClass, FalseClass
+        schema[full_key] = 'boolean'
+      when Integer
+        schema[full_key] = 'integer'
+      when Float
+        schema[full_key] = 'number'
+      when NilClass
+        schema[full_key] = 'null'
+      else
+        schema[full_key] = 'string'
+      end
+    end
+
+    schema
+  end
 end

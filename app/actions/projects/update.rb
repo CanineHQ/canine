@@ -22,7 +22,8 @@ module Projects
       provider_params = params[:project][:project_credential_provider_attributes]
       return unless provider_params.present? && provider_params[:provider_id].present?
 
-      project.project_credential_provider.provider_id = provider_params[:provider_id]
+      provider = user.providers.find(provider_params[:provider_id])
+      project.project_credential_provider.provider = provider
     end
 
     def self.handle_build_configuration(project, params)

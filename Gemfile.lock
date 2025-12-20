@@ -730,6 +730,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   jsbundling-rails
+  json-schema (~> 5.1)
   jwt (~> 2.9)
   k8s-ruby (~> 0.17.2)
   kubeclient (~> 4.12)

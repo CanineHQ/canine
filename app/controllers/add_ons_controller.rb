@@ -85,14 +85,31 @@ class AddOnsController < ApplicationController
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
-  def default_values
-    # Render a partial with the default values
-    @default_values = K8::Helm::Client.get_default_values_yaml(
-      repository_name: params[:repository_name],
-      repository_url: params[:repository_url],
-      chart_name: params[:chart_name]
-    )
-    render partial: "add_ons/helm/default_values", locals: { default_values: @default_values }
+  def metadata
+    cache_key = "helm_schema:#{Digest::SHA256.hexdigest(params[:chart_url].to_s)}"
+
+    schema = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url])
+      next {} if result.failure?
+
+      package = result.response
+      repository = package["repository"]
+
+      values_yaml = K8::Helm::Client.get_default_values_yaml(
+        repository_name: repository["name"],
+        repository_url: repository["url"],
+        chart_name: package["name"]
+      )
+      next {} if values_yaml.blank?
+
+      values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ])
+      InferJsonSchemaService.new(values).infer
+    rescue Psych::SyntaxError => e
+      Rails.logger.error("Failed to parse values.yaml: #{e.message}")
+      {}
+    end
+
+    render json: { schema: schema }
   end
 
   def download_values
