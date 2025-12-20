@@ -8,24 +8,33 @@ import { keymap } from "@codemirror/view"
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete"
 
 export default class extends YamlEditorController {
-  static targets = ["textarea", "editor"]
+  static targets = ["textarea", "editor", "status"]
   static values = {
-    schema: Object, // JSON schema object
     metadataUrl: String, // URL to fetch schema from
-    chartUrl: String // Helm chart URL
+    chartUrl: String, // Helm chart URL
+    chartUrlInputId: String
   }
 
   connect() {
     super.connect()
-    this.fetchSchema()
+    if (this.hasChartUrlValue) {
+      this.fetchSchema(this.chartUrlValue)
+    } else if (this.hasChartUrlInputIdValue) {
+      this.chartUrlInput = document.getElementById(this.chartUrlInputIdValue)
+      this.chartUrlInput.addEventListener('change', (e) => {
+        this.fetchSchema(e.target.value)
+      })
+    }
   }
 
-  async fetchSchema() {
-    if (!this.hasMetadataUrlValue || !this.hasChartUrlValue) return
+  async fetchSchema(chartUrl) {
+    if (!this.hasMetadataUrlValue || !chartUrl) return
+
+    this.updateStatus(chartUrl, 'loading')
 
     try {
       const url = new URL(this.metadataUrlValue, window.location.origin)
-      url.searchParams.set('chart_url', this.chartUrlValue)
+      url.searchParams.set('chart_url', chartUrl)
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' }
@@ -33,11 +42,14 @@ export default class extends YamlEditorController {
 
       if (response.ok) {
         const data = await response.json()
-        this.schemaValue = data.schema || {}
-        console.log('schema', this.schemaValue)
+        this.schema = data.schema || {}
+        this.updateStatus(chartUrl, 'success')
+      } else {
+        this.updateStatus(chartUrl, 'error')
       }
     } catch (error) {
       console.error('Failed to fetch schema:', error)
+      this.updateStatus(chartUrl, 'error')
     }
   }
 
@@ -89,13 +101,12 @@ export default class extends YamlEditorController {
   }
 
   yamlCompletions(context) {
-    console.log(context);
     const word = context.matchBefore(/[\w.]*/)
     if (!word || (word.from === word.to && !context.explicit)) {
       return null
     }
 
-    const schema = this.hasSchemaValue ? this.schemaValue : {}
+    const schema = this.schema ? this.schema : {}
     const { path, isValue, currentKey } = this.getCurrentPath(context)
     const schemaAtPath = this.getSchemaAtPath(schema, path)
 
@@ -215,5 +226,22 @@ export default class extends YamlEditorController {
     }
 
     return options
+  }
+
+  updateStatus(chartUrl, status) {
+    if (!this.hasStatusTarget) return
+
+    this.statusTarget.classList.remove('text-red-400', 'text-green-400', 'text-yellow-400')
+
+    if (status === 'loading') {
+      this.statusTarget.textContent = `Loading schema: ${chartUrl}`
+      this.statusTarget.classList.add('text-yellow-400')
+    } else if (status === 'success') {
+      this.statusTarget.textContent = `Schema: ${chartUrl}`
+      this.statusTarget.classList.add('text-green-400')
+    } else {
+      this.statusTarget.textContent = `Failed to load schema: ${chartUrl}`
+      this.statusTarget.classList.add('text-red-400')
+    }
   }
 }

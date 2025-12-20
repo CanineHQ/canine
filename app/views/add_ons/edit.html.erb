@@ -28,7 +28,10 @@
             value: @service.values_yaml.to_yaml,
             data: { 'yaml-autocomplete-target': 'textarea' }
           ) %>
-          <div data-yaml-autocomplete-target="editor" class="mt-2"></div>
+          <div class="relative mt-2">
+            <div data-yaml-autocomplete-target="editor"></div>
+            <div data-yaml-autocomplete-target="status" class="absolute bottom-2 right-2 text-xs"></div>
+          </div>
         </div>
         <div class="form-footer">
           <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
