@@ -86,11 +86,11 @@ class AddOnsController < ApplicationController
   end
 
   def metadata
-    cache_key = "helm_schema:#{Digest::SHA256.hexdigest(params[:chart_url].to_s)}"
+    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest(params[:chart_url].to_s)}"
 
-    schema = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+    metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
       result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url])
-      next {} if result.failure?
+      next { schema: {}, default_values: nil } if result.failure?
 
       package = result.response
       repository = package["repository"]
@@ -100,16 +100,17 @@ class AddOnsController < ApplicationController
         repository_url: repository["url"],
         chart_name: package["name"]
       )
-      next {} if values_yaml.blank?
+      next { schema: {}, default_values: nil } if values_yaml.blank?
 
-      values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ])
-      InferJsonSchemaService.new(values).infer
+      values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
+      schema = InferJsonSchemaService.new(values).infer
+      { schema: schema, default_values: values_yaml }
     rescue Psych::SyntaxError => e
       Rails.logger.error("Failed to parse values.yaml: #{e.message}")
-      {}
+      { schema: {}, default_values: nil }
     end
 
-    render json: { schema: schema }
+    render json: metadata
   end
 
   def download_values
