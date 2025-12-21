@@ -72,7 +72,7 @@ class ProjectsController < ApplicationController
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    result = Projects::Update.call(@project, params)
+    result = Projects::Update.call(@project, params, current_user)
 
     respond_to do |format|
       if result.success?
