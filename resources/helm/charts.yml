@@ -80,7 +80,7 @@ helm:
     - name: airbyte
       friendly_name: Airbyte
       logo: /images/helm/airbyte.webp
-      repository: https://airbytehq.github.io/helm-charts
+      chart_url: airbyte/airbyte
       
     - name: minio
       logo: /images/helm/minio.webp
@@ -104,8 +104,3 @@ helm:
           key: helm_chart.name
           type: string
           hidden: false
-    #- name: prometheus
-    #  logo: /images/helm/prometheus.png
-    #  repository: https://prometheus-community.github.io/helm-charts
-    #- name: wordpress
-    #  repository: https://charts.bitnami.com/bitnami
