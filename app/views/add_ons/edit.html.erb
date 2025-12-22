@@ -12,7 +12,7 @@
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-lg font-bold">Configuration</h2>
         <% if @add_on.installed? %>
-          <%= link_to "Download Values", download_values_add_on_path(@add_on), class: "btn btn-outline btn-sm", target: "_blank" %>
+          <%= link_to "Download Running Values YAML", download_values_add_on_path(@add_on), class: "btn btn-outline btn-sm", target: "_blank" %>
         <% end %>
       </div>
       <%= form_with(model: @add_on) do |form| %>
@@ -29,6 +29,9 @@
             data: { 'yaml-autocomplete-target': 'textarea' }
           ) %>
           <div class="relative mt-2">
+            <div class="absolute top-2 right-2 z-10">
+              <%= render "add_ons/show_default_yaml_button", chart_url: @add_on.chart_url %>
+            </div>
             <div data-yaml-autocomplete-target="editor"></div>
             <div class="absolute bottom-2 left-2 z-10">
               <%= render "add_ons/show_default_yaml_button", chart_url: @add_on.chart_url %>
