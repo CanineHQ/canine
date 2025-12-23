@@ -129,13 +129,13 @@ RSpec.describe Projects::Update do
       end
     end
 
-    context 'with project_credential_provider_attributes' do
+    context 'with project_credential_provider' do
       let(:new_provider) { create(:provider, :github, user:) }
       let(:params) do
         ActionController::Parameters.new({
           project: {
             name: 'updated-name',
-            project_credential_provider_attributes: {
+            project_credential_provider: {
               provider_id: new_provider.id
             }
           }
