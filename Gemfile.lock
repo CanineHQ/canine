@@ -582,6 +582,9 @@ GEM
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
+    ruby-saml (1.18.1)
+      nokogiri (>= 1.13.10)
+      rexml
     ruby-vips (2.2.2)
       ffi (~> 1.12)
       logger
@@ -759,6 +762,7 @@ DEPENDENCIES
   rswag-api (~> 2.10, >= 2.10.1)
   rswag-specs
   rubocop-rails-omakase
+  ruby-saml (~> 1.17)
   rubyzip (~> 3.2)
   sassc-rails (~> 2.1)
   sentry-rails (~> 5.27)

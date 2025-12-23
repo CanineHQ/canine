@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   get '/accounts/:slug/auth/oidc', to: 'accounts/oidc#authorize', as: :oidc_auth
   get '/accounts/:slug/auth/oidc/callback', to: 'accounts/oidc#callback', as: :oidc_callback
 
+  # SAML authentication routes
+  get '/accounts/:slug/auth/saml', to: 'accounts/saml#authorize', as: :saml_auth
+  post '/accounts/:slug/auth/saml/callback', to: 'accounts/saml#callback', as: :saml_callback
+  get '/accounts/:slug/auth/saml/metadata', to: 'accounts/saml#metadata', as: :saml_metadata
+
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
     Avo::Engine.routes.draw do

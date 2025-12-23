@@ -3,6 +3,7 @@
 # Table name: account_users
 #
 #  id         :bigint           not null, primary key
+#  role       :integer          default(2), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  account_id :bigint           not null

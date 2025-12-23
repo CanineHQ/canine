@@ -42,6 +42,10 @@ class SSOProvider < ApplicationRecord
     configuration_type == "OIDCConfiguration"
   end
 
+  def saml?
+    configuration_type == "SAMLConfiguration"
+  end
+
   def sso_users_count
     providers.joins(:user).distinct.count(:user_id)
   end

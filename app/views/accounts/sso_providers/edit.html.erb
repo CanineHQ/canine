@@ -7,6 +7,8 @@
     <div class="text-sm text-gray-500 mt-2 mb-4">
       <% if @provider_type == "oidc" %>
         Update your OIDC provider configuration.
+      <% elsif @provider_type == "saml" %>
+        Update your SAML provider configuration.
       <% else %>
         Update your LDAP provider configuration.
       <% end %>
@@ -44,6 +46,9 @@
       <% if @provider_type == "oidc" %>
         <div class="divider">OIDC Configuration</div>
         <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
+      <% elsif @provider_type == "saml" %>
+        <div class="divider">SAML Configuration</div>
+        <%= render "accounts/sso_providers/saml/form_fields", saml_configuration: @saml_configuration %>
       <% else %>
         <div class="divider">LDAP Configuration</div>
         <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>

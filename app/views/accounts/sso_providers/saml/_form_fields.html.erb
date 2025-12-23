@@ -1,0 +1,127 @@
+<%= render "accounts/sso_providers/saml/metadata_info" %>
+
+<%= fields_for :saml_configuration, saml_configuration do |saml_form| %>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(
+      label: "IdP Entity ID",
+      description: "The Identity Provider's entity ID (issuer)"
+    )) do %>
+      <%= saml_form.text_field :idp_entity_id, class: "input input-bordered w-full", required: true, placeholder: "https://idp.example.com/saml/metadata" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "IdP SSO Service URL",
+      description: "The Identity Provider's Single Sign-On service URL"
+    )) do %>
+      <%= saml_form.text_field :idp_sso_service_url, class: "input input-bordered w-full", required: true, placeholder: "https://idp.example.com/saml/sso" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "IdP Certificate",
+      description: "The Identity Provider's X.509 certificate (PEM format)"
+    )) do %>
+      <%= saml_form.text_area :idp_cert, class: "textarea textarea-bordered w-full font-mono text-sm", rows: 6, required: true, placeholder: "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----" %>
+      <label class="label">
+        <span class="label-text-alt">* Required - Paste the full certificate including BEGIN/END lines</span>
+      </label>
+    <% end %>
+  </div>
+
+  <details class="collapse collapse-arrow bg-base-200 mt-8">
+    <summary class="collapse-title font-medium">
+      Advanced Settings (Optional)
+    </summary>
+    <div class="collapse-content">
+      <div class="space-y-8 pt-4">
+        <%= render(FormFieldComponent.new(
+          label: "IdP SLO Service URL",
+          description: "The Identity Provider's Single Logout service URL (optional)"
+        )) do %>
+          <%= saml_form.text_field :idp_slo_service_url, class: "input input-bordered w-full", placeholder: "https://idp.example.com/saml/slo" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "SP Entity ID",
+          description: "Custom Service Provider entity ID (defaults to metadata URL)"
+        )) do %>
+          <%= saml_form.text_field :sp_entity_id, class: "input input-bordered w-full", placeholder: "Leave blank to use default" %>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Name Identifier Format",
+          description: "The format of the NameID in SAML assertions"
+        )) do %>
+          <%= saml_form.select :name_identifier_format, [
+            ["Email Address", "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"],
+            ["Persistent", "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"],
+            ["Transient", "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"],
+            ["Unspecified", "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"]
+          ], {}, class: "select select-bordered w-full" %>
+        <% end %>
+
+        <div class="flex gap-8">
+          <%= render(FormFieldComponent.new(
+            label: "Sign AuthN Requests",
+            description: "Sign authentication requests sent to IdP"
+          )) do %>
+            <%= saml_form.check_box :authn_requests_signed, class: "checkbox checkbox-primary" %>
+          <% end %>
+
+          <%= render(FormFieldComponent.new(
+            label: "Require Signed Assertions",
+            description: "Require IdP to sign SAML assertions"
+          )) do %>
+            <%= saml_form.check_box :want_assertions_signed, class: "checkbox checkbox-primary" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="divider">Attribute Mappings</div>
+
+      <div class="space-y-8">
+        <%= render(FormFieldComponent.new(
+          label: "UID Attribute",
+          description: "SAML attribute used as user identifier"
+        )) do %>
+          <%= saml_form.text_field :uid_attribute, class: "input input-bordered w-full", placeholder: "email" %>
+          <label class="label">
+            <span class="label-text-alt">Default: email</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Email Attribute",
+          description: "SAML attribute for email address"
+        )) do %>
+          <%= saml_form.text_field :email_attribute, class: "input input-bordered w-full", placeholder: "email" %>
+          <label class="label">
+            <span class="label-text-alt">Default: email</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Name Attribute",
+          description: "SAML attribute for display name"
+        )) do %>
+          <%= saml_form.text_field :name_attribute, class: "input input-bordered w-full", placeholder: "name" %>
+          <label class="label">
+            <span class="label-text-alt">Default: name</span>
+          </label>
+        <% end %>
+
+        <%= render(FormFieldComponent.new(
+          label: "Groups Attribute",
+          description: "SAML attribute for group membership (optional)"
+        )) do %>
+          <%= saml_form.text_field :groups_attribute, class: "input input-bordered w-full", placeholder: "groups" %>
+        <% end %>
+      </div>
+    </div>
+  </details>
+<% end %>
