@@ -6,7 +6,7 @@
       label: "IdP Entity ID",
       description: "The Identity Provider's entity ID (issuer)"
     )) do %>
-      <%= saml_form.text_field :idp_entity_id, class: "input input-bordered w-full", required: true, placeholder: "https://idp.example.com/saml/metadata" %>
+      <%= saml_form.text_field :idp_entity_id, class: "input input-bordered w-full", required: true, placeholder: "my-idp-entity-id" %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>
