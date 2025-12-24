@@ -1,0 +1,122 @@
+<% favorites_result = Favorites::ForUser.execute(user: current_user, account: current_account) %>
+
+<div id="sidebar_favorites">
+  <div class="menu mb-6">
+    <li class="mb-0.5">
+      <details <%= 'open' if in_namespace?('projects') %>>
+        <summary>
+          <%= link_to projects_path do %>
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:sparkles" height="18"></iconify-icon>
+              Projects
+            </div>
+          <% end %>
+        </summary>
+        <ul>
+          <% if favorites_result.favorited_projects.any? %>
+            <% favorites_result.favorited_projects.each do |project| %>
+              <li>
+                <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(project_path(project))}" do %>
+                  <div class="flex items-center gap-2">
+                    <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
+                    <%= project.name %>
+                  </div>
+                <% end %>
+              </li>
+            <% end %>
+          <% else %>
+            <li class="text-base-content/50 text-sm px-4 py-2">
+              No favorited projects
+            </li>
+          <% end %>
+          <li>
+            <%= link_to new_project_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_project_path)}" do %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                New Project
+              </div>
+            <% end %>
+          </li>
+        </ul>
+      </details>
+    </li>
+
+    <li class="mb-0.5">
+      <details <%= 'open' if in_namespace?('clusters') %>>
+        <summary>
+          <%= link_to clusters_path do %>
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:boxes" height="18"></iconify-icon>
+              Clusters
+            </div>
+          <% end %>
+        </summary>
+        <ul>
+          <% if favorites_result.favorited_clusters.any? %>
+            <% favorites_result.favorited_clusters.each do |cluster| %>
+              <li>
+                <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(cluster_path(cluster))}" do %>
+                  <div class="flex items-center gap-2">
+                    <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
+                    <%= cluster.name %>
+                  </div>
+                <% end %>
+              </li>
+            <% end %>
+          <% else %>
+            <li class="text-base-content/50 text-sm px-4 py-2">
+              No favorited clusters
+            </li>
+          <% end %>
+          <li>
+            <%= link_to new_cluster_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_cluster_path)}" do %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                New Cluster
+              </div>
+            <% end %>
+          </li>
+        </ul>
+      </details>
+    </li>
+
+    <li class="mb-0.5">
+      <details <%= 'open' if in_namespace?('add_ons') %>>
+        <summary>
+          <%= link_to add_ons_path do %>
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:package" height="18"></iconify-icon>
+              Add Ons
+            </div>
+          <% end %>
+        </summary>
+        <ul>
+          <% if favorites_result.favorited_add_ons.any? %>
+            <% favorites_result.favorited_add_ons.each do |add_on| %>
+              <li>
+                <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(add_on_path(add_on))}" do %>
+                  <div class="flex items-center gap-2">
+                    <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
+                    <%= add_on.name %>
+                  </div>
+                <% end %>
+              </li>
+            <% end %>
+          <% else %>
+            <li class="text-base-content/50 text-sm px-4 py-2">
+              No favorited add-ons
+            </li>
+          <% end %>
+          <li>
+            <%= link_to new_add_on_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_add_on_path)}" do %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+                New Add On
+              </div>
+            <% end %>
+          </li>
+        </ul>
+      </details>
+    </li>
+  </div>
+</div>

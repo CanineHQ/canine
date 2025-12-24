@@ -60,108 +60,11 @@
         <div class="simplebar-offset">
           <div class="simplebar-content-wrapper">
             <div class="simplebar-content">
-              <div class="menu mb-6">
-                <li class="mb-0.5">
-                  <details <%= 'open' if in_namespace?('projects') %>>
-                    <summary>
-                      <%= link_to projects_path do %>
-                        <div class="flex items-center gap-2">
-                          <iconify-icon icon="lucide:sparkles" height="18"></iconify-icon>
-                          Projects
-                        </div>
-                      <% end %>
-                    </summary>
-                    <ul>
-                      <% Projects::VisibleToUser.execute(
-                          account_user: current_account_user
-                        ).projects.order(created_at: :desc).each do |project| %>
-                        <li>
-                          <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(project_path(project))}" do %>
-                            <div class="flex items-center gap-2">
-                              <%= project.name %>
-                            </div>
-                          <% end %>
-                        </li>
-                      <% end %>
-                      <li>
-                        <%= link_to new_project_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_project_path)}" do %>
-                          <div class="flex items-center gap-2">
-                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
-                            New Project
-                          </div>
-                        <% end %>
-                      </li>
-                    </ul>
-                  </details>
-                </li>
-                <li class="mb-0.5">
-                  <details <%= 'open' if in_namespace?('clusters') %>>
-                    <summary>
-                      <%= link_to clusters_path do %>
-                        <div class="flex items-center gap-2">
-                          <iconify-icon icon="lucide:boxes" height="18"></iconify-icon>
-                          Clusters
-                        </div>
-                      <% end %>
-                    </summary>
-                    <ul>
-                      <% Clusters::VisibleToUser.execute(
-                        account_user: current_account_user
-                        ).clusters.order(created_at: :desc).each do |cluster| %>
-                        <li>
-                          <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(cluster_path(cluster))}" do %>
-                            <div class="flex items-center gap-2">
-                              <%= cluster.name %>
-                            </div>
-                          <% end %>
-                        </li>
-                      <% end %>
-                      <li>
-                        <%= link_to new_cluster_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_cluster_path)}" do %>
-                          <div class="flex items-center gap-2">
-                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
-                            New Cluster
-                          </div>
-                        <% end %>
-                      </li>
-                    </ul>
-                  </details>
-                </li>
-                <li class="mb-0.5">
-                  <details <%= 'open' if in_namespace?('add_ons') %>>
-                    <summary>
-                      <%= link_to add_ons_path do %>
-                        <div class="flex items-center gap-2">
-                          <iconify-icon icon="lucide:package" height="18"></iconify-icon>
-                          Add Ons
-                        </div>
-                      <% end %>
-                    </summary>
-                    <ul>
-                      <% AddOns::VisibleToUser.execute(
-                        account_user: current_account_user
-                        ).add_ons.order(created_at: :desc).each do |add_on| %>
-                        <li>
-                          <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(add_on_path(add_on))}" do %>
-                            <div class="flex items-center gap-2">
-                              <%= add_on.name %>
-                            </div>
-                          <% end %>
-                        </li>
-                      <% end %>
-                      <li>
-                        <%= link_to new_add_on_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_add_on_path)}" do %>
-                          <div class="flex items-center gap-2">
-                            <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
-                            New Add On
-                          </div>
-                        <% end %>
-                      </li>
-                    </ul>
-                  </details>
-                </li>
-
-              </div>
+              <% if ENV['SCALE_MODE'] == 'true' %>
+                <%= render "layouts/sidebar_favorites" %>
+              <% else %>
+                <%= render "layouts/sidebar_full" %>
+              <% end %>
             </div>
           </div>
         </div>
