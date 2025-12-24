@@ -41,6 +41,8 @@ class Users::SessionsController < Devise::SessionsController
       render "devise/sessions/ldap"
     elsif @account.sso_provider&.oidc?
       render "devise/sessions/oidc"
+    elsif @account.sso_provider&.saml?
+      render "devise/sessions/saml"
     else
       render :new
     end
@@ -64,6 +66,9 @@ class Users::SessionsController < Devise::SessionsController
       end
     elsif @account.sso_provider&.oidc?
       # OIDC uses a redirect flow, so this shouldn't be called directly
+      redirect_to account_sign_in_path(@account.slug)
+    elsif @account.sso_provider&.saml?
+      # SAML uses a redirect flow, so this shouldn't be called directly
       redirect_to account_sign_in_path(@account.slug)
     else
       redirect_to new_user_session_path

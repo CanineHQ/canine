@@ -1,20 +1,23 @@
 <%= settings_layout do %>
   <%= turbo_frame_tag "sso_provider" do %>
     <div class="font-lg font-bold mt-4">
-      Add <%= @provider_type == "oidc" ? "OIDC" : "LDAP" %> Provider
+      Add <%= { "oidc" => "OIDC", "saml" => "SAML", "ldap" => "LDAP" }[@provider_type] || "LDAP" %> Provider
     </div>
 
     <div class="text-sm text-gray-500 mt-2 mb-4">
       <% if @provider_type == "oidc" %>
         Configure an OpenID Connect provider for SSO authentication. This will allow users to sign in using your identity provider.
+      <% elsif @provider_type == "saml" %>
+        Configure a SAML 2.0 Identity Provider for SSO authentication. This will allow users to sign in using your enterprise identity provider.
       <% else %>
         Configure an LDAP directory for SSO authentication. This will allow users to sign in using their LDAP credentials.
       <% end %>
     </div>
 
-    <div class="tabs tabs-boxed mb-4 max-w-sm">
+    <div class="tabs tabs-boxed mb-4 max-w-md">
       <%= link_to "LDAP", new_sso_provider_path(provider_type: "ldap"), class: "tab #{@provider_type == 'ldap' ? 'tab-active' : ''}" %>
       <%= link_to "OIDC", new_sso_provider_path(provider_type: "oidc"), class: "tab #{@provider_type == 'oidc' ? 'tab-active' : ''}" %>
+      <%= link_to "SAML", new_sso_provider_path(provider_type: "saml"), class: "tab #{@provider_type == 'saml' ? 'tab-active' : ''}" %>
     </div>
 
     <%= form_with model: @sso_provider, url: sso_provider_path(provider_type: @provider_type) do |form| %>
@@ -49,6 +52,9 @@
       <% if @provider_type == "oidc" %>
         <div class="divider">OIDC Configuration</div>
         <%= render "accounts/sso_providers/oidc/form_fields", oidc_configuration: @oidc_configuration %>
+      <% elsif @provider_type == "saml" %>
+        <div class="divider">SAML Configuration</div>
+        <%= render "accounts/sso_providers/saml/form_fields", saml_configuration: @saml_configuration %>
       <% else %>
         <div class="divider">LDAP Configuration</div>
         <%= render "accounts/sso_providers/ldap/form_fields", ldap_configuration: @ldap_configuration %>

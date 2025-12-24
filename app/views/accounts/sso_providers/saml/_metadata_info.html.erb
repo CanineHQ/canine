@@ -1,0 +1,23 @@
+<div class="alert alert-warning mb-4">
+  <iconify-icon icon="lucide:info" class="mr-2"></iconify-icon>
+  <div>
+    <div class="font-medium">Service Provider Configuration</div>
+    <div class="text-sm mt-1">Configure these URLs in your Identity Provider:</div>
+    <div class="mt-2 space-y-2">
+      <div>
+        <span class="text-sm font-medium">ACS URL (Assertion Consumer Service):</span>
+        <pre
+          class="inline-block cursor-pointer ml-2"
+          data-controller="clipboard"
+          data-clipboard-text="<%= saml_callback_url(slug: current_account.slug) %>"><%= saml_callback_url(slug: current_account.slug) %></pre>
+      </div>
+      <div>
+        <span class="text-sm font-medium">SP Metadata URL:</span>
+        <pre
+          class="inline-block cursor-pointer ml-2"
+          data-controller="clipboard"
+          data-clipboard-text="<%= saml_metadata_url(slug: current_account.slug) %>"><%= saml_metadata_url(slug: current_account.slug) %></pre>
+      </div>
+    </div>
+  </div>
+</div>

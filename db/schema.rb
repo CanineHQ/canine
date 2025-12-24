@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_22_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -517,6 +517,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["service_id"], name: "index_resource_constraints_on_service_id"
+  end
+
+  create_table "saml_configurations", force: :cascade do |t|
+    t.string "idp_entity_id", null: false
+    t.string "idp_sso_service_url", null: false
+    t.text "idp_cert", null: false
+    t.string "idp_slo_service_url"
+    t.string "name_identifier_format", default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    t.string "uid_attribute", default: "email"
+    t.string "email_attribute", default: "email"
+    t.string "name_attribute", default: "name"
+    t.string "groups_attribute"
+    t.string "sp_entity_id"
+    t.boolean "authn_requests_signed", default: false
+    t.boolean "want_assertions_signed", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "services", force: :cascade do |t|
