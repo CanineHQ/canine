@@ -36,8 +36,10 @@ class SAMLConfiguration < ApplicationRecord
       settings.idp_slo_service_url = idp_slo_service_url if idp_slo_service_url.present?
       settings.name_identifier_format = name_identifier_format
       settings.sp_entity_id = sp_entity_id.presence || default_sp_entity_id(account)
-      settings.authn_requests_signed = authn_requests_signed
-      settings.want_assertions_signed = want_assertions_signed
+      settings.assertion_consumer_service_url = Rails.application.routes.url_helpers.saml_callback_url(slug: account.slug)
+      settings.idp_sso_service_binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+      settings.security[:authn_requests_signed] = authn_requests_signed
+      settings.security[:want_assertions_signed] = false
     end
   end
 
