@@ -1,0 +1,40 @@
+<%= turbo_stream.update "search_results" do %>
+  <% if @query.blank? %>
+    <div class="p-4 text-center text-base-content/60">Type to search projects, clusters, and add-ons</div>
+  <% elsif @result.projects.empty? && @result.clusters.empty? && @result.add_ons.empty? %>
+    <div class="p-4 text-center text-base-content/60">No results found</div>
+  <% else %>
+    <% if @result.projects.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Projects (<%= @result.projects.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <% @result.projects.each do |project| %>
+          <li><a href="<%= project_deployments_path(project) %>" class="gap-0"><%= highlight(project.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if @result.clusters.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Clusters (<%= @result.clusters.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <% @result.clusters.each do |cluster| %>
+          <li><a href="<%= cluster_path(cluster) %>" class="gap-0"><%= highlight(cluster.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if @result.add_ons.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Add-ons (<%= @result.add_ons.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <% @result.add_ons.each do |add_on| %>
+          <li><a href="<%= add_on_path(add_on) %>" class="gap-0"><%= highlight(add_on.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>
