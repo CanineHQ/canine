@@ -4,11 +4,13 @@ module GlobalSearch
   class Search
     extend LightService::Action
 
-    expects :account_user, :query
+    expects :account_user, :query, :limit
+
     promises :projects, :clusters, :add_ons
 
     executed do |context|
       query = context.query.to_s.strip
+      limit = context.limit
       params = { q: query }
 
       if query.blank?
@@ -20,15 +22,17 @@ module GlobalSearch
 
       context.projects = Projects::List.call(account_user: context.account_user, params: params)
                                        .projects
-                                       .limit(10)
+                                       .includes(:cluster)
+                                       .limit(limit)
 
       context.clusters = Clusters::List.call(account_user: context.account_user, params: params)
                                        .clusters
-                                       .limit(10)
+                                       .limit(limit)
 
       context.add_ons = AddOns::List.call(account_user: context.account_user, params: params)
                                     .add_ons
-                                    .limit(10)
+                                    .includes(:cluster)
+                                    .limit(limit)
     end
   end
 end

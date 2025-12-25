@@ -29,6 +29,7 @@
         <h1 class="text-lg font-medium flex items-center gap-2 my-2">
           <img src="<%= get_logo_image_url(add_on.metadata.dig('package_details', 'logo_image_id')) %>" class="h-8 w-8">
           <%= add_on.name %>
+          <%= render "favorites/button", favoriteable: add_on %>
         </h1>
         <div class="text-sm">
           <%= link_to "https://artifacthub.io/packages/helm/#{add_on.chart_url}", class: "underline", target: "_blank" do %>

@@ -9,9 +9,7 @@
         Projects (<%= @result.projects.size %>)
       </div>
       <ul class="menu menu-sm">
-        <% @result.projects.each do |project| %>
-          <li><a href="<%= project_deployments_path(project) %>" class="gap-0"><%= highlight(project.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
-        <% end %>
+        <%= render partial: "search/project", collection: @result.projects, locals: { query: @query } %>
       </ul>
     <% end %>
 
@@ -20,9 +18,7 @@
         Clusters (<%= @result.clusters.size %>)
       </div>
       <ul class="menu menu-sm">
-        <% @result.clusters.each do |cluster| %>
-          <li><a href="<%= cluster_path(cluster) %>" class="gap-0"><%= highlight(cluster.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
-        <% end %>
+        <%= render partial: "search/cluster", collection: @result.clusters, locals: { query: @query } %>
       </ul>
     <% end %>
 
@@ -31,9 +27,7 @@
         Add-ons (<%= @result.add_ons.size %>)
       </div>
       <ul class="menu menu-sm">
-        <% @result.add_ons.each do |add_on| %>
-          <li><a href="<%= add_on_path(add_on) %>" class="gap-0"><%= highlight(add_on.name, @query, highlighter: '<span class="underline">\1</span>') %></a></li>
-        <% end %>
+        <%= render partial: "search/add_on", collection: @result.add_ons, locals: { query: @query } %>
       </ul>
     <% end %>
   <% end %>

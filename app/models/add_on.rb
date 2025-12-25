@@ -28,6 +28,7 @@ class AddOn < ApplicationRecord
   include Loggable
   include TeamAccessible
   include Namespaced
+  include Favoriteable
   belongs_to :cluster
   has_one :account, through: :cluster
 

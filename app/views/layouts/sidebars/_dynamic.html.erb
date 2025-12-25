@@ -1,0 +1,8 @@
+<% open_section = defined?(open_section) ? open_section : nil %>
+<div id="<%= dom_id(current_user, "sidebar") %>">
+<% if ENV['SCALE_MODE'] == 'true' %>
+  <%= render "layouts/sidebars/favorites", open_section: %>
+<% else %>
+  <%= render "layouts/sidebars/full", open_section: %>
+<% end %>
+</div>
