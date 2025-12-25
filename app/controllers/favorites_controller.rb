@@ -20,8 +20,9 @@ class FavoritesController < ApplicationController
             locals: { favoriteable: @favoriteable }
           ),
           turbo_stream.replace(
-            "sidebar_favorites",
-            partial: "layouts/sidebar_favorites"
+            dom_id(current_user, "sidebar"),
+            partial: "layouts/sidebars/dynamic",
+            locals: { open_section: @favoriteable.class.name.pluralize.underscore },
           )
         ]
       end

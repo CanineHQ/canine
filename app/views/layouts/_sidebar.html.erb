@@ -60,11 +60,7 @@
         <div class="simplebar-offset">
           <div class="simplebar-content-wrapper">
             <div class="simplebar-content">
-              <% if ENV['SCALE_MODE'] == 'true' %>
-                <%= render "layouts/sidebar_favorites" %>
-              <% else %>
-                <%= render "layouts/sidebar_full" %>
-              <% end %>
+              <%= render "layouts/sidebars/dynamic" %>
             </div>
           </div>
         </div>
