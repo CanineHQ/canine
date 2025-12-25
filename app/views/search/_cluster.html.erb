@@ -3,7 +3,10 @@
     <%= cluster_icon(cluster) %>
     <div class="flex flex-col">
       <span class="text-base"><%= highlight(cluster.name, query, highlighter: '<span class="underline">\1</span>') %></span>
-      <span class="text-xs text-base-content/50"><%= pluralize(cluster.projects.size, "project") %>, <%= pluralize(cluster.add_ons.size, "add-on") %></span>
+      <div class="flex items-center gap-2 text-xs text-base-content/50">
+        <span><%= pluralize(cluster.projects.size, "project") %></span>
+        <span><%= pluralize(cluster.add_ons.size, "add-on") %></span>
+      </div>
     </div>
   </a>
 </li>
