@@ -5,6 +5,6 @@ module ClustersHelper
 
   def cluster_icon(cluster, classes: "")
     icon = cluster.k3s? ? "devicon:k3s" : "devicon:kubernetes"
-    tag.iconify_icon(icon:, classes:)
+    tag.iconify_icon(icon:, class: classes)
   end
 end

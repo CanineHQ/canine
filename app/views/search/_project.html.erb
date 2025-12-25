@@ -1,6 +1,6 @@
 <li>
-  <a href="<%= project_deployments_path(project) %>" class="flex items-center gap-2">
-    <%= render "projects/favicon", project: project %>
+  <a href="<%= project_deployments_path(project) %>" class="flex items-center gap-3">
+    <%= render "projects/favicon", project: project, img_size: "w-7 h-7", icon_size: "text-2xl" %>
     <div class="flex flex-col">
       <span class="text-base"><%= highlight(project.name, query, highlighter: '<span class="underline">\1</span>') %></span>
       <div class="flex items-center gap-2 text-xs text-base-content/50">
