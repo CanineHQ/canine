@@ -3,7 +3,10 @@
     <img src="<%= get_logo_image_url(add_on.metadata.dig('package_details', 'logo_image_id')) %>" class="w-5 h-5">
     <div class="flex flex-col">
       <span class="text-base"><%= highlight(add_on.name, query, highlighter: '<span class="underline">\1</span>') %></span>
-      <span class="text-xs text-base-content/50"><%= add_on.cluster.name %></span>
+      <div class="flex items-center gap-2 text-xs text-base-content/50">
+        <span><%= add_on.cluster.name %></span>
+        <span class="truncate max-w-xs"><%= add_on.chart_url %></span>
+      </div>
     </div>
   </a>
 </li>
