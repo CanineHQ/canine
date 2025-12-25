@@ -23,6 +23,7 @@
 class Cluster < ApplicationRecord
   include Loggable
   include TeamAccessible
+  include Favoriteable
   broadcasts_refreshes
   belongs_to :account
 

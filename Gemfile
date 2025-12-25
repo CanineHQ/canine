@@ -44,6 +44,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem 'faker', '~> 3.5.2'
 end
 
 group :development do
@@ -56,7 +57,6 @@ group :test do
   gem "capybara"
 
   gem "database_cleaner-active_record", '~> 2.2.2'
-  gem 'faker', '~> 3.5.2'
   gem 'shoulda-matchers', '~> 6.5'
 end
 

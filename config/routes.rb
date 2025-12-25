@@ -60,6 +60,12 @@ Rails.application.routes.draw do
     # Alternate route to use if logged in users should still see public root
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
+
+  resources :favorites, only: [] do
+    collection do
+      post :toggle
+    end
+  end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
   resources :build_packs, only: [] do
     collection do
