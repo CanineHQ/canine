@@ -11,11 +11,12 @@
         <th>
           <span class="text-sm font-medium text-base-content/80">Role</span>
         </th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
       <% account_users.each do |account_user| %>
-        <tr class="cursor-pointer hover:bg-base-200/40">
+        <tr class="hover:bg-base-200/40">
           <td>
             <div class="font-medium"><%= account_user.user.name %></div>
           </td>
@@ -23,15 +24,21 @@
             <div class="font-medium"><%= account_user.user.email %></div>
           </td>
           <td>
-            <div class="font-medium"><%= account_user.user_id == current_account.owner_id ? "Owner" : "Member" %></div>
+            <% if account_user.owner? %>
+              <span class="badge badge-primary">Owner</span>
+            <% elsif current_account_user.admin_or_owner? %>
+              <%= form_with model: account_user, url: account_user_path(account_user), method: :patch, local: true do |f| %>
+                <%= f.select :role, [["Admin", "admin"], ["Member", "member"]], {}, class: "select select-bordered !select-sm", onchange: "this.form.submit()" %>
+              <% end %>
+            <% else %>
+              <span class="badge"><%= account_user.role.capitalize %></span>
+            <% end %>
           </td>
           <td>
-            <% unless account_user.user_id == current_account.owner_id %>
-              <div class="text-sm capitalize">
-                <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-square btn-sm btn-danger min-w-max" do %>
-                  <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
-                <% end %>
-              </div>
+            <% if current_account_user.admin_or_owner? && !account_user.owner? %>
+              <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-ghost btn-sm btn-square" do %>
+                <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+              <% end %>
             <% end %>
           </td>
         </tr>

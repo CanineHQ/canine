@@ -13,7 +13,7 @@ module AddOns
       account = account_user.account
 
       # Admins can see all add_ons in the account
-      if account_user.admin?
+      if account_user.admin_or_owner?
         context.add_ons = AddOn.joins(:cluster).where(clusters: { account_id: account.id })
         next context
       end

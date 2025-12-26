@@ -13,7 +13,7 @@ module Clusters
       account = account_user.account
 
       # Admins can see all clusters in the account
-      if account_user.admin?
+      if account_user.admin_or_owner?
         context.clusters = Cluster.where(account_id: account.id)
         next context
       end

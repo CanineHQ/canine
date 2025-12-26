@@ -24,7 +24,7 @@ FactoryBot.define do
     association :owner, factory: :user
 
     after(:create) do |account|
-      create(:account_user, account: account, user: account.owner)
+      create(:account_user, account: account, user: account.owner, role: :owner)
     end
 
     trait :with_stack_manager do

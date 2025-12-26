@@ -5,7 +5,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     ActiveRecord::Base.transaction do
       super do |user|
         account = Account.create!(name: "#{user.first_name}'s Account", owner: user) if user.persisted?
-        AccountUser.create!(account:, user:)
+        AccountUser.create!(account:, user:, role: :owner)
       end
     end
   rescue ActiveRecord::RecordInvalid => e

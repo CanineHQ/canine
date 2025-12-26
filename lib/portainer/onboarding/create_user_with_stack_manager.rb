@@ -25,7 +25,7 @@ class Portainer::Onboarding::CreateUserWithStackManager
 
       context.account = Account.create!(owner: context.user, name: context.account_name)
 
-      AccountUser.create!(account: context.account, user: context.user)
+      AccountUser.create!(account: context.account, user: context.user, role: :owner)
 
       context.stack_manager = StackManager.find_or_initialize_by(
         account: context.account,

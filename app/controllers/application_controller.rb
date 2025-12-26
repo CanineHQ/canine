@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   def authenticate_user!(opts = {})
     if request.headers["X-API-Key"].present?
@@ -72,7 +73,16 @@ class ApplicationController < ActionController::Base
       redirect_to root_path
     end
 
+    def pundit_user
+      current_account_user
+    end
+
     def missing_portainer_credential
       redirect_to providers_path, alert: "Please add your Portainer API token to continue."
+    end
+
+    def user_not_authorized
+      flash[:alert] = "You are not authorized to perform this action."
+      redirect_back(fallback_location: root_path)
     end
 end

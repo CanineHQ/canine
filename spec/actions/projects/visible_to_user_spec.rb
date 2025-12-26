@@ -10,11 +10,11 @@ RSpec.describe Projects::VisibleToUser do
 
   describe '.execute' do
     context 'when user is an admin (account owner)' do
-      let(:team) { create(:team, account: account) }
+      let!(:team) { create(:team, account: account) }
 
       before do
         account.update!(owner: user)
-        team # Create team so account has teams
+        account_user.update!(role: :owner)
       end
 
       it 'returns all projects in the account regardless of team membership' do

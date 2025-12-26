@@ -1,6 +1,7 @@
 class Accounts::TeamsController < ApplicationController
   include SettingsHelper
   before_action :set_team, only: %i[show edit update destroy]
+  before_action :authorize_account
 
   def index
     @pagy, @teams = pagy(current_account.teams)
@@ -46,6 +47,10 @@ class Accounts::TeamsController < ApplicationController
 
   def set_team
     @team = current_account.teams.friendly.find(params[:id])
+  end
+
+  def authorize_account
+    authorize current_account
   end
 
   def team_params

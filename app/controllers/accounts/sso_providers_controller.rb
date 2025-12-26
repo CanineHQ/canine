@@ -1,5 +1,7 @@
 module Accounts
   class SSOProvidersController < ApplicationController
+    before_action :authorize_account
+
     def show
       @sso_provider = current_account.sso_provider
       @configuration = @sso_provider&.configuration
@@ -165,6 +167,10 @@ module Accounts
         :authn_requests_signed,
         :want_assertions_signed
       )
+    end
+
+    def authorize_account
+      authorize current_account, :update?
     end
   end
 end

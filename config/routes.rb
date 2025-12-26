@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   end
   resources :accounts, only: [ :create ] do
     collection do
-      resources :account_users, only: %i[create index destroy], module: :accounts
+      resources :account_users, only: %i[create index update destroy], module: :accounts
       resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
         post :test_connection
       end

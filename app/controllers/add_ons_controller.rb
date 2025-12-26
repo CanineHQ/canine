@@ -11,9 +11,6 @@ class AddOnsController < ApplicationController
       format.html
       format.json { render json: @add_ons.map { |a| { id: a.id, name: a.name } } }
     end
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_ons
   end
 
   def search
@@ -32,9 +29,6 @@ class AddOnsController < ApplicationController
   # GET /add_ons/new
   def new
     @add_on = AddOn.new
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
   end
 
   # GET /add_ons/1/edit
@@ -48,8 +42,6 @@ class AddOnsController < ApplicationController
     add_on_params = AddOns::Create.parse_params(params)
     result = AddOns::Create.call(AddOn.new(add_on_params), current_user)
     @add_on = result.add_on
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
 
     respond_to do |format|
       if result.success?
