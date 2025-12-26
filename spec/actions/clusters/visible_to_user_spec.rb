@@ -13,11 +13,11 @@ RSpec.describe Clusters::VisibleToUser do
     context 'when user is an admin (account owner)' do
       let!(:cluster1) { create(:cluster, account: account) }
       let!(:cluster2) { create(:cluster, account: account) }
-      let(:team) { create(:team, account: account) }
+      let!(:team) { create(:team, account: account) }
 
       before do
         account.update!(owner: user)
-        team # Create team so account has teams
+        account_user.update!(role: :owner)
       end
 
       it 'returns all clusters in the account regardless of team membership' do

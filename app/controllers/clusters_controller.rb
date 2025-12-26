@@ -5,7 +5,6 @@ class ClustersController < ApplicationController
     :retry_install, :transfer_ownership
   ]
 
-  # GET /clusters
   def index
     sortable_column = params[:sort] || "created_at"
     clusters = Clusters::List.call(account_user: current_account_user, params: params).clusters
@@ -15,24 +14,15 @@ class ClustersController < ApplicationController
       format.html
       format.json { render json: @clusters.map { |c| { id: c.id, name: c.name } } }
     end
-
-    # Uncomment to authorize with Pundit
-    # authorize @clusters
   end
 
-  # GET /clusters/1 or /clusters/1.json
   def show
   end
 
-  # GET /clusters/new
   def new
     @cluster = Cluster.new
-
-    # Uncomment to authorize with Pundit
-    # authorize @cluster
   end
 
-  # GET /clusters/1/edit
   def edit
   end
 
@@ -40,10 +30,9 @@ class ClustersController < ApplicationController
   end
 
   def check_k3s_ip_address
-    # Check if the IP address is reachable at port 6443
     ip_address = params[:ip_address]
     port = 6443
-    timeout = 5  # seconds
+    timeout = 5
 
     begin
       Timeout.timeout(timeout) do
@@ -114,13 +103,9 @@ class ClustersController < ApplicationController
     send_data connection.kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
   end
 
-  # POST /clusters or /clusters.json
   def create
     @cluster = current_account.clusters.new(cluster_params)
     result = Clusters::Create.call(@cluster, current_user)
-
-    # Uncomment to authorize with Pundit
-    # authorize @cluster
 
     respond_to do |format|
       if result.success?
@@ -135,7 +120,6 @@ class ClustersController < ApplicationController
     end
   end
 
-  # PATCH/PUT /clusters/1 or /clusters/1.json
   def update
     respond_to do |format|
       if @cluster.update(cluster_params)
@@ -148,7 +132,6 @@ class ClustersController < ApplicationController
     end
   end
 
-  # DELETE /clusters/1 or /clusters/1.json
   def destroy
     @cluster.destroy!
     respond_to do |format|
@@ -175,18 +158,13 @@ class ClustersController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_cluster
     clusters = Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
     @cluster = clusters.find(params[:id])
-
-    # Uncomment to authorize with Pundit
-    # authorize @cluster
   rescue ActiveRecord::RecordNotFound
     redirect_to clusters_path
   end
 
-  # Only allow a list of trusted parameters through.
   def cluster_params
     # Handle kubeconfig from YAML editor
     if params[:cluster][:kubeconfig_yaml_format] == "true" && params[:cluster][:kubeconfig].present?

@@ -1,0 +1,18 @@
+<% favorited = favoriteable.favorited_by?(current_user, current_account) %>
+<div id="<%= dom_id(favoriteable, :favorite) %>">
+  <%= button_to(
+    toggle_favorites_path(
+      favoriteable_type: favoriteable.class.name,
+      favoriteable_id: favoriteable.id,
+      format: "turbo_stream"
+    ),
+    class: "btn btn-ghost btn-sm btn-circle",
+    title: favorited ? 'Remove from favorites' : 'Add to favorites',
+  ) do %>
+    <iconify-icon
+      icon="<%= favorited ? 'mdi:star' : 'mdi:star-outline' %>"
+      height="16"
+      class="<%= favorited ? 'text-warning' : 'text-base-content/60' %>"
+    ></iconify-icon>
+  <% end %>
+</div>

@@ -44,6 +44,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  gem 'faker', '~> 3.5.2'
 end
 
 group :development do
@@ -56,7 +57,6 @@ group :test do
   gem "capybara"
 
   gem "database_cleaner-active_record", '~> 2.2.2'
-  gem 'faker', '~> 3.5.2'
   gem 'shoulda-matchers', '~> 6.5'
 end
 
@@ -72,6 +72,7 @@ gem "good_job", "~> 4.12"
 gem "httparty", "~> 0.23.2"
 gem "image_processing", "~> 1.13"
 gem "jsbundling-rails"
+gem "json-schema", "~> 5.1"
 gem "k8s-ruby", "~> 0.17.2"
 gem "kubeclient", "~> 4.12"
 gem "light-service", "~> 0.20.0"
@@ -105,3 +106,5 @@ gem 'flipper-ui', '~> 1.2.2'
 gem "net-ldap", "~> 0.20.0"
 
 gem "jwt", "~> 2.9"
+
+gem "ruby-saml", "~> 1.17"

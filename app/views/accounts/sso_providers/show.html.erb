@@ -14,6 +14,8 @@
                   <span class="badge badge-outline">LDAP</span>
                 <% elsif @sso_provider.oidc? %>
                   <span class="badge badge-outline">OIDC</span>
+                <% elsif @sso_provider.saml? %>
+                  <span class="badge badge-outline">SAML</span>
                 <% end %>
                 <% if @sso_provider.enabled %>
                   <span class="badge badge-success">Enabled</span>
@@ -70,6 +72,26 @@
                   <div class="font-mono text-sm"><%= @configuration.uid_claim %></div>
                 </div>
               </div>
+            <% elsif @sso_provider.saml? %>
+              <%= render "accounts/sso_providers/saml/metadata_info" %>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">IdP Entity ID</div>
+                  <div class="font-mono text-sm break-all"><%= @configuration.idp_entity_id %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">IdP SSO URL</div>
+                  <div class="font-mono text-sm break-all"><%= @configuration.idp_sso_service_url %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Name ID Format</div>
+                  <div class="font-mono text-sm"><%= @configuration.name_identifier_format.split(':').last %></div>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-base-content/70 mb-1">Email Attribute</div>
+                  <div class="font-mono text-sm"><%= @configuration.email_attribute %></div>
+                </div>
+              </div>
             <% end %>
           <% end %>
         </div>
@@ -83,6 +105,7 @@
       <div class="flex gap-2">
         <%= link_to "+ Add LDAP Provider", new_sso_provider_path(provider_type: "ldap"), class: "btn btn-primary btn-sm" %>
         <%= link_to "+ Add OIDC Provider", new_sso_provider_path(provider_type: "oidc"), class: "btn btn-primary btn-sm" %>
+        <%= link_to "+ Add SAML Provider", new_sso_provider_path(provider_type: "saml"), class: "btn btn-primary btn-sm" %>
       </div>
     <% end %>
   <% end %>

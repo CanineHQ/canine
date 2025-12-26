@@ -14,7 +14,7 @@
             Make sure you have the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private image.
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
-          <%= link_to "Find your Github token →", "https://github.com/settings/tokens", target: "_blank", class: "text-sm text-gray-500 " %>
+          <%= link_to "Create your Github token →", "https://github.com/settings/tokens/new?scopes=repo,write:packages&description=Canine%20Deployment%20Platform", target: "_blank", class: "text-sm text-gray-500 " %>
           <div class="mt-2">
             Select the
             <% Providers::CreateGithubProvider::EXPECTED_SCOPES.each do |scope| %>
@@ -23,7 +23,7 @@
             permissions.
           </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
-          <%= link_to "Find your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500 " %>
+          <%= link_to "Create your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500 " %>
           <div class="mt-2">
             Select the
             <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>

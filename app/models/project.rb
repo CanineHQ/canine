@@ -36,6 +36,7 @@
 class Project < ApplicationRecord
   include TeamAccessible
   include Namespaced
+  include Favoriteable
   broadcasts_refreshes
   belongs_to :cluster
   has_one :account, through: :cluster

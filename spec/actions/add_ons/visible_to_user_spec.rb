@@ -14,11 +14,11 @@ RSpec.describe AddOns::VisibleToUser do
     context 'when user is an admin (account owner)' do
       let!(:add_on1) { create(:add_on, cluster: cluster) }
       let!(:add_on2) { create(:add_on, cluster: cluster) }
-      let(:team) { create(:team, account: account) }
+      let!(:team) { create(:team, account: account) }
 
       before do
         account.update!(owner: user)
-        team # Create team so account has teams
+        account_user.update!(role: :owner)
       end
 
       it 'returns all add_ons in the account regardless of team membership' do

@@ -11,9 +11,6 @@ class AddOnsController < ApplicationController
       format.html
       format.json { render json: @add_ons.map { |a| { id: a.id, name: a.name } } }
     end
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_ons
   end
 
   def search
@@ -45,7 +42,6 @@ class AddOnsController < ApplicationController
     add_on_params = AddOns::Create.parse_params(params)
     result = AddOns::Create.call(AddOn.new(add_on_params), current_user)
     @add_on = result.add_on
-    authorize @add_on
 
     respond_to do |format|
       if result.success?
@@ -81,14 +77,32 @@ class AddOnsController < ApplicationController
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
-  def default_values
-    # Render a partial with the default values
-    @default_values = K8::Helm::Client.get_default_values_yaml(
-      repository_name: params[:repository_name],
-      repository_url: params[:repository_url],
-      chart_name: params[:chart_name]
-    )
-    render partial: "add_ons/helm/default_values", locals: { default_values: @default_values }
+  def metadata
+    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest(params[:chart_url].to_s)}"
+
+    metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url])
+      next { schema: {}, default_values: nil } if result.failure?
+
+      package = result.response
+      repository = package["repository"]
+
+      values_yaml = K8::Helm::Client.get_default_values_yaml(
+        repository_name: repository["name"],
+        repository_url: repository["url"],
+        chart_name: package["name"]
+      )
+      next { schema: {}, default_values: nil } if values_yaml.blank?
+
+      values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
+      schema = InferJsonSchemaService.new(values).infer
+      { schema: schema, default_values: values_yaml }
+    rescue Psych::SyntaxError => e
+      Rails.logger.error("Failed to parse values.yaml: #{e.message}")
+      { schema: {}, default_values: nil }
+    end
+
+    render json: metadata
   end
 
   def download_values
@@ -124,7 +138,6 @@ class AddOnsController < ApplicationController
     add_ons = AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons
     @add_on = add_ons.find(params[:id])
     @service = K8::Helm::Service.create_from_add_on(K8::Connection.new(@add_on, current_user))
-    authorize @add_on
   rescue ActiveRecord::RecordNotFound
     redirect_to add_ons_path
   end

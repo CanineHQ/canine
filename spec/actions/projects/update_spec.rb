@@ -30,7 +30,7 @@ RSpec.describe Projects::Update do
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'updates the project successfully' do
         result = subject
@@ -78,7 +78,7 @@ RSpec.describe Projects::Update do
           )
         end
 
-        subject { described_class.call(project, params) }
+        subject { described_class.call(project, params, user) }
 
         it 'updates the existing build_configuration' do
           result = subject
@@ -91,7 +91,7 @@ RSpec.describe Projects::Update do
       end
 
       context 'when project does not have build_configuration' do
-        subject { described_class.call(project, params) }
+        subject { described_class.call(project, params, user) }
 
         it 'creates a new build_configuration' do
           expect { subject }.to change { BuildConfiguration.count }.by(1)
@@ -118,7 +118,7 @@ RSpec.describe Projects::Update do
           })
         end
 
-        subject { described_class.call(project, params) }
+        subject { described_class.call(project, params, user) }
 
         it 'uses provider_id from project_credential_provider' do
           result = subject
@@ -129,20 +129,20 @@ RSpec.describe Projects::Update do
       end
     end
 
-    context 'with project_credential_provider_attributes' do
+    context 'with project_credential_provider' do
       let(:new_provider) { create(:provider, :github, user:) }
       let(:params) do
         ActionController::Parameters.new({
           project: {
             name: 'updated-name',
-            project_credential_provider_attributes: {
+            project_credential_provider: {
               provider_id: new_provider.id
             }
           }
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'updates the project credential provider' do
         original_provider_id = project.project_credential_provider.provider_id
@@ -162,7 +162,7 @@ RSpec.describe Projects::Update do
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'fails when validation fails' do
         result = subject
@@ -180,7 +180,7 @@ RSpec.describe Projects::Update do
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'fails with error message' do
         allow_any_instance_of(Project).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new(project))
@@ -203,7 +203,7 @@ RSpec.describe Projects::Update do
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'rolls back all changes if build_configuration save fails' do
         allow_any_instance_of(BuildConfiguration).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new(BuildConfiguration.new))
@@ -265,7 +265,7 @@ RSpec.describe Projects::Update do
         })
       end
 
-      subject { described_class.call(project, params) }
+      subject { described_class.call(project, params, user) }
 
       it 'updates build packs with correct order and removes old packs' do
         expect { subject }.to change { BuildPack.count }.by(1)

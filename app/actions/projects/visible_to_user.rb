@@ -13,7 +13,7 @@ module Projects
       account = account_user.account
 
       # Admins can see all projects in the account
-      if account_user.admin?
+      if account_user.admin_or_owner?
         context.projects = Project.joins(:cluster).where(clusters: { account_id: account.id })
         next context
       end

@@ -9,6 +9,11 @@ Rails.application.routes.draw do
   get '/accounts/:slug/auth/oidc', to: 'accounts/oidc#authorize', as: :oidc_auth
   get '/accounts/:slug/auth/oidc/callback', to: 'accounts/oidc#callback', as: :oidc_callback
 
+  # SAML authentication routes
+  get '/accounts/:slug/auth/saml', to: 'accounts/saml#authorize', as: :saml_auth
+  post '/accounts/:slug/auth/saml/callback', to: 'accounts/saml#callback', as: :saml_callback
+  get '/accounts/:slug/auth/saml/metadata', to: 'accounts/saml#metadata', as: :saml_metadata
+
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
     Avo::Engine.routes.draw do
@@ -19,7 +24,7 @@ Rails.application.routes.draw do
   end
   resources :accounts, only: [ :create ] do
     collection do
-      resources :account_users, only: %i[create index destroy], module: :accounts
+      resources :account_users, only: %i[create index update destroy], module: :accounts
       resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
         post :test_connection
       end
@@ -55,7 +60,14 @@ Rails.application.routes.draw do
     # Alternate route to use if logged in users should still see public root
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
+
+  resources :favorites, only: [] do
+    collection do
+      post :toggle
+    end
+  end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
+  get "/search", to: "search#index"
   resources :build_packs, only: [] do
     collection do
       get :search
@@ -65,7 +77,7 @@ Rails.application.routes.draw do
   resources :add_ons do
     collection do
       get :search
-      get :default_values
+      get :metadata
     end
     member do
       post :restart

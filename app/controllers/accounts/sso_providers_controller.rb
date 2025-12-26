@@ -1,5 +1,7 @@
 module Accounts
   class SSOProvidersController < ApplicationController
+    before_action :authorize_account
+
     def show
       @sso_provider = current_account.sso_provider
       @configuration = @sso_provider&.configuration
@@ -10,6 +12,7 @@ module Accounts
       @sso_provider = current_account.build_sso_provider
       @ldap_configuration = LDAPConfiguration.new
       @oidc_configuration = OIDCConfiguration.new
+      @saml_configuration = SAMLConfiguration.new
     end
 
     def create
@@ -29,6 +32,7 @@ module Accounts
         @sso_provider = result.sso_provider
         @ldap_configuration = provider_type == "ldap" ? result.configuration : LDAPConfiguration.new
         @oidc_configuration = provider_type == "oidc" ? result.configuration : OIDCConfiguration.new
+        @saml_configuration = provider_type == "saml" ? result.configuration : SAMLConfiguration.new
         render :new, status: :unprocessable_entity
       end
     end
@@ -36,14 +40,15 @@ module Accounts
     def edit
       @sso_provider = current_account.sso_provider
       redirect_to new_sso_provider_path, alert: "No SSO provider configured" unless @sso_provider
-      @provider_type = @sso_provider&.oidc? ? "oidc" : "ldap"
+      @provider_type = provider_type_for(@sso_provider)
       @ldap_configuration = @sso_provider&.ldap? ? @sso_provider.configuration : LDAPConfiguration.new
       @oidc_configuration = @sso_provider&.oidc? ? @sso_provider.configuration : OIDCConfiguration.new
+      @saml_configuration = @sso_provider&.saml? ? @sso_provider.configuration : SAMLConfiguration.new
     end
 
     def update
       @sso_provider = current_account.sso_provider
-      provider_type = @sso_provider.oidc? ? "oidc" : "ldap"
+      provider_type = provider_type_for(@sso_provider)
 
       result = SSOProviders::Update.call(
         sso_provider: @sso_provider,
@@ -57,6 +62,7 @@ module Accounts
         @provider_type = provider_type
         @ldap_configuration = @sso_provider.ldap? ? @sso_provider.configuration : LDAPConfiguration.new
         @oidc_configuration = @sso_provider.oidc? ? @sso_provider.configuration : OIDCConfiguration.new
+        @saml_configuration = @sso_provider.saml? ? @sso_provider.configuration : SAMLConfiguration.new
         render :edit, status: :unprocessable_entity
       end
     end
@@ -101,9 +107,18 @@ module Accounts
         ldap_configuration_params
       when "oidc"
         oidc_configuration_params
+      when "saml"
+        saml_configuration_params
       else
         {}
       end
+    end
+
+    def provider_type_for(sso_provider)
+      return "ldap" if sso_provider&.ldap?
+      return "oidc" if sso_provider&.oidc?
+      return "saml" if sso_provider&.saml?
+      "ldap"
     end
 
     def ldap_configuration_params
@@ -135,6 +150,27 @@ module Accounts
         :email_claim,
         :name_claim
       )
+    end
+
+    def saml_configuration_params
+      params.require(:saml_configuration).permit(
+        :idp_entity_id,
+        :idp_sso_service_url,
+        :idp_cert,
+        :idp_slo_service_url,
+        :name_identifier_format,
+        :uid_attribute,
+        :email_attribute,
+        :name_attribute,
+        :groups_attribute,
+        :sp_entity_id,
+        :authn_requests_signed,
+        :want_assertions_signed
+      )
+    end
+
+    def authorize_account
+      authorize current_account, :update?
     end
   end
 end

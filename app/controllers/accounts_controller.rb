@@ -9,10 +9,11 @@ class AccountsController < ApplicationController
   end
 
   def create
-    account = current_user.accounts.create!(
+    account = Account.create!(
       name: account_params[:name],
       owner: current_user
     )
+    AccountUser.create!(account: account, user: current_user, role: :owner)
     session[:account_id] = account.id
     redirect_to root_path
   end

@@ -11,10 +11,20 @@ class Accounts::AccountUsersController < ApplicationController
     redirect_to account_users_path, notice: "User was successfully added."
   end
 
-  def destroy
-    current_account.account_users.find(params[:id]).destroy
+  def update
+    account_user = current_account.account_users.find(params[:id])
+    authorize account_user
 
-    redirect_to account_users_path, notice: "User was successfully destroyed."
+    account_user.update!(role: account_user_params[:role])
+    redirect_to account_users_path, notice: "User role was successfully updated."
+  end
+
+  def destroy
+    account_user = current_account.account_users.find(params[:id])
+    authorize account_user
+
+    account_user.destroy
+    redirect_to account_users_path, notice: "User was successfully removed."
   end
 
   def index
@@ -26,5 +36,9 @@ class Accounts::AccountUsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:email)
+  end
+
+  def account_user_params
+    params.require(:account_user).permit(:role)
   end
 end

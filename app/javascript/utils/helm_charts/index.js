@@ -3,23 +3,6 @@ export function getLogoImageUrl(packageData) {
   return logoImageId ? `https://artifacthub.io/image/${logoImageId}` : "https://artifacthub.io/static/media/placeholder_pkg_helm.png";
 }
 
-export async function getDefaultValues(
-  repositoryName,
-  repositoryUrl,
-  chartName,
-) {
-  const params = new URLSearchParams({
-    repository_name: repositoryName,
-    repository_url: repositoryUrl,
-    chart_name: chartName
-  });
-
-  const url = `/add_ons/default_values?${params.toString()}`;
-  const response = await fetch(url);
-  const html = await response.text()
-  return html;
-}
-
 export function helmChartHeader(packageData) {
   const logoImageUrl = getLogoImageUrl(packageData);
   return `

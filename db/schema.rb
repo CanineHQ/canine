@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_24_180944) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -230,6 +230,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable"
     t.index ["project_id"], name: "index_events_on_project_id"
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "account_id", null: false
+    t.string "favoriteable_type", null: false
+    t.bigint "favoriteable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_favorites_on_account_id"
+    t.index ["favoriteable_type", "favoriteable_id"], name: "index_favorites_on_favoriteable"
+    t.index ["user_id", "account_id", "favoriteable_type", "favoriteable_id"], name: "index_favorites_unique", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -519,6 +532,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
     t.index ["service_id"], name: "index_resource_constraints_on_service_id"
   end
 
+  create_table "saml_configurations", force: :cascade do |t|
+    t.string "idp_entity_id", null: false
+    t.string "idp_sso_service_url", null: false
+    t.text "idp_cert", null: false
+    t.string "idp_slo_service_url"
+    t.string "name_identifier_format", default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    t.string "uid_attribute", default: "email"
+    t.string "email_attribute", default: "email"
+    t.string "name_attribute", default: "name"
+    t.string "groups_attribute"
+    t.string "sp_entity_id"
+    t.boolean "authn_requests_signed", default: false
+    t.boolean "want_assertions_signed", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.integer "service_type", null: false
@@ -641,6 +671,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_022149) do
   add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "favorites", "accounts"
+  add_foreign_key "favorites", "users"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"

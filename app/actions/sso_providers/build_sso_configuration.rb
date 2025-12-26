@@ -12,6 +12,8 @@ module SSOProviders
         LDAPConfiguration.new(context.configuration_params)
       when "oidc"
         OIDCConfiguration.new(context.configuration_params)
+      when "saml"
+        SAMLConfiguration.new(context.configuration_params)
       else
         context.fail_and_return!("Unknown provider type: #{context.provider_type}")
       end

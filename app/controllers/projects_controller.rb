@@ -3,7 +3,6 @@ class ProjectsController < ApplicationController
   before_action :set_project, only: %i[show edit update destroy restart]
   before_action :set_provider_type, only: %i[new create]
 
-  # GET /projects
   def index
     sortable_column = params[:sort] || "created_at"
     projects = Projects::List.call(account_user: current_account_user, params: params).projects
@@ -13,10 +12,6 @@ class ProjectsController < ApplicationController
       format.html
       format.json { render json: @projects.map { |p| { id: p.id, name: p.name } } }
     end
-
-    # Uncomment to authorize with Pundit
-    # authorize @projects
-    #
   end
 
   def restart
@@ -32,28 +27,23 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # GET /projects/1 or /projects/1.json
   def show
     @pagy, @events = pagy(@project.events.order(created_at: :desc))
     render "projects/deployments/index"
   end
 
-  # GET /projects/new
   def new
     @project = Project.new
   end
 
-  # GET /projects/1/edit
   def edit
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
   end
 
-  # POST /projects or /projects.json
   def create
     result = Projects::Create.call(params, current_user)
 
     @project = result.project
-    authorize @project
     respond_to do |format|
       if result.success?
         format.html { redirect_to @project, notice: "Project was successfully created." }
@@ -68,9 +58,8 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    result = Projects::Update.call(@project, params)
+    result = Projects::Update.call(@project, params, current_user)
 
     respond_to do |format|
       if result.success?
@@ -83,7 +72,6 @@ class ProjectsController < ApplicationController
     end
   end
 
-  # DELETE /projects/1 or /projects/1.json
   def destroy
     Projects::DestroyJob.perform_later(@project, current_user)
     respond_to do |format|
@@ -94,18 +82,13 @@ class ProjectsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_project
     projects = Projects::VisibleToUser.execute(account_user: current_account_user).projects
     @project = projects.find(params[:id])
-
-    # Uncomment to authorize with Pundit
-    # authorize @project
   rescue ActiveRecord::RecordNotFound
     redirect_to projects_path
   end
 
-  # Only allow a list of trusted parameters through.
   def project_params
     Projects::Create.create_params(params)
   end
