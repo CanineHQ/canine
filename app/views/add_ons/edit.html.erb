@@ -19,7 +19,8 @@
         <div class="form-group"
              data-controller="yaml-autocomplete"
              data-yaml-autocomplete-metadata-url-value="<%= metadata_add_ons_path %>"
-             data-yaml-autocomplete-chart-url-value="<%= @add_on.chart_url %>">
+             data-yaml-autocomplete-chart-url-value="<%= @add_on.chart_url %>"
+             data-yaml-autocomplete-version-value="<%= @add_on.version %>">
           <%= form.label :values_yaml, "Values YAML" %>
           <%= form.text_area(
             :values_yaml,
@@ -30,7 +31,7 @@
           ) %>
           <div class="relative mt-2">
             <div class="absolute top-2 right-2 z-10">
-              <%= render "add_ons/show_default_yaml_button", chart_url: @add_on.chart_url %>
+              <%= render "add_ons/show_default_yaml_button", chart_url: @add_on.chart_url, version: @add_on.version %>
             </div>
             <div data-yaml-autocomplete-target="editor"></div>
             <div data-yaml-autocomplete-target="status" class="absolute bottom-2 right-2 text-xs"></div>

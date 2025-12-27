@@ -78,7 +78,7 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
-  def install(name, chart_url, values: {}, namespace: 'default')
+  def install(name, chart_url, version, values: {}, namespace: 'default')
     return StandardError.new("Can't install helm chart if not connected") unless connected?
 
     with_kube_config do |kubeconfig_file|
@@ -88,7 +88,7 @@ class K8::Helm::Client
         values_file.write(values.to_yaml)
         values_file.flush
 
-        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace} --timeout=#{DEFAULT_TIMEOUT}"
+        command = "helm upgrade --install #{name} #{chart_url} -f #{values_file.path} --namespace #{namespace} --version #{version} --timeout=#{DEFAULT_TIMEOUT}"
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status
@@ -110,11 +110,13 @@ class K8::Helm::Client
   def self.get_default_values_yaml(
     repository_name:,
     repository_url:,
-    chart_name:
+    chart_name:,
+    version: nil
   )
     runner = Cli::RunAndReturnOutput.new
     add_repo(repository_name, repository_url, runner)
     command = "helm show values #{repository_name}/#{chart_name}"
+    command += " --version #{version}" if version.present?
     output = runner.(command)
     output
   end
