@@ -9,7 +9,8 @@ export default class extends Controller {
   static values = {
     metadataUrl: String,
     chartUrl: String,
-    chartUrlInputId: String
+    chartUrlInputId: String,
+    version: String // Helm chart version
   }
 
   disconnect() {
@@ -18,6 +19,7 @@ export default class extends Controller {
     }
   }
 
+  // version is only null for new add-ons, in which case it fetches the latest
   async showDefaultYaml() {
     const chartUrl = this.getChartUrl()
     if (!chartUrl || !this.hasMetadataUrlValue) return
@@ -28,6 +30,9 @@ export default class extends Controller {
     try {
       const url = new URL(this.metadataUrlValue, window.location.origin)
       url.searchParams.set('chart_url', chartUrl)
+      if (this.hasVersionValue && this.versionValue) {
+        url.searchParams.set('version', this.versionValue)
+      }
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' }

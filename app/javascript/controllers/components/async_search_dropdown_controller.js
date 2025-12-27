@@ -130,7 +130,7 @@ export default class extends Controller {
     }
 
     this.dropdown.innerHTML = results.map((item, index) => `
-      <li class="cursor-pointer p-2 hover:bg-base-300" data-index="${index}">
+      <li class="cursor-pointer p-4 hover:bg-base-300" data-index="${index}">
         ${this.renderItem(item)}
       </li>
     `).join('')

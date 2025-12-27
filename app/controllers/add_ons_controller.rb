@@ -78,10 +78,10 @@ class AddOnsController < ApplicationController
   end
 
   def metadata
-    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest(params[:chart_url].to_s)}"
+    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{params[:chart_url]}:#{params[:version]}")}"
 
     metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url])
+      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url], version: params[:version])
       next { schema: {}, default_values: nil } if result.failure?
 
       package = result.response
@@ -90,12 +90,12 @@ class AddOnsController < ApplicationController
       values_yaml = K8::Helm::Client.get_default_values_yaml(
         repository_name: repository["name"],
         repository_url: repository["url"],
-        chart_name: package["name"]
+        chart_name: package["name"],
+        version: package["version"]
       )
       next { schema: {}, default_values: nil } if values_yaml.blank?
 
-      values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
-      schema = InferJsonSchemaService.new(values).infer
+      schema = fetch_or_infer_schema(package, values_yaml)
       { schema: schema, default_values: values_yaml }
     rescue Psych::SyntaxError => e
       Rails.logger.error("Failed to parse values.yaml: #{e.message}")
@@ -132,6 +132,19 @@ class AddOnsController < ApplicationController
   end
 
   private
+
+  def fetch_or_infer_schema(package, values_yaml)
+    if package["has_values_schema"]
+      schema_result = AddOns::HelmChartValuesSchema.execute(
+        package_id: package["package_id"],
+        version: package["version"]
+      )
+      return schema_result.schema if schema_result.success?
+    end
+
+    values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
+    InferJsonSchemaService.new(values).infer
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on
