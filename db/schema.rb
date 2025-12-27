@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_24_180944) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_27_185545) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_24_180944) do
     t.string "chart_url"
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
+    t.string "version", null: false
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
   end

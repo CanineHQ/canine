@@ -14,5 +14,6 @@ class AddOns::SetPackageDetails
     # Readme is too large
     result.response.delete('readme')
     add_on.metadata['package_details'] = result.response
+    add_on.version ||= result.response['version']
   end
 end
