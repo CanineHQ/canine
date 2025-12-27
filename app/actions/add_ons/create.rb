@@ -11,6 +11,7 @@ class AddOns::Create
       :chart_type,
       :chart_url,
       :name,
+      :version,
       metadata: {},
       values: {}
     )

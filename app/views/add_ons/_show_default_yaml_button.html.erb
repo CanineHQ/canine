@@ -2,6 +2,7 @@
   data-controller="show-default-yaml"
   data-show-default-yaml-metadata-url-value="<%= metadata_add_ons_path %>"
   data-show-default-yaml-chart-url-value="<%= local_assigns[:chart_url] %>"
+  data-show-default-yaml-version-value="<%= local_assigns[:version] %>"
   data-show-default-yaml-chart-url-input-id-value="<%= local_assigns[:chart_url_input_id] %>"
 >
   <button
@@ -21,7 +22,10 @@
       </button>
       <div class="mb-4">
         <h3 class="text-xl font-bold">Default YAML Values</h3>
-        <code class="text-sm text-gray-400" data-show-default-yaml-target="chartUrl"></code>
+        <div class="flex items-center gap-2">
+          <code class="text-sm text-gray-400" data-show-default-yaml-target="chartUrl"></code>
+          <span class="badge badge-sm badge-outline" data-show-default-yaml-target="version"></span>
+        </div>
       </div>
       <div data-show-default-yaml-target="editor" class="overflow-auto max-h-[60vh]"></div>
     </div>

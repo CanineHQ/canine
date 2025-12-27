@@ -12,13 +12,14 @@ export default class extends YamlEditorController {
   static values = {
     metadataUrl: String, // URL to fetch schema from
     chartUrl: String, // Helm chart URL
-    chartUrlInputId: String
+    chartUrlInputId: String,
+    version: String // Helm chart version
   }
 
   connect() {
     super.connect()
     if (this.hasChartUrlValue) {
-      this.fetchSchema(this.chartUrlValue)
+      this.fetchSchema(this.chartUrlValue, this.versionValue)
     } else if (this.hasChartUrlInputIdValue) {
       this.chartUrlInput = document.getElementById(this.chartUrlInputIdValue)
       this.chartUrlInput.addEventListener('change', (e) => {
@@ -27,7 +28,8 @@ export default class extends YamlEditorController {
     }
   }
 
-  async fetchSchema(chartUrl) {
+  // version is only null for new add-ons, in which case it fetches the latest
+  async fetchSchema(chartUrl, version = null) {
     if (!this.hasMetadataUrlValue || !chartUrl) return
 
     this.updateStatus(chartUrl, 'loading')
@@ -35,6 +37,9 @@ export default class extends YamlEditorController {
     try {
       const url = new URL(this.metadataUrlValue, window.location.origin)
       url.searchParams.set('chart_url', chartUrl)
+      if (version) {
+        url.searchParams.set('version', version)
+      }
 
       const response = await fetch(url, {
         headers: { 'Accept': 'application/json' }
@@ -43,7 +48,7 @@ export default class extends YamlEditorController {
       if (response.ok) {
         const data = await response.json()
         this.schema = data.schema || {}
-        this.updateStatus(chartUrl, 'success')
+        this.updateStatus(chartUrl, 'success', data.version)
       } else {
         this.updateStatus(chartUrl, 'error')
       }
@@ -228,16 +233,18 @@ export default class extends YamlEditorController {
     return options
   }
 
-  updateStatus(chartUrl, status) {
+  updateStatus(chartUrl, status, version = null) {
     if (!this.hasStatusTarget) return
 
     this.statusTarget.classList.remove('text-red-400', 'text-green-400', 'text-yellow-400')
+
+    const versionSuffix = version ? ` (v${version})` : ''
 
     if (status === 'loading') {
       this.statusTarget.textContent = `Loading schema: ${chartUrl}`
       this.statusTarget.classList.add('text-yellow-400')
     } else if (status === 'success') {
-      this.statusTarget.textContent = `Schema: ${chartUrl}`
+      this.statusTarget.textContent = `Schema: ${chartUrl}${versionSuffix}`
       this.statusTarget.classList.add('text-green-400')
     } else {
       this.statusTarget.textContent = `Failed to load schema: ${chartUrl}`
