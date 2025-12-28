@@ -107,17 +107,15 @@ class K8::Helm::Client
     end
   end
 
-  def self.get_default_values_yaml(
-    repository_name:,
-    repository_url:,
-    chart_name:,
-    version: nil
-  )
-    runner = Cli::RunAndReturnOutput.new
-    add_repo(repository_name, repository_url, runner)
-    command = "helm show values #{repository_name}/#{chart_name}"
-    command += " --version #{version}" if version.present?
-    output = runner.(command)
-    output
+  def self.get_default_values_yaml(package_id, version)
+    response = HTTParty.get(
+      "https://artifacthub.io/api/v1/packages/#{package_id}/#{version}/values"
+    )
+
+    if response.success?
+      response.parsed_response
+    else
+      nil
+    end
   end
 end
