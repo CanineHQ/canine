@@ -88,16 +88,11 @@ class AddOnsController < ApplicationController
       repository = package["repository"]
 
       version = package["version"]
-      values_yaml = K8::Helm::Client.get_default_values_yaml(
-        repository_name: repository["name"],
-        repository_url: repository["url"],
-        chart_name: package["name"],
-        version: package["version"]
-      )
+      values_yaml = K8::Helm::Client.get_default_values_yaml(package["package_id"], package["version"])
       next { schema: {}, default_values: nil, version: } if values_yaml.blank?
 
-      schema = fetch_or_infer_schema(package, values_yaml)
-      { schema: schema, default_values: values_yaml, version: }
+      schema_data = fetch_or_infer_schema(package, values_yaml)
+      { schema: schema_data[:schema], schema_source: schema_data[:schema_source], default_values: values_yaml, version: }
     rescue Psych::SyntaxError => e
       Rails.logger.error("Failed to parse values.yaml: #{e.message}")
       { schema: {}, default_values: nil, version: }
@@ -140,11 +135,11 @@ class AddOnsController < ApplicationController
         package_id: package["package_id"],
         version: package["version"]
       )
-      return schema_result.schema if schema_result.success?
+      return { schema: schema_result.schema, schema_source: "fetched" } if schema_result.success?
     end
 
     values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
-    InferJsonSchemaService.new(values).infer
+    { schema: InferJsonSchemaService.new(values).infer, schema_source: "inferred" }
   end
 
   # Use callbacks to share common setup or constraints between actions.

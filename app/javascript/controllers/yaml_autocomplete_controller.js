@@ -48,7 +48,7 @@ export default class extends YamlEditorController {
       if (response.ok) {
         const data = await response.json()
         this.schema = data.schema || {}
-        this.updateStatus(chartUrl, 'success', data.version)
+        this.updateStatus(chartUrl, 'success', data.version, data.schema_source)
       } else {
         this.updateStatus(chartUrl, 'error')
       }
@@ -233,7 +233,7 @@ export default class extends YamlEditorController {
     return options
   }
 
-  updateStatus(chartUrl, status, version = null) {
+  updateStatus(chartUrl, status, version = null, schemaSource = null) {
     if (!this.hasStatusTarget) return
 
     this.statusTarget.classList.remove('text-red-400', 'text-green-400', 'text-yellow-400')
@@ -244,7 +244,8 @@ export default class extends YamlEditorController {
       this.statusTarget.textContent = `Loading schema: ${chartUrl}`
       this.statusTarget.classList.add('text-yellow-400')
     } else if (status === 'success') {
-      this.statusTarget.textContent = `Schema: ${chartUrl}${versionSuffix}`
+      const sourceLabel = schemaSource === 'fetched' ? 'Official' : 'Inferred'
+      this.statusTarget.textContent = `Schema (${sourceLabel}): ${chartUrl}${versionSuffix}`
       this.statusTarget.classList.add('text-green-400')
     } else {
       this.statusTarget.textContent = `Failed to load schema: ${chartUrl}`
