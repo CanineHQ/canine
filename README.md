@@ -88,9 +88,6 @@ Canine Cloud offers additional features for small teams:
 
 For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
 
-## Repo Activity
-![Alt](https://repobeats.axiom.co/api/embed/0af4ce8a75f4a12ec78973ddf7021c769b9a0051.svg "Repobeats analytics image")
-
 ## License
 
 Canine is released under the [Apache 2.0 License](https://github.com/CanineHQ/canine/blob/main/LICENSE).
