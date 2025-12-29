@@ -15,7 +15,14 @@
       <% team_memberships.each do |team_membership| %>
         <tr class="hover:bg-base-200/40">
           <td>
-            <div class="font-medium"><%= team_membership.user.name %></div>
+            <div class="flex items-center gap-3">
+              <div class="avatar">
+                <div class="mask mask-squircle w-8 h-8">
+                  <%= image_tag avatar_path(team_membership.user, size: 32) %>
+                </div>
+              </div>
+              <div class="font-medium"><%= team_membership.user.name %></div>
+            </div>
           </td>
           <td>
             <div class="font-medium"><%= team_membership.user.email %></div>
