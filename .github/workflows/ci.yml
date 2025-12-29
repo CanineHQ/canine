@@ -52,7 +52,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .node-version
           cache: yarn
 
       - name: Install Node dependencies
@@ -61,7 +61,6 @@ jobs:
       - name: Build assets
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
         run: |
           yarn build
           bin/rails tailwindcss:build

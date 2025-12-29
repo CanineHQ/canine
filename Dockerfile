@@ -62,7 +62,7 @@ RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Install javascript dependencies
-ARG NODE_VERSION=20.11.0
+ARG NODE_VERSION=23.10.0
 ARG YARN_VERSION=1.22.21
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
