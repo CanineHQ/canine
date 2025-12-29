@@ -55,6 +55,7 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "cuprite"
 
   gem "database_cleaner-active_record", '~> 2.2.2'
   gem 'shoulda-matchers', '~> 6.5'
