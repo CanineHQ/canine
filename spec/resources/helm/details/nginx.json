@@ -1,0 +1,1535 @@
+{
+  "package_id": "bec45f52-fe90-46a1-b6eb-a3dcd9bb203f",
+  "name": "nginx",
+  "normalized_name": "nginx",
+  "category": 5,
+  "is_operator": false,
+  "description": "NGINX Open Source is a web server that can be also used as a reverse proxy, load balancer, and HTTP cache. Recommended for high-demanding sites due to its ability to provide faster content.",
+  "logo_image_id": "df8b0c56-3686-47ad-b3cf-44ab4c2ef096",
+  "keywords": [
+    "nginx",
+    "http",
+    "web",
+    "www",
+    "reverse proxy"
+  ],
+  "home_url": "https://bitnami.com",
+  "readme": "<!--- app-name: NGINX Open Source -->\n\n# Bitnami Secure Images Helm chart for NGINX Open Source\n\nNGINX Open Source is a web server that can be also used as a reverse proxy, load balancer, and HTTP cache. Recommended for high-demanding sites due to its ability to provide faster content.\n\n[Overview of NGINX Open Source](http://nginx.org)\n\nTrademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.\n\n## TL;DR\n\n```console\nhelm install my-release oci://MY-OCI-REGISTRY/nginx\n```\n\n> Tip: Did you know that this app is also available as a Kubernetes App on the Azure Marketplace? Kubernetes Apps are the easiest way to deploy Bitnami on AKS. Click [here](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/bitnami.nginx-cnab) to see the listing on Azure Marketplace.\n\n## Why use Bitnami Secure Images?\n\nThose are hardened, minimal CVE images built and maintained by Bitnami. Bitnami Secure Images are based on the cloud-optimized, security-hardened enterprise [OS Photon Linux](https://vmware.github.io/photon/). Why choose BSI images?\n\n- Hardened secure images of popular open source software with Near-Zero Vulnerabilities\n- Vulnerability Triage & Prioritization with VEX Statements, KEV and EPSS Scores\n- Compliance focus with FIPS, STIG, and air-gap options, including secure bill of materials (SBOM)\n- Software supply chain provenance attestation through in-toto\n- First class support for the internet’s favorite Helm charts\n\nEach image comes with valuable security metadata. You can view the metadata in [our public catalog here](https://app-catalog.vmware.com/bitnami/apps). Note: Some data is only available with [commercial subscriptions to BSI](https://bitnami.com/).\n\n![Alt text](https://github.com/bitnami/containers/blob/main/BSI%20UI%201.png?raw=true \"Application details\")\n![Alt text](https://github.com/bitnami/containers/blob/main/BSI%20UI%202.png?raw=true \"Packaging report\")\n\nIf you are looking for our previous generation of images based on Debian Linux, please see the [Bitnami Legacy registry](https://hub.docker.com/u/bitnamilegacy).\n\n## Introduction\n\nBitnami charts for Helm are carefully engineered, actively maintained and are the quickest and easiest way to deploy containers on a Kubernetes cluster that are ready to handle production workloads.\n\nThis chart bootstraps a [NGINX Open Source](https://github.com/bitnami/containers/tree/main/bitnami/nginx) deployment on a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.\n\n## Prerequisites\n\n- Kubernetes 1.23+\n- Helm 3.8.0+\n\n## Installing the Chart\n\nTo install the chart with the release name `my-release`:\n\n```console\nhelm install my-release oci://REGISTRY_NAME/REPOSITORY_NAME/nginx\n```\n\n> Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.\n\nThese commands deploy NGINX Open Source on the Kubernetes cluster in the default configuration.\n\n> **Tip**: List all releases using `helm list`\n\n## Configuration and installation details\n\n### Resource requests and limits\n\nBitnami charts allow setting resource requests and limits for all containers inside the chart deployment. These are inside the `resources` value (check parameter table). Setting requests is essential for production workloads and these should be adapted to your specific use case.\n\nTo make this process easier, the chart contains the `resourcesPreset` values, which automatically sets the `resources` section according to different presets. Check these presets in [the bitnami/common chart](https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15). However, in production workloads using `resourcesPreset` is discouraged as it may not fully adapt to your specific needs. Find more information on container resource management in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).\n\n### Prometheus metrics\n\nThis chart can be integrated with Prometheus by setting `metrics.enabled` to `true`. This will deploy a sidecar container with [nginx-prometheus-exporter](https://github.com/nginxinc/nginx-prometheus-exporter) in all pods and will expose it via the Nginx service. This service will be have the necessary annotations to be automatically scraped by Prometheus.\n\n#### Prometheus requirements\n\nIt is necessary to have a working installation of Prometheus or Prometheus Operator for the integration to work. Install the [Bitnami Prometheus helm chart](https://github.com/bitnami/charts/tree/main/bitnami/prometheus) or the [Bitnami Kube Prometheus helm chart](https://github.com/bitnami/charts/tree/main/bitnami/kube-prometheus) to easily have a working Prometheus in your cluster.\n\n#### Integration with Prometheus Operator\n\nThe chart can deploy `ServiceMonitor` objects for integration with Prometheus Operator installations. To do so, set the value `metrics.serviceMonitor.enabled=true`. Ensure that the Prometheus Operator `CustomResourceDefinitions` are installed in the cluster or it will fail with the following error:\n\n```text\nno matches for kind \"ServiceMonitor\" in version \"monitoring.coreos.com/v1\"\n```\n\nInstall the [Bitnami Kube Prometheus helm chart](https://github.com/bitnami/charts/tree/main/bitnami/kube-prometheus) for having the necessary CRDs and the Prometheus Operator.\n\n### Securing traffic using TLS\n\nNginx can encrypt communications by setting `tls.enabled=true`. The chart allows two configuration options:\n\n- Provide your own secret using the `tls.certificatesSecret` value. Also set the correct name of the certificate files using the `tls.certFilename`, `tls.certKeyFilename` and `tls.certCAFilename` values.\n- Have the chart auto-generate the certificates using `tls.autoGenerated=true`.\n\n### [Rolling VS Immutable tags](https://techdocs.broadcom.com/us/en/vmware-tanzu/bitnami-secure-images/bitnami-secure-images/services/bsi-doc/apps-tutorials-understand-rolling-tags-containers-index.html)\n\nIt is strongly recommended to use immutable tags in a production environment. This ensures your deployment does not change automatically if the same tag is updated with a different image.\n\nBitnami will release a new chart updating its containers if a new version of the main container, significant changes, or critical vulnerabilities exist.\n\n### Use a different NGINX version\n\nTo modify the application version used in this chart, specify a different version of the image using the `image.tag` parameter and/or a different repository using the `image.repository` parameter.\n\n### FIPS parameters\n\nThe FIPS parameters only have effect if you are using images from the [Bitnami Secure Images catalog](https://go-vmware.broadcom.com/contact-us).\n\nFor more information on this new support, please refer to the [FIPS Compliance section](https://techdocs.broadcom.com/us/en/vmware-tanzu/bitnami-secure-images/bitnami-secure-images/services/bsi-doc/security-frameworks-FIPS-compliance.html).\n\n### Backup and restore\n\nTo back up and restore Helm chart deployments on Kubernetes, you need to back up the persistent volumes from the source deployment and attach them to a new deployment using [Velero](https://velero.io/), a Kubernetes backup/restore tool. Find the instructions for using Velero in [this guide](https://techdocs.broadcom.com/us/en/vmware-tanzu/bitnami-secure-images/bitnami-secure-images/services/bsi-doc/apps-tutorials-backup-restore-deployments-velero-index.html).\n\n### Deploying your custom web application\n\nThe NGINX chart allows you to deploy a custom web application using one of the following methods:\n\n- Cloning from a git repository: Set `cloneStaticSiteFromGit.enabled` to `true` and set the repository and branch using the `cloneStaticSiteFromGit.repository` and `cloneStaticSiteFromGit.branch` parameters. A sidecar will also pull the latest changes in an interval set by `cloneStaticSitesFromGit.interval`.\n- Providing a ConfigMap: Set the `staticSiteConfigmap` value to mount a ConfigMap in the NGINX html folder.\n- Using an existing PVC: Set the `staticSitePVC` value to mount an PersistentVolumeClaim with the static site content.\n\nYou can deploy a example web application using git deploying the chart with the following parameters:\n\n```console\ncloneStaticSiteFromGit.enabled=true\ncloneStaticSiteFromGit.repository=https://github.com/mdn/beginner-html-site-styled.git\ncloneStaticSiteFromGit.branch=master\n```\n\n### Providing a custom server block\n\nThis helm chart supports using custom custom server block for NGINX to use.\n\nYou can use the `serverBlock` or `streamServerBlock` value to provide a custom server block for NGINX to use. To do this, create a values files with your server block and install the chart using it:\n\n```yaml\nserverBlock: |-\n  server {\n    listen 0.0.0.0:8080;\n    location / {\n      return 200 \"hello!\";\n    }\n  }\n```\n\n> Warning: The above example is not compatible with enabling Prometheus metrics since it affects the `/status` endpoint.\n\nIn addition, you can also set an external ConfigMap with the configuration file. This is done by setting the `existingServerBlockConfigmap` parameter. Note that this will override the previous option.\n\n### Adding custom configuration by context\n\nThe NGINX chart supports context-based configuration includes, allowing you to add custom directives to specific NGINX contexts. You can provide configuration for three contexts:\n\n- **Main context**: For global directives like module loading and worker processes\n- **Events context**: For event-related directives\n- **HTTP context**: For HTTP-related directives\n\n#### Inline Context Configuration\n\nYou can provide inline configuration using the `contextIncludes` values:\n\n```yaml\ncontextIncludes:\n  main: |\n    # Load additional modules\n    load_module /opt/bitnami/nginx/modules/ngx_http_dav_module.so;\n\n    # Set worker processes\n    worker_processes auto;\n\n  events: |\n    # Increase worker connections\n    worker_connections 2048;\n\n    # Use epoll for better performance\n    use epoll;\n\n  http: |\n    # Enable gzip compression\n    gzip on;\n    gzip_vary on;\n    gzip_types text/plain application/json text/css;\n\n    # Security headers\n    add_header X-Frame-Options DENY;\n    add_header X-Content-Type-Options nosniff;\n```\n\n#### External ConfigMaps for Context Configuration\n\nYou can also reference external ConfigMaps for each context using lists:\n\n```yaml\nexistingContextMainConfigmaps:\n  - \"nginx-modules-config\"\n  - \"nginx-main-directives\"\n\nexistingContextEventsConfigmaps:\n  - \"nginx-events-tuning\"\n\nexistingContextHttpConfigmaps:\n  - \"nginx-security-headers\"\n  - \"nginx-compression-config\"\n```\n\n#### Mixed Configuration\n\nYou can combine inline configuration with external ConfigMaps:\n\n```yaml\ncontextIncludes:\n  main: |\n    worker_processes auto;\n\nexistingContextMainConfigmaps:\n  - \"nginx-modules-config\"\n\nexistingContextHttpConfigmaps:\n  - \"nginx-security-config\"\n```\n\nAll configuration files are mounted to the appropriate directories (`/opt/bitnami/nginx/conf/context.d/{main,events,http}/`) and included using wildcards in the nginx.conf.\n\n### Adding extra environment variables\n\nIn case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `extraEnvVars` property.\n\n```yaml\nextraEnvVars:\n  - name: LOG_LEVEL\n    value: error\n```\n\nAlternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `extraEnvVarsCM` or the `extraEnvVarsSecret` values.\n\n### Setting Pod's affinity\n\nThis chart allows you to set your custom affinity using the `affinity` parameter. Find more information about Pod's affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).\n\nAs an alternative, you can use of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/main/bitnami/common#affinity) chart. To do so, set the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parameters.\n\n### Deploying extra resources\n\nThere are cases where you may want to deploy extra objects, such a ConfigMap containing your app's configuration or some extra deployment with a micro service used by your app. For covering this case, the chart allows adding the full specification of other objects using the `extraDeploy` parameter.\n\n### Gateway API\n\nThis chart provides support for exposing NGINX using the [Gateway API](https://gateway-api.sigs.k8s.io/) and its `HTTPRoute` resource. If you have a Gateway controller installed on your cluster, such as [APISIX](https://github.com/bitnami/charts-private/tree/main/bitnami/apisix), [Contour](https://github.com/bitnami/charts-private/tree/main/bitnami/contour), [Envoy Gateway](https://github.com/bitnami/charts-private/tree/main/bitnami/envoy-gateway), [NGINX Gateway Fabric](https://github.com/bitnami/charts-private/tree/main/bitnami/nginx-gateway-fabric) or [Kong Ingress Controller](https://github.com/bitnami/charts-private/tree/main/bitnami/kong) you can utilize the Gateway controller to serve your application. To enable Gateway API integration, set `httpRoute.enabled` to `true`.\nThe Gateway to be used can be customized by setting the `httpRoute.parentRefs` parameter. By default, it will reference a Gateway named `gateway` in the same namespace as the release.\n\nYou can specify the list of hostnames to be mapped to the deployment using the `httpRoute.hostnames` parameter. Additionally, you can customize the rules used to route the traffic to the service by modifying the `httpRoute.matches` and `httpRoute.filters` parameters or adding new rules using the `httpRoute.extraRules` parameter.\n\nThis chart also supports creating a `BackendTLSPolicy` to define the SNI the Gateway should use to connect to the NGINX backend pods and how the certificate served by these pods should be verified. To do so, set the `backendTLSPolicy.enabled` parameter to `true`. Please note it's required to secure traffic using TLS as explained in the [Securing traffic using TLS](#securing-traffic-using-tls) section to be able to use this feature.\n\n### Ingress\n\nThis chart provides support for ingress resources. If you have an ingress controller installed on your cluster, such as [nginx-ingress-controller](https://github.com/bitnami/charts/tree/main/bitnami/nginx-ingress-controller) or [contour](https://github.com/bitnami/charts/tree/main/bitnami/contour) you can utilize the ingress controller to serve your application.\n\nTo enable ingress integration, please set `ingress.enabled` to `true`.\n\n#### Hosts\n\nMost likely you will only want to have one hostname that maps to this NGINX installation. If that's your case, the property `ingress.hostname` will set it. However, it is possible to have more than one host. To facilitate this, the `ingress.extraHosts` object can be specified as an array. You can also use `ingress.extraTLS` to add the TLS configuration for extra hosts.\n\nFor each host indicated at `ingress.extraHosts`, please indicate a `name`, `path`, and any `annotations` that you may want the ingress controller to know about.\n\nFor annotations, please see [this document](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md). Not all annotations are supported by all ingress controllers, but this document does a good job of indicating which annotation is supported by many popular ingress controllers.\n\n## Parameters\n\n### Global parameters\n\n| Name                                                  | Description                                                                                                                                                                                                                                                                                                                                                         | Value        |\n| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |\n| `global.imageRegistry`                                | Global Docker image registry                                                                                                                                                                                                                                                                                                                                        | `\"\"`         |\n| `global.imagePullSecrets`                             | Global Docker registry secret names as an array                                                                                                                                                                                                                                                                                                                     | `[]`         |\n| `global.defaultFips`                                  | Default value for the FIPS configuration (allowed values: '', restricted, relaxed, off). Can be overriden by the 'fips' object                                                                                                                                                                                                                                      | `restricted` |\n| `global.security.allowInsecureImages`                 | Allows skipping image verification                                                                                                                                                                                                                                                                                                                                  | `false`      |\n| `global.compatibility.openshift.adaptSecurityContext` | Adapt the securityContext sections of the deployment to make them compatible with Openshift restricted-v2 SCC: remove runAsUser, runAsGroup and fsGroup and let the platform use their allowed default IDs. Possible values: auto (apply if the detected running cluster is Openshift), force (perform the adaptation always), disabled (do not perform adaptation) | `auto`       |\n\n### Common parameters\n\n| Name                     | Description                                                                             | Value           |\n| ------------------------ | --------------------------------------------------------------------------------------- | --------------- |\n| `nameOverride`           | String to partially override nginx.fullname template (will maintain the release name)   | `\"\"`            |\n| `fullnameOverride`       | String to fully override nginx.fullname template                                        | `\"\"`            |\n| `namespaceOverride`      | String to fully override common.names.namespace                                         | `\"\"`            |\n| `kubeVersion`            | Force target Kubernetes version (using Helm capabilities if not set)                    | `\"\"`            |\n| `clusterDomain`          | Kubernetes Cluster Domain                                                               | `cluster.local` |\n| `extraDeploy`            | Extra objects to deploy (value evaluated as a template)                                 | `[]`            |\n| `commonLabels`           | Add labels to all the deployed resources                                                | `{}`            |\n| `commonAnnotations`      | Add annotations to all the deployed resources                                           | `{}`            |\n| `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |\n| `diagnosticMode.command` | Command to override all containers in the the deployment(s)/statefulset(s)              | `[\"sleep\"]`     |\n| `diagnosticMode.args`    | Args to override all containers in the the deployment(s)/statefulset(s)                 | `[\"infinity\"]`  |\n\n### NGINX parameters\n\n| Name                           | Description                                                                                           | Value                   |\n| ------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------- |\n| `image.registry`               | NGINX image registry                                                                                  | `REGISTRY_NAME`         |\n| `image.repository`             | NGINX image repository                                                                                | `REPOSITORY_NAME/nginx` |\n| `image.digest`                 | NGINX image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag | `\"\"`                    |\n| `image.pullPolicy`             | NGINX image pull policy                                                                               | `IfNotPresent`          |\n| `image.pullSecrets`            | Specify docker-registry secret names as an array                                                      | `[]`                    |\n| `image.debug`                  | Set to true if you would like to see extra information on logs                                        | `false`                 |\n| `enableDefaultInitContainers`  | If set to false, disable all init containers except user-defined at `initContainer`.                  | `true`                  |\n| `automountServiceAccountToken` | Mount Service Account token in pod                                                                    | `false`                 |\n| `hostAliases`                  | Deployment pod host aliases                                                                           | `[]`                    |\n| `command`                      | Override default container command (useful when using custom images)                                  | `[]`                    |\n| `args`                         | Override default container args (useful when using custom images)                                     | `[]`                    |\n| `extraEnvVars`                 | Extra environment variables to be set on NGINX containers                                             | `[]`                    |\n| `extraEnvVarsCM`               | ConfigMap with extra environment variables                                                            | `\"\"`                    |\n| `extraEnvVarsSecret`           | Secret with extra environment variables                                                               | `\"\"`                    |\n\n### NGINX deployment parameters\n\n| Name                                                | Description                                                                                                                                                                                                       | Value            |\n| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |\n| `replicaCount`                                      | Number of NGINX replicas to deploy                                                                                                                                                                                | `1`              |\n| `revisionHistoryLimit`                              | The number of old history to retain to allow rollback                                                                                                                                                             | `10`             |\n| `updateStrategy.type`                               | NGINX deployment strategy type                                                                                                                                                                                    | `RollingUpdate`  |\n| `updateStrategy.rollingUpdate`                      | NGINX deployment rolling update configuration parameters                                                                                                                                                          | `{}`             |\n| `podLabels`                                         | Additional labels for NGINX pods                                                                                                                                                                                  | `{}`             |\n| `podAnnotations`                                    | Annotations for NGINX pods                                                                                                                                                                                        | `{}`             |\n| `podAffinityPreset`                                 | Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                                                                               | `\"\"`             |\n| `podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                                                                          | `soft`           |\n| `nodeAffinityPreset.type`                           | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`                                                                                                                         | `\"\"`             |\n| `nodeAffinityPreset.key`                            | Node label key to match Ignored if `affinity` is set.                                                                                                                                                             | `\"\"`             |\n| `nodeAffinityPreset.values`                         | Node label values to match. Ignored if `affinity` is set.                                                                                                                                                         | `[]`             |\n| `affinity`                                          | Affinity for pod assignment                                                                                                                                                                                       | `{}`             |\n| `hostNetwork`                                       | Specify if host network should be enabled for NGINX pod                                                                                                                                                           | `false`          |\n| `hostIPC`                                           | Specify if host IPC should be enabled for NGINX pod                                                                                                                                                               | `false`          |\n| `dnsPolicy`                                         | Specifies the DNS policy for the NGINX pod                                                                                                                                                                        | `\"\"`             |\n| `dnsConfig`                                         | Allows users more control on the DNS settings for a Pod. Required if `dnsPolicy` is set to `None`                                                                                                                 | `{}`             |\n| `nodeSelector`                                      | Node labels for pod assignment. Evaluated as a template.                                                                                                                                                          | `{}`             |\n| `tolerations`                                       | Tolerations for pod assignment. Evaluated as a template.                                                                                                                                                          | `[]`             |\n| `priorityClassName`                                 | NGINX pods' priorityClassName                                                                                                                                                                                     | `\"\"`             |\n| `schedulerName`                                     | Name of the k8s scheduler (other than default)                                                                                                                                                                    | `\"\"`             |\n| `runtimeClassName`                                  | Name of the runtime class to be used by pod(s)                                                                                                                                                                    | `\"\"`             |\n| `terminationGracePeriodSeconds`                     | In seconds, time the given to the NGINX pod needs to terminate gracefully                                                                                                                                         | `\"\"`             |\n| `topologySpreadConstraints`                         | Topology Spread Constraints for pod assignment                                                                                                                                                                    | `[]`             |\n| `tls.enabled`                                       | Enable TLS transport                                                                                                                                                                                              | `true`           |\n| `tls.autoGenerated`                                 | Auto-generate self-signed certificates                                                                                                                                                                            | `true`           |\n| `tls.existingSecret`                                | Name of a secret containing the certificates                                                                                                                                                                      | `\"\"`             |\n| `tls.certFilename`                                  | Path of the certificate file when mounted as a secret                                                                                                                                                             | `tls.crt`        |\n| `tls.certKeyFilename`                               | Path of the certificate key file when mounted as a secret                                                                                                                                                         | `tls.key`        |\n| `tls.certCAFilename`                                | Path of the certificate CA file when mounted as a secret                                                                                                                                                          | `ca.crt`         |\n| `tls.cert`                                          | Content of the certificate to be added to the secret                                                                                                                                                              | `\"\"`             |\n| `tls.key`                                           | Content of the certificate key to be added to the secret                                                                                                                                                          | `\"\"`             |\n| `tls.ca`                                            | Content of the certificate CA to be added to the secret                                                                                                                                                           | `\"\"`             |\n| `podSecurityContext.enabled`                        | Enabled NGINX pods' Security Context                                                                                                                                                                              | `true`           |\n| `podSecurityContext.fsGroupChangePolicy`            | Set filesystem group change policy                                                                                                                                                                                | `Always`         |\n| `podSecurityContext.supplementalGroups`             | Set filesystem extra groups                                                                                                                                                                                       | `[]`             |\n| `podSecurityContext.fsGroup`                        | Set NGINX pod's Security Context fsGroup                                                                                                                                                                          | `1001`           |\n| `podSecurityContext.sysctls`                        | sysctl settings of the NGINX pods                                                                                                                                                                                 | `[]`             |\n| `containerSecurityContext.enabled`                  | Enabled containers' Security Context                                                                                                                                                                              | `true`           |\n| `containerSecurityContext.seLinuxOptions`           | Set SELinux options in container                                                                                                                                                                                  | `{}`             |\n| `containerSecurityContext.runAsUser`                | Set containers' Security Context runAsUser                                                                                                                                                                        | `1001`           |\n| `containerSecurityContext.runAsGroup`               | Set containers' Security Context runAsGroup                                                                                                                                                                       | `1001`           |\n| `containerSecurityContext.runAsNonRoot`             | Set container's Security Context runAsNonRoot                                                                                                                                                                     | `true`           |\n| `containerSecurityContext.privileged`               | Set container's Security Context privileged                                                                                                                                                                       | `false`          |\n| `containerSecurityContext.readOnlyRootFilesystem`   | Set container's Security Context readOnlyRootFilesystem                                                                                                                                                           | `true`           |\n| `containerSecurityContext.allowPrivilegeEscalation` | Set container's Security Context allowPrivilegeEscalation                                                                                                                                                         | `false`          |\n| `containerSecurityContext.capabilities.drop`        | List of capabilities to be dropped                                                                                                                                                                                | `[\"ALL\"]`        |\n| `containerSecurityContext.seccompProfile.type`      | Set container's Security Context seccomp profile                                                                                                                                                                  | `RuntimeDefault` |\n| `containerPorts.http`                               | Sets http port inside NGINX container                                                                                                                                                                             | `8080`           |\n| `containerPorts.https`                              | Sets https port inside NGINX container                                                                                                                                                                            | `8443`           |\n| `extraContainerPorts`                               | Array of additional container ports for the Nginx container                                                                                                                                                       | `[]`             |\n| `resourcesPreset`                                   | Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if resources is set (resources is recommended for production). | `nano`           |\n| `resources`                                         | Set container requests and limits for different resources like CPU or memory (essential for production workloads)                                                                                                 | `{}`             |\n| `fips.openssl`                                      | Configure OpenSSL FIPS mode: '', 'restricted', 'relaxed', 'off'. If empty (\"\"), 'global.defaultFips' would be used                                                                                                | `\"\"`             |\n| `lifecycleHooks`                                    | Optional lifecycleHooks for the NGINX container                                                                                                                                                                   | `{}`             |\n| `startupProbe.enabled`                              | Enable startupProbe                                                                                                                                                                                               | `false`          |\n| `startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                                                                                                                            | `30`             |\n| `startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                                                                                                                                   | `10`             |\n| `startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                                                                                                                                  | `5`              |\n| `startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                                                                                                                                | `6`              |\n| `startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                                                                                                                                | `1`              |\n| `livenessProbe.enabled`                             | Enable livenessProbe                                                                                                                                                                                              | `true`           |\n| `livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                                                                                                           | `30`             |\n| `livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                                                                                                                  | `10`             |\n| `livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                                                                                                                 | `5`              |\n| `livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                                                                                                                               | `6`              |\n| `livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                                                                                                                               | `1`              |\n| `readinessProbe.enabled`                            | Enable readinessProbe                                                                                                                                                                                             | `true`           |\n| `readinessProbe.path`                               | Request path for livenessProbe                                                                                                                                                                                    | `/`              |\n| `readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                                                                                                                          | `5`              |\n| `readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                                                                                                                                 | `5`              |\n| `readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                                                                                                                                | `3`              |\n| `readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                                                                                                                              | `3`              |\n| `readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                                                                                                                              | `1`              |\n| `customStartupProbe`                                | Custom liveness probe for the Web component                                                                                                                                                                       | `{}`             |\n| `customLivenessProbe`                               | Override default liveness probe                                                                                                                                                                                   | `{}`             |\n| `customReadinessProbe`                              | Override default readiness probe                                                                                                                                                                                  | `{}`             |\n| `autoscaling.enabled`                               | Enable autoscaling for NGINX deployment                                                                                                                                                                           | `false`          |\n| `autoscaling.minReplicas`                           | Minimum number of replicas to scale back                                                                                                                                                                          | `\"\"`             |\n| `autoscaling.maxReplicas`                           | Maximum number of replicas to scale out                                                                                                                                                                           | `\"\"`             |\n| `autoscaling.targetCPU`                             | Target CPU utilization percentage                                                                                                                                                                                 | `\"\"`             |\n| `autoscaling.targetMemory`                          | Target Memory utilization percentage                                                                                                                                                                              | `\"\"`             |\n| `extraVolumes`                                      | Array to add extra volumes                                                                                                                                                                                        | `[]`             |\n| `extraVolumeMounts`                                 | Array to add extra mount                                                                                                                                                                                          | `[]`             |\n| `serviceAccount.create`                             | Enable creation of ServiceAccount for nginx pod                                                                                                                                                                   | `true`           |\n| `serviceAccount.name`                               | The name of the ServiceAccount to use.                                                                                                                                                                            | `\"\"`             |\n| `serviceAccount.annotations`                        | Annotations for service account. Evaluated as a template.                                                                                                                                                         | `{}`             |\n| `serviceAccount.automountServiceAccountToken`       | Auto-mount the service account token in the pod                                                                                                                                                                   | `false`          |\n| `sidecars`                                          | Sidecar parameters                                                                                                                                                                                                | `[]`             |\n| `sidecarSingleProcessNamespace`                     | Enable sharing the process namespace with sidecars                                                                                                                                                                | `false`          |\n| `initContainers`                                    | Extra init containers                                                                                                                                                                                             | `[]`             |\n| `pdb.create`                                        | Created a PodDisruptionBudget                                                                                                                                                                                     | `true`           |\n| `pdb.minAvailable`                                  | Min number of pods that must still be available after the eviction.                                                                                                                                               | `\"\"`             |\n| `pdb.maxUnavailable`                                | Max number of pods that can be unavailable after the eviction.                                                                                                                                                    | `\"\"`             |\n\n### Custom NGINX application parameters\n\n| Name                                             | Description                                                                                                                                                                                                                                                                     | Value                 |\n| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |\n| `cloneStaticSiteFromGit.enabled`                 | Get the server static content from a Git repository                                                                                                                                                                                                                             | `false`               |\n| `cloneStaticSiteFromGit.image.registry`          | Git image registry                                                                                                                                                                                                                                                              | `REGISTRY_NAME`       |\n| `cloneStaticSiteFromGit.image.repository`        | Git image repository                                                                                                                                                                                                                                                            | `REPOSITORY_NAME/git` |\n| `cloneStaticSiteFromGit.image.digest`            | Git image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag                                                                                                                                                                             | `\"\"`                  |\n| `cloneStaticSiteFromGit.image.pullPolicy`        | Git image pull policy                                                                                                                                                                                                                                                           | `IfNotPresent`        |\n| `cloneStaticSiteFromGit.image.pullSecrets`       | Specify docker-registry secret names as an array                                                                                                                                                                                                                                | `[]`                  |\n| `cloneStaticSiteFromGit.repository`              | Git Repository to clone static content from                                                                                                                                                                                                                                     | `\"\"`                  |\n| `cloneStaticSiteFromGit.branch`                  | Git branch to checkout                                                                                                                                                                                                                                                          | `\"\"`                  |\n| `cloneStaticSiteFromGit.interval`                | Interval for sidecar container pull from the Git repository                                                                                                                                                                                                                     | `60`                  |\n| `cloneStaticSiteFromGit.gitClone.command`        | Override default container command for git-clone-repository                                                                                                                                                                                                                     | `[]`                  |\n| `cloneStaticSiteFromGit.gitClone.args`           | Override default container args for git-clone-repository                                                                                                                                                                                                                        | `[]`                  |\n| `cloneStaticSiteFromGit.gitSync.command`         | Override default container command for git-repo-syncer                                                                                                                                                                                                                          | `[]`                  |\n| `cloneStaticSiteFromGit.gitSync.args`            | Override default container args for git-repo-syncer                                                                                                                                                                                                                             | `[]`                  |\n| `cloneStaticSiteFromGit.gitSync.resourcesPreset` | Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if cloneStaticSiteFromGit.gitSync.resources is set (cloneStaticSiteFromGit.gitSync.resources is recommended for production). | `nano`                |\n| `cloneStaticSiteFromGit.gitSync.resources`       | Set container requests and limits for different resources like CPU or memory (essential for production workloads)                                                                                                                                                               | `{}`                  |\n| `cloneStaticSiteFromGit.gitSync.fips.openssl`    | Configure OpenSSL FIPS mode: '', 'restricted', 'relaxed', 'off'. If empty (\"\"), 'global.defaultFips' would be used                                                                                                                                                              | `\"\"`                  |\n| `cloneStaticSiteFromGit.extraEnvVars`            | Additional environment variables to set for the in the containers that clone static site from git                                                                                                                                                                               | `[]`                  |\n| `cloneStaticSiteFromGit.extraEnvVarsSecret`      | Secret with extra environment variables                                                                                                                                                                                                                                         | `\"\"`                  |\n| `cloneStaticSiteFromGit.extraVolumeMounts`       | Add extra volume mounts for the Git containers                                                                                                                                                                                                                                  | `[]`                  |\n| `serverBlock`                                    | Custom server block to be added to NGINX configuration                                                                                                                                                                                                                          | `\"\"`                  |\n| `streamServerBlock`                              | Custom stream server block to be added to NGINX configuration                                                                                                                                                                                                                   | `\"\"`                  |\n| `existingServerBlockConfigmap`                   | ConfigMap with custom server block to be added to NGINX configuration                                                                                                                                                                                                           | `\"\"`                  |\n| `existingStreamServerBlockConfigmap`             | ConfigMap with custom stream server block to be added to NGINX configuration                                                                                                                                                                                                    | `\"\"`                  |\n| `contextIncludes.main`                           | Custom configuration for the main context                                                                                                                                                                                                                                       | `\"\"`                  |\n| `contextIncludes.events`                         | Custom configuration for the events context                                                                                                                                                                                                                                     | `\"\"`                  |\n| `contextIncludes.http`                           | Custom configuration for the http context                                                                                                                                                                                                                                       | `\"\"`                  |\n| `existingContextMainConfigmaps`                  | List of existing ConfigMaps with custom main context configuration                                                                                                                                                                                                              | `[]`                  |\n| `existingContextEventsConfigmaps`                | List of existing ConfigMaps with custom events context configuration                                                                                                                                                                                                            | `[]`                  |\n| `existingContextHttpConfigmaps`                  | List of existing ConfigMaps with custom http context configuration                                                                                                                                                                                                              | `[]`                  |\n| `staticSiteConfigmap`                            | Name of existing ConfigMap with the server static site content                                                                                                                                                                                                                  | `\"\"`                  |\n| `staticSitePVC`                                  | Name of existing PVC with the server static site content                                                                                                                                                                                                                        | `\"\"`                  |\n\n### Traffic Exposure parameters\n\n| Name                                    | Description                                                                                                                      | Value                    |\n| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |\n| `service.type`                          | Service type                                                                                                                     | `LoadBalancer`           |\n| `service.ports.http`                    | Service HTTP port                                                                                                                | `80`                     |\n| `service.ports.https`                   | Service HTTPS port                                                                                                               | `443`                    |\n| `service.nodePorts`                     | Specify the nodePort(s) value(s) for the LoadBalancer and NodePort service types.                                                | `{}`                     |\n| `service.targetPort`                    | Target port reference value for the Loadbalancer service types can be specified explicitly.                                      | `{}`                     |\n| `service.clusterIP`                     | NGINX service Cluster IP                                                                                                         | `\"\"`                     |\n| `service.loadBalancerIP`                | LoadBalancer service IP address                                                                                                  | `\"\"`                     |\n| `service.loadBalancerSourceRanges`      | NGINX service Load Balancer sources                                                                                              | `[]`                     |\n| `service.loadBalancerClass`             | service Load Balancer class if service type is `LoadBalancer` (optional, cloud specific)                                         | `\"\"`                     |\n| `service.extraPorts`                    | Extra ports to expose (normally used with the `sidecar` value)                                                                   | `[]`                     |\n| `service.sessionAffinity`               | Session Affinity for Kubernetes service, can be \"None\" or \"ClientIP\"                                                             | `None`                   |\n| `service.sessionAffinityConfig`         | Additional settings for the sessionAffinity. Ignored if `service.sessionAffinity` is `None`                                      | `{}`                     |\n| `service.annotations`                   | Service annotations                                                                                                              | `{}`                     |\n| `service.externalTrafficPolicy`         | Enable client source IP preservation                                                                                             | `Cluster`                |\n| `networkPolicy.enabled`                 | Specifies whether a NetworkPolicy should be created                                                                              | `true`                   |\n| `networkPolicy.allowExternal`           | Don't require server label for connections                                                                                       | `true`                   |\n| `networkPolicy.allowExternalEgress`     | Allow the pod to access any range of port and all destinations.                                                                  | `true`                   |\n| `networkPolicy.extraIngress`            | Add extra ingress rules to the NetworkPolicy                                                                                     | `[]`                     |\n| `networkPolicy.extraEgress`             | Add extra ingress rules to the NetworkPolicy (ignored if allowExternalEgress=true)                                               | `[]`                     |\n| `networkPolicy.ingressNSMatchLabels`    | Labels to match to allow traffic from other namespaces                                                                           | `{}`                     |\n| `networkPolicy.ingressNSPodMatchLabels` | Pod labels to match to allow traffic from other namespaces                                                                       | `{}`                     |\n| `httpRoute.enabled`                     | Enable HTTPRoute generation for NGINX                                                                                            | `false`                  |\n| `httpRoute.annotations`                 | Additional annotations for the HTTPRoute resource                                                                                | `{}`                     |\n| `httpRoute.labels`                      | Additional labels for the HTTPRoute resource                                                                                     | `{}`                     |\n| `httpRoute.parentRefs`                  | Gateways the HTTPRoute is attached to. If unspecified, it'll be attached to Gateway named 'gateway' in the same namespace.       | `[]`                     |\n| `httpRoute.hostnames`                   | List of hostnames matching HTTP header                                                                                           | `[]`                     |\n| `httpRoute.matches`                     | List of match rules applied to the HTTPRoute for the default svc backend reference                                               | `[]`                     |\n| `httpRoute.filters`                     | List of filter rules applied to the HTTPRoute for the default svc backend reference                                              | `[]`                     |\n| `httpRoute.extraRules`                  | List of extra rules applied to the HTTPRoute                                                                                     | `[]`                     |\n| `backendTLSPolicy.enabled`              | Enable BackendTLSPolicy generation for NGINX. Ignored if `tls.enabled` is `false`.                                               | `false`                  |\n| `backendTLSPolicy.annotations`          | Additional annotations for the BackendTLSPolicy resource                                                                         | `{}`                     |\n| `backendTLSPolicy.labels`               | Additional labels for the BackendTLSPolicy resource                                                                              | `{}`                     |\n| `backendTLSPolicy.hostname`             | SNI to connect to the backend, it must match the certificate served by the backend unless SubjectAltNames are specified.         | `\"\"`                     |\n| `backendTLSPolicy.subjectAltNames`      | List of Subject Alternative Names (SANs) to verify the backend certificate against.                                              | `[]`                     |\n| `ingress.enabled`                       | Set to true to enable ingress record generation                                                                                  | `false`                  |\n| `ingress.selfSigned`                    | Create a TLS secret for this ingress record using self-signed certificates generated by Helm                                     | `false`                  |\n| `ingress.pathType`                      | Ingress path type                                                                                                                | `ImplementationSpecific` |\n| `ingress.apiVersion`                    | Force Ingress API version (automatically detected if not set)                                                                    | `\"\"`                     |\n| `ingress.hostname`                      | Default host for the ingress resource                                                                                            | `nginx.local`            |\n| `ingress.path`                          | The Path to Nginx. You may need to set this to '/*' in order to use this with ALB ingress controllers.                           | `/`                      |\n| `ingress.annotations`                   | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |\n| `ingress.ingressClassName`              | Set the ingerssClassName on the ingress record for k8s 1.18+                                                                     | `\"\"`                     |\n| `ingress.tls`                           | Create TLS Secret                                                                                                                | `false`                  |\n| `ingress.tlsWwwPrefix`                  | Adds www subdomain to default cert                                                                                               | `false`                  |\n| `ingress.extraHosts`                    | The list of additional hostnames to be covered with this ingress record.                                                         | `[]`                     |\n| `ingress.extraPaths`                    | Any additional arbitrary paths that may need to be added to the ingress under the main host.                                     | `[]`                     |\n| `ingress.extraTls`                      | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |\n| `ingress.secrets`                       | If you're providing your own certificates, please use this to add the certificates as secrets                                    | `[]`                     |\n| `ingress.extraRules`                    | The list of additional rules to be added to this ingress record. Evaluated as a template                                         | `[]`                     |\n| `healthIngress.enabled`                 | Set to true to enable health ingress record generation                                                                           | `false`                  |\n| `healthIngress.selfSigned`              | Create a TLS secret for this ingress record using self-signed certificates generated by Helm                                     | `false`                  |\n| `healthIngress.pathType`                | Ingress path type                                                                                                                | `ImplementationSpecific` |\n| `healthIngress.hostname`                | When the health ingress is enabled, a host pointing to this will be created                                                      | `example.local`          |\n| `healthIngress.path`                    | Default path for the ingress record                                                                                              | `/`                      |\n| `healthIngress.annotations`             | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |\n| `healthIngress.tls`                     | Enable TLS configuration for the hostname defined at `healthIngress.hostname` parameter                                          | `false`                  |\n| `healthIngress.extraHosts`              | An array with additional hostname(s) to be covered with the ingress record                                                       | `[]`                     |\n| `healthIngress.extraPaths`              | An array with additional arbitrary paths that may need to be added to the ingress under the main host                            | `[]`                     |\n| `healthIngress.extraTls`                | TLS configuration for additional hostnames to be covered                                                                         | `[]`                     |\n| `healthIngress.secrets`                 | TLS Secret configuration                                                                                                         | `[]`                     |\n| `healthIngress.ingressClassName`        | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                    | `\"\"`                     |\n| `healthIngress.extraRules`              | The list of additional rules to be added to this ingress record. Evaluated as a template                                         | `[]`                     |\n\n### Metrics parameters\n\n| Name                                         | Description                                                                                                                                                                                                                       | Value                            |\n| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |\n| `metrics.enabled`                            | Start a Prometheus exporter sidecar container                                                                                                                                                                                     | `false`                          |\n| `metrics.image.registry`                     | NGINX Prometheus exporter image registry                                                                                                                                                                                          | `REGISTRY_NAME`                  |\n| `metrics.image.repository`                   | NGINX Prometheus exporter image repository                                                                                                                                                                                        | `REPOSITORY_NAME/nginx-exporter` |\n| `metrics.image.digest`                       | NGINX Prometheus exporter image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag                                                                                                         | `\"\"`                             |\n| `metrics.image.pullPolicy`                   | NGINX Prometheus exporter image pull policy                                                                                                                                                                                       | `IfNotPresent`                   |\n| `metrics.image.pullSecrets`                  | Specify docker-registry secret names as an array                                                                                                                                                                                  | `[]`                             |\n| `metrics.port`                               | NGINX Container Status Port scraped by Prometheus Exporter                                                                                                                                                                        | `\"\"`                             |\n| `metrics.extraArgs`                          | Extra arguments for Prometheus exporter                                                                                                                                                                                           | `[]`                             |\n| `metrics.containerPorts.metrics`             | Prometheus exporter container port                                                                                                                                                                                                | `9113`                           |\n| `metrics.podAnnotations`                     | Additional annotations for NGINX Prometheus exporter pod(s)                                                                                                                                                                       | `{}`                             |\n| `metrics.securityContext.enabled`            | Enabled NGINX Exporter containers' Security Context                                                                                                                                                                               | `false`                          |\n| `metrics.securityContext.seLinuxOptions`     | Set SELinux options in container                                                                                                                                                                                                  | `{}`                             |\n| `metrics.securityContext.runAsUser`          | Set NGINX Exporter container's Security Context runAsUser                                                                                                                                                                         | `1001`                           |\n| `metrics.service.port`                       | NGINX Prometheus exporter service port                                                                                                                                                                                            | `9113`                           |\n| `metrics.service.annotations`                | Annotations for the Prometheus exporter service                                                                                                                                                                                   | `{}`                             |\n| `metrics.resourcesPreset`                    | Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if metrics.resources is set (metrics.resources is recommended for production). | `nano`                           |\n| `metrics.resources`                          | Set container requests and limits for different resources like CPU or memory (essential for production workloads)                                                                                                                 | `{}`                             |\n| `metrics.fips.openssl`                       | Configure OpenSSL FIPS mode: '', 'restricted', 'relaxed', 'off'. If empty (\"\"), 'global.defaultFips' would be used                                                                                                                | `\"\"`                             |\n| `metrics.fips.golang`                        | Configure Golang FIPS mode: '', 'restricted', 'relaxed', 'off'. If empty (\"\"), 'global.defaultFips' would be used                                                                                                                 | `restricted`                     |\n| `metrics.serviceMonitor.enabled`             | Creates a Prometheus Operator ServiceMonitor (also requires `metrics.enabled` to be `true`)                                                                                                                                       | `false`                          |\n| `metrics.serviceMonitor.namespace`           | Namespace in which Prometheus is running                                                                                                                                                                                          | `\"\"`                             |\n| `metrics.serviceMonitor.tlsConfig`           | TLS configuration used for scrape endpoints used by Prometheus                                                                                                                                                                    | `{}`                             |\n| `metrics.serviceMonitor.jobLabel`            | The name of the label on the target service to use as the job name in prometheus.                                                                                                                                                 | `\"\"`                             |\n| `metrics.serviceMonitor.interval`            | Interval at which metrics should be scraped.                                                                                                                                                                                      | `\"\"`                             |\n| `metrics.serviceMonitor.scrapeTimeout`       | Timeout after which the scrape is ended                                                                                                                                                                                           | `\"\"`                             |\n| `metrics.serviceMonitor.selector`            | Prometheus instance selector labels                                                                                                                                                                                               | `{}`                             |\n| `metrics.serviceMonitor.labels`              | Additional labels that can be used so PodMonitor will be discovered by Prometheus                                                                                                                                                 | `{}`                             |\n| `metrics.serviceMonitor.relabelings`         | RelabelConfigs to apply to samples before scraping                                                                                                                                                                                | `[]`                             |\n| `metrics.serviceMonitor.metricRelabelings`   | MetricRelabelConfigs to apply to samples before ingestion                                                                                                                                                                         | `[]`                             |\n| `metrics.serviceMonitor.honorLabels`         | honorLabels chooses the metric's labels on collisions with target labels                                                                                                                                                          | `false`                          |\n| `metrics.prometheusRule.enabled`             | if `true`, creates a Prometheus Operator PrometheusRule (also requires `metrics.enabled` to be `true` and `metrics.prometheusRule.rules`)                                                                                         | `false`                          |\n| `metrics.prometheusRule.namespace`           | Namespace for the PrometheusRule Resource (defaults to the Release Namespace)                                                                                                                                                     | `\"\"`                             |\n| `metrics.prometheusRule.additionalLabels`    | Additional labels that can be used so PrometheusRule will be discovered by Prometheus                                                                                                                                             | `{}`                             |\n| `metrics.prometheusRule.rules`               | Prometheus Rule definitions                                                                                                                                                                                                       | `[]`                             |\n| `metrics.customLivenessProbe`                | Override default metrics liveness probe                                                                                                                                                                                           | `{}`                             |\n| `metrics.livenessProbe.enabled`              | Enable livenessProbe                                                                                                                                                                                                              | `true`                           |\n| `metrics.livenessProbe.initialDelaySeconds`  | Initial delay seconds for livenessProbe                                                                                                                                                                                           | `30`                             |\n| `metrics.livenessProbe.timeoutSeconds`       | Timeout seconds for livenessProbe                                                                                                                                                                                                 | `5`                              |\n| `metrics.livenessProbe.periodSeconds`        | Period seconds for livenessProbe                                                                                                                                                                                                  | `10`                             |\n| `metrics.livenessProbe.failureThreshold`     | Failure threshold for livenessProbe                                                                                                                                                                                               | `2`                              |\n| `metrics.livenessProbe.successThreshold`     | Success threshold for livenessProbe                                                                                                                                                                                               | `1`                              |\n| `metrics.customReadinessProbe`               | Override default metrics readiness probe                                                                                                                                                                                          | `{}`                             |\n| `metrics.readinessProbe.enabled`             | Enable readinessProbe                                                                                                                                                                                                             | `true`                           |\n| `metrics.readinessProbe.initialDelaySeconds` | Initial delay seconds for readinessProbe                                                                                                                                                                                          | `5`                              |\n| `metrics.readinessProbe.timeoutSeconds`      | Timeout seconds for readinessProbe                                                                                                                                                                                                | `3`                              |\n| `metrics.readinessProbe.periodSeconds`       | Period seconds for readinessProbe                                                                                                                                                                                                 | `30`                             |\n| `metrics.readinessProbe.failureThreshold`    | Failure threshold for readinessProbe                                                                                                                                                                                              | `2`                              |\n| `metrics.readinessProbe.successThreshold`    | Success threshold for readinessProbe                                                                                                                                                                                              | `1`                              |\n| `metrics.customStartupProbe`                 | Override default metrics startup probe                                                                                                                                                                                            | `{}`                             |\n| `metrics.startupProbe.enabled`               | Enable startupProbe                                                                                                                                                                                                               | `false`                          |\n| `metrics.startupProbe.initialDelaySeconds`   | Initial delay seconds for startupProbe                                                                                                                                                                                            | `5`                              |\n| `metrics.startupProbe.timeoutSeconds`        | Timeout seconds for startupProbe                                                                                                                                                                                                  | `3`                              |\n| `metrics.startupProbe.periodSeconds`         | Period seconds for startupProbe                                                                                                                                                                                                   | `5`                              |\n| `metrics.startupProbe.failureThreshold`      | Failure threshold for startupProbe                                                                                                                                                                                                | `10`                             |\n| `metrics.startupProbe.successThreshold`      | Success threshold for startupProbe                                                                                                                                                                                                | `1`                              |\n\n\nSpecify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,\n\n```console\nhelm install my-release \\\n  --set imagePullPolicy=Always \\\n    oci://REGISTRY_NAME/REPOSITORY_NAME/nginx\n```\n\n> Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.\n\nThe above command sets the `imagePullPolicy` to `Always`.\n\nAlternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,\n\n```console\nhelm install my-release -f values.yaml oci://REGISTRY_NAME/REPOSITORY_NAME/nginx\n```\n\n> Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.\n> **Tip**: You can use the default [values.yaml](https://github.com/bitnami/charts/tree/main/bitnami/nginx/values.yaml)\n\n## Troubleshooting\n\nFind more information about how to deal with common errors related to Bitnami's Helm charts in [this troubleshooting guide](https://docs.bitnami.com/general/how-to/troubleshoot-helm-chart-issues).\n\n## Upgrading\n\n### To 19.0.0\n\nThe [module ngx_http_dav_module](http://nginx.org/en/docs/http/ngx_http_dav_module.html), WebDAV protocol, has been converted into a dynamic module under the `/opt/bitnami/nginx/modules` directory. It is necessary to include the directive `load_module /opt/bitnami/nginx/modules/ngx_http_dav_module.so;` to enable its functionality.\n\n### To 18.3.0\n\nThis version introduces image verification for security purposes. To disable it, set `global.security.allowInsecureImages` to `true`. More details at [GitHub issue](https://github.com/bitnami/charts/issues/30850).\n\n### To 16.0.0\n\nThis major bump changes the following security defaults:\n\n- `runAsGroup` is changed from `0` to `1001`\n- `readOnlyRootFilesystem` is set to `true`\n- `resourcesPreset` is changed from `none` to the minimum size working in our test suites (NOTE: `resourcesPreset` is not meant for production usage, but `resources` adapted to your use case).\n- `global.compatibility.openshift.adaptSecurityContext` is changed from `disabled` to `auto`.\n\nThis could potentially break any customization or init scripts used in your deployment. If this is the case, change the default values to the previous ones.\n\n### To 11.0.0\n\nThis major release renames several values in this chart and adds missing features, in order to be aligned with the rest of the assets in the Bitnami charts repository.\n\nAffected values:\n\n- `service.port` was renamed as `service.ports.http`.\n- `service.httpsPort` was deprecated. We recommend using `service.ports.https`.\n- `serviceAccount.autoMount` was renamed as `serviceAccount.automountServiceAccountToken`\n- `metrics.serviceMonitor.additionalLabels` was renamed as `metrics.serviceMonitor.labels`\n\n### To 10.0.0\n\nThis major release no longer uses the bitnami/nginx-ldap-auth-daemon container as a dependency since its upstream project is not actively maintained.\n\n*2022-04-12 edit*:\n\n[Bitnami's reference implementation](https://www.nginx.com/blog/nginx-plus-authenticate-users/).\n\nOn 9 April 2022, security vulnerabilities in the [NGINX LDAP reference implementation](https://github.com/nginxinc/nginx-ldap-auth) were publicly shared. **Although the deprecation of this container from the Bitnami catalog was not related to this security issue, [here](https://docs.bitnami.com/general/security/) you can find more information from the Bitnami security team.**\n\n### To 8.0.0\n\n[On November 13, 2020, Helm v2 support was formally finished](https://github.com/helm/charts#status-of-the-project), this major version is the result of the required changes applied to the Helm Chart to be able to incorporate the different features added in Helm v3 and to be consistent with the Helm project itself regarding the Helm v2 EOL.\n\n#### What changes were introduced in this major version?\n\n- Previous versions of this Helm Chart use `apiVersion: v1` (installable by both Helm 2 and 3), this Helm Chart was updated to `apiVersion: v2` (installable by Helm 3 only). [Here](https://helm.sh/docs/topics/charts/#the-apiversion-field) you can find more information about the `apiVersion` field.\n- Move dependency information from the *requirements.yaml* to the *Chart.yaml*\n- After running `helm dependency update`, a *Chart.lock* file is generated containing the same structure used in the previous *requirements.lock*\n- The different fields present in the *Chart.yaml* file has been ordered alphabetically in a homogeneous way for all the Bitnami Helm Charts\n\n#### Considerations when upgrading to this version\n\n- If you want to upgrade to this version from a previous one installed with Helm v3, you shouldn't face any issues\n- If you want to upgrade to this version using Helm v2, this scenario is not supported as this version doesn't support Helm v2 anymore\n- If you installed the previous version with Helm v2 and wants to upgrade to this version with Helm v3, please refer to the [official Helm documentation](https://helm.sh/docs/topics/v2_v3_migration/#migration-use-cases) about migrating from Helm v2 to v3\n\n#### Useful links\n\n- <https://techdocs.broadcom.com/us/en/vmware-tanzu/bitnami-secure-images/bitnami-secure-images/services/bsi-doc/apps-tutorials-resolve-helm2-helm3-post-migration-issues-index.html>\n- <https://helm.sh/docs/topics/v2_v3_migration/>\n- <https://helm.sh/blog/migrate-from-helm-v2-to-helm-v3/>\n\n### To 7.0.0\n\n- This version also introduces `bitnami/common`, a [library chart](https://helm.sh/docs/topics/library_charts/#helm) as a dependency. More documentation about this new utility could be found [here](https://github.com/bitnami/charts/tree/main/bitnami/common#bitnami-common-library-chart). Please, make sure that you have updated the chart dependencies before executing any upgrade.\n- Ingress configuration was also adapted to follow the Helm charts best practices.\n\n> Note: There is no backwards compatibility due to the above mentioned changes. It's necessary to install a new release of the chart, and migrate your existing application to the new NGINX instances.\n\n### To 5.6.0\n\nAdded support for the use of LDAP.\n\n### To 5.0.0\n\nBackwards compatibility is not guaranteed unless you modify the labels used on the chart's deployments.\nUse the workaround below to upgrade from versions previous to 5.0.0. The following example assumes that the release name is nginx:\n\n```console\nkubectl delete deployment nginx --cascade=false\nhelm upgrade nginx oci://REGISTRY_NAME/REPOSITORY_NAME/nginx\n```\n\n> Note: You need to substitute the placeholders `REGISTRY_NAME` and `REPOSITORY_NAME` with a reference to your Helm chart registry and repository. For example, in the case of Bitnami, you need to use `REGISTRY_NAME=registry-1.docker.io` and `REPOSITORY_NAME=bitnamicharts`.\n\n### To 1.0.0\n\nBackwards compatibility is not guaranteed unless you modify the labels used on the chart's deployments.\nUse the workaround below to upgrade from versions previous to 1.0.0. The following example assumes that the release name is nginx:\n\n```console\nkubectl patch deployment nginx --type=json -p='[{\"op\": \"remove\", \"path\": \"/spec/selector/matchLabels/chart\"}]'\n```\n\n## License\n\nCopyright &copy; 2025 Broadcom. The term \"Broadcom\" refers to Broadcom Inc. and/or its subsidiaries.\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n<http://www.apache.org/licenses/LICENSE-2.0>\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
+  "links": [
+    {
+      "url": "https://github.com/bitnami/charts/tree/main/bitnami/nginx",
+      "name": "source"
+    }
+  ],
+  "security_report_summary": {
+    "low": 0,
+    "high": 0,
+    "medium": 0,
+    "unknown": 0,
+    "critical": 0
+  },
+  "security_report_created_at": 1766852103,
+  "data": {
+    "type": "",
+    "apiVersion": "v2",
+    "kubeVersion": "",
+    "dependencies": [
+      {
+        "name": "common",
+        "version": "2.33.2",
+        "repository": "oci://registry-1.docker.io/bitnamicharts"
+      }
+    ]
+  },
+  "version": "22.4.0",
+  "available_versions": [
+    {
+      "version": "22.4.0",
+      "app_version": "1.29.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1766497531
+    },
+    {
+      "version": "22.3.9",
+      "app_version": "1.29.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1765645638
+    },
+    {
+      "version": "22.3.8",
+      "app_version": "1.29.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1765390277
+    },
+    {
+      "version": "22.3.3",
+      "app_version": "1.29.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1764163126
+    },
+    {
+      "version": "22.3.2",
+      "app_version": "1.29.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1762556823
+    },
+    {
+      "version": "22.2.6",
+      "app_version": "1.29.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1762517595
+    },
+    {
+      "version": "22.2.4",
+      "app_version": "1.29.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1762274490
+    },
+    {
+      "version": "22.2.3",
+      "app_version": "1.29.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1761667767
+    },
+    {
+      "version": "22.2.1",
+      "app_version": "1.29.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1761313367
+    },
+    {
+      "version": "22.1.1",
+      "app_version": "1.29.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1760966152
+    },
+    {
+      "version": "22.0.11",
+      "app_version": "1.29.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1760306822
+    },
+    {
+      "version": "22.0.10",
+      "app_version": "1.29.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1759916249
+    },
+    {
+      "version": "22.0.7",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1759783038
+    },
+    {
+      "version": "21.1.23",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755547490
+    },
+    {
+      "version": "21.1.22",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755343955
+    },
+    {
+      "version": "21.1.21",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755270247
+    },
+    {
+      "version": "21.1.16",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755247217
+    },
+    {
+      "version": "21.1.11",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755223492
+    },
+    {
+      "version": "21.1.7",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755198303
+    },
+    {
+      "version": "21.1.5",
+      "app_version": "1.29.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1755126243
+    },
+    {
+      "version": "21.1.4",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1754678536
+    },
+    {
+      "version": "21.1.1",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1754066530
+    },
+    {
+      "version": "21.1.0",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1754007466
+    },
+    {
+      "version": "21.0.9",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1753983477
+    },
+    {
+      "version": "21.0.8",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1752789823
+    },
+    {
+      "version": "21.0.7",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1752766657
+    },
+    {
+      "version": "21.0.6",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1752045115
+    },
+    {
+      "version": "21.0.4",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1751892337
+    },
+    {
+      "version": "21.0.3",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1751301595
+    },
+    {
+      "version": "21.0.2",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1751277883
+    },
+    {
+      "version": "21.0.1",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1750979090
+    },
+    {
+      "version": "21.0.0",
+      "app_version": "1.29.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1750948646
+    },
+    {
+      "version": "20.1.4",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1750937650
+    },
+    {
+      "version": "20.1.3",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1750119286
+    },
+    {
+      "version": "20.1.2",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1749884605
+    },
+    {
+      "version": "20.1.0",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1749585899
+    },
+    {
+      "version": "20.0.8",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1749477859
+    },
+    {
+      "version": "20.0.7",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1749213937
+    },
+    {
+      "version": "20.0.5",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1748615908
+    },
+    {
+      "version": "20.0.4",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1748534699
+    },
+    {
+      "version": "20.0.3",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1747829136
+    },
+    {
+      "version": "20.0.2",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1747132763
+    },
+    {
+      "version": "20.0.1",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1746549559
+    },
+    {
+      "version": "20.0.0",
+      "app_version": "1.28.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1745512731
+    },
+    {
+      "version": "19.1.1",
+      "app_version": "1.27.5",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1744824897
+    },
+    {
+      "version": "19.1.0",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1744373125
+    },
+    {
+      "version": "19.0.5",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1744347817
+    },
+    {
+      "version": "19.0.4",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1743588235
+    },
+    {
+      "version": "19.0.3",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1742920661
+    },
+    {
+      "version": "19.0.2",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1741754482
+    },
+    {
+      "version": "19.0.1",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1741098950
+    },
+    {
+      "version": "19.0.0",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1739205440
+    },
+    {
+      "version": "18.3.6",
+      "app_version": "1.27.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1738838173
+    },
+    {
+      "version": "18.3.5",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1736546604
+    },
+    {
+      "version": "18.3.4",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1736390165
+    },
+    {
+      "version": "18.3.3",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1736364761
+    },
+    {
+      "version": "18.3.2",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1735709667
+    },
+    {
+      "version": "18.3.1",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1734084243
+    },
+    {
+      "version": "18.3.0",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1733884277
+    },
+    {
+      "version": "18.2.6",
+      "app_version": "1.27.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1732651429
+    },
+    {
+      "version": "17.3.3",
+      "app_version": "1.26.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1731917784
+    },
+    {
+      "version": "18.2.5",
+      "app_version": "1.27.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1731071119
+    },
+    {
+      "version": "18.2.4",
+      "app_version": "1.27.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1729511051
+    },
+    {
+      "version": "18.2.3",
+      "app_version": "1.27.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1728907310
+    },
+    {
+      "version": "18.2.2",
+      "app_version": "1.27.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1727893801
+    },
+    {
+      "version": "18.2.1",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1727790640
+    },
+    {
+      "version": "18.2.0",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1726822575
+    },
+    {
+      "version": "18.1.15",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1726739936
+    },
+    {
+      "version": "18.1.14",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1726362988
+    },
+    {
+      "version": "18.1.13",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1726213861
+    },
+    {
+      "version": "18.1.12",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1726071514
+    },
+    {
+      "version": "18.1.11",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1724431997
+    },
+    {
+      "version": "18.1.10",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1724272957
+    },
+    {
+      "version": "18.1.9",
+      "app_version": "1.27.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1723651418
+    },
+    {
+      "version": "18.1.8",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1723550829
+    },
+    {
+      "version": "18.1.7",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1721902970
+    },
+    {
+      "version": "18.1.6",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1721817727
+    },
+    {
+      "version": "18.1.5",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1721136040
+    },
+    {
+      "version": "18.1.4",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1720029923
+    },
+    {
+      "version": "18.1.3",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1719993376
+    },
+    {
+      "version": "18.1.2",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1718713923
+    },
+    {
+      "version": "18.1.1",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1718631314
+    },
+    {
+      "version": "18.1.0",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1718104072
+    },
+    {
+      "version": "18.0.3",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1718056503
+    },
+    {
+      "version": "18.0.2",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1718026876
+    },
+    {
+      "version": "18.0.1",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1717690136
+    },
+    {
+      "version": "18.0.0",
+      "app_version": "1.27.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1717678890
+    },
+    {
+      "version": "17.3.2",
+      "app_version": "1.26.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1717006789
+    },
+    {
+      "version": "17.3.1",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1716894713
+    },
+    {
+      "version": "17.3.0",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1716556038
+    },
+    {
+      "version": "17.2.1",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1716532267
+    },
+    {
+      "version": "17.2.0",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1716458604
+    },
+    {
+      "version": "17.1.0",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1716301495
+    },
+    {
+      "version": "17.0.2",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1715999273
+    },
+    {
+      "version": "17.0.1",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1715664395
+    },
+    {
+      "version": "17.0.0",
+      "app_version": "1.26.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1715600479
+    },
+    {
+      "version": "16.0.7",
+      "app_version": "1.25.5",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1715092204
+    },
+    {
+      "version": "16.0.6",
+      "app_version": "1.25.5",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1713881289
+    },
+    {
+      "version": "16.0.5",
+      "app_version": "1.25.5",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1713768472
+    },
+    {
+      "version": "16.0.4",
+      "app_version": "1.25.5",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1713373086
+    },
+    {
+      "version": "16.0.3",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712827642
+    },
+    {
+      "version": "16.0.2",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712642894
+    },
+    {
+      "version": "16.0.1",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712336051
+    },
+    {
+      "version": "16.0.0",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712244971
+    },
+    {
+      "version": "15.14.2",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712059841
+    },
+    {
+      "version": "15.14.1",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1712057956
+    },
+    {
+      "version": "15.14.0",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1709735639
+    },
+    {
+      "version": "15.13.0",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1709727054
+    },
+    {
+      "version": "15.12.2",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1708600291
+    },
+    {
+      "version": "15.12.1",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1708528006
+    },
+    {
+      "version": "15.11.0",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1708100762
+    },
+    {
+      "version": "15.10.4",
+      "app_version": "1.25.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1707942168
+    },
+    {
+      "version": "15.10.3",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1707143293
+    },
+    {
+      "version": "15.10.2",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1706919610
+    },
+    {
+      "version": "15.10.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1706631830
+    },
+    {
+      "version": "15.10.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1706627792
+    },
+    {
+      "version": "15.9.3",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1706523218
+    },
+    {
+      "version": "15.9.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705999604
+    },
+    {
+      "version": "15.9.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705656310
+    },
+    {
+      "version": "15.8.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705537928
+    },
+    {
+      "version": "15.8.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705503648
+    },
+    {
+      "version": "15.7.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705418985
+    },
+    {
+      "version": "15.6.2",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1705313417
+    },
+    {
+      "version": "15.6.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1704925662
+    },
+    {
+      "version": "15.6.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1704812718
+    },
+    {
+      "version": "15.5.3",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1704390380
+    },
+    {
+      "version": "15.5.2",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1703756595
+    },
+    {
+      "version": "15.5.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1702998549
+    },
+    {
+      "version": "15.5.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1702981861
+    },
+    {
+      "version": "15.4.5",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1702630149
+    },
+    {
+      "version": "15.4.4",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1701780702
+    },
+    {
+      "version": "15.4.3",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1700592138
+    },
+    {
+      "version": "15.4.2",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1699522209
+    },
+    {
+      "version": "15.4.1",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1699519827
+    },
+    {
+      "version": "15.4.0",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1698677036
+    },
+    {
+      "version": "15.3.5",
+      "app_version": "1.25.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1698180377
+    },
+    {
+      "version": "15.3.4",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1697124040
+    },
+    {
+      "version": "15.3.3",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1696903193
+    },
+    {
+      "version": "15.3.2",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1696886359
+    },
+    {
+      "version": "15.3.1",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1695686760
+    },
+    {
+      "version": "15.3.0",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1695294581
+    },
+    {
+      "version": "15.2.1",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1694078396
+    },
+    {
+      "version": "15.2.0",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1692715157
+    },
+    {
+      "version": "15.1.5",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1692631278
+    },
+    {
+      "version": "15.1.4",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1692298260
+    },
+    {
+      "version": "15.1.3",
+      "app_version": "1.25.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1692143943
+    },
+    {
+      "version": "15.1.2",
+      "app_version": "1.25.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1690341014
+    },
+    {
+      "version": "15.1.1",
+      "app_version": "1.25.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1689257030
+    },
+    {
+      "version": "15.1.0",
+      "app_version": "1.25.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1688027221
+    },
+    {
+      "version": "15.0.2",
+      "app_version": "1.25.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1686685358
+    },
+    {
+      "version": "15.0.1",
+      "app_version": "1.25.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1685110690
+    },
+    {
+      "version": "15.0.0",
+      "app_version": "1.25.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1685087428
+    },
+    {
+      "version": "14.2.2",
+      "app_version": "1.24.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1684691479
+    },
+    {
+      "version": "14.2.1",
+      "app_version": "1.24.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1683810562
+    },
+    {
+      "version": "14.1.1",
+      "app_version": "1.24.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1683635371
+    },
+    {
+      "version": "14.1.0",
+      "app_version": "1.24.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1682695240
+    },
+    {
+      "version": "14.0.0",
+      "app_version": "1.24.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1682334276
+    },
+    {
+      "version": "13.2.34",
+      "app_version": "1.23.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1681890802
+    },
+    {
+      "version": "13.2.33",
+      "app_version": "1.23.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1680365987
+    },
+    {
+      "version": "13.2.32",
+      "app_version": "1.23.4",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1680033338
+    },
+    {
+      "version": "13.2.31",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1679567253
+    },
+    {
+      "version": "13.2.30",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1679184198
+    },
+    {
+      "version": "13.2.29",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1678116967
+    },
+    {
+      "version": "13.2.28",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1677671844
+    },
+    {
+      "version": "13.2.27",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1676648526
+    },
+    {
+      "version": "13.2.26",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1676647229
+    },
+    {
+      "version": "13.2.25",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1676572467
+    },
+    {
+      "version": "13.2.24",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1676285144
+    },
+    {
+      "version": "13.2.23",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1675161084
+    },
+    {
+      "version": "13.2.22",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1674478436
+    },
+    {
+      "version": "13.2.21",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1672781389
+    },
+    {
+      "version": "13.2.20",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1671657924
+    },
+    {
+      "version": "13.2.19",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1671460157
+    },
+    {
+      "version": "13.2.18",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1671105599
+    },
+    {
+      "version": "13.2.17",
+      "app_version": "1.23.3",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1670962107
+    },
+    {
+      "version": "13.2.16",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1670864254
+    },
+    {
+      "version": "13.2.15",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1670634834
+    },
+    {
+      "version": "13.2.14",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1669208695
+    },
+    {
+      "version": "13.2.13",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1667399548
+    },
+    {
+      "version": "13.2.12",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1666617462
+    },
+    {
+      "version": "13.2.11",
+      "app_version": "1.23.2",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1666198277
+    },
+    {
+      "version": "13.2.10",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1665163788
+    },
+    {
+      "version": "13.2.9",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1664614425
+    },
+    {
+      "version": "13.2.8",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1664543830
+    },
+    {
+      "version": "13.2.6",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1663684853
+    },
+    {
+      "version": "13.2.5",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1663370145
+    },
+    {
+      "version": "13.2.4",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1662488795
+    },
+    {
+      "version": "13.2.3",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1661943831
+    },
+    {
+      "version": "13.2.2",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1661931057
+    },
+    {
+      "version": "13.2.1",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1661292947
+    },
+    {
+      "version": "13.2.0",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1661174455
+    },
+    {
+      "version": "13.1.8",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1660836427
+    },
+    {
+      "version": "13.1.7",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1660032210
+    },
+    {
+      "version": "13.1.6",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1659631462
+    },
+    {
+      "version": "13.1.5",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1659515353
+    },
+    {
+      "version": "13.1.4",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1658423522
+    },
+    {
+      "version": "13.1.3",
+      "app_version": "1.23.1",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1658283132
+    },
+    {
+      "version": "13.1.2",
+      "app_version": "1.23.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1657802552
+    },
+    {
+      "version": "13.1.1",
+      "app_version": "1.23.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1657668106
+    },
+    {
+      "version": "13.1.0",
+      "app_version": "1.23.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1657117381
+    },
+    {
+      "version": "13.0.0",
+      "app_version": "1.23.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1656689602
+    },
+    {
+      "version": "12.0.6",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1656646506
+    },
+    {
+      "version": "12.0.5",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1655937803
+    },
+    {
+      "version": "12.0.4",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1654812627
+    },
+    {
+      "version": "12.0.3",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1654699636
+    },
+    {
+      "version": "12.0.2",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1654548890
+    },
+    {
+      "version": "12.0.1",
+      "app_version": "1.22.0",
+      "contains_security_updates": false,
+      "prerelease": false,
+      "ts": 1654299164
+    }
+  ],
+  "app_version": "1.29.4",
+  "digest": "8ea21e7b353b1f3ea83713da7f2a7ab77f1334b01c89e8f9f6e822eeb00516b8",
+  "deprecated": false,
+  "contains_security_updates": false,
+  "prerelease": false,
+  "signed": true,
+  "signatures": [
+    "cosign"
+  ],
+  "content_url": "oci://registry-1.docker.io/bitnamicharts/nginx:22.4.0",
+  "containers_images": [
+    {
+      "name": "",
+      "image": "registry-1.docker.io/bitnami/nginx:latest",
+      "whitelisted": false
+    }
+  ],
+  "all_containers_images_whitelisted": false,
+  "has_values_schema": true,
+  "has_changelog": false,
+  "ts": 1766497531,
+  "repository": {
+    "repository_id": "64117528-d525-41d6-862c-41a43207c431",
+    "name": "bitnami",
+    "display_name": "Bitnami",
+    "url": "https://charts.bitnami.com/bitnami",
+    "private": false,
+    "kind": 0,
+    "verified_publisher": true,
+    "official": false,
+    "scanner_disabled": false,
+    "organization_name": "bitnami",
+    "organization_display_name": "Bitnami"
+  },
+  "stats": {
+    "subscriptions": 28,
+    "webhooks": 3
+  },
+  "production_organizations_count": 2
+}
