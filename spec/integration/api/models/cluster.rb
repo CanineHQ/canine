@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-SwaggerSchemas::PROJECT = {
+SwaggerSchemas::CLUSTER = {
   type: :object,
-  required: %w[id name repository_url branch status updated_at created_at],
+  required: %w[id name cluster_type status created_at updated_at],
   properties: {
     id: {
       type: :integer,
@@ -10,25 +10,21 @@ SwaggerSchemas::PROJECT = {
     },
     name: {
       type: :string,
-      example: 'example-project'
+      example: 'production-cluster'
     },
-    repository_url: {
+    cluster_type: {
       type: :string,
-      example: 'https://github.com/example/example-project'
-    },
-    branch: {
-      type: :string,
-      example: 'main'
+      example: 'k8s'
     },
     status: {
       type: :string,
-      example: 'deployed'
+      example: 'ready'
     },
-    updated_at: {
+    created_at: {
       type: :string,
       example: '2021-01-01T00:00:00Z'
     },
-    created_at: {
+    updated_at: {
       type: :string,
       example: '2021-01-01T00:00:00Z'
     }
