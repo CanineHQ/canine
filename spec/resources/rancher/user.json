@@ -1,0 +1,17 @@
+{
+  "type": "collection",
+  "resourceType": "user",
+  "data": [
+    {
+      "id": "user-xxxxx",
+      "type": "user",
+      "username": "admin",
+      "principalIds": [
+        "local://user-xxxxx"
+      ],
+      "me": true,
+      "enabled": true,
+      "mustChangePassword": false
+    }
+  ]
+}

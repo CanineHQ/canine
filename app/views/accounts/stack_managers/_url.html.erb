@@ -1,21 +1,23 @@
+<% stack_manager = form.object %>
+<% is_rancher = stack_manager&.rancher? %>
 <div data-controller="stack-manager--url-input">
   <div class="form-group">
-    <%= form.label :provider_url, "Portainer URL" %>
+    <%= form.label :provider_url, is_rancher ? "Rancher URL" : "Portainer URL" %>
     <%= form.text_field(
       :provider_url,
       name: "stack_manager[provider_url]",
       class: "input input-bordered w-full",
-      placeholder: "http://portainer.portainer.svc.cluster.local:9000",
+      placeholder: is_rancher ? "https://rancher.example.com" : "http://portainer.portainer.svc.cluster.local:9000",
       data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
     ) %>
   </div>
 
   <div class="form-group">
-    <%= form.label :access_token, "Account Access Token" %>
+    <%= form.label :access_token, is_rancher ? "API Key" : "Account Access Token" %>
     <%= form.text_field(
       :access_token,
       name: "stack_manager[access_token]",
-      placeholder: "Enter your access token",
+      placeholder: is_rancher ? "token-xxxxx:your-secret-key" : "Enter your access token",
       class: "input input-bordered w-full",
       required: true,
       data: { "stack-manager--url-input-target": "accessTokenInput", action: "blur->stack-manager--url-input#verifyUrl" },
@@ -23,10 +25,10 @@
     <div>
       <label class="label" style="display: flex" for="access_token">
         <span class="label-text-alt">
-          This access token is used for all members of the account, to perform asynchronous Git deployments.
+          This <%= is_rancher ? "API key" : "access token" %> is used for all members of the account, to perform asynchronous Git deployments.
         </span>
         <span class="label-text-alt" class="hidden" data-stack-manager--url-input-target="accessTokenHelp">
-          <a class="link link-primary" target="_blank" href="#">Get your access token in Portainer →</a>
+          <a class="link link-primary" target="_blank" href="#">Get your <%= is_rancher ? "API key" : "access token" %> in <%= is_rancher ? "Rancher" : "Portainer" %> →</a>
         </span>
       </label>
     </div>
@@ -44,7 +46,7 @@
     <% end %>
     <div class="label">
       <span class="label-text-alt text-gray-500">
-        If enabled, any access to the cluster will be done through the user's Portainer session, and the access token above will only be used for async Git deployments.
+        If enabled, any access to the cluster will be done through the user's <%= is_rancher ? "Rancher" : "Portainer" %> session, and the <%= is_rancher ? "API key" : "access token" %> above will only be used for async Git deployments.
       </span>
     </div>
   </div>

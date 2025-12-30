@@ -23,7 +23,8 @@ class StackManager < ApplicationRecord
   belongs_to :account
 
   enum :stack_manager_type, {
-    portainer: 0
+    portainer: 0,
+    rancher: 1
   }
 
   validates_presence_of :account, :provider_url, :stack_manager_type
@@ -38,6 +39,8 @@ class StackManager < ApplicationRecord
   def stack
     if portainer?
       @_stack ||= Portainer::Stack.new(self)
+    elsif rancher?
+      @_stack ||= Rancher::Stack.new(self)
     end
   end
 

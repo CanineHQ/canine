@@ -64,6 +64,17 @@ class User < ApplicationRecord
       portainer_access_token.blank?
   end
 
+  def rancher_access_token
+    return @rancher_access_token if @rancher_access_token
+    @rancher_access_token = providers.find_by(provider: Provider::RANCHER_PROVIDER)&.access_token
+  end
+
+  def needs_rancher_credential?(account)
+    account.stack_manager&.rancher? &&
+      account.stack_manager.enable_role_based_access_control? &&
+      rancher_access_token.blank?
+  end
+
   private
 
   def downcase_email

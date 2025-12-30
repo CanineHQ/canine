@@ -23,14 +23,14 @@ export class PortainerChecker {
     return PortainerChecker.STATUS_ERROR;
   }
 
-  async checkReachable(url) {
+  async checkReachable(url, stackManagerType = 'portainer') {
     const response = await fetch('/stack_manager/check_reachable', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
-      body: JSON.stringify({ stack_manager: { url } })
+      body: JSON.stringify({ stack_manager: { url, stack_manager_type: stackManagerType } })
     })
     return this.toResult(response);
   }
@@ -46,14 +46,14 @@ export class PortainerChecker {
     return this.toResult(response);
   }
 
-  async verifyPortainerUrl(url, accessToken) {
+  async verifyPortainerUrl(url, accessToken, stackManagerType = 'portainer') {
     const response = await fetch('/stack_manager/verify_url', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
-      body: JSON.stringify({ stack_manager: { url, access_token: accessToken } })
+      body: JSON.stringify({ stack_manager: { url, access_token: accessToken, stack_manager_type: stackManagerType } })
     })
 
     return this.toResult(response);

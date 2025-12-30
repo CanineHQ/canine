@@ -44,6 +44,7 @@ class Provider < ApplicationRecord
   }
 
   PORTAINER_PROVIDER = "portainer"
+  RANCHER_PROVIDER = "rancher"
 
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?

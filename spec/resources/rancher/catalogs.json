@@ -1,0 +1,22 @@
+{
+  "type": "collection",
+  "resourceType": "catalog",
+  "data": [
+    {
+      "id": "library",
+      "type": "catalog",
+      "name": "library",
+      "url": "https://git.rancher.io/charts",
+      "branch": "release-v2.8",
+      "catalogType": "helm"
+    },
+    {
+      "id": "system-library",
+      "type": "catalog",
+      "name": "system-library",
+      "url": "https://git.rancher.io/system-charts",
+      "branch": "release-v2.8",
+      "catalogType": "helm"
+    }
+  ]
+}

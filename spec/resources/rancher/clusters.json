@@ -1,0 +1,40 @@
+{
+  "type": "collection",
+  "resourceType": "cluster",
+  "data": [
+    {
+      "id": "c-m-xxxxxxxx",
+      "type": "cluster",
+      "name": "local",
+      "state": "active",
+      "provider": "rke2",
+      "version": {
+        "gitVersion": "v1.28.4+rke2r1"
+      },
+      "transitioning": "no",
+      "transitioningMessage": ""
+    },
+    {
+      "id": "c-m-yyyyyyyy",
+      "type": "cluster",
+      "name": "production",
+      "state": "active",
+      "provider": "rke2",
+      "version": {
+        "gitVersion": "v1.28.4+rke2r1"
+      },
+      "transitioning": "no",
+      "transitioningMessage": ""
+    },
+    {
+      "id": "c-m-zzzzzzzz",
+      "type": "cluster",
+      "name": "staging",
+      "state": "provisioning",
+      "provider": "rke2",
+      "version": null,
+      "transitioning": "yes",
+      "transitioningMessage": "Waiting for cluster to be ready"
+    }
+  ]
+}

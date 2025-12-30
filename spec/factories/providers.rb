@@ -64,5 +64,10 @@ FactoryBot.define do
       provider { Provider::PORTAINER_PROVIDER }
       access_token { "sample_access_token" }
     end
+
+    trait :rancher do
+      provider { Provider::RANCHER_PROVIDER }
+      access_token { "token-xxxxx:sample_secret_key" }
+    end
   end
 end

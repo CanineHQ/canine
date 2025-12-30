@@ -7,7 +7,16 @@ module Accounts
 
     def check_reachable
       url = params[:stack_manager][:url]
-      unless Portainer::Client.reachable?(url)
+      stack_type = params[:stack_manager][:stack_manager_type]&.to_sym
+
+      reachable = case stack_type
+      when :rancher
+        Rancher::Client.reachable?(url)
+      else
+        Portainer::Client.reachable?(url)
+      end
+
+      unless reachable
         head :bad_gateway
         return
       end
@@ -21,7 +30,13 @@ module Accounts
         return
       end
 
-      if current_user.portainer_access_token.blank?
+      access_token = if stack_manager.rancher?
+        current_user.rancher_access_token
+      else
+        current_user.portainer_access_token
+      end
+
+      if access_token.blank?
         head :unauthorized
         return
       end
@@ -32,20 +47,32 @@ module Accounts
       else
         head :unauthorized
       end
-    rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError
+    rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError,
+           Rancher::Client::MissingCredentialError, Rancher::Client::UnauthorizedError
       head :unauthorized
-    rescue Portainer::Client::ConnectionError
+    rescue Portainer::Client::ConnectionError, Rancher::Client::ConnectionError
       head :bad_gateway
     end
 
     def verify_url
       url = params[:stack_manager][:url]
       access_token = params[:stack_manager][:access_token]
+      stack_type = params[:stack_manager][:stack_manager_type]&.to_sym || :portainer
+
       stack_manager = StackManager.new(
         provider_url: url,
         access_token: access_token,
+        stack_manager_type: stack_type
       )
-      unless Portainer::Client.reachable?(url)
+
+      reachable = case stack_type
+      when :rancher
+        Rancher::Client.reachable?(url)
+      else
+        Portainer::Client.reachable?(url)
+      end
+
+      unless reachable
         return head :bad_gateway
       end
 

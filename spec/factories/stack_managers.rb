@@ -25,5 +25,11 @@ FactoryBot.define do
     stack_manager_type { :portainer }
     access_token { SecureRandom.hex(10) }
     account
+
+    trait :rancher do
+      provider_url { 'https://rancher.example.com' }
+      stack_manager_type { :rancher }
+      access_token { "token-xxxxx:#{SecureRandom.hex(20)}" }
+    end
   end
 end
