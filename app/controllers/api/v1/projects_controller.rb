@@ -4,12 +4,10 @@ module Api
       before_action :set_project, only: %i[show deploy restart]
 
       def index
-        projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
-        render json: projects.map { |p| project_json(p) }
+        @projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
       end
 
       def show
-        render json: project_json(@project)
       end
 
       def deploy
@@ -41,18 +39,6 @@ module Api
       def set_project
         projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
         @project = projects.find(params[:id])
-      end
-
-      def project_json(project)
-        {
-          id: project.id,
-          name: project.name,
-          repository_url: project.repository_url,
-          branch: project.branch,
-          status: project.status,
-          created_at: project.created_at,
-          updated_at: project.updated_at
-        }
       end
     end
   end

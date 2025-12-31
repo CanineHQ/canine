@@ -2,13 +2,17 @@
 
 SwaggerSchemas::PROJECT = {
   type: :object,
-  required: %w[id name repository_url branch status updated_at created_at],
+  required: %w[id name namespace repository_url branch status cluster_id updated_at created_at],
   properties: {
     id: {
       type: :integer,
       example: 1
     },
     name: {
+      type: :string,
+      example: 'example-project'
+    },
+    namespace: {
       type: :string,
       example: 'example-project'
     },
@@ -23,6 +27,10 @@ SwaggerSchemas::PROJECT = {
     status: {
       type: :string,
       example: 'deployed'
+    },
+    cluster_id: {
+      type: :integer,
+      example: 1
     },
     updated_at: {
       type: :string,

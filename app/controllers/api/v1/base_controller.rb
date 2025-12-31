@@ -34,10 +34,13 @@ module Api
       end
 
       def current_account
-        @current_account ||= if params[:account_id].present?
-                               current_user.accounts.find_by(id: params[:account_id])
-        else
-                               current_user.accounts.first
+        @current_account ||= begin
+          account_id = request.headers["X-Account-Id"].presence || params[:account_id].presence
+          if account_id
+            current_user.accounts.find_by(id: account_id)
+          else
+            current_user.accounts.first
+          end
         end
       end
 

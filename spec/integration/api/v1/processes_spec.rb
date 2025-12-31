@@ -54,13 +54,26 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
       parameter name: :project_id, in: :path, type: :integer, description: 'Project ID'
 
       response(201, 'created') do
-        schema type: :object,
-               properties: {
-                 message: { type: :string, example: 'One off pod example-project-run-abc123 created' },
-                 pod_name: { type: :string, example: 'example-project-run-abc123' },
-                 pod_id: { type: :string, example: 'abc123' }
-               },
-               required: %w[message pod_name pod_id]
+        schema '$ref' => '#/components/schemas/pod'
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/projects/{project_id}/processes/{id}' do
+    let(:project_id) { project.id }
+    let(:id) { 'test-pod' }
+
+    get('Show Process') do
+      tags 'Processes'
+      operationId 'showProcess'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :project_id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :id, in: :path, type: :string, description: 'Pod name'
+
+      response(200, 'successful') do
+        schema '$ref' => '#/components/schemas/pod'
         run_test!
       end
     end

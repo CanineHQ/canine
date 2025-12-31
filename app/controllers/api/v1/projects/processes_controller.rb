@@ -5,36 +5,34 @@ module Api
         before_action :set_project
 
         def index
-          client = K8::Client.new(K8::Connection.new(@project.cluster, current_user))
-          pods = client.get_pods(namespace: @project.namespace)
+          client = K8::Client.new(active_connection)
+          @pods = client.get_pods(namespace: @project.namespace)
+        end
 
-          render json: pods.map { |pod| pod_json(pod) }
+        def show
+          client = K8::Client.new(active_connection)
+          @pod = client.get_pods(namespace: @project.namespace, field_selector: "metadata.name=#{params[:id]}").first
         end
 
         def create
-          connection = K8::Connection.new(@project, current_user)
-          kubectl = K8::Kubectl.new(connection)
+          client = K8::Client.new(active_connection)
+          kubectl = K8::Kubectl.new(active_connection)
           pod = K8::Stateless::Pod.new(@project)
           kubectl.apply_yaml(pod.to_yaml)
+          @pod = client.get_pods(namespace: @project.namespace, field_selector: "metadata.name=#{pod.name}").first
 
-          render json: { message: "One off pod #{pod.name} created", pod_name: pod.name, pod_id: pod.id }, status: :created
+          render :create, status: :created
         end
 
         private
 
+        def active_connection
+          @active_connection ||= K8::Connection.new(@project, current_user)
+        end
+
         def set_project
           projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
           @project = projects.find(params[:project_id])
-        end
-
-        def pod_json(pod)
-          {
-            name: pod.metadata.name,
-            namespace: pod.metadata.namespace,
-            status: pod.status.phase,
-            created_at: pod.metadata.creationTimestamp,
-            labels: pod.metadata.labels&.to_h
-          }
         end
       end
     end
