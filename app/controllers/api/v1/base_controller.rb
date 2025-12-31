@@ -3,6 +3,8 @@ module Api
     class BaseController < ActionController::API
       include Pundit::Authorization
 
+      helper_method :current_user, :current_account, :current_account_user
+
       before_action :authenticate_with_api_token!
 
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
