@@ -1,4 +1,23 @@
 Rails.application.routes.draw do
+  # API routes
+  namespace :api do
+    namespace :v1 do
+      resource :me, only: :show, controller: "me"
+      resources :projects, only: %i[index show] do
+        member do
+          post :deploy
+          post :restart
+        end
+        resources :processes, only: %i[index show create], module: :projects
+      end
+      resources :clusters, only: %i[index] do
+        member do
+          get :download_kubeconfig
+        end
+      end
+    end
+  end
+
   # Account-specific URL-based routes
   devise_scope :user do
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in

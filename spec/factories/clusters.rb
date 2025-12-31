@@ -31,7 +31,7 @@ FactoryBot.define do
         "contexts" => [ { "name" => "test-cluster", "context" => { "cluster" => "test-cluster", "user" => "test-user" } } ],
         "current-context" => "test-cluster",
         "users" => [ { "name" => "test-user", "user" => { "token" => "test-token" } } ]
-      }.to_json
+      }
     end
     status { :initializing }
     cluster_type { :k8s }

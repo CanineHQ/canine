@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-SwaggerSchemas::PROJECTS = {
+SwaggerSchemas::PODS = {
   type: :object,
-  required: %w[projects],
+  required: %w[pods],
   properties: {
-    projects: {
+    pods: {
       type: :array,
       items: {
-        '$ref' => '#/components/schemas/project'
+        '$ref' => '#/components/schemas/pod'
       }
     }
   }

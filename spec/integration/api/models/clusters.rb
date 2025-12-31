@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-SwaggerSchemas::PROJECTS = {
+SwaggerSchemas::CLUSTERS = {
   type: :object,
-  required: %w[projects],
+  required: %w[clusters],
   properties: {
-    projects: {
+    clusters: {
       type: :array,
       items: {
-        '$ref' => '#/components/schemas/project'
+        '$ref' => '#/components/schemas/cluster'
       }
     }
   }
