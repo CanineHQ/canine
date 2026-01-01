@@ -187,6 +187,21 @@ class ClustersController < ApplicationController
         raise message
       end
       params[:cluster][:kubeconfig] = data
+    elsif params[:cluster][:cluster_type] == "local_k3s"
+      kubeconfig_output = params[:cluster][:kubeconfig_output]
+      if kubeconfig_output.blank?
+        message = "Kubeconfig output is required for local K3s clusters"
+        flash[:error] = message
+        raise message
+      end
+
+      begin
+        params[:cluster][:kubeconfig] = YAML.safe_load(kubeconfig_output)
+      rescue StandardError => e
+        message = "Invalid kubeconfig output"
+        flash[:error] = message
+        raise message
+      end
     elsif (kubeconfig_file = params[:cluster][:kubeconfig_file]).present?
       yaml_content = kubeconfig_file.read
 

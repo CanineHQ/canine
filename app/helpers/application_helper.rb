@@ -41,6 +41,10 @@ module ApplicationHelper
     controller.controller_path.include?(namespace)
   end
 
+  def active_path?(path)
+    request.path == path || request.path.start_with?("#{path}/")
+  end
+
   def letter_to_color(letter)
     colors = [
       '#8B5CF6', # Violet-500

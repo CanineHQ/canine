@@ -16,7 +16,7 @@
           <li class="menu-title text-xs uppercase tracking-wider text-base-content/50 pt-2">Favorites</li>
           <% favorites_result.favorited_projects.each do |project| %>
             <li>
-              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(project_path(project))}" do %>
+              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
                 <div class="flex items-center gap-2">
                   <%= project.name %>
                 </div>
@@ -29,7 +29,7 @@
             account_user: current_account_user
           ).projects.order(created_at: :desc).each do |project| %>
           <li>
-            <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(project_path(project))}" do %>
+            <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
               <div class="flex items-center gap-2">
                 <%= project.name %>
               </div>
@@ -62,7 +62,7 @@
           <li class="menu-title text-xs uppercase tracking-wider text-base-content/50 pt-2">Favorites</li>
           <% favorites_result.favorited_clusters.each do |cluster| %>
             <li>
-              <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(cluster_path(cluster))}" do %>
+              <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if active_path?(cluster_path(cluster))}" do %>
                 <div class="flex items-center gap-2">
                   <%= cluster.name %>
                 </div>
@@ -75,7 +75,7 @@
           account_user: current_account_user
           ).clusters.order(created_at: :desc).each do |cluster| %>
           <li>
-            <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(cluster_path(cluster))}" do %>
+            <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if active_path?(cluster_path(cluster))}" do %>
               <div class="flex items-center gap-2">
                 <%= cluster.name %>
               </div>
@@ -108,7 +108,7 @@
           <li class="menu-title text-xs uppercase tracking-wider text-base-content/50 pt-2">Favorites</li>
           <% favorites_result.favorited_add_ons.each do |add_on| %>
             <li>
-              <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(add_on_path(add_on))}" do %>
+              <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if active_path?(add_on_path(add_on))}" do %>
                 <div class="flex items-center gap-2">
                   <%= add_on.name %>
                 </div>
@@ -121,7 +121,7 @@
           account_user: current_account_user
           ).add_ons.order(created_at: :desc).each do |add_on| %>
           <li>
-            <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(add_on_path(add_on))}" do %>
+            <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if active_path?(add_on_path(add_on))}" do %>
               <div class="flex items-center gap-2">
                 <%= add_on.name %>
               </div>

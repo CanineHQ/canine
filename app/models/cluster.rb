@@ -6,6 +6,7 @@
 #  cluster_type :integer          default("k8s")
 #  kubeconfig   :jsonb
 #  name         :string           not null
+#  options      :jsonb            not null
 #  status       :integer          default("initializing"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
@@ -48,7 +49,8 @@ class Cluster < ApplicationRecord
   }
   enum :cluster_type, {
     k8s: 0,
-    k3s: 1
+    k3s: 1,
+    local_k3s: 2
   }
   RESERVED_NAMESPACES = [
     "default",

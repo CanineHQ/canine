@@ -15,22 +15,24 @@
     <div data-controller="card-select">
       <label class="mb-4 inline-block">Which managed Kubernetes provider are you using?</label>
       <div class="form-group">
-        <div class="flex gap-4">
-          <%= form.collection_select :cluster_type, 
-            Cluster.cluster_types.keys, 
+        <div class="flex gap-4 flex-wrap">
+          <%= form.collection_select :cluster_type,
+            Cluster.cluster_types.keys,
             :to_s,
             :titleize,
             { },
-            { class: "select select-bordered hidden", data: { "card-select-target": "input" } } 
+            { class: "select select-bordered hidden", data: { "card-select-target": "input" } }
           %>
-          <%= render "clusters/cluster_types/cards/k8s" %>
+          <%= render "clusters/cluster_types/cards/local_k3s" %>
           <%= render "clusters/cluster_types/cards/k3s" %>
+          <%= render "clusters/cluster_types/cards/k8s" %>
         </div>
       </div>
 
       <div class="my-10 has-styled-links">
         <%= render "clusters/cluster_types/instructions/k8s", form: form %>
         <%= render "clusters/cluster_types/instructions/k3s", form: form %>
+        <%= render "clusters/cluster_types/instructions/local_k3s", form: form %>
       </div>
     </div>
   </div>
