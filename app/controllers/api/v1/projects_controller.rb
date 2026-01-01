@@ -4,7 +4,7 @@ module Api
       before_action :set_project, only: %i[show deploy restart]
 
       def index
-        @projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
+        @projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects.order(:name)
       end
 
       def show
