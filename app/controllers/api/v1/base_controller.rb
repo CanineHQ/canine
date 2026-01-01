@@ -39,7 +39,7 @@ module Api
         @current_account ||= begin
           account_id = request.headers["X-Account-Id"].presence || params[:account_id].presence
           if account_id
-            current_user.accounts.find_by(id: account_id)
+            current_user.accounts.friendly.find(account_id)
           else
             current_user.accounts.first
           end
