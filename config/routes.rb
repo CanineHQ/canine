@@ -10,6 +10,11 @@ Rails.application.routes.draw do
         end
         resources :processes, only: %i[index show create], module: :projects
       end
+      resources :builds, only: %i[index show] do
+        member do
+          patch :kill
+        end
+      end
       resources :clusters, only: %i[index] do
         member do
           get :download_kubeconfig
