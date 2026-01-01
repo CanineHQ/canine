@@ -15,7 +15,7 @@
         <% if favorites_result.favorited_projects.any? %>
           <% favorites_result.favorited_projects.each do |project| %>
             <li>
-              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(project_path(project))}" do %>
+              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
                 <div class="flex items-center gap-2">
                   <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
                   <%= project.name %>
@@ -54,7 +54,7 @@
         <% if favorites_result.favorited_clusters.any? %>
           <% favorites_result.favorited_clusters.each do |cluster| %>
             <li>
-              <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(cluster_path(cluster))}" do %>
+              <%= link_to cluster_path(cluster), class: "hover:bg-base-content/15 #{'active' if active_path?(cluster_path(cluster))}" do %>
                 <div class="flex items-center gap-2">
                   <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
                   <%= cluster.name %>
@@ -93,7 +93,7 @@
         <% if favorites_result.favorited_add_ons.any? %>
           <% favorites_result.favorited_add_ons.each do |add_on| %>
             <li>
-              <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if request.path.start_with?(add_on_path(add_on))}" do %>
+              <%= link_to add_on_path(add_on), class: "hover:bg-base-content/15 #{'active' if active_path?(add_on_path(add_on))}" do %>
                 <div class="flex items-center gap-2">
                   <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
                   <%= add_on.name %>

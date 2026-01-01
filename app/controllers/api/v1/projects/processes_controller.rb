@@ -6,7 +6,7 @@ module Api
 
         def index
           client = K8::Client.new(active_connection)
-          @pods = client.get_pods(namespace: @project.namespace).sort_by { |pod| pod.metadata.name }
+          @pods = client.get_pods(namespace: @project.namespace).sort_by { |pod| pod.metadata.name }.first(50)
         end
 
         def show

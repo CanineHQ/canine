@@ -6,6 +6,7 @@
 #  cluster_type :integer          default("k8s")
 #  kubeconfig   :jsonb
 #  name         :string           not null
+#  options      :jsonb            not null
 #  status       :integer          default("initializing"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null

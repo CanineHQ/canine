@@ -4,7 +4,7 @@ module Api
       before_action :set_cluster, only: %i[download_kubeconfig]
 
       def index
-        @clusters = ::Clusters::VisibleToUser.execute(account_user: current_account_user).clusters.order(:name)
+        @clusters = ::Clusters::VisibleToUser.execute(account_user: current_account_user).clusters.order(:name).limit(50)
       end
 
       def download_kubeconfig
