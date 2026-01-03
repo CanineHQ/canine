@@ -1,25 +1,24 @@
 <div class="card-form hidden card-local_k3s space-y-4">
-  <div class="space-y-4">
-    <p class="font-semibold">Setting up a local K3s or K3d cluster:</p>
-
-    <div>
-      <p class="font-medium">Option 1: K3d (Docker-based, recommended for macOS)</p>
-      <ol class="list-decimal list-inside space-y-2 mt-2 ml-4">
-        <li>Install K3d: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="brew install k3d">brew install k3d</code></li>
-        <li>Create a cluster: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d cluster create dev">k3d cluster create dev</code></li>
-        <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d kubeconfig get dev">k3d kubeconfig get dev</code></li>
-      </ol>
+  <div data-controller="card-select">
+    <label class="mb-2">What operating system are you using?</label>
+    <div class="form-group">
+      <div class="flex gap-4">
+        <select class="hidden" data-card-select-target="input">
+          <option value="macos">macOS</option>
+          <option value="linux">Linux</option>
+          <option value="windows">Windows</option>
+        </select>
+        <%= render "clusters/instructions/cards/macos" %>
+        <%= render "clusters/instructions/cards/linux" %>
+        <%= render "clusters/instructions/cards/windows" %>
+      </div>
     </div>
 
-    <div>
-      <p class="font-medium">Option 2: K3s (Native)</p>
-      <ol class="list-decimal list-inside space-y-2 mt-2 ml-4">
-        <li>Install K3s: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -sfL https://get.k3s.io | sh -">curl -sfL https://get.k3s.io | sh -</code></li>
-        <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo cat /etc/rancher/k3s/k3s.yaml">sudo cat /etc/rancher/k3s/k3s.yaml</code></li>
-      </ol>
+    <div class="my-10 has-styled-links">
+      <%= render "clusters/instructions/instructions/macos" %>
+      <%= render "clusters/instructions/instructions/linux" %>
+      <%= render "clusters/instructions/instructions/windows" %>
     </div>
-
-    <p class="font-semibold">Copy the kubeconfig output and paste it below:</p>
   </div>
 
   <div class="form-group">

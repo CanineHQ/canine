@@ -1,0 +1,12 @@
+<div class="card-form hidden card-macos space-y-4">
+  <p class="font-semibold">Setting up K3d on macOS:</p>
+  <p class="text-sm text-gray-400">K3d runs K3s inside Docker containers, making it ideal for macOS development.</p>
+
+  <ol class="list-decimal list-inside space-y-2 ml-4">
+    <li>Install K3d via Homebrew: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="brew install k3d">brew install k3d</code></li>
+    <li>Create a cluster: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d cluster create dev">k3d cluster create dev</code></li>
+    <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d kubeconfig get dev">k3d kubeconfig get dev</code></li>
+  </ol>
+
+  <p class="mt-4 font-semibold">Copy the kubeconfig output and paste it below.</p>
+</div>

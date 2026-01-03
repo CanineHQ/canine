@@ -8,7 +8,8 @@ module Api
           .where(status: :in_progress)
           .or(accessible_builds.where(created_at: 24.hours.ago..))
           .order(created_at: :desc)
-          .limit(50)
+        @builds = @builds.where(project_id: params[:project_id]) if params[:project_id].present?
+        @builds = @builds.limit(50)
       end
 
       def show
