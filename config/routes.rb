@@ -23,6 +23,22 @@ Rails.application.routes.draw do
     end
   end
 
+  use_doorkeeper
+
+  # RFC 7591: Dynamic Client Registration Protocol
+  post "/oauth/register", to: "oauth_client_registration#create", as: :oauth_register
+
+  # RFC 9728: Protected Resource Metadata (MCP server as protected resource)
+  get "/.well-known/oauth-protected-resource",       to: "oauth_authorization_server_metadata#protected_resource"
+  get "/.well-known/oauth-protected-resource/mcp",   to: "oauth_authorization_server_metadata#protected_resource"
+
+  # RFC 8414: Authorization Server Metadata (OAuth server endpoints)
+  get "/.well-known/oauth-authorization-server",     to: "oauth_authorization_server_metadata#authorization_server"
+  get "/.well-known/oauth-authorization-server/mcp", to: "oauth_authorization_server_metadata#authorization_server"
+
+  post "/mcp", to: "mcp#handle"
+  get  "/mcp", to: "mcp#handle"
+
   # Account-specific URL-based routes
   devise_scope :user do
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
