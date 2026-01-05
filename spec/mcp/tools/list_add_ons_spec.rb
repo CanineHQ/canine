@@ -4,11 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Tools::ListAddOns do
   it 'returns add-ons accessible to the user' do
-    account = create(:account)
+    add_on = create(:add_on, name: 'redis-cache', status: :installed)
     user = create(:user)
-    create(:account_user, account:, user:)
-    cluster = create(:cluster, account:)
-    add_on = create(:add_on, cluster:, name: 'redis-cache', status: :installed)
+    create(:account_user, account: add_on.cluster.account, user: user)
 
     response = described_class.call(server_context: { user_id: user.id })
     result = JSON.parse(response.content.first[:text])

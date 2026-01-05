@@ -30,6 +30,7 @@ class MCPController < ActionController::API
 
   def mcp_tools
     [
+      Tools::ListAccounts,
       Tools::ListProjects,
       Tools::GetProjectDetails,
       Tools::GetProjectLogs,

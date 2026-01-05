@@ -4,11 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Tools::GetProjectLogs do
   it 'fetches logs from kubernetes pods' do
-    account = create(:account)
+    project = create(:project)
     user = create(:user)
-    create(:account_user, account:, user:)
-    cluster = create(:cluster, account:)
-    project = create(:project, cluster:, account:)
+    create(:account_user, account: project.account, user: user)
 
     mock_pod = OpenStruct.new(
       metadata: OpenStruct.new(name: 'web-abc', labels: OpenStruct.new(app: 'web')),

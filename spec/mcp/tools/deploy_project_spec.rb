@@ -4,11 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Tools::DeployProject do
   it 'starts a deployment for the project' do
-    account = create(:account)
+    project = create(:project)
     user = create(:user)
-    create(:account_user, account:, user:)
-    cluster = create(:cluster, account:)
-    project = create(:project, cluster:, account:)
+    create(:account_user, account: project.account, user: user)
 
     allow(Git::Client).to receive(:from_project).and_return(
       double(commits: [ Git::Common::Commit.new(

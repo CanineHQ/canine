@@ -4,11 +4,9 @@ require 'rails_helper'
 
 RSpec.describe Tools::GetAddOnLogs do
   it 'fetches logs from kubernetes pods' do
-    account = create(:account)
+    add_on = create(:add_on, name: 'redis-cache')
     user = create(:user)
-    create(:account_user, account:, user:)
-    cluster = create(:cluster, account:)
-    add_on = create(:add_on, cluster:, name: 'redis-cache')
+    create(:account_user, account: add_on.cluster.account, user: user)
 
     mock_pod = OpenStruct.new(
       metadata: OpenStruct.new(name: 'redis-0'),

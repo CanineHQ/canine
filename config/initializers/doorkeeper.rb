@@ -42,7 +42,7 @@ Doorkeeper.configure do
   #
   # Default value is an empty Array: []
   # RFC 8707: Resource Indicators - store the resource parameter
-  custom_access_token_attributes [ ]
+  custom_access_token_attributes []
 
   # Hook into the strategies' request & response life-cycle in case your
   # application needs advanced customization or logging:

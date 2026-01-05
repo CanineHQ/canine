@@ -40,8 +40,14 @@
             <%= (provider.last_used_at.strftime("%b %d, %Y") if provider.last_used_at) || "Never" %>
           </td>
           <td>
-            <% project_credential_providers.each do |project_credential_provider| %>
-              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover: underline" %>
+            <% max_display = ProvidersController::MAX_DISPLAYED_PROJECTS %>
+            <% remaining = project_credential_providers.size - max_display %>
+            <% display_count = remaining > 1 ? max_display : project_credential_providers.size %>
+            <% project_credential_providers.first(display_count).each_with_index do |project_credential_provider, index| %>
+              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline" %><%= ", " if index < display_count - 1 %>
+            <% end %>
+            <% if remaining > 1 %>
+              <span class="text-gray-500">and <%= remaining %> others</span>
             <% end %>
           </td>
           <td>
