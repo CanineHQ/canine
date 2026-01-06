@@ -430,6 +430,48 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_190845) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.bigint "resource_owner_id", null: false
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.integer "expires_in", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "revoked_at"
+    t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
+    t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
+  end
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.bigint "resource_owner_id"
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.string "refresh_token"
+    t.integer "expires_in"
+    t.string "scopes"
+    t.datetime "created_at", null: false
+    t.datetime "revoked_at"
+    t.string "previous_refresh_token", default: "", null: false
+    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
+  end
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "uid", null: false
+    t.string "secret", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.boolean "confidential", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
   create_table "oidc_configurations", force: :cascade do |t|
     t.string "issuer", null: false
     t.string "client_id", null: false
@@ -677,6 +719,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_190845) do
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
+  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"

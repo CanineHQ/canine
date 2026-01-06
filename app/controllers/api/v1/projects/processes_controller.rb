@@ -32,7 +32,7 @@ module Api
 
         def set_project
           projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects
-          @project = projects.find(params[:project_id])
+          @project = projects.find_by_name!(params[:project_id])
         end
       end
     end

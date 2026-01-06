@@ -109,3 +109,7 @@ gem "net-ldap", "~> 0.20.0"
 gem "jwt", "~> 2.9"
 
 gem "ruby-saml", "~> 1.17"
+
+gem "mcp", "~> 0.4.0"
+
+gem "doorkeeper", "~> 5.8"

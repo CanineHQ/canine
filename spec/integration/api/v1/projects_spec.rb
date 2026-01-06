@@ -35,14 +35,14 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
   end
 
   path '/api/v1/projects/{id}' do
-    let(:id) { project.id }
+    let(:id) { project.name }
 
     get('Show Project') do
       tags 'Projects'
       operationId 'showProject'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
 
       response(200, 'successful') do
         schema '$ref' => '#/components/schemas/project'
@@ -52,7 +52,7 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
   end
 
   path '/api/v1/projects/{id}/deploy' do
-    let(:id) { project.id }
+    let(:id) { project.name }
 
     post('Deploy Project') do
       tags 'Projects'
@@ -60,7 +60,7 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
       consumes 'application/json'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
       parameter name: :body, in: :body, schema: {
         type: :object,
         properties: {
@@ -81,14 +81,14 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
   end
 
   path '/api/v1/projects/{id}/restart' do
-    let(:id) { project.id }
+    let(:id) { project.name }
     post('Restart Project') do
       tags 'Projects'
       operationId 'restartProject'
       consumes 'application/json'
       produces 'application/json'
       security [ x_api_key: [] ]
-      parameter name: :id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
 
       response(200, 'successful') do

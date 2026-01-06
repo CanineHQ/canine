@@ -26,14 +26,14 @@ RSpec.describe Api::V1::ClustersController, :swagger, type: :request do
   end
 
   path '/api/v1/clusters/{id}/download_kubeconfig' do
-    let(:id) { cluster.id }
+    let(:id) { cluster.name }
 
     get('Download Kubeconfig') do
       tags 'Clusters'
       operationId 'downloadKubeconfig'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :id, in: :path, type: :integer, description: 'Cluster ID'
+      parameter name: :id, in: :path, type: :string, description: 'Cluster name'
 
       response(200, 'successful') do
         schema type: :object,
