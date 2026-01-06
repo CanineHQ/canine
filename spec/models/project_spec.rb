@@ -27,6 +27,7 @@
 # Indexes
 #
 #  index_projects_on_cluster_id  (cluster_id)
+#  index_projects_on_name        (name)
 #
 # Foreign Keys
 #
@@ -48,6 +49,18 @@ RSpec.describe Project, type: :model do
       it 'is not valid' do
         expect(project).not_to be_valid
         expect(project.errors[:name]).to include("must be unique to this cluster")
+      end
+    end
+
+    context 'when name exists in another cluster within the same account' do
+      it 'is not valid' do
+        existing_project = create(:project)
+        other_cluster = create(:cluster, account: existing_project.cluster.account)
+        new_project = build(:project, name: existing_project.name)
+        new_project.cluster = other_cluster
+
+        expect(new_project).not_to be_valid
+        expect(new_project.errors[:name]).to include("has already been taken")
       end
     end
   end

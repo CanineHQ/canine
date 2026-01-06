@@ -26,17 +26,23 @@
 #
 #  fk_rails_...  (cluster_id => clusters.id)
 #
-FactoryBot.define do
-  factory :add_on do
-    cluster
-    chart_url { 'bitnami/redis' }
-    chart_type { "helm_chart" }
-    version { "1.0.0" }
-    sequence(:name) { |n| "example-addon-#{n}" }
-    sequence(:namespace) { |n| "example-addon-#{n}" }
-    managed_namespace { true }
-    status { :installing }
-    values { {} }
-    metadata { { "package_details" => { "repository" => { "name" => "bitnami", "url" => "https://bitnami.com/charts" } } } }
+require 'rails_helper'
+
+RSpec.describe AddOn, type: :model do
+  let(:cluster) { create(:cluster) }
+  let(:add_on) { build(:add_on, cluster:) }
+
+  describe 'validations' do
+    context 'when name exists in another cluster within the same account' do
+      it 'is not valid' do
+        existing_add_on = create(:add_on)
+        other_cluster = create(:cluster, account: existing_add_on.cluster.account)
+        new_add_on = build(:add_on, name: existing_add_on.name)
+        new_add_on.cluster = other_cluster
+
+        expect(new_add_on).not_to be_valid
+        expect(new_add_on.errors[:name]).to include("has already been taken")
+      end
+    end
   end
 end
