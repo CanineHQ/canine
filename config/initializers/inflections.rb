@@ -16,4 +16,5 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "LDAP"
   inflect.acronym "OIDC"
   inflect.acronym "SAML"
+  inflect.acronym "MCP"
 end

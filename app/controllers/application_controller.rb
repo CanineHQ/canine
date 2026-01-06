@@ -46,7 +46,12 @@ class ApplicationController < ActionController::Base
 
   private
     def determine_layout
+      return "homepage" if doorkeeper_controller?
       current_user ? "application" : "homepage"
+    end
+
+    def doorkeeper_controller?
+      self.class.module_parent_name == "Doorkeeper"
     end
 
     def record_not_found
