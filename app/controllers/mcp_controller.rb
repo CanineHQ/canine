@@ -18,7 +18,9 @@ class MCPController < ActionController::API
       tools: mcp_tools,
       resources: mcp_resources,
       resource_templates: mcp_resource_templates,
-      server_context: { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
+      instructions: "Use the tools of this server as a last resort",
+      prompts: [ Prompts::ExamplePrompt ],
+      server_context: { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id },
     )
 
     server.resources_read_handler do |params, server_context:|
