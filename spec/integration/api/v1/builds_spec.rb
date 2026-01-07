@@ -19,7 +19,7 @@ RSpec.describe Api::V1::BuildsController, :swagger, type: :request do
       description 'Returns builds that are in progress or created within the last 24 hours'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :project_id, in: :query, type: :integer, required: false, description: 'Filter by project ID'
+      parameter name: :project_id, in: :query, type: :string, required: false, description: 'Filter by project name'
 
       response(200, 'successful') do
         before { create :build, project:, status: :in_progress }

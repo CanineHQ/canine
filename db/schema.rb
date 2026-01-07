@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_02_213258) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_06_190845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,6 +77,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_213258) do
     t.string "version", null: false
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
+    t.index ["name"], name: "index_add_ons_on_name"
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -542,6 +543,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_213258) do
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
+    t.index ["name"], name: "index_projects_on_name"
   end
 
   create_table "providers", force: :cascade do |t|

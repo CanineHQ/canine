@@ -30,14 +30,14 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
   end
 
   path '/api/v1/projects/{project_id}/processes' do
-    let(:project_id) { project.id }
+    let(:project_id) { project.name }
 
     get('List Processes') do
       tags 'Processes'
       operationId 'listProcesses'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :project_id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :project_id, in: :path, type: :string, description: 'Project name'
 
       response(200, 'successful') do
         schema '$ref' => '#/components/schemas/pods'
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
       consumes 'application/json'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :project_id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :project_id, in: :path, type: :string, description: 'Project name'
 
       response(201, 'created') do
         schema '$ref' => '#/components/schemas/pod'
@@ -61,7 +61,7 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
   end
 
   path '/api/v1/projects/{project_id}/processes/{id}' do
-    let(:project_id) { project.id }
+    let(:project_id) { project.name }
     let(:id) { 'test-pod' }
 
     get('Show Process') do
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
       operationId 'showProcess'
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
-      parameter name: :project_id, in: :path, type: :integer, description: 'Project ID'
+      parameter name: :project_id, in: :path, type: :string, description: 'Project name'
       parameter name: :id, in: :path, type: :string, description: 'Pod name'
 
       response(200, 'successful') do

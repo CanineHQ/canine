@@ -16,7 +16,7 @@ module Api
 
       def set_cluster
         clusters = ::Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
-        @cluster = clusters.find(params[:id])
+        @cluster = clusters.find_by_name!(params[:id])
       end
     end
   end

@@ -27,6 +27,7 @@
 # Indexes
 #
 #  index_projects_on_cluster_id  (cluster_id)
+#  index_projects_on_name        (name)
 #
 # Foreign Keys
 #
@@ -37,6 +38,7 @@ class Project < ApplicationRecord
   include TeamAccessible
   include Namespaced
   include Favoriteable
+  include AccountUniqueName
   broadcasts_refreshes
   belongs_to :cluster
   has_one :account, through: :cluster
@@ -71,8 +73,6 @@ class Project < ApplicationRecord
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
-  validates_uniqueness_of :name, scope: :cluster_id
-
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end
