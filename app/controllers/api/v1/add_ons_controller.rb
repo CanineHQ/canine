@@ -6,7 +6,7 @@ module Api
       before_action :set_add_on, only: %i[show restart]
 
       def index
-        @add_ons = ::AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons.order(:name).limit(50)
+        @add_ons = ::AddOns::VisibleToUser.execute(account_user: current_account_user).add_ons.includes(:cluster).order(:name).limit(50)
       end
 
       def show
