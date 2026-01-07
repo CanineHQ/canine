@@ -3,6 +3,8 @@
 module Tools
   class GetProjectLogs < MCP::Tool
     include Tools::Concerns::Authentication
+    title "Get project logs"
+    read_only_hint true
 
     description "Get logs from all services in a project, including pod events for startup errors"
 
