@@ -20,6 +20,11 @@ Rails.application.routes.draw do
           get :download_kubeconfig
         end
       end
+      resources :add_ons, only: %i[index show] do
+        member do
+          post :restart
+        end
+      end
     end
   end
 
