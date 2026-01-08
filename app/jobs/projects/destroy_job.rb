@@ -2,7 +2,7 @@ class Projects::DestroyJob < ApplicationJob
   def perform(project, user)
     project.destroying!
 
-    deployment_service_class(project).for_project(project, user).uninstall
+    uninstall_service_class(project).new(project, user).call
 
     remove_github_webhook(project) if should_remove_webhook?(project)
     project.destroy!
@@ -10,14 +10,14 @@ class Projects::DestroyJob < ApplicationJob
 
   private
 
-  def deployment_service_class(project)
+  def uninstall_service_class(project)
     deployment_method = project.deployment_configuration&.deployment_method || "legacy"
 
     case deployment_method
     when "helm"
-      Deployments::HelmDeploymentService
+      Projects::HelmUninstallService
     else
-      Deployments::LegacyDeploymentService
+      Projects::LegacyUninstallService
     end
   end
 

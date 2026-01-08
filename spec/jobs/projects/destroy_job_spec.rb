@@ -5,10 +5,10 @@ RSpec.describe Projects::DestroyJob do
   let(:user) { create(:user) }
   let(:job) { described_class.new }
   let(:subject) { job.perform(project, user) }
-  let(:mock_service) { instance_double(Deployments::LegacyDeploymentService, uninstall: true) }
+  let(:mock_service) { instance_double(Projects::LegacyUninstallService, call: true) }
 
   before do
-    allow(Deployments::LegacyDeploymentService).to receive(:for_project).and_return(mock_service)
+    allow(Projects::LegacyUninstallService).to receive(:new).and_return(mock_service)
   end
 
   context 'with a complex project' do
@@ -20,7 +20,7 @@ RSpec.describe Projects::DestroyJob do
     let!(:environment_variable) { create(:environment_variable, project: project) }
 
     it 'destroys the project, builds, deployments, volumes, envvars, and services' do
-      expect(mock_service).to receive(:uninstall)
+      expect(mock_service).to receive(:call)
       expect(job).to receive(:remove_github_webhook)
 
       subject

@@ -7,12 +7,8 @@ class CreateDeploymentConfigurations < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    reversible do |dir|
-      dir.up do
-        Project.find_each do |project|
-          DeploymentConfiguration.create!(project: project, deployment_method: :legacy)
-        end
+      Project.find_each do |project|
+        DeploymentConfiguration.create!(project: project, deployment_method: :legacy)
       end
-    end
   end
 end

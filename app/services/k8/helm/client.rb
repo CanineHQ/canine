@@ -141,6 +141,13 @@ class K8::Helm::Client
       raise "Helm uninstall failed with exit status #{exit_status}" unless exit_status.success?
       exit_status
     end
+  rescue Cli::CommandFailedError => e
+    # If the release doesn't exist, that's fine - the desired state is achieved
+    if runner.respond_to?(:output) && runner.output.include?("not found")
+      Rails.logger.info("Helm release '#{name}' not found in namespace '#{namespace}', skipping uninstall")
+      return nil
+    end
+    raise e
   end
 
   def self.get_default_values_yaml(package_id, version)
