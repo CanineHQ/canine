@@ -1,65 +1,31 @@
-<button aria-label="Search button" data-action="theme#searchModalToggle" class="btn btn-outline btn-sm h-9 w-32 md:w-48 items-center justify-start gap-3 border-base-content/20 hover:border-transparent hover:bg-base-content/20 sm:flex">
-  <iconify-icon icon="lucide:search" height="16" class="text-base-content/60"></iconify-icon>
+<div data-controller="global-search">
+  <button aria-label="Search button" data-action="global-search#toggle" class="btn btn-outline btn-sm h-9 w-32 md:w-48 items-center justify-start gap-3 border-base-content/20 hover:border-transparent hover:bg-base-content/20 sm:flex">
+    <iconify-icon icon="lucide:search" height="16" class="text-base-content/60"></iconify-icon>
+    <span class="text-base-content/60 hidden md:inline">Search (Cmd+K)</span>
+  </button>
 
-  <span class="text-base-content/60 hidden md:inline">Search (Cmd+K)</span>
-</button>
-
-<dialog aria-label="Modal" class="modal" id="search_modal">
-  <div class="modal-box p-0">
-    <div class="form-control flex-row items-center rounded-box p-2 px-5">
-      <iconify-icon icon="lucide:search" height="18" class="text-base-content/70"></iconify-icon>
-
-      <input
-        data-theme-target="searchInput"
-        data-action="theme#searchInput"
-        placeholder="Search"
-        class="input input-sm w-full text-base focus:border-transparent focus:outline-0 focus:outline-offset-0"
-      >
-      <form method="dialog">
-        <button aria-label="Close search modal" class="btn btn-circle btn-ghost btn-sm gap-2">
-          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
-        </button>
-      </form>
+  <dialog aria-label="Search modal" class="modal" data-global-search-target="modal">
+    <div class="modal-box p-0">
+      <div class="form-control flex-row items-center rounded-box p-2 px-5">
+        <iconify-icon icon="lucide:search" height="18" class="text-base-content/70"></iconify-icon>
+        <input
+          data-global-search-target="input"
+          data-action="input->global-search#search"
+          placeholder="Search projects, clusters, add-ons..."
+          class="input input-sm w-full text-base focus:border-transparent focus:outline-0 focus:outline-offset-0"
+        >
+        <form method="dialog">
+          <button aria-label="Close search modal" class="btn btn-circle btn-ghost btn-sm gap-2">
+            <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+          </button>
+        </form>
+      </div>
+      <div id="search_results" class="border-t border-base-content/10 max-h-96 overflow-y-auto" data-global-search-target="results">
+        <div class="p-4 text-center text-base-content/60">Type to search projects, clusters, and add-ons</div>
+      </div>
     </div>
-    <div class="border-t border-base-content/10">
-      <ul class="menu">
-        <li class="menu-title">Projects</li>
-        <% current_account.projects.each do |project| %>
-          <li class="">
-            <details open data-theme-target="menuItem" data-name="<%= project.name %>">
-              <summary><div class="name"><%= project.name %></div></summary>
-              <ul>
-                <% %w(deployments services environment_variables processes metrics).each do |name| %>
-                  <li>
-                    <a href="<%= send("project_#{name}_path", project) %>" data-theme-target="linkItem">
-                      <%= name.titleize %>
-                    </a>
-                  </li>
-                <% end %>
-              </ul>
-            </details>
-          </li>
-        <% end %>
-        <% current_account.add_ons.each do |addon| %>
-          <li class="">
-            <details open data-theme-target="menuItem" data-name="<%= addon.name %>">
-              <summary><div class="name"><%= addon.name %></div></summary>
-              <ul>
-                <% %w(processes metrics).each do |name| %>
-                  <li>
-                    <a href="<%= send("add_on_#{name}_path", addon) %>" data-theme-target="linkItem">
-                      <%= name.titleize %>
-                    </a>
-                  </li>
-                <% end %>
-              </ul>
-            </details>
-          </li>
-        <% end %>
-      </ul>
-    </div>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+</div>

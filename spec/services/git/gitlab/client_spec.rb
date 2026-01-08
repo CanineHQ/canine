@@ -4,6 +4,7 @@ RSpec.describe Git::Gitlab::Client do
   let(:access_token) { 'test_token' }
   let(:repository_url) { 'czhu12/echo' }
   let(:client) { described_class.new(access_token:, repository_url:) }
+  let(:gitlab_api_base) { "#{Provider::GITLAB_API_BASE}/api/v4" }
 
   describe '#register_webhook!' do
     let(:webhook_url) { 'http://localhost:3000/inbound_webhooks/gitlab' }
@@ -32,7 +33,7 @@ RSpec.describe Git::Gitlab::Client do
 
       it 'creates a new webhook' do
         expect(HTTParty).to receive(:post).with(
-          "#{described_class::GITLAB_API_BASE}/projects/#{client.encoded_url}/hooks",
+          "#{gitlab_api_base}/projects/#{client.encoded_url}/hooks",
           headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
           body: {
             url: webhook_url,
@@ -66,7 +67,7 @@ RSpec.describe Git::Gitlab::Client do
 
       it 'deletes the webhook' do
         expect(HTTParty).to receive(:delete).with(
-          "#{described_class::GITLAB_API_BASE}/projects/#{client.encoded_url}/hooks/#{webhook['id']}",
+          "#{gitlab_api_base}/projects/#{client.encoded_url}/hooks/#{webhook['id']}",
           headers: { "Authorization" => "Bearer #{access_token}" }
         )
 
@@ -96,7 +97,7 @@ RSpec.describe Git::Gitlab::Client do
     context 'when file exists' do
       before do
         allow(HTTParty).to receive(:get).with(
-          "#{described_class::GITLAB_API_BASE}/projects/#{client.encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
+          "#{gitlab_api_base}/projects/#{client.encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",
           headers: { "Authorization" => "Bearer #{access_token}" }
         ).and_return(success_response)
       end

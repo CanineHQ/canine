@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_06_190845) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -19,6 +19,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.bigint "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 2, null: false
     t.index ["account_id"], name: "index_account_users_on_account_id"
     t.index ["user_id"], name: "index_account_users_on_user_id"
   end
@@ -73,8 +74,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.string "chart_url"
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
+    t.string "version", null: false
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
+    t.index ["name"], name: "index_add_ons_on_name"
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -84,6 +87,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "access_token", null: false
+    t.datetime "last_used_at"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["access_token"], name: "index_api_tokens_on_access_token", unique: true
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
   create_table "build_clouds", force: :cascade do |t|
@@ -159,6 +174,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.datetime "updated_at", null: false
     t.integer "cluster_type", default: 0
     t.string "external_id"
+    t.jsonb "options", default: {}, null: false
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
@@ -217,6 +233,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable"
     t.index ["project_id"], name: "index_events_on_project_id"
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "account_id", null: false
+    t.string "favoriteable_type", null: false
+    t.bigint "favoriteable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_favorites_on_account_id"
+    t.index ["favoriteable_type", "favoriteable_id"], name: "index_favorites_on_favoriteable"
+    t.index ["user_id", "account_id", "favoriteable_type", "favoriteable_id"], name: "index_favorites_unique", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -401,6 +430,48 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "oauth_access_grants", force: :cascade do |t|
+    t.bigint "resource_owner_id", null: false
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.integer "expires_in", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "revoked_at"
+    t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
+    t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
+  end
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.bigint "resource_owner_id"
+    t.bigint "application_id", null: false
+    t.string "token", null: false
+    t.string "refresh_token"
+    t.integer "expires_in"
+    t.string "scopes"
+    t.datetime "created_at", null: false
+    t.datetime "revoked_at"
+    t.string "previous_refresh_token", default: "", null: false
+    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
+    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
+    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
+  end
+
+  create_table "oauth_applications", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "uid", null: false
+    t.string "secret", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.boolean "confidential", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
   create_table "oidc_configurations", force: :cascade do |t|
     t.string "issuer", null: false
     t.string "client_id", null: false
@@ -472,6 +543,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
+    t.index ["name"], name: "index_projects_on_name"
   end
 
   create_table "providers", force: :cascade do |t|
@@ -504,6 +576,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["service_id"], name: "index_resource_constraints_on_service_id"
+  end
+
+  create_table "saml_configurations", force: :cascade do |t|
+    t.string "idp_entity_id", null: false
+    t.string "idp_sso_service_url", null: false
+    t.text "idp_cert", null: false
+    t.string "idp_slo_service_url"
+    t.string "name_identifier_format", default: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    t.string "uid_attribute", default: "email"
+    t.string "email_attribute", default: "email"
+    t.string "name_attribute", default: "name"
+    t.string "groups_attribute"
+    t.string "sp_entity_id"
+    t.boolean "authn_requests_signed", default: false
+    t.boolean "want_assertions_signed", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "services", force: :cascade do |t|
@@ -616,6 +705,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
   add_foreign_key "build_configurations", "projects"
@@ -627,6 +717,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_221841) do
   add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "favorites", "accounts"
+  add_foreign_key "favorites", "users"
+  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
+  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"

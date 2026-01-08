@@ -4,8 +4,9 @@ module Projects
   class Update
     extend LightService::Organizer
 
-    def self.call(project, params)
+    def self.call(project, params, user)
       build_configuration = handle_build_configuration(project, params)
+      handle_project_credential_provider(project, params, user)
 
       with(
         project:,
@@ -15,6 +16,14 @@ module Projects
         Projects::UpdateSave,
         Projects::UpdateBuildPacks
       )
+    end
+
+    def self.handle_project_credential_provider(project, params, user)
+      provider_params = params[:project][:project_credential_provider]
+      return unless provider_params.present? && provider_params[:provider_id].present?
+
+      provider = user.providers.find(provider_params[:provider_id])
+      project.project_credential_provider.provider = provider
     end
 
     def self.handle_build_configuration(project, params)

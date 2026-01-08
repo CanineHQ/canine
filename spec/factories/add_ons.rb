@@ -11,6 +11,7 @@
 #  namespace         :string           not null
 #  status            :integer          default("installing"), not null
 #  values            :jsonb
+#  version           :string           not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  cluster_id        :bigint           not null
@@ -19,6 +20,7 @@
 #
 #  index_add_ons_on_cluster_id           (cluster_id)
 #  index_add_ons_on_cluster_id_and_name  (cluster_id,name) UNIQUE
+#  index_add_ons_on_name                 (name)
 #
 # Foreign Keys
 #
@@ -29,6 +31,7 @@ FactoryBot.define do
     cluster
     chart_url { 'bitnami/redis' }
     chart_type { "helm_chart" }
+    version { "1.0.0" }
     sequence(:name) { |n| "example-addon-#{n}" }
     sequence(:namespace) { |n| "example-addon-#{n}" }
     managed_namespace { true }

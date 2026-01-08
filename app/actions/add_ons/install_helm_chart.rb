@@ -29,6 +29,7 @@ class AddOns::InstallHelmChart
       client.install(
         add_on.name,
         package_details['repository']['url'],
+        add_on.version,
         values: add_on.values,
         namespace: add_on.name
       )
@@ -45,6 +46,7 @@ class AddOns::InstallHelmChart
       client.install(
         add_on.name,
         chart_url,
+        add_on.version,
         values: add_on.values,
         namespace: add_on.name
       )

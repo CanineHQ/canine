@@ -12,24 +12,24 @@
       </tr>
     </thead>
     <tbody>
-      <% current_user.providers.each do |provider| %>
+      <% current_user.providers.non_sso.each do |provider| %>
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
           <td>
-          <%= provider.provider %>
-          <br />
-          <% if provider.container_registry? %>
-            <span class="text-gray-500">
-              <%= provider.registry_url %>
-            </span>
-          <% end %>
+            <%= provider.provider.titleize %>
+            <% if provider.registry_url.present? %>
+              <br />
+              <span class="text-gray-500 text-sm">
+                <%= provider.registry_url %>
+              </span>
+            <% end %>
           </td>
           <td>
             <%= render "providers/show", provider: %>
           </td>
           <td>
             <% if provider.access_token %>
-            <%= provider.access_token.first(4) %><%= "*" * [0, [10, provider.access_token.length - 6].min].max %><%= provider.access_token.last(2) %>
+              <%= provider.abbreviated_access_token %>
             <% else %>
               <span class="text-gray-500">
                 N/A
@@ -40,8 +40,14 @@
             <%= (provider.last_used_at.strftime("%b %d, %Y") if provider.last_used_at) || "Never" %>
           </td>
           <td>
-            <% project_credential_providers.each do |project_credential_provider| %>
-              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover: underline" %>
+            <% max_display = ProvidersController::MAX_DISPLAYED_PROJECTS %>
+            <% remaining = project_credential_providers.size - max_display %>
+            <% display_count = remaining > 1 ? max_display : project_credential_providers.size %>
+            <% project_credential_providers.first(display_count).each_with_index do |project_credential_provider, index| %>
+              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline" %><%= ", " if index < display_count - 1 %>
+            <% end %>
+            <% if remaining > 1 %>
+              <span class="text-gray-500">and <%= remaining %> others</span>
             <% end %>
           </td>
           <td>

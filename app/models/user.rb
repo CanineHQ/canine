@@ -42,6 +42,20 @@ class User < ApplicationRecord
   has_many :projects, through: :accounts
   has_many :add_ons, through: :accounts
   has_many :services, through: :accounts
+  has_many :api_tokens, dependent: :destroy
+  has_many :favorites, dependent: :destroy
+
+  # Doorkeeper
+  has_many :access_grants,
+            class_name: 'Doorkeeper::AccessGrant',
+            foreign_key: :resource_owner_id,
+            dependent: :delete_all # or :destroy if you need callbacks
+
+  has_many :access_tokens,
+            class_name: 'Doorkeeper::AccessToken',
+            foreign_key: :resource_owner_id,
+            dependent: :delete_all # or :destroy if you need callbacks
+
   attr_readonly :admin
 
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"

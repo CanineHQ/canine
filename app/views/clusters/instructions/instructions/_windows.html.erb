@@ -1,0 +1,26 @@
+<div class="card-form hidden card-windows space-y-4">
+  <p class="font-semibold">Setting up K3d on Windows:</p>
+
+  <div>
+    <p class="font-medium">Option 1: K3d with Docker Desktop (Recommended)</p>
+    <p class="text-sm text-gray-400 mb-2">Requires Docker Desktop for Windows to be installed and running.</p>
+    <ol class="list-decimal list-inside space-y-2 ml-4">
+      <li>Install K3d via Chocolatey: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="choco install k3d">choco install k3d</code></li>
+      <li>Or install via Scoop: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="scoop install k3d">scoop install k3d</code></li>
+      <li>Create a cluster: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d cluster create dev">k3d cluster create dev</code></li>
+      <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d kubeconfig get dev">k3d kubeconfig get dev</code></li>
+    </ol>
+  </div>
+
+  <div class="mt-4">
+    <p class="font-medium">Option 2: WSL2 + K3s</p>
+    <p class="text-sm text-gray-400 mb-2">Run K3s natively inside Windows Subsystem for Linux.</p>
+    <ol class="list-decimal list-inside space-y-2 ml-4">
+      <li>Enable WSL2 and install Ubuntu from the Microsoft Store</li>
+      <li>Inside WSL2, install K3s: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -sfL https://get.k3s.io | sh -">curl -sfL https://get.k3s.io | sh -</code></li>
+      <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo cat /etc/rancher/k3s/k3s.yaml">sudo cat /etc/rancher/k3s/k3s.yaml</code></li>
+    </ol>
+  </div>
+
+  <p class="mt-4 font-semibold">Copy the kubeconfig output and paste it below.</p>
+</div>

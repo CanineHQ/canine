@@ -1,14 +1,16 @@
-<% cache ["project_favicon_v5", project.id, project.domains.first&.domain_name], expires_in: 7.days do %>
+<% img_size = local_assigns[:img_size] || "w-5 h-5" %>
+<% icon_size = local_assigns[:icon_size] || "text-xl" %>
+<% cache ["project_favicon_v6", project.id, project.domains.first&.domain_name, img_size, icon_size], expires_in: 7.days do %>
   <% if project.domains.any? %>
     <% favicon_service = FaviconService.new(project.domains.first.domain_name) %>
     <% if favicon_service.exists?(provider: :duckduckgo) %>
       <% favicon_url = favicon_service.fetch_url %>
-      <img src="<%= favicon_url %>" alt="favicon" class="w-5 h-5" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-      <iconify-icon icon="lucide:globe" class="w-5 h-5" style="display:none;"></iconify-icon>
+      <img src="<%= favicon_url %>" alt="favicon" class="<%= img_size %>" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+      <iconify-icon icon="lucide:globe" class="<%= icon_size %>" style="display:none;"></iconify-icon>
     <% else %>
-      <iconify-icon icon="lucide:globe" class="w-5 h-5"></iconify-icon>
+      <iconify-icon icon="lucide:globe" class="<%= icon_size %>"></iconify-icon>
     <% end %>
   <% else %>
-    <iconify-icon icon="lucide:globe" class="w-5 h-5"></iconify-icon>
+    <iconify-icon icon="lucide:globe" class="<%= icon_size %>"></iconify-icon>
   <% end %>
 <% end %>

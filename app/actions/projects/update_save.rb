@@ -14,6 +14,9 @@ module Projects
         context.project.repository_url = context.project.repository_url.strip.downcase if context.project.repository_url_changed?
         context.project.save!
 
+        # Save project credential provider if changed
+        context.project.project_credential_provider.save! if context.project.project_credential_provider.changed?
+
         # Save build configuration if present
         context.build_configuration&.save!
       end

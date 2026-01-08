@@ -11,6 +11,7 @@
 #  namespace         :string           not null
 #  status            :integer          default("installing"), not null
 #  values            :jsonb
+#  version           :string           not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  cluster_id        :bigint           not null
@@ -19,6 +20,7 @@
 #
 #  index_add_ons_on_cluster_id           (cluster_id)
 #  index_add_ons_on_cluster_id_and_name  (cluster_id,name) UNIQUE
+#  index_add_ons_on_name                 (name)
 #
 # Foreign Keys
 #
@@ -28,6 +30,8 @@ class AddOn < ApplicationRecord
   include Loggable
   include TeamAccessible
   include Namespaced
+  include Favoriteable
+  include AccountUniqueName
   belongs_to :cluster
   has_one :account, through: :cluster
 
@@ -43,10 +47,9 @@ class AddOn < ApplicationRecord
   validates :chart_type, presence: true
   validate :chart_type_exists
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
-  validates_presence_of :chart_url
+  validates :chart_url, presence: true
+  validates :version, presence: true
   validate :has_package_details, if: :helm_chart?
-  validates_uniqueness_of :name, scope: :cluster_id
-
   after_update_commit do
     broadcast_replace_later_to [ self, :install_stage ], target: dom_id(self, :install_stage), partial: "add_ons/install_stage", locals: { add_on: self }
   end

@@ -1,0 +1,34 @@
+<div
+  data-controller="show-default-yaml"
+  data-show-default-yaml-metadata-url-value="<%= metadata_add_ons_path %>"
+  data-show-default-yaml-chart-url-value="<%= local_assigns[:chart_url] %>"
+  data-show-default-yaml-version-value="<%= local_assigns[:version] %>"
+  data-show-default-yaml-chart-url-input-id-value="<%= local_assigns[:chart_url_input_id] %>"
+>
+  <button
+    type="button"
+    class="btn btn-xs btn-outline"
+    data-show-default-yaml-target="button"
+    data-action="click->show-default-yaml#showDefaultYaml"
+  >
+    <span class="loading loading-spinner loading-xs hidden" data-show-default-yaml-target="spinner"></span>
+    Show Default YAML
+  </button>
+
+  <dialog aria-label="Modal" class="modal" data-show-default-yaml-target="modal">
+    <div class="modal-box w-11/12 max-w-5xl bg-base-300">
+      <button type="button" aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2" data-action="click->show-default-yaml#closeModal">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+      <div class="mb-4">
+        <h3 class="text-xl font-bold">Default YAML Values</h3>
+        <div class="flex items-center gap-2">
+          <code class="text-sm text-gray-400" data-show-default-yaml-target="chartUrl"></code>
+          <span class="badge badge-sm badge-outline" data-show-default-yaml-target="version"></span>
+        </div>
+      </div>
+      <div data-show-default-yaml-target="editor" class="overflow-auto max-h-[60vh]"></div>
+    </div>
+    <div class="modal-backdrop" data-action="click->show-default-yaml#closeModal"></div>
+  </dialog>
+</div>

@@ -4,8 +4,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Backend
 
-  # protect_from_forgery with: :exception
-  skip_before_action :verify_authenticity_token
+  protect_from_forgery with: :exception
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
@@ -14,6 +13,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   protected
     def current_account
@@ -46,7 +46,12 @@ class ApplicationController < ActionController::Base
 
   private
     def determine_layout
+      return "homepage" if doorkeeper_controller?
       current_user ? "application" : "homepage"
+    end
+
+    def doorkeeper_controller?
+      self.class.module_parent_name == "Doorkeeper"
     end
 
     def record_not_found
@@ -54,7 +59,16 @@ class ApplicationController < ActionController::Base
       redirect_to root_path
     end
 
+    def pundit_user
+      current_account_user
+    end
+
     def missing_portainer_credential
       redirect_to providers_path, alert: "Please add your Portainer API token to continue."
+    end
+
+    def user_not_authorized
+      flash[:alert] = "You are not authorized to perform this action."
+      redirect_back(fallback_location: root_path)
     end
 end

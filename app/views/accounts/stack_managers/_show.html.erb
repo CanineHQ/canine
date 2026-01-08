@@ -27,7 +27,18 @@
         <div class="text-sm text-base-content/70">Type</div>
         <div class="font-medium"><%= stack_manager.stack_manager_type.humanize %></div>
       </div>
-      
+
+      <div>
+        <div class="text-sm text-base-content/70">Role Based Access Control</div>
+        <div class="font-medium">
+          <% if stack_manager.enable_role_based_access_control %>
+            <span class="badge badge-success">Enabled</span>
+          <% else %>
+            <span class="badge badge-ghost">Disabled</span>
+          <% end %>
+        </div>
+      </div>
+
       <div data-controller="stack-manager--url-input">
         <div class="text-sm text-base-content/70">Provider URL</div>
         <div class="flex items-center gap-2">

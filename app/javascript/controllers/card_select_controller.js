@@ -16,6 +16,9 @@ export default class extends Controller {
     this.element.querySelectorAll('.card-form').forEach(form => form.classList.add('hidden'))
     this.element.querySelectorAll(`.card-${event.currentTarget.dataset.cardName}`).forEach(form => form.classList.remove("hidden"));
 
-    this.chartUrlTarget.value = event.currentTarget.dataset.chartUrl
+    if (this.hasChartUrlTarget) {
+      this.chartUrlTarget.value = event.currentTarget.dataset.chartUrl
+      this.chartUrlTarget.dispatchEvent(new Event('change'))
+    }
   }
 }

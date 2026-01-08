@@ -52,6 +52,7 @@ Unlike hosted PaaS solutions, you maintain complete control over your infrastruc
 | **💾 Persistent Storage** | Volume management for stateful applications and databases |
 | **👥 Multi-tenancy** | Account-based isolation with team collaboration and access control |
 | **⚙️ Custom Pod Templates** | Advanced Kubernetes pod customization with YAML configuration |
+| **🔑 Enterprise SSO** | Single sign-on support with SAML, OIDC, and LDAP integration |
 
 ## Requirements
 
@@ -86,9 +87,6 @@ Canine Cloud offers additional features for small teams:
 - Way less maintenance for you
 
 For more information & pricing, take a look at our landing page [https://canine.sh](https://canine.sh).
-
-## Repo Activity
-![Alt](https://repobeats.axiom.co/api/embed/0af4ce8a75f4a12ec78973ddf7021c769b9a0051.svg "Repobeats analytics image")
 
 ## License
 

@@ -11,9 +11,6 @@ class AddOnsController < ApplicationController
       format.html
       format.json { render json: @add_ons.map { |a| { id: a.id, name: a.name } } }
     end
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_ons
   end
 
   def search
@@ -32,9 +29,6 @@ class AddOnsController < ApplicationController
   # GET /add_ons/new
   def new
     @add_on = AddOn.new
-
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
   end
 
   # GET /add_ons/1/edit
@@ -48,8 +42,6 @@ class AddOnsController < ApplicationController
     add_on_params = AddOns::Create.parse_params(params)
     result = AddOns::Create.call(AddOn.new(add_on_params), current_user)
     @add_on = result.add_on
-    # Uncomment to authorize with Pundit
-    # authorize @add_on
 
     respond_to do |format|
       if result.success?
@@ -85,14 +77,28 @@ class AddOnsController < ApplicationController
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
-  def default_values
-    # Render a partial with the default values
-    @default_values = K8::Helm::Client.get_default_values_yaml(
-      repository_name: params[:repository_name],
-      repository_url: params[:repository_url],
-      chart_name: params[:chart_name]
-    )
-    render partial: "add_ons/helm/default_values", locals: { default_values: @default_values }
+  def metadata
+    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{params[:chart_url]}:#{params[:version]}")}"
+
+    metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url], version: params[:version])
+      next { schema: {}, default_values: nil } if result.failure?
+
+      package = result.response
+      repository = package["repository"]
+
+      version = package["version"]
+      values_yaml = K8::Helm::Client.get_default_values_yaml(package["package_id"], package["version"])
+      next { schema: {}, default_values: nil, version: } if values_yaml.blank?
+
+      schema_data = fetch_or_infer_schema(package, values_yaml)
+      { schema: schema_data[:schema], schema_source: schema_data[:schema_source], default_values: values_yaml, version: }
+    rescue Psych::SyntaxError => e
+      Rails.logger.error("Failed to parse values.yaml: #{e.message}")
+      { schema: {}, default_values: nil, version: }
+    end
+
+    render json: metadata
   end
 
   def download_values
@@ -122,6 +128,19 @@ class AddOnsController < ApplicationController
   end
 
   private
+
+  def fetch_or_infer_schema(package, values_yaml)
+    if package["has_values_schema"]
+      schema_result = AddOns::HelmChartValuesSchema.execute(
+        package_id: package["package_id"],
+        version: package["version"]
+      )
+      return { schema: schema_result.schema, schema_source: "fetched" } if schema_result.success?
+    end
+
+    values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
+    { schema: InferJsonSchemaService.new(values).infer, schema_source: "inferred" }
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_add_on

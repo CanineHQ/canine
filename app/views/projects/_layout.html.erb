@@ -11,6 +11,7 @@
     <h3 class="text-lg font-medium flex items-center gap-2 my-2">
       <%= render "projects/favicon", project: project %>
       <%= project.name %>
+      <%= render "favorites/button", favoriteable: project %>
     </h3>
     <% if project.domains.any? %>
       <div class="my-3">
@@ -39,7 +40,7 @@
           <div class="flex flex-row items-center gap-1">
             <iconify-icon icon="logos:docker-icon"></iconify-icon>
             <span class="underline"><%= project.repository_url %></span>
-          <div class="flex flex-row items-center gap-1">
+          </div>
         <% end %>
       <% end %>
 

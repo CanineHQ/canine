@@ -1,7 +1,11 @@
 <div>
   <div class="flex items-center justify-between mb-4">
     <div>
-      <h3 class="text-lg font-medium my-2"><%= cluster.name %></h3>
+      <h3 class="text-lg font-medium my-2 flex items-center gap-2">
+        <%= cluster_icon(cluster, classes: "text-2xl") %>
+        <%= cluster.name %>
+        <%= render "favorites/button", favoriteable: cluster %>
+      </h3>
       <%= render "clusters/status", cluster: cluster %>
       <div class="mt-1">
         <%= render "clusters/info", cluster: @cluster %>

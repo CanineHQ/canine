@@ -1,20 +1,31 @@
 # frozen_string_literal: true
 
 class AccountPolicy < ApplicationPolicy
-  def admin?
-    account_admin?
+  def index?
+    user.present?
   end
 
-  def manage_stack_manager?
-    account_admin?
+  def new?
+    create?
   end
 
-  private
+  def edit?
+    update?
+  end
 
-  def account_admin?
-    return false unless record
+  def show?
+    user.present?
+  end
 
-    account_user = AccountUser.find_by(user: user, account: record)
-    account_user&.admin?
+  def create?
+    user&.admin_or_owner?
+  end
+
+  def update?
+    user&.admin_or_owner?
+  end
+
+  def destroy?
+    user&.admin_or_owner?
   end
 end

@@ -1,9 +1,8 @@
 module Accounts
   class StackManagersController < ApplicationController
     before_action :authenticate_user!
-    before_action :authorize_account_admin, only: [ :show, :new, :create, :edit, :update, :destroy, :sync_clusters, :sync_registries ]
+    before_action :authorize_account, except: [ :verify_url, :check_reachable ]
     before_action :set_stack_manager, only: [ :show, :edit, :update, :destroy, :sync_clusters, :sync_registries ]
-    before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable ]
 
     def check_reachable
@@ -149,6 +148,10 @@ module Accounts
       else
         head :unauthorized
       end
+    end
+
+    def authorize_account
+      authorize current_account, :update?
     end
   end
 end

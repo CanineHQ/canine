@@ -138,6 +138,7 @@ rails console
 5. **Migrations**: Use strong migrations practices for zero-downtime deployments
 6. **Linting**: Always run `rubocop -A` at the end of every development cycle
 7. **Testing**: If you are going to create a spec, make sure to run it at the end of the development cycle. Don't write specs for validations or associations. Don't create many specs, keep them short and test multiple things in a single spec if it is conveniant
+8. **API**: Any changes to the api should go into /api/v1 and try to mirror the controller structure and routes in the app. Any updates, make sure to update the swagger tests as well
 
 ## Important Patterns
 

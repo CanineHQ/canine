@@ -1,4 +1,6 @@
 class ProvidersController < ApplicationController
+  MAX_DISPLAYED_PROJECTS = 4
+
   def index
   end
 

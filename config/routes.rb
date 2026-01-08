@@ -1,9 +1,63 @@
 Rails.application.routes.draw do
+  # API routes
+  namespace :api do
+    namespace :v1 do
+      resource :me, only: :show, controller: "me"
+      resources :projects, only: %i[index show] do
+        member do
+          post :deploy
+          post :restart
+        end
+        resources :processes, only: %i[index show create], module: :projects
+      end
+      resources :builds, only: %i[index show] do
+        member do
+          patch :kill
+        end
+      end
+      resources :clusters, only: %i[index] do
+        member do
+          get :download_kubeconfig
+        end
+      end
+      resources :add_ons, only: %i[index show] do
+        member do
+          post :restart
+        end
+      end
+    end
+  end
+
+  use_doorkeeper
+
+  # RFC 7591: Dynamic Client Registration Protocol
+  post "/oauth/register", to: "oauth_client_registration#create", as: :oauth_register
+
+  # RFC 9728: Protected Resource Metadata (MCP server as protected resource)
+  get "/.well-known/oauth-protected-resource",       to: "oauth_authorization_server_metadata#protected_resource"
+  get "/.well-known/oauth-protected-resource/mcp",   to: "oauth_authorization_server_metadata#protected_resource"
+
+  # RFC 8414: Authorization Server Metadata (OAuth server endpoints)
+  get "/.well-known/oauth-authorization-server",     to: "oauth_authorization_server_metadata#authorization_server"
+  get "/.well-known/oauth-authorization-server/mcp", to: "oauth_authorization_server_metadata#authorization_server"
+
+  post "/mcp", to: "mcp#handle"
+  get  "/mcp", to: "mcp#handle"
+
   # Account-specific URL-based routes
   devise_scope :user do
     get '/accounts/:slug/sign_in', to: 'users/sessions#account_login', as: :account_sign_in
     post '/accounts/:slug/sign_in', to: 'users/sessions#account_create'
   end
+
+  # OIDC authentication routes
+  get '/accounts/:slug/auth/oidc', to: 'accounts/oidc#authorize', as: :oidc_auth
+  get '/accounts/:slug/auth/oidc/callback', to: 'accounts/oidc#callback', as: :oidc_callback
+
+  # SAML authentication routes
+  get '/accounts/:slug/auth/saml', to: 'accounts/saml#authorize', as: :saml_auth
+  post '/accounts/:slug/auth/saml/callback', to: 'accounts/saml#callback', as: :saml_callback
+  get '/accounts/:slug/auth/saml/metadata', to: 'accounts/saml#metadata', as: :saml_metadata
 
   authenticate :user, ->(user) { user.admin? } do
     mount Avo::Engine, at: Avo.configuration.root_path
@@ -15,8 +69,10 @@ Rails.application.routes.draw do
   end
   resources :accounts, only: [ :create ] do
     collection do
-      resources :account_users, only: %i[create index destroy], module: :accounts
-      resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts
+      resources :account_users, only: %i[create index update destroy], module: :accounts
+      resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
+        post :test_connection
+      end
       resources :teams, module: :accounts do
         resources :team_memberships, only: %i[create destroy], module: :teams
         resources :team_resources, only: %i[create destroy], module: :teams
@@ -49,7 +105,14 @@ Rails.application.routes.draw do
     # Alternate route to use if logged in users should still see public root
     # get "/dashboard", to: "dashboard#show", as: :user_root
   end
+
+  resources :favorites, only: [] do
+    collection do
+      post :toggle
+    end
+  end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
+  get "/search", to: "search#index"
   resources :build_packs, only: [] do
     collection do
       get :search
@@ -59,7 +122,7 @@ Rails.application.routes.draw do
   resources :add_ons do
     collection do
       get :search
-      get :default_values
+      get :metadata
     end
     member do
       post :restart
@@ -71,6 +134,7 @@ Rails.application.routes.draw do
   end
 
   resources :providers, only: %i[index new create destroy]
+  resources :api_tokens, only: %i[index new create destroy]
   resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
   resources :projects do
     member do
@@ -147,6 +211,9 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "async_render" => "async_renderer#async_render"
+
+  get "/api-docs", to: "static#docs"
+  get "/swagger", to: "static#swagger"
 
   get "/calculator", to: "static#calculator"
   # Public marketing homepage

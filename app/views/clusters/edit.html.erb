@@ -39,7 +39,7 @@
               <div data-yaml-editor-target="editor" class="mt-2"></div>
             </div>
             <div class="form-footer flex gap-2">
-              <%= form.submit "Save", class: "btn btn-primary" %>
+              <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
               <button type="button"
                       class="btn btn-outline"
                       data-action="click->content-toggle#cancelEdit">

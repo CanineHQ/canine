@@ -24,16 +24,29 @@
 class SSOProvider < ApplicationRecord
   belongs_to :account
   belongs_to :configuration, polymorphic: true, dependent: :destroy
+  has_many :providers, dependent: :nullify
 
   validates :account_id, uniqueness: true
 
   enum :team_provisioning_mode, {
     disabled: 0,
     just_in_time: 1
-  }
+  }, suffix: true
 
 
   def ldap?
     configuration_type == "LDAPConfiguration"
+  end
+
+  def oidc?
+    configuration_type == "OIDCConfiguration"
+  end
+
+  def saml?
+    configuration_type == "SAMLConfiguration"
+  end
+
+  def sso_users_count
+    providers.joins(:user).distinct.count(:user_id)
   end
 end

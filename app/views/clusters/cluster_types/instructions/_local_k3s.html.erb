@@ -1,0 +1,32 @@
+<div class="card-form hidden card-local_k3s space-y-4">
+  <div data-controller="card-select">
+    <label class="mb-2">What operating system are you using?</label>
+    <div class="form-group">
+      <div class="flex gap-4">
+        <select class="hidden" data-card-select-target="input">
+          <option value="macos">macOS</option>
+          <option value="linux">Linux</option>
+          <option value="windows">Windows</option>
+        </select>
+        <%= render "clusters/instructions/cards/macos" %>
+        <%= render "clusters/instructions/cards/linux" %>
+        <%= render "clusters/instructions/cards/windows" %>
+      </div>
+    </div>
+
+    <div class="my-10 has-styled-links">
+      <%= render "clusters/instructions/instructions/macos" %>
+      <%= render "clusters/instructions/instructions/linux" %>
+      <%= render "clusters/instructions/instructions/windows" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :kubeconfig_output, "Kubeconfig" %>
+    <%= form.text_area :kubeconfig_output, class: "textarea textarea-bordered w-full max-w-lg h-48", placeholder: "Paste your kubeconfig here..." %>
+  </div>
+
+  <div>
+    <%= form.submit "Create Cluster", class: "btn btn-primary" %>
+  </div>
+</div>

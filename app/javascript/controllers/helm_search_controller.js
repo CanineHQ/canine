@@ -27,7 +27,30 @@ export default class extends AsyncSearchDropdownController {
     this.input.parentElement.classList.add('hidden')
     this.input.value = pkg.name
     const chartUrl = `${pkg.repository.name}/${pkg.name}`
-    document.querySelector(`input[name="add_on[chart_url]"]`).value = chartUrl
+    const element = document.querySelector(`input[name="add_on[chart_url]"]`)
+    element.value = chartUrl
+    element.dispatchEvent(new Event('change'))
+
     this.element.appendChild(renderHelmChartCard(pkg))
+  }
+
+  clearSelection() {
+    // Remove the card
+    const card = this.element.querySelector('[data-helm-chart-card]')
+    if (card) {
+      card.remove()
+    }
+
+    // Clear the chart_url
+    const chartUrlInput = document.querySelector(`input[name="add_on[chart_url]"]`)
+    if (chartUrlInput) {
+      chartUrlInput.value = ''
+      chartUrlInput.dispatchEvent(new Event('change'))
+    }
+
+    // Clear and show the input
+    this.input.value = ''
+    this.input.parentElement.classList.remove('hidden')
+    this.input.focus()
   }
 }

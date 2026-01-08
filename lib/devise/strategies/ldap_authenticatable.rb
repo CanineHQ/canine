@@ -37,7 +37,12 @@ module Devise
 
         authenticator = LDAP::Authenticator.new(ldap_configuration)
 
-        result = authenticator.call(username: username, password: password)
+        sso_provider = ldap_configuration.sso_provider
+        result = authenticator.call(
+          username: username,
+          password: password,
+          fetch_groups: sso_provider.just_in_time_team_provisioning_mode?
+        )
 
         unless result.success?
           Rails.logger.info "LDAP auth failed for username=#{username.inspect}: #{result.error_message}"
@@ -45,16 +50,16 @@ module Devise
         end
 
         email = result.email
-        groups = result.groups
-        sso_provider = ldap_configuration.sso_provider
 
-        if sso_provider.just_in_time?
-          ar_result = ActiveRecord::Base.transaction do
-            SSO::SyncUserTeams.call(email, groups, ldap_configuration.account)
-          end
-        else
-          ar_result = SSO::CreateUserInAccount.call(email, ldap_configuration.account)
-        end
+        ar_result = SSO::SyncUserTeams.call(
+          email: email,
+          team_names: result.groups || [],
+          account: ldap_configuration.account,
+          sso_provider: sso_provider,
+          uid: result.user_dn,
+          name: result.name,
+          create_teams: sso_provider.just_in_time_team_provisioning_mode?
+        )
 
         if ar_result.failure?
           return fail(:invalid_login)

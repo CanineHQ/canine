@@ -1,0 +1,11 @@
+<div class="alert alert-warning mb-4">
+  <iconify-icon icon="lucide:info" class="mr-2"></iconify-icon>
+  <div>
+    <div class="font-medium">Redirect URI</div>
+    <div class="text-sm mt-1">Configure this redirect URI in your OIDC provider:</div>
+    <pre
+      class="inline-block cursor-pointer mt-2"
+      data-controller="clipboard"
+      data-clipboard-text="<%= oidc_callback_url(slug: current_account.slug) %>"><%= oidc_callback_url(slug: current_account.slug) %></pre>
+  </div>
+</div>

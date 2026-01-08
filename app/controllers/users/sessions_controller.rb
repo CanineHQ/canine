@@ -36,8 +36,13 @@ class Users::SessionsController < Devise::SessionsController
     self.resource = resource_class.new(sign_in_params)
     clean_up_passwords(resource)
     @sso_provider = @account.sso_provider if @account.sso_enabled?
+
     if @account.sso_provider&.ldap?
       render "devise/sessions/ldap"
+    elsif @account.sso_provider&.oidc?
+      render "devise/sessions/oidc"
+    elsif @account.sso_provider&.saml?
+      render "devise/sessions/saml"
     else
       render :new
     end
@@ -59,6 +64,12 @@ class Users::SessionsController < Devise::SessionsController
         clean_up_passwords(self.resource)
         render "devise/sessions/ldap"
       end
+    elsif @account.sso_provider&.oidc?
+      # OIDC uses a redirect flow, so this shouldn't be called directly
+      redirect_to account_sign_in_path(@account.slug)
+    elsif @account.sso_provider&.saml?
+      # SAML uses a redirect flow, so this shouldn't be called directly
+      redirect_to account_sign_in_path(@account.slug)
     else
       redirect_to new_user_session_path
     end

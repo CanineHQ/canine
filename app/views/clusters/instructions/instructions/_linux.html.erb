@@ -1,0 +1,20 @@
+<div class="card-form hidden card-linux space-y-4">
+  <p class="font-semibold">Setting up K3s on Linux:</p>
+  <p class="text-sm text-gray-400">K3s runs natively on Linux for a lightweight Kubernetes experience.</p>
+
+  <ol class="list-decimal list-inside space-y-2 ml-4">
+    <li>Install K3s: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -sfL https://get.k3s.io | sh -">curl -sfL https://get.k3s.io | sh -</code></li>
+    <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="sudo cat /etc/rancher/k3s/k3s.yaml">sudo cat /etc/rancher/k3s/k3s.yaml</code></li>
+  </ol>
+
+  <div class="mt-4">
+    <p class="font-medium">Alternative: K3d (Docker-based)</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2 ml-4">
+      <li>Install K3d: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash">curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash</code></li>
+      <li>Create a cluster: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d cluster create dev">k3d cluster create dev</code></li>
+      <li>Get the kubeconfig: <code class="cursor-pointer" data-controller="clipboard" data-clipboard-text="k3d kubeconfig get dev">k3d kubeconfig get dev</code></li>
+    </ol>
+  </div>
+
+  <p class="mt-4 font-semibold">Copy the kubeconfig output and paste it below.</p>
+</div>

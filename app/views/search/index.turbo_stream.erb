@@ -1,0 +1,34 @@
+<%= turbo_stream.update "search_results" do %>
+  <% if @query.blank? %>
+    <div class="p-4 text-center text-base-content/60">Type to search projects, clusters, and add-ons</div>
+  <% elsif @result.projects.empty? && @result.clusters.empty? && @result.add_ons.empty? %>
+    <div class="p-4 text-center text-base-content/60">No results found</div>
+  <% else %>
+    <% if @result.projects.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Projects (<%= @result.projects.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <%= render partial: "search/project", collection: @result.projects, locals: { query: @query } %>
+      </ul>
+    <% end %>
+
+    <% if @result.clusters.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Clusters (<%= @result.clusters.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <%= render partial: "search/cluster", collection: @result.clusters, locals: { query: @query } %>
+      </ul>
+    <% end %>
+
+    <% if @result.add_ons.any? %>
+      <div class="px-4 py-2 text-xs font-semibold text-base-content/60 uppercase tracking-wide">
+        Add-ons (<%= @result.add_ons.size %>)
+      </div>
+      <ul class="menu menu-sm">
+        <%= render partial: "search/add_on", collection: @result.add_ons, locals: { query: @query } %>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>

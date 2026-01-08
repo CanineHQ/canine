@@ -79,7 +79,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 
@@ -131,7 +131,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 
@@ -141,7 +141,7 @@ module Portainer
       end
     rescue Socket::ResolutionError
       raise ConnectionError, "Portainer URL is not resolvable"
-    rescue Net::ReadTimeout
+    rescue Net::ReadTimeout, Net::OpenTimeout
       raise ConnectionError, "Connection to Portainer timed out"
     end
 

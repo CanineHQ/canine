@@ -6,6 +6,7 @@
 #  cluster_type :integer          default("k8s")
 #  kubeconfig   :jsonb
 #  name         :string           not null
+#  options      :jsonb            not null
 #  status       :integer          default("initializing"), not null
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
@@ -31,7 +32,7 @@ FactoryBot.define do
         "contexts" => [ { "name" => "test-cluster", "context" => { "cluster" => "test-cluster", "user" => "test-user" } } ],
         "current-context" => "test-cluster",
         "users" => [ { "name" => "test-user", "user" => { "token" => "test-token" } } ]
-      }.to_json
+      }
     end
     status { :initializing }
     cluster_type { :k8s }

@@ -78,7 +78,7 @@ module Users
             owner: user,
             name: "#{auth.info.name || auth.info.email.split("@").first}'s Account"
           )
-          AccountUser.create!(account: account, user: user)
+          AccountUser.create!(account: account, user: user, role: :owner)
         end
 
         user

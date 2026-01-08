@@ -78,12 +78,13 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
-  def build_install_command(name, chart_url, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:)
+  def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:)
     command_parts = [
       "helm upgrade --install #{name} #{chart_url}",
       "-f #{values_file_path}",
       "--namespace #{namespace}",
-      "--timeout=#{timeout}"
+      "--timeout=#{timeout}",
+      "--version #{version}"
     ]
     command_parts << "--dry-run" if dry_run
     command_parts << "--atomic" if atomic
@@ -96,6 +97,7 @@ class K8::Helm::Client
   def install(
     name,
     chart_url,
+    version,
     values: {},
     namespace: 'default',
     dry_run: false,
@@ -114,6 +116,7 @@ class K8::Helm::Client
         command = build_install_command(
           name,
           chart_url,
+          version,
           values_file_path: values_file.path,
           namespace: namespace,
           timeout: timeout,
@@ -140,15 +143,15 @@ class K8::Helm::Client
     end
   end
 
-  def self.get_default_values_yaml(
-    repository_name:,
-    repository_url:,
-    chart_name:
-  )
-    runner = Cli::RunAndReturnOutput.new
-    add_repo(repository_name, repository_url, runner)
-    command = "helm show values #{repository_name}/#{chart_name}"
-    output = runner.(command)
-    output
+  def self.get_default_values_yaml(package_id, version)
+    response = HTTParty.get(
+      "https://artifacthub.io/api/v1/packages/#{package_id}/#{version}/values"
+    )
+
+    if response.success?
+      response.parsed_response
+    else
+      nil
+    end
   end
 end

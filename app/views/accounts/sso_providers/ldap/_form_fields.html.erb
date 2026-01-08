@@ -1,110 +1,118 @@
 <%= fields_for :ldap_configuration, ldap_configuration do |ldap_form| %>
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Host <span class="text-error">*</span></span>
-    </label>
-    <%= ldap_form.text_field :host, class: "input input-bordered", required: true, placeholder: "ldap.example.com" %>
-    <label class="label">
-      <span class="label-text-alt">LDAP server hostname or IP address</span>
-    </label>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(
+      label: "Host",
+      description: "LDAP server hostname or IP address"
+    )) do %>
+      <%= ldap_form.text_field :host, class: "input input-bordered w-full", required: true, placeholder: "ldap.example.com" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Port",
+      description: "LDAP server port"
+    )) do %>
+      <%= ldap_form.number_field :port, class: "input input-bordered w-full", required: true, placeholder: "389" %>
+      <label class="label">
+        <span class="label-text-alt">Default: 389 (LDAP), 636 (LDAPS)</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Base DN",
+      description: "Base Distinguished Name for user searches"
+    )) do %>
+      <%= ldap_form.text_field :base_dn, class: "input input-bordered w-full", required: true, placeholder: "dc=example,dc=com" %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Encryption",
+      description: "Connection encryption method"
+    )) do %>
+      <%= ldap_form.select :encryption,
+          LDAPConfiguration.encryptions.keys.map { |key| [key.titleize, key] },
+          {},
+          class: "select select-bordered w-full" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Bind DN",
+      description: "Service account DN for LDAP searches"
+    )) do %>
+      <%= ldap_form.text_field :bind_dn, class: "input input-bordered w-full", placeholder: "cn=admin,dc=example,dc=com" %>
+      <label class="label">
+        <span class="label-text-alt">Leave empty for anonymous bind</span>
+      </label>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Bind Password",
+      description: "Password for the bind DN"
+    )) do %>
+      <%= ldap_form.text_field :bind_password, type: "password", class: "input input-bordered w-full" %>
+    <% end %>
   </div>
 
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Port <span class="text-error">*</span></span>
-    </label>
-    <%= ldap_form.number_field :port, class: "input input-bordered", required: true, placeholder: "389" %>
-    <label class="label">
-      <span class="label-text-alt">Default: 389 (LDAP), 636 (LDAPS)</span>
-    </label>
-  </div>
-
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Base DN <span class="text-error">*</span></span>
-    </label>
-    <%= ldap_form.text_field :base_dn, class: "input input-bordered", required: true, placeholder: "dc=example,dc=com" %>
-    <label class="label">
-      <span class="label-text-alt">Base Distinguished Name for user searches</span>
-    </label>
-  </div>
-
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Encryption</span>
-    </label>
-    <%= ldap_form.select :encryption,
-        LDAPConfiguration.encryptions.keys.map { |key| [key.titleize, key] },
-        {},
-        class: "select select-bordered" %>
-    <label class="label">
-      <span class="label-text-alt">Connection encryption method</span>
-    </label>
-  </div>
-
-  <div class="divider">Bind Credentials (Optional)</div>
-
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Bind DN</span>
-    </label>
-    <%= ldap_form.text_field :bind_dn, class: "input input-bordered", placeholder: "cn=admin,dc=example,dc=com" %>
-    <label class="label">
-      <span class="label-text-alt">Leave empty for anonymous bind</span>
-    </label>
-  </div>
-
-  <div class="form-control mt-1 w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Bind Password</span>
-    </label>
-    <%= ldap_form.password_field :bind_password, class: "input input-bordered" %>
-  </div>
-
-  <details class="collapse collapse-arrow bg-base-200 mt-4 max-w-sm">
+  <details class="collapse collapse-arrow bg-base-200 mt-8">
     <summary class="collapse-title font-medium">
       Advanced Settings (Optional)
     </summary>
-    <div class="collapse-content space-y-4">
-      <div class="form-control mt-1 w-full">
-        <label class="label">
-          <span class="label-text">UID Attribute</span>
-        </label>
-        <%= ldap_form.text_field :uid_attribute, class: "input input-bordered", placeholder: "uid" %>
-        <label class="label">
-          <span class="label-text-alt">Attribute used for username (default: uid)</span>
-        </label>
-      </div>
+    <div class="collapse-content">
+      <div class="space-y-8 mt-4">
+        <%= render(FormFieldComponent.new(
+          label: "UID Attribute",
+          description: "Attribute used for username"
+        )) do %>
+          <%= ldap_form.text_field :uid_attribute, class: "input input-bordered w-full", placeholder: "uid" %>
+          <label class="label">
+            <span class="label-text-alt">Default: uid</span>
+          </label>
+        <% end %>
 
-      <div class="form-control mt-1 w-full">
-        <label class="label">
-          <span class="label-text">Email Attribute</span>
-        </label>
-        <%= ldap_form.text_field :email_attribute, class: "input input-bordered", placeholder: "mail" %>
-        <label class="label">
-          <span class="label-text-alt">Attribute used for email (default: mail)</span>
-        </label>
-      </div>
+        <%= render(FormFieldComponent.new(
+          label: "Email Attribute",
+          description: "Attribute used for email address"
+        )) do %>
+          <%= ldap_form.text_field :email_attribute, class: "input input-bordered w-full", placeholder: "mail" %>
+          <label class="label">
+            <span class="label-text-alt">Default: mail</span>
+          </label>
+        <% end %>
 
-      <div class="form-control mt-1 w-full">
-        <label class="label">
-          <span class="label-text">Name Attribute</span>
-        </label>
-        <%= ldap_form.text_field :name_attribute, class: "input input-bordered", placeholder: "cn" %>
-        <label class="label">
-          <span class="label-text-alt">Attribute used for display name (default: cn)</span>
-        </label>
-      </div>
+        <%= render(FormFieldComponent.new(
+          label: "Name Attribute",
+          description: "Attribute used for display name"
+        )) do %>
+          <%= ldap_form.text_field :name_attribute, class: "input input-bordered w-full", placeholder: "cn" %>
+          <label class="label">
+            <span class="label-text-alt">Default: cn</span>
+          </label>
+        <% end %>
 
-      <div class="form-control mt-1 w-full">
-        <label class="label">
-          <span class="label-text">Filter</span>
-        </label>
-        <%= ldap_form.text_field :filter, class: "input input-bordered", placeholder: "(objectClass=person)" %>
-        <label class="label">
-          <span class="label-text-alt">Additional LDAP filter for user searches</span>
-        </label>
+        <%= render(FormFieldComponent.new(
+          label: "Filter",
+          description: "Additional LDAP filter for user searches"
+        )) do %>
+          <%= ldap_form.text_field :filter, class: "input input-bordered w-full", placeholder: "(objectClass=person)" %>
+        <% end %>
       </div>
     </div>
   </details>
+
+  <div class="mt-8" data-controller="ldap-test-connection">
+    <button type="button"
+            class="btn btn-outline btn-sm"
+            data-action="click->ldap-test-connection#test"
+            data-ldap-test-connection-target="button">
+      <iconify-icon icon="lucide:plug" height="16"></iconify-icon>
+      Test Connection
+    </button>
+    <%= turbo_frame_tag "ldap_test_connection_result", class: "block mt-3", data: { ldap_test_connection_target: "result" } do %>
+    <% end %>
+  </div>
 <% end %>
