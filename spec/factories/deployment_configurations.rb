@@ -18,7 +18,7 @@
 #
 FactoryBot.define do
   factory :deployment_configuration do
-    project
+    project { nil }
     deployment_method { :legacy }
   end
 end

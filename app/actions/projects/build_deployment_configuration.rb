@@ -4,6 +4,8 @@ class Projects::BuildDeploymentConfiguration
 
   executed do |context|
     project = context.project
-    project.build_deployment_configuration!(deployment_method: "helm")
+    if project.deployment_configuration.nil?
+      project.build_deployment_configuration(deployment_method: "helm")
+    end
   end
 end

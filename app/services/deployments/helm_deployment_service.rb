@@ -35,6 +35,7 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
   def setup_chart_builder
     @chart_builder = K8::Helm::ChartBuilder.new(
       @project.name,
+      @deployment.version,
       @deployment
     ).connect(@connection)
 

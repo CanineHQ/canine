@@ -4,7 +4,7 @@ RSpec.describe K8::Helm::ChartBuilder do
   let(:chart_name) { 'test-chart' }
   let(:logger) { double('logger', info: nil) }
   let(:mock_client) { instance_double(K8::Helm::Client) }
-  let(:chart_builder) { described_class.new(chart_name, logger) }
+  let(:chart_builder) { described_class.new(chart_name, "1.0.0", logger) }
 
   let(:mock_resource) do
     double('resource',
@@ -67,7 +67,8 @@ RSpec.describe K8::Helm::ChartBuilder do
       expect(mock_client).to receive(:install).with(
         chart_name,
         kind_of(String),
-        namespace: 'my-namespace'
+        "1.0.0",
+        hash_including(namespace: 'my-namespace')
       )
 
       chart_builder.install_chart('my-namespace')

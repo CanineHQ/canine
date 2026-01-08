@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
+#  version    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  build_id   :bigint           not null
@@ -24,6 +25,12 @@ class Deployment < ApplicationRecord
   enum :status, { in_progress: 0, completed: 1, failed: 2 }
   after_update_commit do
     self.build.broadcast_build
+  end
+
+  before_create :stamp_version
+
+  def stamp_version
+    self.version = "#{project.deployments.count + 1}.0.0"
   end
 
   def add_manifest(yaml)

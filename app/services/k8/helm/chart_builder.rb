@@ -1,8 +1,9 @@
 class K8::Helm::ChartBuilder < K8::Base
-  attr_reader :chart_name, :resources, :logger, :client
+  attr_reader :chart_name, :resources, :logger, :client, :version
 
-  def initialize(chart_name, logger)
+  def initialize(chart_name, version, logger)
     @chart_name = chart_name
+    @version = version
     @logger = logger
     @resources = []
     @before_install_callbacks = []
@@ -25,9 +26,9 @@ class K8::Helm::ChartBuilder < K8::Base
     <<-YAML
 apiVersion: v2
 name: #{chart_name}
-version: 1.0.0
+version: #{version}
 type: application
-appVersion: "1.0.0"
+appVersion: #{version}
     YAML
   end
 
@@ -51,6 +52,7 @@ appVersion: "1.0.0"
       client.install(
         chart_name,
         chart_directory,
+        version,
         namespace: namespace,
         atomic: true,
         timeout: "5m0s",

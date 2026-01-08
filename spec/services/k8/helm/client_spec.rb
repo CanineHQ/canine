@@ -25,6 +25,7 @@ RSpec.describe K8::Helm::Client do
       command = client.build_install_command(
         "my-release",
         "/path/to/chart",
+        "1.0.0",
         values_file_path: "/tmp/values.yaml",
         namespace: "production",
         timeout: "5m0s",
@@ -39,6 +40,7 @@ RSpec.describe K8::Helm::Client do
         "-f /tmp/values.yaml " \
         "--namespace production " \
         "--timeout=5m0s " \
+        "--version 1.0.0 " \
         "--atomic " \
         "--wait " \
         "--history-max=10"
@@ -49,6 +51,7 @@ RSpec.describe K8::Helm::Client do
       command = client.build_install_command(
         "my-release",
         "/path/to/chart",
+        "1.0.0",
         values_file_path: "/tmp/values.yaml",
         namespace: "default",
         timeout: "1000s",
@@ -62,7 +65,8 @@ RSpec.describe K8::Helm::Client do
         "helm upgrade --install my-release /path/to/chart " \
         "-f /tmp/values.yaml " \
         "--namespace default " \
-        "--timeout=1000s"
+        "--timeout=1000s " \
+        "--version 1.0.0"
       )
     end
   end

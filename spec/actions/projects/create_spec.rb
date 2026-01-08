@@ -36,6 +36,8 @@ RSpec.describe Projects::Create do
         expect(subject).to be_success
         expect(subject.project.build_configuration).to be_persisted
         expect(subject.project.build_configuration.provider_id).to eq(provider.id)
+        expect(subject.project.deployment_configuration).to be_persisted
+        expect(subject.project.deployment_configuration.deployment_method).to eq('helm')
       end
 
       context 'with a build configuration specification' do
@@ -157,6 +159,7 @@ RSpec.describe Projects::Create do
         expect(subject).to eq([
           Projects::ValidateGitRepository,
           Projects::Create::ToNamespaced,
+          Projects::BuildDeploymentConfiguration,
           Namespaced::SetUpNamespace,
           Namespaced::ValidateNamespace,
           Projects::InitializeBuildPacks,
@@ -175,6 +178,7 @@ RSpec.describe Projects::Create do
         expect(subject).to eq([
           Projects::ValidateGitRepository,
           Projects::Create::ToNamespaced,
+          Projects::BuildDeploymentConfiguration,
           Namespaced::SetUpNamespace,
           Namespaced::ValidateNamespace,
           Projects::InitializeBuildPacks,

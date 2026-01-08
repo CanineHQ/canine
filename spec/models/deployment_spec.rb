@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
+#  version    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  build_id   :bigint           not null
@@ -22,6 +23,17 @@ require 'rails_helper'
 RSpec.describe Deployment, type: :model do
   let(:build) { create(:build) }
   let(:deployment) { create(:deployment, build: build) }
+
+  describe '#stamp_version' do
+    it 'sets version based on project deployment count' do
+      project = build.project
+      new_deployment = FactoryBot.build(:deployment, build: build)
+
+      new_deployment.stamp_version
+
+      expect(new_deployment.version).to eq("#{project.deployments.count + 1}.0.0")
+    end
+  end
 
   describe '#add_manifest' do
     let(:deployment_yaml) do

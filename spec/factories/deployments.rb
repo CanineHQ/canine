@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
+#  version    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  build_id   :bigint           not null
