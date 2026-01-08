@@ -8,5 +8,6 @@ json.branch project.branch
 json.status project.status
 json.cluster_id project.cluster_id
 json.cluster_name project.cluster.name
+json.container_registry_url project.container_image_reference
 json.created_at project.created_at
 json.updated_at project.updated_at

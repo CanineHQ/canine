@@ -2,7 +2,7 @@
 
 SwaggerSchemas::PROJECT = {
   type: :object,
-  required: %w[id name namespace repository_url branch status cluster_id cluster_name updated_at created_at],
+  required: %w[id name namespace repository_url branch status cluster_id cluster_name container_registry_url updated_at created_at],
   properties: {
     id: {
       type: :integer,
@@ -35,6 +35,10 @@ SwaggerSchemas::PROJECT = {
     cluster_name: {
       type: :string,
       example: 'production'
+    },
+    container_registry_url: {
+      type: :string,
+      example: 'ghcr.io/example/example-project:main'
     },
     updated_at: {
       type: :string,
