@@ -79,6 +79,7 @@ class Projects::Create
     end
 
     steps << Projects::Create::ToNamespaced
+    steps << Projects::BuildDeploymentConfiguration
     steps << Namespaced::SetUpNamespace
     steps << Namespaced::ValidateNamespace
     steps << Projects::InitializeBuildPacks

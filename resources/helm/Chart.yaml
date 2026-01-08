@@ -1,0 +1,5 @@
+apiVersion: v2
+name: <%= project.name %>
+version: 1.0.0
+type: application
+appVersion: "1.0.0"

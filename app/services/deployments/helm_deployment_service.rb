@@ -1,0 +1,88 @@
+class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
+  def deploy
+    setup_connection
+    setup_chart_builder
+
+    apply_namespace if @project.managed_namespace?
+    upload_registry_secrets
+    apply_config_and_secrets
+
+    deploy_volumes
+    predeploy
+    deploy_services
+    @chart_builder.install_chart(@project.name)
+    kill_one_off_containers
+    postdeploy
+
+    mark_services_healthy
+    complete_deployment!
+  end
+
+  def uninstall
+    setup_connection
+    setup_helm_client
+
+    predestroy
+    @helm_client.uninstall(@project.name, namespace: @project.namespace)
+    postdestroy
+
+    delete_namespace if @project.managed_namespace?
+    @logger.info("Uninstalled #{@project.name}", color: :green)
+  end
+
+  private
+
+  def setup_chart_builder
+    @chart_builder = K8::Helm::ChartBuilder.new(
+      @project.name,
+      @deployment.version,
+      @deployment
+    ).connect(@connection)
+
+    @chart_builder.register_before_install do |yaml_content|
+      @deployment.add_manifest(yaml_content)
+    end
+  end
+
+  def apply_config_and_secrets
+    @chart_builder << build_resource("ConfigMap", @project)
+    @chart_builder << build_resource("Secrets", @project)
+  end
+
+  def build_resource(resource_type, target)
+    K8::Stateless.const_get(resource_type).new(target)
+  end
+
+  def deploy_volumes
+    @project.volumes.each do |volume|
+      @chart_builder << build_resource("Pv", volume)
+      @chart_builder << build_resource("Pvc", volume)
+      volume.deployed!
+    rescue StandardError => e
+      volume.failed!
+      raise e
+    end
+  end
+
+  def deploy_service(service)
+    if service.background_service?
+      @chart_builder << build_resource("Deployment", service)
+    elsif service.cron_job?
+      @chart_builder << build_resource("CronJob", service)
+    elsif service.web_service?
+      @chart_builder << build_resource("Deployment", service)
+      @chart_builder << build_resource("Service", service)
+      if service.domains.any? && service.allow_public_networking?
+        @chart_builder << build_resource("Ingress", service)
+      end
+    end
+  end
+
+  def mark_services_healthy
+    @project.services.each(&:healthy!)
+  end
+
+  def setup_helm_client
+    @helm_client = K8::Helm::Client.connect(@connection, Cli::RunAndLog.new(@logger))
+  end
+end

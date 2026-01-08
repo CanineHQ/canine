@@ -41,5 +41,9 @@ FactoryBot.define do
         service.cron_schedule ||= build(:cron_schedule, service: service)
       end
     end
+
+    trait :background_service do
+      service_type { :background_service }
+    end
   end
 end

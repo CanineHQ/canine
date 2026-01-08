@@ -40,6 +40,11 @@ class ProjectForks::ForkProject
         child_project.build_configuration = new_build_configuration
       end
 
+      if parent_project.deployment_configuration.present?
+        new_deployment_configuration = parent_project.deployment_configuration.dup
+        child_project.deployment_configuration = new_deployment_configuration
+      end
+
       if file.present?
         # Parse and store the config
         canine_config = CanineConfig::Definition.parse(file.content, parent_project, pull_request)

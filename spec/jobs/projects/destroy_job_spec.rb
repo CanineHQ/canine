@@ -1,4 +1,3 @@
-# spec/actions/projects/create_spec.rb
 require 'rails_helper'
 
 RSpec.describe Projects::DestroyJob do
@@ -6,9 +5,10 @@ RSpec.describe Projects::DestroyJob do
   let(:user) { create(:user) }
   let(:job) { described_class.new }
   let(:subject) { job.perform(project, user) }
+  let(:mock_service) { instance_double(Deployments::LegacyDeploymentService, uninstall: true) }
 
   before do
-    allow(job).to receive(:delete_namespace)
+    allow(Deployments::LegacyDeploymentService).to receive(:for_project).and_return(mock_service)
   end
 
   context 'with a complex project' do
@@ -20,7 +20,7 @@ RSpec.describe Projects::DestroyJob do
     let!(:environment_variable) { create(:environment_variable, project: project) }
 
     it 'destroys the project, builds, deployments, volumes, envvars, and services' do
-      expect(job).to receive(:delete_namespace)
+      expect(mock_service).to receive(:uninstall)
       expect(job).to receive(:remove_github_webhook)
 
       subject

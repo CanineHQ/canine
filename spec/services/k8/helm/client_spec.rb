@@ -19,4 +19,55 @@ RSpec.describe K8::Helm::Client do
       expect(client).to be_connected
     end
   end
+
+  describe '#build_install_command' do
+    it 'serializes all options into the helm command' do
+      command = client.build_install_command(
+        "my-release",
+        "/path/to/chart",
+        "1.0.0",
+        values_file_path: "/tmp/values.yaml",
+        namespace: "production",
+        timeout: "5m0s",
+        dry_run: false,
+        atomic: true,
+        wait: true,
+        history_max: 10
+      )
+
+      expect(command).to eq(
+        "helm upgrade --install my-release /path/to/chart " \
+        "-f /tmp/values.yaml " \
+        "--namespace production " \
+        "--timeout=5m0s " \
+        "--version 1.0.0 " \
+        "--atomic " \
+        "--wait " \
+        "--history-max=10"
+      )
+    end
+
+    it 'excludes optional flags when not set' do
+      command = client.build_install_command(
+        "my-release",
+        "/path/to/chart",
+        "1.0.0",
+        values_file_path: "/tmp/values.yaml",
+        namespace: "default",
+        timeout: "1000s",
+        dry_run: false,
+        atomic: false,
+        wait: false,
+        history_max: nil
+      )
+
+      expect(command).to eq(
+        "helm upgrade --install my-release /path/to/chart " \
+        "-f /tmp/values.yaml " \
+        "--namespace default " \
+        "--timeout=1000s " \
+        "--version 1.0.0"
+      )
+    end
+  end
 end

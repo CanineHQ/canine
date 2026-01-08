@@ -5,6 +5,7 @@
 #  id         :bigint           not null, primary key
 #  manifests  :jsonb
 #  status     :integer          default("in_progress"), not null
+#  version    :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  build_id   :bigint           not null
@@ -26,11 +27,14 @@ class Deployment < ApplicationRecord
     self.build.broadcast_build
   end
 
+  before_create :stamp_version
+
+  def stamp_version
+    self.version = "#{project.deployments.count + 1}.0.0"
+  end
+
   def add_manifest(yaml)
-    manifest = YAML.safe_load(yaml)
-    kind = manifest["kind"]&.downcase
-    name = manifest.dig("metadata", "name")
-    manifest_key = "#{kind}/#{name}"
+    manifest_key = K8::Base.manifest_key(yaml)
 
     self.manifests ||= {}
     self.manifests[manifest_key] = yaml

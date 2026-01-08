@@ -54,6 +54,7 @@ class Project < ApplicationRecord
 
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy
+  has_one :deployment_configuration, dependent: :destroy
 
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
@@ -73,6 +74,8 @@ class Project < ApplicationRecord
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
+  validates_presence_of :deployment_configuration
+
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
   end

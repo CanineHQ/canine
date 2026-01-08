@@ -52,6 +52,7 @@ FactoryBot.define do
       provider = create(:provider, :github)
       project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
       project.project_credential_provider ||= build(:project_credential_provider, project: project, provider: provider)
+      project.deployment_configuration ||= build(:deployment_configuration, project: project)
     end
 
     trait :github do
@@ -59,6 +60,7 @@ FactoryBot.define do
         provider = create(:provider, :github)
         project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+        project.deployment_configuration ||= build(:deployment_configuration, project: project)
       end
     end
 
@@ -67,6 +69,7 @@ FactoryBot.define do
         provider = create(:provider, :gitlab)
         project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+        project.deployment_configuration ||= build(:deployment_configuration, project: project)
       end
     end
 
@@ -75,6 +78,7 @@ FactoryBot.define do
         provider = create(:provider, :container_registry)
         project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
+        project.deployment_configuration ||= build(:deployment_configuration, project: project)
       end
     end
   end
