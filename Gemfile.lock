@@ -308,9 +308,9 @@ GEM
       bindata
       faraday (~> 2.0)
       faraday-follow_redirects
-    json-schema (5.2.2)
+    json-schema (6.1.0)
       addressable (~> 2.8)
-      bigdecimal (~> 3.1)
+      bigdecimal (>= 3.1, < 5)
     json_rpc_handler (0.1.1)
     jsonpath (1.1.5)
       multi_json
@@ -563,10 +563,10 @@ GEM
     rswag-api (2.16.0)
       activesupport (>= 5.2, < 8.1)
       railties (>= 5.2, < 8.1)
-    rswag-specs (2.16.0)
-      activesupport (>= 5.2, < 8.1)
-      json-schema (>= 2.2, < 6.0)
-      railties (>= 5.2, < 8.1)
+    rswag-specs (2.17.0)
+      activesupport (>= 5.2, < 8.2)
+      json-schema (>= 2.2, < 7.0)
+      railties (>= 5.2, < 8.2)
       rspec-core (>= 2.14)
     rubocop (1.79.2)
       json (~> 2.3)
@@ -751,7 +751,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   jsbundling-rails
-  json-schema (~> 5.1)
+  json-schema (~> 6.1)
   jwt (~> 2.9)
   k8s-ruby (~> 0.17.2)
   kubeclient (~> 4.12)
