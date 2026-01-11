@@ -1,4 +1,5 @@
 class Avo::Resources::OIDCConfiguration < Avo::BaseResource
+  self.visible_on_sidebar = false
   self.includes = []
 
   def fields

@@ -1,4 +1,5 @@
 class Avo::Resources::Favorite < Avo::BaseResource
+  self.visible_on_sidebar = false
   # self.includes = []
   # self.attachments = []
   # self.search = {

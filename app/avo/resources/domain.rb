@@ -1,4 +1,6 @@
 class Avo::Resources::Domain < Avo::BaseResource
+  self.visible_on_sidebar = false
+
   def fields
     field :id, as: :id
     # Generated fields from model
