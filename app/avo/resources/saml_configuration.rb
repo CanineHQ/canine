@@ -1,4 +1,5 @@
 class Avo::Resources::SAMLConfiguration < Avo::BaseResource
+  self.visible_on_sidebar = false
   self.includes = []
 
   def fields

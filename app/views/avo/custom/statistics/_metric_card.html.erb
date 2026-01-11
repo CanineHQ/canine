@@ -1,0 +1,13 @@
+<%
+  color_styles = {
+    'green' => { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' },
+    'yellow' => { bg: '#fefce8', text: '#ca8a04', border: '#fef08a' },
+    'red' => { bg: '#fef2f2', text: '#dc2626', border: '#fecaca' }
+  }
+  colors = color_styles[color] || color_styles['green']
+%>
+<div style="background-color: <%= colors[:bg] %>; border: 1px solid <%= colors[:border] %>; border-radius: 0.5rem; padding: 1.25rem;">
+  <p style="font-size: 0.875rem; font-weight: 500; color: #4b5563; margin: 0 0 0.25rem 0;"><%= title %></p>
+  <p style="font-size: 1.875rem; font-weight: 700; color: <%= colors[:text] %>; margin: 0;"><%= value %></p>
+  <p style="font-size: 0.75rem; color: #6b7280; margin: 0.25rem 0 0 0;"><%= detail %></p>
+</div>

@@ -1,38 +1,260 @@
+<% @time_period = (params[:time_period].presence || 7).to_i.days %>
+
 <div class="flex flex-col">
-  <%= render Avo::PanelComponent.new(name: 'Performance Dashboard', display_breadcrumbs: true) do |c| %>
+  <%= render Avo::PanelComponent.new(name: 'Dashboard', display_breadcrumbs: true) do |c| %>
     <% c.with_tools do %>
-      <div class="text-sm italic">Performance metrics for clusters, projects, builds and deployments.</div>
+      <%= form_with url: dashboard_path, method: :get, local: true, class: "flex items-center gap-2" do %>
+        <span class="text-sm text-gray-600">Time period:</span>
+        <%= select_tag :time_period,
+            options_for_select([
+              ["Last 7 days", 7],
+              ["Last 30 days", 30],
+              ["Last 90 days", 90],
+              ["Last year", 365]
+            ], params[:time_period].presence || 7),
+            class: "border border-gray-300 rounded-md text-sm px-3 py-1.5",
+            onchange: "this.form.submit()" %>
+      <% end %>
     <% end %>
 
-    <% @time_period = (params[:time_period].to_i || 7).days %>
     <% c.with_body do %>
-      <div class="flex flex-col justify-between py-6 min-h-24">
-        <div class="px-6 space-y-4">
-          <div class="px-4 mb-4">
-            <%= form_with url: dashboard_path, method: :get, local: true do %>
-              <label for="time_period" class="mr-2">Select Time Period:</label>
-              <span>Last</span>
-              <%= select_tag :time_period, options_for_select([[7, 7], [30, 30], [365, 365]], (params[:time_period].to_i || 7)), class: "border rounded" %>
-              <span>days</span>
-              <%= submit_tag 'Filter', class: "ml-2 bg-blue-500 text-white rounded px-4 py-2" %>
-            <% end %>
+      <div class="p-6">
+        <!-- Overview Stats -->
+        <div class="mb-8">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Overview</h3>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Total Users',
+                value: User.count,
+                subtitle: "+#{User.where(created_at: @time_period.ago..).count} new",
+                icon: 'users',
+                color: 'blue' %>
+
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Accounts',
+                value: Account.count,
+                subtitle: "+#{Account.where(created_at: @time_period.ago..).count} new",
+                icon: 'building',
+                color: 'purple' %>
+
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Clusters',
+                value: Cluster.count,
+                subtitle: "#{Cluster.where(status: :running).count} running",
+                icon: 'server',
+                color: 'green' %>
+
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Projects',
+                value: Project.count,
+                subtitle: "#{Project.where(status: :deployed).count} deployed",
+                icon: 'folder',
+                color: 'yellow' %>
+
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Services',
+                value: Service.count,
+                subtitle: "#{Service.where(status: :healthy).count} healthy",
+                icon: 'cube',
+                color: 'indigo' %>
+
+            <%= render 'avo/custom/statistics/stat_card',
+                title: 'Add-ons',
+                value: AddOn.count,
+                subtitle: "#{AddOn.where(status: :installed).count} installed",
+                icon: 'puzzle',
+                color: 'pink' %>
+          </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="mb-8">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Performance</h3>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+            <% builds_completed = Build.where(created_at: @time_period.ago.., status: :completed).count %>
+            <% builds_total = Build.where(created_at: @time_period.ago..).count %>
+            <% build_rate = builds_total > 0 ? (builds_completed.to_f / builds_total * 100).round : 0 %>
+            <%= render 'avo/custom/statistics/metric_card',
+                title: 'Build Success Rate',
+                value: "#{build_rate}%",
+                detail: "#{builds_completed} / #{builds_total} builds",
+                color: build_rate >= 80 ? 'green' : (build_rate >= 50 ? 'yellow' : 'red') %>
+
+            <% deployments_completed = Deployment.where(created_at: @time_period.ago.., status: :completed).count %>
+            <% deployments_total = Deployment.where(created_at: @time_period.ago..).count %>
+            <% deploy_rate = deployments_total > 0 ? (deployments_completed.to_f / deployments_total * 100).round : 0 %>
+            <%= render 'avo/custom/statistics/metric_card',
+                title: 'Deployment Success Rate',
+                value: "#{deploy_rate}%",
+                detail: "#{deployments_completed} / #{deployments_total} deployments",
+                color: deploy_rate >= 80 ? 'green' : (deploy_rate >= 50 ? 'yellow' : 'red') %>
+
+            <% healthy_services = Service.where(status: :healthy).count %>
+            <% total_services = Service.running.count %>
+            <% health_rate = total_services > 0 ? (healthy_services.to_f / total_services * 100).round : 0 %>
+            <%= render 'avo/custom/statistics/metric_card',
+                title: 'Service Health',
+                value: "#{health_rate}%",
+                detail: "#{healthy_services} / #{total_services} healthy",
+                color: health_rate >= 90 ? 'green' : (health_rate >= 70 ? 'yellow' : 'red') %>
+
+            <% running_clusters = Cluster.where(status: :running).count %>
+            <% total_clusters = Cluster.count %>
+            <% cluster_rate = total_clusters > 0 ? (running_clusters.to_f / total_clusters * 100).round : 0 %>
+            <%= render 'avo/custom/statistics/metric_card',
+                title: 'Cluster Availability',
+                value: "#{cluster_rate}%",
+                detail: "#{running_clusters} / #{total_clusters} running",
+                color: cluster_rate >= 90 ? 'green' : (cluster_rate >= 70 ? 'yellow' : 'red') %>
+          </div>
+        </div>
+
+        <!-- Status Breakdown -->
+        <div class="mb-8" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+          <!-- Cluster Status -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.25rem;">
+            <h4 class="text-sm font-semibold text-gray-700 mb-4">Cluster Status</h4>
+            <div class="space-y-3">
+              <% Cluster.statuses.keys.each do |status| %>
+                <% count = Cluster.where(status: status).count %>
+                <% next if count == 0 %>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; <%= status_color_style(status) %>"></span>
+                    <span class="text-sm text-gray-600"><%= status.humanize %></span>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900"><%= count %></span>
+                </div>
+              <% end %>
+            </div>
           </div>
 
-          <div class="grid grid-cols-4 gap-4">
-            <%= render 'avo/custom/statistics/build_success_rate', time_period: @time_period %>
-            <%= render 'avo/custom/statistics/deployment_success_rate', time_period: @time_period %>
-            <%= render 'avo/custom/statistics/projects' %>
-            <%= render 'avo/custom/statistics/clusters' %>
+          <!-- Add-on Status -->
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.25rem;">
+            <h4 class="text-sm font-semibold text-gray-700 mb-4">Add-on Status</h4>
+            <div class="space-y-3">
+              <% AddOn.statuses.keys.each do |status| %>
+                <% count = AddOn.where(status: status).count %>
+                <% next if count == 0 %>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; <%= addon_status_color_style(status) %>"></span>
+                    <span class="text-sm text-gray-600"><%= status.humanize %></span>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900"><%= count %></span>
+                </div>
+              <% end %>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="flex flex-col justify-between py-6 min-h-24">
-        <div class="px-6 space-y-4">
-          <div class="grid grid-cols-4 gap-4">
-            <%= render 'avo/custom/statistics/new_users', time_period: @time_period %>
-            <%= render 'avo/custom/statistics/new_apps', time_period: @time_period %>
+
+        <!-- Recent Activity -->
+        <div class="mb-8">
+          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Recent Activity</h3>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+            <!-- Recent Builds -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
+              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+                <h4 class="text-sm font-semibold text-gray-700">Recent Builds</h4>
+                <%= link_to "View all", avo.resources_builds_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+              </div>
+              <div>
+                <% Build.order(created_at: :desc).limit(5).each do |build| %>
+                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; <%= build_status_color_style(build.status) %>"></span>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900">
+                          <%= link_to build.project&.name || "Build ##{build.id}", avo.resources_build_path(build), class: "hover:text-blue-600" %>
+                        </p>
+                        <p class="text-xs text-gray-500"><%= time_ago_in_words(build.created_at) %> ago</p>
+                      </div>
+                    </div>
+                    <span style="<%= build_status_badge_style(build.status) %> font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500;">
+                      <%= build.status.humanize %>
+                    </span>
+                  </div>
+                <% end %>
+                <% if Build.count == 0 %>
+                  <div style="padding: 1rem 1.25rem; text-align: center;" class="text-sm text-gray-500">No builds yet</div>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Recent Deployments -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
+              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
+                <h4 class="text-sm font-semibold text-gray-700">Recent Deployments</h4>
+                <%= link_to "View all", avo.resources_deployments_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+              </div>
+              <div>
+                <% Deployment.order(created_at: :desc).limit(5).each do |deployment| %>
+                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; <%= deployment_status_color_style(deployment.status) %>"></span>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900">
+                          <%= link_to deployment.build&.project&.name || "Deployment ##{deployment.id}", avo.resources_deployment_path(deployment), class: "hover:text-blue-600" %>
+                        </p>
+                        <p class="text-xs text-gray-500"><%= time_ago_in_words(deployment.created_at) %> ago</p>
+                      </div>
+                    </div>
+                    <span style="<%= deployment_status_badge_style(deployment.status) %> font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500;">
+                      <%= deployment.status.humanize %>
+                    </span>
+                  </div>
+                <% end %>
+                <% if Deployment.count == 0 %>
+                  <div style="padding: 1rem 1.25rem; text-align: center;" class="text-sm text-gray-500">No deployments yet</div>
+                <% end %>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Alerts Section -->
+        <% failed_clusters = Cluster.where(status: :failed) %>
+        <% failed_addons = AddOn.where(status: :failed) %>
+        <% failed_builds = Build.where(status: :failed).where(created_at: 24.hours.ago..) %>
+        <% if failed_clusters.any? || failed_addons.any? || failed_builds.any? %>
+          <div>
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Attention Required</h3>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1.25rem;">
+              <div class="space-y-3">
+                <% if failed_clusters.any? %>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="color: #ef4444;">
+                      <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                    </span>
+                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_clusters.count %></strong> cluster(s) in failed state</span>
+                  </div>
+                <% end %>
+                <% if failed_addons.any? %>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="color: #ef4444;">
+                      <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                    </span>
+                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_addons.count %></strong> add-on(s) in failed state</span>
+                  </div>
+                <% end %>
+                <% if failed_builds.any? %>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="color: #ef4444;">
+                      <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                      </svg>
+                    </span>
+                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_builds.count %></strong> build(s) failed in the last 24 hours</span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
       </div>
     <% end %>
   <% end %>
