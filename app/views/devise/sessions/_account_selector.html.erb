@@ -25,7 +25,23 @@
       </div>
     </div>
 
-    <div class="flex justify-start mt-3">
+    <div class="flex items-center justify-start gap-2 mt-3">
+      <% if account.sso_enabled? %>
+        <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <iconify-icon icon="lucide:shield-check" width="14" height="14"></iconify-icon>
+          <span class="font-medium">Login with <%= account.sso_provider.name %></span>
+        </div>
+      <% elsif Rails.application.config.local_mode_passwordless && account.users.count == 1 %>
+        <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20">
+          <iconify-icon icon="lucide:key-round" width="14" height="14"></iconify-icon>
+          <span class="font-medium">Passwordless</span>
+        </div>
+      <% else %>
+        <div class="flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <iconify-icon icon="lucide:lock" width="14" height="14"></iconify-icon>
+          <span class="font-medium">Login with Password</span>
+        </div>
+      <% end %>
       <% if account.stack_manager&.portainer? %>
         <%= render "devise/sessions/portainer_badge", stack_manager: account.stack_manager, logged_in: true %>
       <% end %>
