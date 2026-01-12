@@ -3,6 +3,7 @@ module Accounts
     before_action :authenticate_user!
     before_action :authorize_account, except: [ :verify_url, :check_reachable ]
     before_action :set_stack_manager, only: [ :show, :edit, :update, :destroy, :sync_clusters, :sync_registries ]
+    before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable ]
 
     def check_reachable
@@ -66,11 +67,17 @@ module Accounts
     end
 
     def create
-      @stack_manager = current_account.build_stack_manager(stack_manager_params)
+      result = StackManagers::Create.execute(
+        account: current_account,
+        user: current_user,
+        stack_manager_params: stack_manager_params,
+        personal_access_token: params.dig(:user, :personal_access_token)
+      )
 
-      if @stack_manager.save
+      if result.success?
         redirect_to stack_manager_path, notice: "Stack manager was successfully created."
       else
+        @stack_manager = result.stack_manager || current_account.build_stack_manager(stack_manager_params)
         render :new, status: :unprocessable_entity
       end
     end
@@ -80,9 +87,17 @@ module Accounts
     end
 
     def update
-      if @stack_manager.update(stack_manager_params)
+      result = StackManagers::Create.execute(
+        account: current_account,
+        user: current_user,
+        stack_manager_params: stack_manager_params,
+        personal_access_token: params.dig(:user, :personal_access_token)
+      )
+
+      if result.success?
         redirect_to stack_manager_path, notice: "Stack manager was successfully updated."
       else
+        @stack_manager = result.stack_manager
         render :edit, status: :unprocessable_entity
       end
     end

@@ -96,7 +96,7 @@ class Portainer::Stack
 
   def sync_clusters
     response = client.endpoints
-    response.map do |external_cluster|
+    clusters = response.map do |external_cluster|
       cluster = stack_manager.account.clusters.find_or_initialize_by(external_id: external_cluster.id)
       cluster.name = external_cluster.name
       new_record = cluster.new_record?
@@ -111,6 +111,8 @@ class Portainer::Stack
     disappeared_clusters.each do |cluster|
       cluster.deleted!
     end
+
+    clusters
   end
 
   def fetch_kubeconfig(cluster)
