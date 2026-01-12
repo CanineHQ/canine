@@ -49,4 +49,32 @@
     </div>
   </div>
 
+  <% if local_assigns[:show_personal_token] %>
+    <div class="mt-4">
+      <div data-controller="expandable-optional-input">
+        <div>
+          <a data-action="expandable-optional-input#show" class="btn btn-ghost">
+            + Add personal access token
+          </a>
+        </div>
+        <div data-expandable-optional-input-target="container">
+          <div class="form-group">
+            <%= form.label :personal_access_token, "Personal Access Token" %>
+            <%= form.text_field(
+              :personal_access_token,
+              name: "user[personal_access_token]",
+              placeholder: "Enter your personal access token",
+              class: "input input-bordered w-full",
+            ) %>
+          </div>
+        </div>
+      </div>
+      <div class="label">
+        <span class="label-text-alt text-gray-500">
+          If not provided, the account's access token will be used for your Portainer access.
+        </span>
+      </div>
+    </div>
+  <% end %>
+
 </div>
