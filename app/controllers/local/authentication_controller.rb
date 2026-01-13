@@ -4,7 +4,7 @@ class Local::AuthenticationController < ApplicationController
   before_action :check_if_passwordless_allowed
 
   def login
-    if @account.stack_manager.present?
+    if @account.sso_enabled?
       redirect_to account_sign_in_path(@account.slug)
     elsif @account.users.count > 1
       redirect_to account_sign_in_path(@account.slug)
