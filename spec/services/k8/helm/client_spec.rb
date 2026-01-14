@@ -32,7 +32,9 @@ RSpec.describe K8::Helm::Client do
         dry_run: false,
         atomic: true,
         wait: true,
-        history_max: 10
+        history_max: 10,
+        create_namespace: true,
+        skip_tls_verify: true
       )
 
       expect(command).to eq(
@@ -43,7 +45,9 @@ RSpec.describe K8::Helm::Client do
         "--version 1.0.0 " \
         "--atomic " \
         "--wait " \
-        "--history-max=10"
+        "--history-max=10 " \
+        "--create-namespace " \
+        "--kube-insecure-skip-tls-verify"
       )
     end
 
@@ -58,7 +62,9 @@ RSpec.describe K8::Helm::Client do
         dry_run: false,
         atomic: false,
         wait: false,
-        history_max: nil
+        history_max: nil,
+        create_namespace: false,
+        skip_tls_verify: false
       )
 
       expect(command).to eq(

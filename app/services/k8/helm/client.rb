@@ -78,18 +78,20 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
-  def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:)
+  def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:, create_namespace:, skip_tls_verify:)
     command_parts = [
       "helm upgrade --install #{name} #{chart_url}",
       "-f #{values_file_path}",
       "--namespace #{namespace}",
-      "--timeout=#{timeout}",
-      "--version #{version}"
+      "--timeout=#{timeout}"
     ]
+    command_parts << "--version #{version}" if version.present?
     command_parts << "--dry-run" if dry_run
     command_parts << "--atomic" if atomic
     command_parts << "--wait" if wait
     command_parts << "--history-max=#{history_max}" if history_max
+    command_parts << "--create-namespace" if create_namespace
+    command_parts << "--kube-insecure-skip-tls-verify" if skip_tls_verify
 
     command_parts.join(" ")
   end
@@ -97,13 +99,15 @@ class K8::Helm::Client
   def install(
     name,
     chart_url,
-    version,
+    version = nil,
     values: {},
     namespace: 'default',
     dry_run: false,
     atomic: false,
     wait: false,
     history_max: nil,
+    create_namespace: false,
+    skip_tls_verify: K8::Kubeconfig.skip_tls_verify?,
     timeout: DEFAULT_TIMEOUT
   )
     return StandardError.new("Can't install helm chart if not connected") unless connected?
@@ -123,7 +127,9 @@ class K8::Helm::Client
           dry_run: dry_run,
           atomic: atomic,
           wait: wait,
-          history_max: history_max
+          history_max: history_max,
+          create_namespace: create_namespace,
+          skip_tls_verify: skip_tls_verify
         )
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
