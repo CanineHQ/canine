@@ -1,0 +1,19 @@
+<%= turbo_frame_tag "test_connection_result" do %>
+  <% case status %>
+  <% when :success %>
+    <span class="text-success flex items-center gap-x-1">
+      <iconify-icon icon="lucide:circle-check"></iconify-icon>
+      Connected
+    </span>
+  <% when :unauthorized %>
+    <span class="text-warning flex items-center gap-x-1">
+      <iconify-icon icon="lucide:circle-alert"></iconify-icon>
+      Unauthorized
+    </span>
+  <% when :error %>
+    <span class="text-error flex items-center gap-x-1">
+      <iconify-icon icon="lucide:circle-x"></iconify-icon>
+      <%= message || "Connection failed" %>
+    </span>
+  <% end %>
+<% end %>

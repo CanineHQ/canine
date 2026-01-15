@@ -18,25 +18,43 @@ module Accounts
     def verify_connectivity
       stack_manager = current_account.stack_manager
       if stack_manager.nil?
-        head :not_found
+        respond_to do |format|
+          format.json { head :not_found }
+          format.html { render_connection_result(:error, "Stack manager not found") }
+        end
         return
       end
 
       if current_user.portainer_access_token.blank?
-        head :unauthorized
+        respond_to do |format|
+          format.json { head :unauthorized }
+          format.html { render_connection_result(:unauthorized) }
+        end
         return
       end
 
       stack = stack_manager.stack.connect(current_user, allow_anonymous: false)
       if stack.authenticated?
-        head :ok
+        respond_to do |format|
+          format.json { head :ok }
+          format.html { render_connection_result(:success) }
+        end
       else
-        head :unauthorized
+        respond_to do |format|
+          format.json { head :unauthorized }
+          format.html { render_connection_result(:unauthorized) }
+        end
       end
     rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError
-      head :unauthorized
+      respond_to do |format|
+        format.json { head :unauthorized }
+        format.html { render_connection_result(:unauthorized) }
+      end
     rescue Portainer::Client::ConnectionError
-      head :bad_gateway
+      respond_to do |format|
+        format.json { head :bad_gateway }
+        format.html { render_connection_result(:error, "Connection failed") }
+      end
     end
 
     def verify_url
@@ -167,6 +185,11 @@ module Accounts
 
     def authorize_account
       authorize current_account, :update?
+    end
+
+    def render_connection_result(status, message = nil)
+      render partial: "accounts/stack_managers/test_connection_result",
+             locals: { status: status, message: message }
     end
   end
 end
