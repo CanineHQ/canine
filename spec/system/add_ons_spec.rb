@@ -7,7 +7,7 @@ RSpec.describe "Add Ons", type: :system do
     result = sign_in_user
     @user = result[:user]
     @account = result[:account]
-    @cluster = create(:cluster, account: account, name: "test-cluster")
+    @cluster = create(:cluster, account: account, name: "test-cluster", status: :running)
 
     k8_client = double("K8::Client")
     allow(K8::Client).to receive(:new).and_return(k8_client)
