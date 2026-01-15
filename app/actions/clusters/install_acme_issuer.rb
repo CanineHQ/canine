@@ -1,30 +1,55 @@
 class Clusters::InstallAcmeIssuer
   extend LightService::Action
 
-  expects :cluster, :kubectl
+  REPO_NAME = "jetstack".freeze
+  REPO_URL = "https://charts.jetstack.io".freeze
+  CHART_NAME = "cert-manager".freeze
+  CHART_URL = "jetstack/cert-manager".freeze
+  CHART_VERSION = "v1.15.3".freeze
+
+  CERT_MANAGER_VALUES = {
+    crds: {
+      enabled: true
+    }
+  }.freeze
+
+  expects :cluster, :kubectl, :connection
 
   executed do |context|
     cluster = context.cluster
     kubectl = context.kubectl
+    connection = context.connection
+    namespace = Clusters::Install::DEFAULT_NAMESPACE
+
     cluster.info("Checking if acme issuer is already installed", color: :yellow)
+
     begin
-      kubectl.("get clusterissuer letsencrypt -n #{Clusters::Install::DEFAULT_NAMESPACE}")
+      kubectl.("get clusterissuer letsencrypt -n #{namespace}")
       cluster.success("Acme issuer is already installed")
     rescue Cli::CommandFailedError => e
       cluster.info("Acme issuer not detected, installing...", color: :yellow)
       cluster.info("Installing cert-manager...", color: :yellow)
-      command = "bash #{Rails.root.join("resources", "k8", "scripts", "install_cert_manager.sh")}"
 
-      runner = Cli::RunAndLog.new(cluster)
-      kubectl.with_kube_config do |kubeconfig_file|
-        begin
-          runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path, "NAMESPACE" => Clusters::Install::DEFAULT_NAMESPACE })
-          cluster.success("Cert-manager installed successfully")
-        rescue Cli::CommandFailedError => e
-          cluster.failed!
-          cluster.error("Cert-manager failed to install")
-          context.fail_and_return!("Script failed with exit code #{e.message}")
-        end
+      begin
+        runner = Cli::RunAndLog.new(cluster)
+        helm = K8::Helm::Client.connect(connection, runner)
+
+        helm.add_repo(REPO_NAME, REPO_URL)
+        helm.repo_update(repo_name: REPO_NAME)
+        helm.install(
+          CHART_NAME,
+          CHART_URL,
+          CHART_VERSION,
+          values: CERT_MANAGER_VALUES,
+          namespace: namespace,
+          create_namespace: true
+        )
+
+        cluster.success("Cert-manager installed successfully")
+      rescue StandardError => e
+        cluster.failed!
+        cluster.error("Cert-manager failed to install")
+        context.fail_and_return!("Helm install failed: #{e.message}")
       end
 
       cluster.info("Installing acme issuer...", color: :yellow)
