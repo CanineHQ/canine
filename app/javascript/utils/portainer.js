@@ -28,6 +28,7 @@ export class PortainerChecker {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
       body: JSON.stringify({ stack_manager: { url } })
@@ -40,6 +41,7 @@ export class PortainerChecker {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       }
     })
@@ -51,6 +53,7 @@ export class PortainerChecker {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'X-CSRF-Token': this.csrfToken()
       },
       body: JSON.stringify({ stack_manager: { url, access_token: accessToken } })
