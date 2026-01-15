@@ -40,12 +40,13 @@
 <% if @service.respond_to?(:internal_url) %>
   <h6 class="text-xl font-bold">Connection Details</h6>
   <div class="mb-4">
-    <label for="postgresql-password" class="form-label">Connection URL</label>
-    <div class="flex flex-row" data-controller="toggle-password">
-      <input type="password" id="redis-password" name="redis-password" class="input input-bordered w-full max-w-lg focus:outline-offset-0" value="<%= @service.internal_url %>" data-toggle-password-target="input">
-      <button class="btn btn-outline-secondary" type="button" data-action="click->toggle-password#toggle">
-        <iconify-icon icon="lucide:eye"></iconify-icon>
-      </button>
-    </div>
+    <label for="connection-url" class="form-label">Connection URL</label>
+    <%= render(
+      "shared/partials/async_renderer",
+      view_model: Async::Helm::InternalUrlViewModel.new(
+        current_user,
+        add_on_id: @add_on.id
+      )
+    ) %>
   </div>
 <% end %>

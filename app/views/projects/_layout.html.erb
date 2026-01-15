@@ -23,7 +23,7 @@
         <% end %>
       </div>
     <% end %>
-    <div class="text-sm flex flex-row">
+    <div class="text-sm flex flex-col md:flex-row gap-2 md:gap-0">
       <%= link_to project.link_to_view, target: "_blank" do %>
         <% if project.git? %>
           <div class="flex flex-row items-center gap-1">
@@ -49,7 +49,7 @@
         target: "_blank",
         class: "underline",
       ) do %>
-        <div class="ml-6 flex flex-row items-center gap-1">
+        <div class="md:ml-6 flex flex-row items-center gap-1">
           <iconify-icon icon="devicon:kubernetes"></iconify-icon>
           <div><%= project.cluster.name %></div>
           <div><iconify-icon icon="lucide:slash"></iconify-icon></div>

@@ -3,6 +3,8 @@ class Clusters::Save
   expects :cluster
 
   executed do |context|
-    context.cluster.save!
+    unless context.cluster.save
+      context.fail_and_return!(context.cluster.errors.full_messages.join(", "))
+    end
   end
 end
