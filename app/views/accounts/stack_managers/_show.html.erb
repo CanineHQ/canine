@@ -3,21 +3,21 @@
     <div class="flex justify-between items-start mb-4">
       <h3 class="card-title">Stack Manager Configuration</h3>
       <div class="flex gap-2">
-        <%= link_to edit_stack_manager_path, 
+        <%= link_to edit_stack_manager_path,
             class: "btn btn-sm btn-ghost",
             data: { turbo_frame: "current_account_stack_manager" } do %>
           <iconify-icon icon="lucide:edit"></iconify-icon>
-          Edit
+          <span class="hidden md:inline">Edit</span>
         <% end %>
-        <%= button_to stack_manager_path, 
+        <%= button_to stack_manager_path,
             method: :delete,
             class: "btn btn-sm btn-error btn-outline",
-            data: { 
+            data: {
               turbo_frame: "current_account_stack_manager",
               turbo_confirm: "Are you sure you want to remove this stack manager configuration?"
             } do %>
           <iconify-icon icon="lucide:trash"></iconify-icon>
-          Delete
+          <span class="hidden md:inline">Delete</span>
         <% end %>
       </div>
     </div>
@@ -39,23 +39,22 @@
         </div>
       </div>
 
-      <div data-controller="stack-manager--url-input">
+      <div>
         <div class="text-sm text-base-content/70">Provider URL</div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <div class="font-medium">
-            <%= link_to stack_manager.provider_url, 
-                stack_manager.provider_url, 
+            <%= link_to stack_manager.provider_url,
+                stack_manager.provider_url,
                 target: "_blank",
                 class: "link link-primary" %>
-            <%= text_field_tag(
-              :provider_url,
-              stack_manager.provider_url,
-              class: "hidden input input-bordered w-full",
-              data: { "stack-manager--url-input-target": "urlInput" }
-            ) %>
           </div>
-          <button class="btn btn-ghost btn-sm" data-action="stack-manager--url-input#verifyUrl">Test Connection <iconify-icon icon="lucide:refresh-cw"></iconify-icon></button>
-          <%= render "accounts/stack_managers/url_connection_statuses" %>
+          <%= button_to verify_connectivity_stack_manager_path,
+              method: :post,
+              class: "btn btn-ghost btn-sm",
+              data: { turbo_frame: "test_connection_result" } do %>
+            Test Connection <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+          <% end %>
+          <%= turbo_frame_tag "test_connection_result" %>
         </div>
       </div>
       

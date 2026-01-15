@@ -7254,6 +7254,11 @@ input:-webkit-autofill:active {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 0.15s;
 }
+@media (max-width: 767px) {
+  html:not([data-leftbar-hide]) .content-wrapper {
+    min-width: 100vw;
+  }
+}
 .pro-badge {
   margin-inline-start: 0px;
   border-radius: 0.25rem;
