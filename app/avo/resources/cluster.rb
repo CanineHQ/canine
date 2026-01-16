@@ -1,7 +1,11 @@
 class Avo::Resources::Cluster < Avo::BaseResource
   self.search = {
     query: -> { query.ransack(name_cont: params[:q], m: "or").result(distinct: false) },
-    item: -> { record.name }
+    item: -> {
+      {
+        title: record.name
+      }
+    }
   }
 
   def fields

@@ -64,6 +64,7 @@ end
 gem "actioncable-enhanced-postgresql-adapter", "~> 1.0"
 gem "annotate", "~> 3.2"
 gem "avo", "~> 3.25"
+gem "ransack", "~> 4.2"
 gem "cron2english", "~> 0.1.7"
 gem "cssbundling-rails"
 gem "devise", "~> 4.9"

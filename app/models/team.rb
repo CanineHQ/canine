@@ -23,6 +23,10 @@ class Team < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name]
+  end
+
   belongs_to :account
   has_many :team_memberships, dependent: :destroy
   has_many :users, through: :team_memberships

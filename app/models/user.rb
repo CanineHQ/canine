@@ -58,6 +58,10 @@ class User < ApplicationRecord
 
   attr_readonly :admin
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[email first_name last_name created_at]
+  end
+
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
 

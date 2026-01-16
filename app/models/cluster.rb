@@ -26,6 +26,10 @@ class Cluster < ApplicationRecord
   include TeamAccessible
   include Favoriteable
   broadcasts_refreshes
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name]
+  end
   belongs_to :account
 
   has_many :projects, dependent: :destroy

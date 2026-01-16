@@ -33,6 +33,10 @@ class AddOn < ApplicationRecord
   include Favoriteable
   include AccountUniqueName
   belongs_to :cluster
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name chart_type]
+  end
   has_one :account, through: :cluster
 
   enum :status, {
