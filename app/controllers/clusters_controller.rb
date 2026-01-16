@@ -171,7 +171,7 @@ class ClustersController < ApplicationController
       params[:cluster][:kubeconfig] = YAML.safe_load(params[:cluster][:kubeconfig])
     elsif params[:cluster][:cluster_type] == "k3s"
       ip_address = params[:cluster][:ip_address]
-      kubeconfig_output = params[:cluster][:kubeconfig_output]
+      kubeconfig_output = params[:cluster][:k3s_kubeconfig_output]
       if ip_address.blank? || kubeconfig_output.blank?
         message = "IP address and kubeconfig output are required for K3s clusters"
         flash[:error] = message
@@ -188,7 +188,7 @@ class ClustersController < ApplicationController
       end
       params[:cluster][:kubeconfig] = data
     elsif params[:cluster][:cluster_type] == "local_k3s"
-      kubeconfig_output = params[:cluster][:kubeconfig_output]
+      kubeconfig_output = params[:cluster][:local_k3s_kubeconfig_output]
       if kubeconfig_output.blank?
         message = "Kubeconfig output is required for local K3s clusters"
         flash[:error] = message
