@@ -2,16 +2,17 @@
 #
 # Table name: clusters
 #
-#  id           :bigint           not null, primary key
-#  cluster_type :integer          default("k8s")
-#  kubeconfig   :jsonb
-#  name         :string           not null
-#  options      :jsonb            not null
-#  status       :integer          default("initializing"), not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  account_id   :bigint           not null
-#  external_id  :string
+#  id              :bigint           not null, primary key
+#  cluster_type    :integer          default("k8s")
+#  kubeconfig      :jsonb
+#  name            :string           not null
+#  options         :jsonb            not null
+#  skip_tls_verify :boolean          default(FALSE), not null
+#  status          :integer          default("initializing"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  account_id      :bigint           not null
+#  external_id     :string
 #
 # Indexes
 #

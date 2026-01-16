@@ -7,6 +7,13 @@
       </label>
     <% end %>
 
+    <%= render(FormFieldComponent.new(
+      label: "Skip TLS Verification",
+      description: "Enable this if your cluster uses self-signed certificates."
+    )) do %>
+      <%= form.check_box :skip_tls_verify, class: "checkbox checkbox-error" %>
+    <% end %>
+
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
     </div>

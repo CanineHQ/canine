@@ -1,5 +1,4 @@
 class K8::BuildCloudManager
-  include K8::Kubeconfig
   include StorageHelper
   # Only referenced in the migration for now.
   BUILDKIT_BUILDER_DEFAULT_NAMESPACE = 'canine-k8s-builder'
@@ -159,7 +158,7 @@ class K8::BuildCloudManager
 
     # Create the buildx builder with kubernetes driver
     # The --bootstrap flag will start the builder immediately
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command = "docker buildx create "
       command += "--bootstrap "
       command += "--name #{build_cloud.name} "
@@ -205,7 +204,7 @@ class K8::BuildCloudManager
 
   def ensure_namespace!
     # Create namespace if it doesn't exist
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command = "kubectl create namespace #{namespace}"
       runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
@@ -225,11 +224,6 @@ class K8::BuildCloudManager
 
   def runner
     @runner ||= Cli::RunAndLog.new(build_cloud)
-  end
-
-  def kubeconfig
-    # This is necessary for the include K8::Kubeconfig module
-    connection.kubeconfig
   end
 
   def parse_inspect_output(text)
