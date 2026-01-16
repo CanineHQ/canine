@@ -2,7 +2,11 @@ class Avo::Resources::User < Avo::BaseResource
   self.includes = [ :accounts, :teams ]
   self.search = {
     query: -> { query.ransack(email_cont: params[:q], first_name_cont: params[:q], last_name_cont: params[:q], m: "or").result(distinct: false) },
-    item: -> { record.name.presence || record.email }
+    item: -> {
+      {
+        title: record.name.presence || record.email
+      }
+    }
   }
 
   def fields

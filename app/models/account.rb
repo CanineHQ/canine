@@ -22,6 +22,10 @@ class Account < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name slug]
+  end
+
   belongs_to :owner, class_name: "User"
   has_many :account_users, dependent: :destroy
   has_many :users, through: :account_users

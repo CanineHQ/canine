@@ -40,6 +40,10 @@ class Project < ApplicationRecord
   include Favoriteable
   include AccountUniqueName
   broadcasts_refreshes
+
+  def self.ransackable_attributes(auth_object = nil)
+    %w[name]
+  end
   belongs_to :cluster
   has_one :account, through: :cluster
   has_many :users, through: :account

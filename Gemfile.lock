@@ -527,6 +527,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
+    ransack (4.4.1)
+      activerecord (>= 7.2)
+      activesupport (>= 7.2)
+      i18n
     rdoc (6.15.1)
       erb
       psych (>= 4.0.0)
@@ -775,6 +779,7 @@ DEPENDENCIES
   pundit (~> 2.5)
   rack (~> 3.1)
   rails (~> 7.2.2)
+  ransack (~> 4.2)
   redcarpet (~> 3.6)
   responders!
   rspec-rails (~> 8.0)
