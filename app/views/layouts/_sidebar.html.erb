@@ -14,17 +14,13 @@
   <% end %>
   <div class="flex items-center justify-center">
     <details class="mx-auto dropdown">
-      <summary class="btn m-1"><%= current_account.name %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
-      <ul class="menu dropdown-content w-64 z-50 rounded-box bg-base-300 p-2 shadow">
+      <summary class="btn m-1"><%= truncate(current_account.name, length: 20) %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
+      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow">
         <!-- Current Account Section -->
         <li class="menu-title text-xs opacity-60 px-4 py-2">CURRENT ORGANIZATION</li>
         <li>
           <div class="flex items-center gap-3 px-4 py-3 cursor-default hover:bg-base-200">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="font-semibold truncate"><%= current_account.name %></span>
-              </div>
-            </div>
+            <span class="font-semibold"><%= truncate(current_account.name, length: 24) %></span>
           </div>
         </li>
 
@@ -35,9 +31,7 @@
           <% other_accounts.each do |account| %>
             <li>
               <%= link_to switch_account_path(account), class: "flex items-center gap-3 px-4 py-3" do %>
-                <div class="flex-1 min-w-0">
-                  <div class="font-semibold truncate"><%= account.name %></div>
-                </div>
+                <span class="font-semibold"><%= truncate(account.name, length: 24) %></span>
               <% end %>
             </li>
           <% end %>
