@@ -1,7 +1,7 @@
 <% if current_user != true_user %>
-  <div class="alert alert-warning text-center">
-    You're logged in as <b><%= current_user.name %> (<%= current_user.email %>)</b>
-    <%= link_to stop_impersonating_madmin_impersonates_path, method: :post do %><%= icon("fas", "times") %> Logout <% end %>
+  <div class="bg-warning text-warning-content text-center py-2 px-4 font-medium flex items-center justify-center gap-2">
+    <span>You are impersonating <b><%= current_user.name %> (<%= current_user.email %>)</b></span>
+    <%= button_to "Stop Impersonating", avo.impersonation_path, method: :delete, class: "btn btn-sm btn-ghost" %>
   </div>
 <% end %>
 

@@ -10,6 +10,8 @@ class Avo::Resources::User < Avo::BaseResource
   }
 
   def fields
+    tool Avo::ResourceTools::User, only_on: :show
+
     field :id, as: :id
     field :email, as: :text, link_to_record: true
     field :first_name, as: :text
