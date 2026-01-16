@@ -65,4 +65,86 @@ RSpec.describe "Clusters", type: :system do
       expect(page).to have_current_path(clusters_path)
     end
   end
+
+  describe "create cluster" do
+    let(:valid_kubeconfig_output) do
+      <<~YAML
+        apiVersion: v1
+        clusters:
+        - cluster:
+            certificate-authority-data: dGVzdC1jZXJ0LWRhdGE=
+            server: https://127.0.0.1:6443
+          name: default
+        contexts:
+        - context:
+            cluster: default
+            user: default
+          name: default
+        current-context: default
+        kind: Config
+        preferences: {}
+        users:
+        - name: default
+          user:
+            token: test-token-12345
+      YAML
+    end
+
+    before do
+      allow(Clusters::InstallJob).to receive(:perform_later)
+    end
+
+    it "creates a new external k3s cluster" do
+      visit new_cluster_path
+      fill_in "cluster_name", with: "my-k3s-cluster"
+      find('[data-card-name="k3s"]').click
+
+      fill_in "cluster_ip_address", with: "192.168.1.100"
+
+      # Show and fill the kubeconfig field directly via JS (bypassing step validation)
+      page.execute_script("document.querySelectorAll('[data-k3s-instructions-target=\"step\"]').forEach(s => s.classList.remove('hidden'))")
+      page.execute_script("document.querySelector('[data-k3s-instructions-target=\"next\"]').type = 'submit'")
+      page.execute_script("document.querySelector('[data-k3s-instructions-target=\"next\"]').innerHTML = 'Submit'")
+
+      fill_in "cluster_k3s_kubeconfig_output", with: valid_kubeconfig_output
+      click_button "Submit"
+
+      expect(page).to have_content("Cluster was successfully created")
+      expect(Cluster.last).to have_attributes(name: "my-k3s-cluster", cluster_type: "k3s")
+      expect(Clusters::InstallJob).to have_received(:perform_later)
+    end
+
+    it "creates a new local k3s cluster" do
+      visit new_cluster_path
+      fill_in "cluster_name", with: "my-local-cluster"
+      find('[data-card-name="local_k3s"]').click
+
+      fill_in "cluster_local_k3s_kubeconfig_output", with: valid_kubeconfig_output
+      click_button "Create Cluster"
+
+      expect(page).to have_content("Cluster was successfully created")
+      expect(Cluster.last).to have_attributes(name: "my-local-cluster", cluster_type: "local_k3s")
+      expect(Clusters::InstallJob).to have_received(:perform_later)
+    end
+
+    it "creates a new managed k8s cluster" do
+      kubeconfig_file = Tempfile.new([ 'kubeconfig', '.yaml' ])
+      kubeconfig_file.write(valid_kubeconfig_output)
+      kubeconfig_file.rewind
+
+      visit new_cluster_path
+      fill_in "cluster_name", with: "my-k8s-cluster"
+      find('[data-card-name="k8s"]').click
+
+      attach_file "cluster_kubeconfig_file", kubeconfig_file.path
+      click_button "Submit"
+
+      expect(page).to have_content("Cluster was successfully created")
+      expect(Cluster.last).to have_attributes(name: "my-k8s-cluster", cluster_type: "k8s")
+      expect(Clusters::InstallJob).to have_received(:perform_later)
+    ensure
+      kubeconfig_file.close
+      kubeconfig_file.unlink
+    end
+  end
 end

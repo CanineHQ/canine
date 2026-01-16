@@ -6,8 +6,8 @@ module SystemHelpers
     user ||= account.owner
 
     visit new_user_session_path
-    fill_in "user_email", with: user.email
-    fill_in "user_password", with: "password"
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "password"
     click_button "Sign in"
 
     { user: user, account: account }
