@@ -208,6 +208,6 @@ class ClustersController < ApplicationController
       params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
     end
 
-    params.require(:cluster).permit(:name, :cluster_type, kubeconfig: {})
+    params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, kubeconfig: {})
   end
 end

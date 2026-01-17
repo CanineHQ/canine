@@ -1,8 +1,7 @@
 class K8::Helm::Client
   DEFAULT_TIMEOUT = "1000s"
   CHARTS = YAML.load_file(Rails.root.join('resources', 'helm', 'charts.yml'))
-  include K8::Kubeconfig
-  attr_reader :kubeconfig, :runner
+  attr_reader :connection, :runner
 
   def initialize(runner)
     @runner = runner
@@ -16,17 +15,16 @@ class K8::Helm::Client
 
   def connect(connection)
     @connection = connection
-    @kubeconfig = connection.kubeconfig.is_a?(String) ? JSON.parse(connection.kubeconfig) : connection.kubeconfig
     self
   end
 
   def connected?
-    @kubeconfig.present?
+    @connection&.kubeconfig.present?
   end
 
   def get_values_yaml(name, namespace: 'default')
     return StandardError.new("Can't get current values yaml if not connected") unless connected?
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command = "helm get values #{name} --namespace #{namespace} --kubeconfig=#{kubeconfig_file.path}"
       output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       # Remove the key USER-SUPPLIED VALUES
@@ -38,7 +36,7 @@ class K8::Helm::Client
 
   def get_all_values_yaml(name, namespace: 'default')
     return StandardError.new("Can't get all values yaml if not connected") unless connected?
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command = "helm get values #{name} --all --namespace #{namespace} --kubeconfig=#{kubeconfig_file.path}"
       output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       output
@@ -47,7 +45,7 @@ class K8::Helm::Client
 
   def ls
     return StandardError.new("Can't list helm charts if not connected") unless connected?
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command_output = `helm ls --all-namespaces --kubeconfig=#{kubeconfig_file.path} -o yaml`
       output = YAML.safe_load(command_output)
     end
@@ -107,12 +105,14 @@ class K8::Helm::Client
     wait: false,
     history_max: nil,
     create_namespace: false,
-    skip_tls_verify: K8::Kubeconfig.skip_tls_verify?,
+    skip_tls_verify: nil,
     timeout: DEFAULT_TIMEOUT
   )
     return StandardError.new("Can't install helm chart if not connected") unless connected?
 
-    with_kube_config do |kubeconfig_file|
+    skip_tls = skip_tls_verify.nil? ? connection.cluster.skip_tls_verify : skip_tls_verify
+
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: skip_tls) do |kubeconfig_file|
       Tempfile.create([ 'values', '.yaml' ]) do |values_file|
         values_file.write(values.to_yaml)
         values_file.flush
@@ -129,7 +129,7 @@ class K8::Helm::Client
           wait: wait,
           history_max: history_max,
           create_namespace: create_namespace,
-          skip_tls_verify: skip_tls_verify
+          skip_tls_verify: skip_tls
         )
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
@@ -141,7 +141,7 @@ class K8::Helm::Client
   def uninstall(name, namespace: 'default')
     return StandardError.new("Can't uninstall helm chart if not connected") unless connected?
 
-    with_kube_config do |kubeconfig_file|
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       command = "helm uninstall #{name} --namespace #{namespace}"
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       raise "Helm uninstall failed with exit status #{exit_status}" unless exit_status.success?
