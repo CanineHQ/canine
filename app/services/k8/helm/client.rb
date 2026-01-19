@@ -114,7 +114,7 @@ class K8::Helm::Client
 
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: skip_tls) do |kubeconfig_file|
       Tempfile.create([ 'values', '.yaml' ]) do |values_file|
-        values_file.write(values.to_yaml)
+        values_file.write(deep_stringify_keys(values).to_yaml)
         values_file.flush
 
         command = build_install_command(
@@ -167,4 +167,16 @@ class K8::Helm::Client
       nil
     end
   end
+
+  private
+    def deep_stringify_keys(obj)
+      case obj
+      when Hash
+        obj.transform_keys(&:to_s).transform_values { |v| deep_stringify_keys(v) }
+      when Array
+        obj.map { |v| deep_stringify_keys(v) }
+      else
+        obj
+      end
+    end
 end
