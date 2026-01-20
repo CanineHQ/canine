@@ -66,6 +66,7 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
         apply_resource("Ingress", service)
       end
       restart_deployment(service)
+      setup_automatic_dns(service)
     end
     service.healthy!
   end

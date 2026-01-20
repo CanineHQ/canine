@@ -59,6 +59,16 @@ class Service < ApplicationRecord
     K8::Stateless::Service.new(self).internal_url
   end
 
+  def auto_subdomain
+    "#{name}-#{project.namespace}"
+  end
+
+  def auto_domain
+    return nil unless allow_public_networking?
+
+    "#{auto_subdomain}.#{Dns::Client.default.domain}"
+  end
+
   def friendly_status
     if !web_service? && healthy?
       "deployed"

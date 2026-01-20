@@ -75,4 +75,8 @@ class Deployments::BaseDeploymentService
     @deployment.completed!
     @project.deployed!
   end
+
+  def setup_automatic_dns(service)
+    Dns::AutoSetupService.new(service, connection: @connection, logger: @logger).call
+  end
 end
