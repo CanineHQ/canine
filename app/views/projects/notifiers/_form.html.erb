@@ -1,0 +1,56 @@
+<%= form_with model: notifier, url: notifier.persisted? ? project_notifier_path(@project, notifier) : project_notifiers_path(@project), data: { turbo_frame: "new_notifier" } do |f| %>
+  <% if notifier.errors.any? %>
+    <div class="alert alert-error mb-4">
+      <ul>
+        <% notifier.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-control w-full">
+    <label class="label">
+      <span class="label-text">Name</span>
+    </label>
+    <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "my-slack-notifier", autofocus: true %>
+    <label class="label">
+      <span class="label-text-alt">Letters, numbers, hyphens, and underscores only</span>
+    </label>
+  </div>
+
+  <div class="form-control w-full">
+    <label class="label">
+      <span class="label-text">Provider</span>
+    </label>
+    <%= f.select :provider_type, Notifier.provider_types.keys.map { |type| [type.titleize, type] }, {}, class: "select select-bordered w-full" %>
+  </div>
+
+  <div class="form-control w-full">
+    <label class="label">
+      <span class="label-text">Webhook URL</span>
+    </label>
+    <%= f.text_field :webhook_url, class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
+    <label class="label">
+      <span class="label-text-alt">
+        <% if notifier.slack? || notifier.new_record? %>
+          Get this from Slack: Apps > Incoming Webhooks
+        <% else %>
+          Get this from Discord: Server Settings > Integrations > Webhooks
+        <% end %>
+      </span>
+    </label>
+  </div>
+
+  <div class="form-control">
+    <label class="label cursor-pointer justify-start gap-4">
+      <%= f.check_box :enabled, class: "toggle toggle-primary" %>
+      <span class="label-text">Enabled</span>
+    </label>
+  </div>
+
+  <div class="form-control mt-6">
+    <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary" %>
+    <%= link_to "Cancel", edit_project_path(@project), class: "btn btn-ghost", data: { turbo: false } %>
+  </div>
+<% end %>

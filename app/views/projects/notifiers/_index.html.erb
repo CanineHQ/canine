@@ -1,0 +1,29 @@
+<div class="space-y-4">
+  <div class="text-base-content/50">
+    Configure webhook notifications to receive alerts about builds and deployments in Slack or Discord.
+  </div>
+
+  <div>
+    <%= turbo_frame_tag "new_notifier" do %>
+      <%= link_to "Add Notifier", new_project_notifier_path(project), class: "btn btn-primary btn-outline" %>
+    <% end %>
+  </div>
+
+  <% if project.notifiers.any? %>
+    <div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Provider</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "projects/notifiers/notifier", collection: project.notifiers.order(:name), as: :notifier %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>
