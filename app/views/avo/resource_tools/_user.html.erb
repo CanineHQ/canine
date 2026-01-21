@@ -1,31 +1,37 @@
-<div class="flex flex-col">
-  <%= render Avo::PanelComponent.new(name: "User") do |c| %>
-    <% c.with_tools do %>
-      <%= a_link('/avo', icon: 'heroicons/solid/academic-cap', color: :primary, style: :primary) do %>
-        Login As
-      <% end %>
-    <% end %>
-
+<div id="user_tool_panel">
+  <%= render Avo::PanelComponent.new(name: "Manage User") do |c| %>
     <% c.with_body do %>
-      <div class="flex flex-col p-4 min-h-24">
-        <div class="space-y-4">
-          <h3>Manage User</h3>
-          <%= form_with url: avo.impersonation_path(user_id: @resource.record.id), method: :post, data: { turbo: false } do |f| %>
-            <%= f.submit "Login As", class: Avo::Config.button_css %>
-          <% end %>
-          <%
-            # In this partial you have access to the following variables:
-            # tool
-            # @resource
-            # @resource.record
-            # params
-            # Avo::Current.context
-            # current_user
-          %>
+      <div style="border-top: 1px solid #f3f4f6;">
+        <!-- Login As -->
+        <div style="padding: 1rem; border-bottom: 1px solid #f3f4f6;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Login as this user</h4>
+              <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Impersonate to see what they see</p>
+            </div>
+            <%= form_with url: avo.impersonation_path(user_id: @resource.record.id), method: :post, data: { turbo: false } do |f| %>
+              <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: white; background-color: #2563eb; border: none; cursor: pointer;">
+                Login As
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Reset Password -->
+        <div style="padding: 1rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Reset password</h4>
+              <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Generate a new temporary password</p>
+            </div>
+            <%= form_with url: avo.password_reset_path(user_id: @resource.record.id), method: :post do |f| %>
+              <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #374151; background-color: #f3f4f6; border: none; cursor: pointer;" data-confirm="Generate a new temporary password for <%= @resource.record.email %>?">
+                Reset
+              </button>
+            <% end %>
+          </div>
         </div>
       </div>
     <% end %>
   <% end %>
 </div>
-
-
