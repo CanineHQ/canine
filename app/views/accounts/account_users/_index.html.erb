@@ -43,7 +43,7 @@
           </td>
           <td>
             <% if current_account_user.admin_or_owner? && !account_user.owner? %>
-              <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-ghost btn-sm btn-square" do %>
+              <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Remove #{account_user.user.name.presence || account_user.user.email} from #{current_account.name}? They will lose access to all projects and resources in this account." }, class: "btn btn-ghost btn-sm btn-square" do %>
                 <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
               <% end %>
             <% end %>
