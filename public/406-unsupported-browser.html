@@ -1,65 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Your browser is not supported (406)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
-
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
-
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
-
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
-
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
-  </style>
 </head>
 
-<body class="rails-default-error-page">
-  <!-- This file lives in public/406-unsupported-browser.html -->
-  <div class="dialog">
-    <div>
-      <h1>Your browser is not supported.</h1>
-      <p>Please upgrade your browser to continue.</p>
+<body class="error-page">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: #167bff;
+      --base-100: #191e23;
+      --base-200: #252b32;
+      --base-content: #dcebfa;
+      --warning: #f97316;
+    }
+
+    body.error-page {
+      background-color: var(--base-100);
+      color: var(--base-content);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+  </style>
+
+  <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl w-full">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Left side - Content -->
+        <div class="space-y-6">
+          <div class="text-8xl font-bold" style="color: #f97316;">406</div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight" style="color: var(--base-content);">
+            Sorry,<br>
+            your browser<br>
+            is not supported.
+          </h1>
+
+          <p class="text-lg" style="color: var(--base-content); opacity: 0.8;">
+            Please upgrade your browser to continue.
+          </p>
+
+          <div class="flex gap-3 flex-wrap">
+            <a href="/" class="inline-block hover:opacity-90 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200" style="background-color: #f97316;">
+              Take me home
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Right side - Illustration -->
+        <div class="flex justify-center md:justify-end">
+          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="w-full max-w-md">
+        </div>
+      </div>
     </div>
   </div>
 </body>
