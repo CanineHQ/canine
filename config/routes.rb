@@ -69,6 +69,7 @@ Rails.application.routes.draw do
         get :create, on: :collection, action: :create, as: :start
       end
       resource :password_reset, only: [ :create ]
+      resource :promote_to_admin, only: [ :create, :destroy ]
     end
   end
   resources :accounts, only: [ :create ] do

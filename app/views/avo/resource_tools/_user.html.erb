@@ -18,7 +18,7 @@
         </div>
 
         <!-- Reset Password -->
-        <div style="padding: 1rem;">
+        <div style="padding: 1rem; border-bottom: 1px solid #f3f4f6;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div>
               <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Reset password</h4>
@@ -28,6 +28,33 @@
               <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #374151; background-color: #f3f4f6; border: none; cursor: pointer;" data-confirm="Generate a new temporary password for <%= @resource.record.email %>?">
                 Reset
               </button>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Promote/Demote Site Admin -->
+        <div style="padding: 1rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Site Admin</h4>
+              <% if @resource.record.admin? %>
+                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Remove site admin privileges</p>
+              <% else %>
+                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Promote this user to site admin</p>
+              <% end %>
+            </div>
+            <% if @resource.record.admin? %>
+              <%= form_with url: avo.promote_to_admin_path(user_id: @resource.record.id), method: :delete do |f| %>
+                <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #374151; background-color: #f3f4f6; border: none; cursor: pointer;" data-confirm="Demote <%= @resource.record.email %> from site admin?">
+                  Demote
+                </button>
+              <% end %>
+            <% else %>
+              <%= form_with url: avo.promote_to_admin_path(user_id: @resource.record.id), method: :post do |f| %>
+                <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: white; background-color: #dc2626; border: none; cursor: pointer;" data-confirm="Promote <%= @resource.record.email %> to site admin?">
+                  Promote
+                </button>
+              <% end %>
             <% end %>
           </div>
         </div>
