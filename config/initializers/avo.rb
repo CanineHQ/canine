@@ -11,7 +11,7 @@ Avo.configure do |config|
   # config.mount_avo_engines = true
 
   # Where should the user be redirected when visiting the `/avo` url
-  # config.home_path = nil
+  config.home_path = '/admin/dashboard'
 
   ## == Licensing ==
   # config.license_key = ENV['AVO_LICENSE_KEY']
