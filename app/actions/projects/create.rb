@@ -22,7 +22,8 @@ class Projects::Create
       :container_registry_url,
       :predeploy_command,
       :project_fork_status,
-      :project_fork_cluster_id
+      :project_fork_cluster_id,
+      :project_fork_comment_enabled
     )
   end
 

@@ -24,6 +24,16 @@
         <span class="label-text-alt">* Required</span>
       </label>
     <% end %>
+
+    <div class="form-control">
+      <label class="label cursor-pointer justify-start gap-3">
+        <%= form.check_box :project_fork_comment_enabled, class: "checkbox checkbox-primary" %>
+        <div>
+          <span class="label-text font-medium">Post comment on pull request</span>
+          <p class="text-base-content/50 text-sm">When enabled, a comment will be posted to the pull request when a preview app is created.</p>
+        </div>
+      </label>
+    </div>
   </div>
   <div class="form-footer">
     <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>

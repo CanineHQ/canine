@@ -145,6 +145,17 @@ class Git::Gitlab::Client < Git::Client
     response.parsed_response["state"]
   end
 
+  def add_pull_request_comment(pr_number, body)
+    response = HTTParty.post(
+      "#{gitlab_api_base}/projects/#{encoded_url}/merge_requests/#{pr_number}/notes",
+      headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
+      body: { body: body }.to_json
+    )
+    raise "Failed to add comment: #{response.body}" unless response.success?
+
+    response.parsed_response
+  end
+
   def get_file(file_path, branch)
     response = HTTParty.get(
       "#{gitlab_api_base}/projects/#{encoded_url}/repository/files/#{URI.encode_www_form_component(file_path)}/raw?ref=#{branch}",

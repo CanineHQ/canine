@@ -30,6 +30,7 @@ RSpec.describe ProjectForks::Create do
           'feature/test'
         )
       )
+      allow(git_client).to receive(:add_pull_request_comment)
     end
 
     it 'can create a project fork from a base project' do
@@ -49,6 +50,7 @@ RSpec.describe ProjectForks::Create do
           'feature/test'
         )
       )
+      allow(git_client).to receive(:add_pull_request_comment)
     end
 
     it 'can create a project fork from a base project' do

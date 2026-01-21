@@ -4,7 +4,8 @@ class ProjectForks::Create
   def self.call(parent_project:, pull_request:)
     with(parent_project:, pull_request:).reduce(
       ProjectForks::ForkProject,
-      ProjectForks::InitializeFromCanineConfig
+      ProjectForks::InitializeFromCanineConfig,
+      ProjectForks::PostForkComment
     )
   end
 end

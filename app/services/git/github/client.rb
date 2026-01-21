@@ -114,6 +114,10 @@ class Git::Github::Client < Git::Client
     'not_found'
   end
 
+  def add_pull_request_comment(pr_number, body)
+    client.add_comment(repository_url, pr_number, body)
+  end
+
   def get_file(file_path, branch)
     contents = client.contents(repository_url, path: file_path, ref: branch)
     return nil if contents.nil?
