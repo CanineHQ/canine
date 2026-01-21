@@ -4,7 +4,7 @@ class Avo::Resources::User < Avo::BaseResource
     query: -> { query.ransack(email_cont: params[:q], first_name_cont: params[:q], last_name_cont: params[:q], m: "or").result(distinct: false) },
     item: -> {
       {
-        title: record.name.presence || record.email
+        title: record.name.present? ? "#{record.name} (#{record.email})" : record.email
       }
     }
   }
