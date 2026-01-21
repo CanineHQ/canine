@@ -3,10 +3,6 @@
 <head>
   <title>Your browser is not supported (406)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-</head>
-
-<body class="error-page">
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --primary: #167bff;
@@ -16,31 +12,148 @@
       --warning: #f97316;
     }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body.error-page {
       background-color: var(--base-100);
       color: var(--base-content);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
-  </style>
 
-  <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl w-full">
-      <div class="grid md:grid-cols-2 gap-12 items-center">
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .content-wrapper {
+      max-width: 56rem;
+      width: 100%;
+    }
+
+    .grid {
+      display: grid;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .content-section > * + * {
+      margin-top: 1.5rem;
+    }
+
+    .error-code {
+      font-size: 6rem;
+      line-height: 1;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    .error-title {
+      font-size: 2.25rem;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--base-content);
+    }
+
+    .error-description {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+      color: var(--base-content);
+      opacity: 0.8;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: opacity 200ms;
+      background-color: #f97316;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .illustration-section {
+      display: flex;
+      justify-content: center;
+    }
+
+    .illustration {
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .error-title {
+        font-size: 3rem;
+        line-height: 1;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .illustration-section {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+
+      .error-title {
+        font-size: 3.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="error-page">
+  <div class="container">
+    <div class="content-wrapper">
+      <div class="grid">
         <!-- Left side - Content -->
-        <div class="space-y-6">
-          <div class="text-8xl font-bold" style="color: #f97316;">406</div>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight" style="color: var(--base-content);">
+        <div class="content-section">
+          <div class="error-code">406</div>
+          <h1 class="error-title">
             Sorry,<br>
             your browser<br>
             is not supported.
           </h1>
 
-          <p class="text-lg" style="color: var(--base-content); opacity: 0.8;">
+          <p class="error-description">
             Please upgrade your browser to continue.
           </p>
 
-          <div class="flex gap-3 flex-wrap">
-            <a href="/" class="inline-block hover:opacity-90 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200" style="background-color: #f97316;">
+          <div class="button-group">
+            <a href="/" class="btn-primary">
               Take me home
             </a>
           </div>
@@ -48,8 +161,8 @@
         </div>
 
         <!-- Right side - Illustration -->
-        <div class="flex justify-center md:justify-end">
-          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="w-full max-w-md">
+        <div class="illustration-section">
+          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="illustration">
         </div>
       </div>
     </div>

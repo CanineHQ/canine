@@ -3,10 +3,6 @@
 <head>
   <title>The change you wanted was rejected (422)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-</head>
-
-<body class="error-page">
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --primary: #167bff;
@@ -16,30 +12,157 @@
       --warning: #fbbf24;
     }
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body.error-page {
       background-color: var(--base-100);
       color: var(--base-content);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
-  </style>
 
-  <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl w-full">
-      <div class="grid md:grid-cols-2 gap-12 items-center">
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .content-wrapper {
+      max-width: 56rem;
+      width: 100%;
+    }
+
+    .grid {
+      display: grid;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .content-section > * + * {
+      margin-top: 1.5rem;
+    }
+
+    .error-code {
+      font-size: 6rem;
+      line-height: 1;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    .error-title {
+      font-size: 2.25rem;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--base-content);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      color: rgb(17, 24, 39);
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: opacity 200ms;
+      background-color: #fbbf24;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      display: inline-block;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: background-color 200ms;
+      background-color: var(--base-200);
+      color: var(--base-content);
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-secondary:hover {
+      background-color: #2d343d;
+    }
+
+    .illustration-section {
+      display: flex;
+      justify-content: center;
+    }
+
+    .illustration {
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .error-title {
+        font-size: 3rem;
+        line-height: 1;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .illustration-section {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+
+      .error-title {
+        font-size: 3.75rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="error-page">
+  <div class="container">
+    <div class="content-wrapper">
+      <div class="grid">
         <!-- Left side - Content -->
-        <div class="space-y-6">
-          <div class="text-8xl font-bold" style="color: #fbbf24;">422</div>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight" style="color: var(--base-content);">
+        <div class="content-section">
+          <div class="error-code">422</div>
+          <h1 class="error-title">
             Sorry,<br>
             that wasn't<br>
             accepted.
           </h1>
 
-          <div class="flex gap-3 flex-wrap">
-            <a href="/" class="inline-block hover:opacity-90 text-gray-900 font-semibold px-8 py-3 rounded-lg transition-all duration-200" style="background-color: #fbbf24;">
+          <div class="button-group">
+            <a href="/" class="btn-primary">
               Take me home
             </a>
-            <button onclick="history.back()" class="inline-block hover:bg-[#252b32] font-semibold px-8 py-3 rounded-lg transition-colors duration-200" style="background-color: var(--base-200); color: var(--base-content);">
+            <button onclick="history.back()" class="btn-secondary">
               Go back
             </button>
           </div>
@@ -47,8 +170,8 @@
         </div>
 
         <!-- Right side - Illustration -->
-        <div class="flex justify-center md:justify-end">
-          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="w-full max-w-md">
+        <div class="illustration-section">
+          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="illustration">
         </div>
       </div>
     </div>
