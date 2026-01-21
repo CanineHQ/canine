@@ -3,6 +3,9 @@
 <head>
   <title>Something Went Wrong (500)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body class="error-page">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
@@ -13,15 +16,13 @@
       --error: #f31260;
     }
 
-    body {
+    body.error-page {
       background-color: var(--base-100);
       color: var(--base-content);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
   </style>
-</head>
 
-<body>
   <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl w-full">
       <div class="grid md:grid-cols-2 gap-12 items-center">
