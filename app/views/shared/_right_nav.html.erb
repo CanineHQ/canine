@@ -1,6 +1,6 @@
 <div class="ml-auto">
-  <div class="dropdown ml-auto dropdown-end dropdown-bottom">
-    <label tabindex="0" class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20">
+  <div class="dropdown ml-auto dropdown-end dropdown-bottom" data-controller="dropdown">
+    <label class="btn btn-ghost rounded-btn px-1.5 hover:bg-base-content/20" data-action="click->dropdown#toggle">
       <div aria-label="Avatar photo" class="avatar">
         <div class="mask mask-squircle" style="width: 30px; height: 30px">
           <%= image_tag avatar_path(current_user, size: 40) %>
