@@ -34,6 +34,10 @@ class Event < ApplicationRecord
   def external_link
     if project.github?
       "https://github.com/#{project.repository_url}/commit/#{eventable.commit_sha}"
+    elsif project.gitlab?
+      "https://gitlab.com/#{project.repository_url}/-/commit/#{eventable.commit_sha}"
+    elsif project.bitbucket?
+      "https://bitbucket.org/#{project.repository_url}/commits/#{eventable.commit_sha}"
     else
       "https://hub.docker.com/r/#{project.repository_url}/tags"
     end
