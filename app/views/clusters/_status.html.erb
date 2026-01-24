@@ -1,26 +1,13 @@
 <%
   badge_color = case cluster.status
-  when "initializing"
-    "warning"
-  when "installing"
+  when "initializing", "installing"
     "warning"
   when "running"
     "success"
-  when "failed"
-    "error"
-  when "destroying"
-    "error"
-  when "deleted"
+  when "failed", "destroying", "deleted"
     "error"
   end
 %>
-<div class="flex items-center gap-2">
-  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
-    <%= cluster.status %>
-  </div>
-  <% if cluster.status == "failed" %>
-    <div>
-      <%= button_to "Retry installation", retry_install_cluster_path(cluster), class: "btn btn-primary btn-outline btn-xs" %>
-    </div>
-  <% end %>
+<div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+  <%= cluster.status %>
 </div>

@@ -6,7 +6,12 @@
         <%= cluster.name %>
         <%= render "favorites/button", favoriteable: cluster %>
       </h3>
-      <%= render "clusters/status", cluster: cluster %>
+      <div class="flex items-center gap-2">
+        <%= render "clusters/status", cluster: cluster %>
+        <% if cluster.failed? %>
+          <%= button_to "Retry installation", retry_install_cluster_path(cluster), class: "btn btn-primary btn-outline btn-xs" %>
+        <% end %>
+      </div>
       <div class="mt-1">
         <%= render "clusters/info", cluster: @cluster %>
       </div>
