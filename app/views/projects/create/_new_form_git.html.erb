@@ -25,7 +25,14 @@
         label: "Cluster",
         description: "The cluster to deploy your project to."
       )) do %>
-        <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
+        <%= form.combobox :cluster_id, current_account.clusters.running.map { |cluster|
+          {
+            id: cluster.id,
+            search_text: "#{cluster.name} #{cluster.cluster_type}",
+            partial: "clusters/dropdown_item",
+            locals: { cluster: cluster }
+          }
+        }, placeholder: "Select a cluster..." %>
         <label class="label">
           <span class="label-text-alt">* Required</span>
         </label>

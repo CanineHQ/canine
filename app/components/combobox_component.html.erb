@@ -1,0 +1,30 @@
+<div data-controller="combobox">
+  <%= form.hidden_field field, data: { combobox_target: "hidden" }, value: selected_value %>
+
+  <div data-combobox-target="selected" class="<%= selected_value.blank? ? 'hidden' : '' %>"></div>
+
+  <input
+    type="text"
+    data-combobox-target="input"
+    placeholder="<%= placeholder %>"
+    class="input input-bordered w-full <%= input_class %> <%= selected_value.present? ? 'hidden' : '' %>"
+  />
+
+  <template data-combobox-target="template">
+    <ul>
+      <% items.each do |item| %>
+        <li
+          data-combobox-target="item"
+          data-value="<%= item[:id] %>"
+          <% if item[:search_text] %>data-search-text="<%= item[:search_text] %>"<% end %>
+        >
+          <% if item[:partial] %>
+            <%= render partial: item[:partial], locals: item[:locals] || {} %>
+          <% else %>
+            <%= item[:display_text] %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </template>
+</div>

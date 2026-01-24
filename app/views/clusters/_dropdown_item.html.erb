@@ -1,0 +1,10 @@
+<div class="flex items-center gap-3">
+  <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-base-300">
+    <%= cluster_icon(cluster, classes: "text-lg") %>
+  </div>
+  <div class="flex-1 min-w-0">
+    <div class="font-medium"><%= cluster.name %></div>
+    <div class="text-xs text-base-content/60"><%= cluster.cluster_type.upcase %> &middot; <%= cluster.projects.size %> projects</div>
+  </div>
+  <%= render "clusters/status", cluster: cluster %>
+</div>

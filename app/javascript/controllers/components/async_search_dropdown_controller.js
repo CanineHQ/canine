@@ -1,9 +1,8 @@
-import { Controller } from "@hotwired/stimulus"
-import { computePosition, autoUpdate, flip, shift, offset, size } from "@floating-ui/dom"
+import BaseDropdownController from "./base_dropdown_controller"
 import { debounce } from "../../utils"
 
 /**
- * Base controller for async search dropdowns with autocomplete
+ * Controller for async search dropdowns with autocomplete
  *
  * Child controllers must implement:
  * - fetchResults(query): Promise<Array> - Fetch and return search results
@@ -15,82 +14,30 @@ import { debounce } from "../../utils"
  * - shouldSearch(query): Boolean - Determine if search should be performed (default: non-empty query)
  * - getDebounceDelay(): Number - Debounce delay in ms (default: 500)
  */
-export default class extends Controller {
+export default class extends BaseDropdownController {
   connect() {
-    this.input = this.getInputElement()
+    super.connect()
 
-    if (!this.input) {
+    this.inputElement = this.getInputElement()
+
+    if (!this.inputElement) {
       console.error('AsyncSearchDropdown: No input element found')
       return
     }
 
-    // Disable browser autocomplete
-    this.input.setAttribute('autocomplete', 'off')
+    this.inputElement.setAttribute('autocomplete', 'off')
 
-    // Create dropdown and append to the appropriate container
-    this.dropdown = this.createDropdown()
-    this.getDropdownContainer().appendChild(this.dropdown)
-
-    // Bind search handler with debounce
     this.searchHandler = debounce(this.performSearch.bind(this), this.getDebounceDelay())
-    this.input.addEventListener('input', this.searchHandler)
-
-    // Handle click outside to close dropdown
-    this.clickOutsideHandler = this.handleClickOutside.bind(this)
-    document.addEventListener('click', this.clickOutsideHandler)
-
-    this.cleanupAutoUpdate = null
+    this.inputElement.addEventListener('input', this.searchHandler)
+    this.inputElement.addEventListener('keydown', this.handleKeydown.bind(this))
   }
 
   disconnect() {
-    if (this.input) {
-      this.input.removeEventListener('input', this.searchHandler)
+    if (this.inputElement) {
+      this.inputElement.removeEventListener('input', this.searchHandler)
+      this.inputElement.removeEventListener('keydown', this.handleKeydown.bind(this))
     }
-    document.removeEventListener('click', this.clickOutsideHandler)
-    if (this.cleanupAutoUpdate) {
-      this.cleanupAutoUpdate()
-    }
-    if (this.dropdown && this.dropdown.parentNode) {
-      this.dropdown.parentNode.removeChild(this.dropdown)
-    }
-  }
-
-  createDropdown() {
-    const dropdown = document.createElement('ul')
-    dropdown.className = 'hidden z-50 bg-neutral rounded-box shadow-lg max-h-[300px] overflow-y-auto'
-    dropdown.style.position = 'absolute'
-    dropdown.style.top = '0'
-    dropdown.style.left = '0'
-    return dropdown
-  }
-
-  getDropdownContainer() {
-    // Check if we're inside a modal and append there to maintain stacking context
-    const modal = this.element.closest('.modal, [role="dialog"], dialog')
-    return modal || document.body
-  }
-
-  updatePosition() {
-    computePosition(this.input, this.dropdown, {
-      placement: 'bottom-start',
-      middleware: [
-        offset(4),
-        flip({ fallbackPlacements: ['top-start'] }),
-        shift({ padding: 8 }),
-        size({
-          apply({ rects, elements }) {
-            Object.assign(elements.floating.style, {
-              minWidth: `${rects.reference.width}px`
-            })
-          }
-        })
-      ]
-    }).then(({ x, y }) => {
-      Object.assign(this.dropdown.style, {
-        left: `${x}px`,
-        top: `${y}px`
-      })
-    })
+    super.disconnect()
   }
 
   getInputElement() {
@@ -106,7 +53,7 @@ export default class extends Controller {
   }
 
   async performSearch() {
-    const query = this.input.value
+    const query = this.inputElement.value
 
     if (!this.shouldSearch(query)) {
       this.hideDropdown()
@@ -135,13 +82,14 @@ export default class extends Controller {
       </li>
     `).join('')
 
-    // Store results for later access
     this.currentResults = results
 
-    // Add click handlers
     this.dropdown.querySelectorAll('li').forEach((li, index) => {
       li.addEventListener('click', () => {
         this.selectItem(results[index], li)
+      })
+      li.addEventListener('mouseenter', () => {
+        this.highlightItem(index)
       })
     })
 
@@ -154,67 +102,16 @@ export default class extends Controller {
     this.hideDropdown()
   }
 
+  selectItemAtIndex(index) {
+    if (this.currentResults && this.currentResults[index]) {
+      const li = this.dropdown.querySelectorAll('li[data-index]')[index]
+      this.selectItem(this.currentResults[index], li)
+    }
+  }
+
   clearInput() {
-    if (this.input) {
-      this.input.value = ''
-    }
-  }
-
-  showDropdown() {
-    this.dropdown.classList.remove('hidden')
-    this.updatePosition()
-
-    // Set up auto-update to keep position in sync during scroll/resize
-    if (this.cleanupAutoUpdate) {
-      this.cleanupAutoUpdate()
-    }
-    this.cleanupAutoUpdate = autoUpdate(this.input, this.dropdown, () => {
-      this.updatePosition()
-    })
-  }
-
-  hideDropdown() {
-    this.dropdown.classList.add('hidden')
-    this.dropdown.innerHTML = ''
-
-    // Clean up auto-update listener
-    if (this.cleanupAutoUpdate) {
-      this.cleanupAutoUpdate()
-      this.cleanupAutoUpdate = null
-    }
-  }
-
-  showLoading() {
-    this.dropdown.innerHTML = `
-      <li class="p-4 text-center flex items-center justify-center gap-2">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span>Searching...</span>
-      </li>
-    `
-    this.showDropdown()
-  }
-
-  showError(message) {
-    this.dropdown.innerHTML = `
-      <li class="p-4 text-center text-error">
-        ${message}
-      </li>
-    `
-    this.showDropdown()
-  }
-
-  showEmpty() {
-    this.dropdown.innerHTML = `
-      <li class="p-4 text-center text-base-content/60">
-        No results found
-      </li>
-    `
-    this.showDropdown()
-  }
-
-  handleClickOutside(event) {
-    if (!this.element.contains(event.target) && !this.dropdown.contains(event.target)) {
-      this.hideDropdown()
+    if (this.inputElement) {
+      this.inputElement.value = ''
     }
   }
 
