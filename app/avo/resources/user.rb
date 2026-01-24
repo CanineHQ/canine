@@ -4,7 +4,7 @@ class Avo::Resources::User < Avo::BaseResource
     query: -> { query.ransack(email_cont: params[:q], first_name_cont: params[:q], last_name_cont: params[:q], m: "or").result(distinct: false) },
     item: -> {
       {
-        title: record.name.presence || record.email
+        title: record.name.present? ? "#{record.name} (#{record.email})" : record.email
       }
     }
   }
@@ -16,7 +16,6 @@ class Avo::Resources::User < Avo::BaseResource
     field :email, as: :text, link_to_record: true
     field :first_name, as: :text
     field :last_name, as: :text
-    field :admin, as: :boolean
     field :created_at, as: :date_time, sortable: true
     field :avatar, as: :file, only_on: [ :show, :edit ]
 
