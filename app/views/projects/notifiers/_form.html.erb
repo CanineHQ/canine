@@ -11,19 +11,28 @@
 
   <div class="form-control w-full">
     <label class="label">
-      <span class="label-text">Name</span>
-    </label>
-    <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "my-slack-notifier", autofocus: true %>
-    <label class="label">
-      <span class="label-text-alt">Letters, numbers, hyphens, and underscores only</span>
-    </label>
-  </div>
-
-  <div class="form-control w-full">
-    <label class="label">
       <span class="label-text">Provider</span>
     </label>
-    <%= f.select :provider_type, Notifier.provider_types.keys.map { |type| [type.titleize, type] }, {}, class: "select select-bordered w-full" %>
+    <%= render "shared/partials/radio_selector",
+      selected: notifier.provider_type || "slack",
+      options: [
+        {
+          name: "notifier[provider_type]",
+          value: "slack",
+          href: nil,
+          icon: "logos:slack-icon",
+          label: "Slack",
+          description: "Send notifications to a Slack channel"
+        },
+        {
+          name: "notifier[provider_type]",
+          value: "discord",
+          href: nil,
+          icon: "logos:discord-icon",
+          label: "Discord",
+          description: "Send notifications to a Discord channel"
+        }
+      ] %>
   </div>
 
   <div class="form-control w-full">
@@ -42,10 +51,10 @@
     </label>
   </div>
 
-  <div class="form-control">
-    <label class="label cursor-pointer justify-start gap-4">
-      <%= f.check_box :enabled, class: "toggle toggle-primary" %>
-      <span class="label-text">Enabled</span>
+  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
+    <label class="label mt-1">
+      <span class="label-text cursor-pointer">Enabled</span>
+      <%= f.check_box :enabled, class: "checkbox" %>
     </label>
   </div>
 

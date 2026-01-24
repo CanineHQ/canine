@@ -14,14 +14,13 @@
       <table class="table">
         <thead>
           <tr>
-            <th>Name</th>
             <th>Provider</th>
             <th>Status</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <%= render partial: "projects/notifiers/notifier", collection: project.notifiers.order(:name), as: :notifier %>
+          <%= render partial: "projects/notifiers/notifier", collection: project.notifiers.order(:created_at), as: :notifier %>
         </tbody>
       </table>
     </div>
