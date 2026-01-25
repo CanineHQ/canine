@@ -13,7 +13,7 @@
     <% end %>
   </td>
   <td class="flex gap-2 justify-end">
-    <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost", data: { turbo_frame: "new_notifier" } %>
+    <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost", data: { turbo_frame: "notifiers" } %>
     <%= button_to(
       "Delete",
       project_notifier_path(notifier.project, notifier),

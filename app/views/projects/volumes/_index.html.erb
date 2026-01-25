@@ -1,3 +1,4 @@
+<%= turbo_frame_tag "volumes" do %>
 <div class="space-y-4">
   <div class="text-base-content/50">
     Volumes are a way to persist data across container restarts. In general, you should use a database for this.
@@ -5,12 +6,10 @@
   </div>
 
   <div>
-    <%= turbo_frame_tag "new_volume" do %>
-      <%= link_to "Create Volume", new_project_volume_path(project), class: "btn btn-primary btn-outline" %>
-    <% end %>
+    <%= link_to "Create Volume", new_project_volume_path(project), class: "btn btn-primary btn-outline", data: { turbo_frame: "volumes" } %>
   </div>
 
-  <% if @project.volumes.any? %>
+  <% if project.volumes.any? %>
     <div>
       <table class="table">
         <thead>
@@ -24,9 +23,10 @@
           </tr>
         </thead>
         <tbody>
-          <%= render partial: "projects/volumes/volume", collection: @project.volumes, as: :volume %>
+          <%= render partial: "projects/volumes/volume", collection: project.volumes, as: :volume %>
         </tbody>
       </table>
     </div>
   <% end %>
 </div>
+<% end %>

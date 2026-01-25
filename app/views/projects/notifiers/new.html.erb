@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "new_notifier" do %>
-  <h3 class="text-lg font-bold">New Notifier</h3>
-  <%= render "projects/notifiers/form", notifier: @notifier %>
+<%= turbo_frame_tag "notifiers" do %>
+  <h3 class="text-lg font-bold mb-4">New Notifier</h3>
+  <%= render "form", notifier: @notifier %>
 <% end %>

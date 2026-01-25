@@ -150,7 +150,7 @@ Rails.application.routes.draw do
     end
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
-    resources :notifiers, only: %i[new create edit update destroy], module: :projects
+    resources :notifiers, only: %i[index new create edit update destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update show], module: :projects do
       resource :resource_constraint, only: %i[show new create update destroy], module: :services
