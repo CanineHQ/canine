@@ -55,6 +55,7 @@ class Project < ApplicationRecord
   has_many :domains, through: :services
   has_many :events, dependent: :destroy
   has_many :volumes, dependent: :destroy
+  has_many :notifiers, dependent: :destroy
 
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy

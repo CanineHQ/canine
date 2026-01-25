@@ -1,0 +1,29 @@
+<div class="space-y-4">
+  <div class="text-base-content/50">
+    Set up webhook notifications to receive real-time alerts about builds and deployments. Supports Slack, Discord, Microsoft Teams, and Google Chat.
+  </div>
+
+  <div>
+    <%= turbo_frame_tag "new_notifier" do %>
+      <%= link_to "Add Notifier", new_project_notifier_path(project), class: "btn btn-primary btn-outline" %>
+    <% end %>
+  </div>
+
+  <% if project.notifiers.any? %>
+    <div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Provider</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= render partial: "projects/notifiers/notifier", collection: project.notifiers.order(:created_at), as: :notifier %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

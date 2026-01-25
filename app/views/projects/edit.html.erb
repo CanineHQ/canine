@@ -33,6 +33,13 @@
     </div>
 
     <div>
+      <h2 class="text-2xl font-bold">Notifications</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <%= render "projects/notifiers/index", project: @project %>
+    </div>
+
+    <div>
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="mt-6">
