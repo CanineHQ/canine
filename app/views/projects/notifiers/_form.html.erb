@@ -1,4 +1,4 @@
-<%= form_with model: notifier, url: notifier.persisted? ? project_notifier_path(@project, notifier) : project_notifiers_path(@project), data: { turbo_frame: "new_notifier" } do |f| %>
+<%= form_with model: notifier, url: notifier.persisted? ? project_notifier_path(@project, notifier) : project_notifiers_path(@project) do |f| %>
   <% if notifier.errors.any? %>
     <div class="alert alert-error mb-4">
       <ul>
@@ -9,9 +9,9 @@
     </div>
   <% end %>
 
-  <div class="form-control w-full max-w-xs">
+  <div class="form-control w-full max-w-sm">
     <label class="label">
-      <span class="label-text">Name <span class="text-error">*</span></span>
+      <span class="label-text">Name</span>
     </label>
     <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts", required: true %>
   </div>
@@ -81,7 +81,7 @@
   </div>
 
   <div class="form-footer">
-    <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary", data: { turbo: false } %>
-    <%= link_to "Cancel", edit_project_path(@project), class: "btn btn-ghost", data: { turbo: false } %>
+    <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary" %>
+    <%= link_to "Cancel", project_notifiers_path(@project), class: "btn btn-ghost", data: { turbo_frame: "notifiers" } %>
   </div>
 <% end %>

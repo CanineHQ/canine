@@ -1,6 +1,10 @@
 class Projects::NotifiersController < Projects::BaseController
   before_action :set_notifier, only: [ :edit, :update, :destroy ]
 
+  def index
+    render partial: "index", locals: { project: @project }
+  end
+
   def new
     @notifier = @project.notifiers.new
   end
@@ -8,7 +12,7 @@ class Projects::NotifiersController < Projects::BaseController
   def create
     @notifier = @project.notifiers.build(notifier_params)
     if @notifier.save
-      redirect_to edit_project_path(@project), notice: "Notifier created successfully"
+      render partial: "index", locals: { project: @project }
     else
       render :new, status: :unprocessable_entity
     end
@@ -19,7 +23,7 @@ class Projects::NotifiersController < Projects::BaseController
 
   def update
     if @notifier.update(notifier_params)
-      redirect_to edit_project_path(@project), notice: "Notifier updated successfully"
+      render partial: "index", locals: { project: @project }
     else
       render :edit, status: :unprocessable_entity
     end
@@ -27,7 +31,7 @@ class Projects::NotifiersController < Projects::BaseController
 
   def destroy
     @notifier.destroy
-    redirect_to edit_project_path(@project), notice: "Notifier deleted"
+    render partial: "index", locals: { project: @project }
   end
 
   private
