@@ -11,9 +11,9 @@
 
   <div class="form-control w-full max-w-xs">
     <label class="label">
-      <span class="label-text">Name</span>
+      <span class="label-text">Name <span class="text-error">*</span></span>
     </label>
-    <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts" %>
+    <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts", required: true %>
   </div>
 
   <div class="form-control w-full mt-4">
