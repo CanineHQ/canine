@@ -74,6 +74,13 @@ class Deployments::BaseDeploymentService
   def complete_deployment!
     @deployment.completed!
     @project.deployed!
+    notify_deployment
+  end
+
+  def notify_deployment
+    return unless @project.notifiers.enabled.any?
+
+    DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
   end
 
   def setup_automatic_dns(service)

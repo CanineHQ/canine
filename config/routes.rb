@@ -64,7 +64,12 @@ Rails.application.routes.draw do
     Avo::Engine.routes.draw do
       # This route is not protected, secure it with authentication if needed.
       get "dashboard", to: "tools#dashboard", as: :dashboard
-      resource :impersonation, only: [ :create, :destroy ]
+      resource :impersonation, only: [ :destroy ] do
+        post :create, on: :collection, action: :create
+        get :create, on: :collection, action: :create, as: :start
+      end
+      resource :password_reset, only: [ :create ]
+      resource :promote_to_admin, only: [ :create, :destroy ]
     end
   end
   resources :accounts, only: [ :create ] do
@@ -145,6 +150,7 @@ Rails.application.routes.draw do
     end
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
+    resources :notifiers, only: %i[index new create edit update destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects
     resources :services, only: %i[index new create destroy update show], module: :projects do
       resource :resource_constraint, only: %i[show new create update destroy], module: :services
@@ -201,6 +207,9 @@ Rails.application.routes.draw do
   resources :notifications, only: [ :index ]
   resources :announcements, only: [ :index ]
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks", registrations: "users/registrations", sessions: "users/sessions" }
+
+  resource :password_change, only: [ :show, :update ], controller: "password_change"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -168,6 +168,9 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    devise_invitable (2.0.11)
+      actionmailer (>= 5.0)
+      devise (>= 4.6)
     diff-lcs (1.6.2)
     docile (1.4.1)
     domain_name (0.6.20240107)
@@ -741,6 +744,7 @@ DEPENDENCIES
   database_cleaner-active_record (~> 2.2.2)
   debug
   devise (~> 4.9)
+  devise_invitable (~> 2.0)
   doorkeeper (~> 5.8)
   dotenv (~> 3.1)
   factory_bot_rails
