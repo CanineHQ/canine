@@ -1,6 +1,4 @@
-<%= project_layout(@project) do %>
-  <div class="max-w-md">
-    <h2 class="text-xl font-bold mb-4">Edit Notifier</h2>
-    <%= render "form", notifier: @notifier %>
-  </div>
+<%= turbo_frame_tag "new_notifier" do %>
+  <h3 class="text-lg font-bold">Edit Notifier</h3>
+  <%= render "projects/notifiers/form", notifier: @notifier %>
 <% end %>

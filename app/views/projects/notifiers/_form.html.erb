@@ -9,7 +9,14 @@
     </div>
   <% end %>
 
-  <div class="form-control w-full">
+  <div class="form-control w-full max-w-xs">
+    <label class="label">
+      <span class="label-text">Name</span>
+    </label>
+    <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts" %>
+  </div>
+
+  <div class="form-control w-full mt-4">
     <label class="label">
       <span class="label-text">Provider</span>
     </label>
@@ -22,7 +29,9 @@
           href: nil,
           icon: "logos:slack-icon",
           label: "Slack",
-          description: "Send notifications to a Slack channel"
+          description: "Send notifications to a Slack channel",
+          partial: "projects/notifiers/slack_instructions",
+          locals: {}
         },
         {
           name: "notifier[provider_type]",
@@ -30,36 +39,49 @@
           href: nil,
           icon: "logos:discord-icon",
           label: "Discord",
-          description: "Send notifications to a Discord channel"
+          description: "Send notifications to a Discord channel",
+          partial: "projects/notifiers/discord_instructions",
+          locals: {}
+        },
+        {
+          name: "notifier[provider_type]",
+          value: "microsoft_teams",
+          href: nil,
+          icon: "logos:microsoft-teams",
+          label: "Microsoft Teams",
+          description: "Send notifications to a Teams channel",
+          partial: "projects/notifiers/microsoft_teams_instructions",
+          locals: {}
+        },
+        {
+          name: "notifier[provider_type]",
+          value: "google_chat",
+          href: nil,
+          icon: "/images/logos/google-chat.webp",
+          label: "Google Chat",
+          description: "Send notifications to a Google Chat space",
+          partial: "projects/notifiers/google_chat_instructions",
+          locals: {}
         }
       ] %>
   </div>
 
-  <div class="form-control w-full">
+  <div class="form-control w-full mt-4">
     <label class="label">
       <span class="label-text">Webhook URL</span>
     </label>
     <%= f.text_field :webhook_url, class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
-    <label class="label">
-      <span class="label-text-alt">
-        <% if notifier.slack? || notifier.new_record? %>
-          Get this from Slack: Apps > Incoming Webhooks
-        <% else %>
-          Get this from Discord: Server Settings > Integrations > Webhooks
-        <% end %>
-      </span>
-    </label>
   </div>
 
-  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
+  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">
     <label class="label mt-1">
       <span class="label-text cursor-pointer">Enabled</span>
       <%= f.check_box :enabled, class: "checkbox" %>
     </label>
   </div>
 
-  <div class="form-control mt-6">
-    <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary" %>
+  <div class="form-footer">
+    <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary", data: { turbo: false } %>
     <%= link_to "Cancel", edit_project_path(@project), class: "btn btn-ghost", data: { turbo: false } %>
   </div>
 <% end %>

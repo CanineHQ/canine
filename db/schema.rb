@@ -434,12 +434,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_24_193354) do
 
   create_table "notifiers", force: :cascade do |t|
     t.bigint "project_id", null: false
+    t.string "name", null: false
     t.integer "provider_type", default: 0, null: false
     t.string "webhook_url", null: false
     t.boolean "enabled", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_id", "provider_type"], name: "index_notifiers_on_project_id_and_provider_type", unique: true
     t.index ["project_id"], name: "index_notifiers_on_project_id"
   end
 

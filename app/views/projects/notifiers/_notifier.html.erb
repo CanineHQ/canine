@@ -1,4 +1,5 @@
 <tr id="<%= dom_id(notifier) %>">
+  <td><%= notifier.name %></td>
   <td>
     <span class="badge badge-outline">
       <%= notifier.provider_type.titleize %>
@@ -12,7 +13,7 @@
     <% end %>
   </td>
   <td class="flex gap-2 justify-end">
-    <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost" %>
+    <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost", data: { turbo_frame: "new_notifier" } %>
     <%= button_to(
       "Delete",
       project_notifier_path(notifier.project, notifier),
