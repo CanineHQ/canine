@@ -42,7 +42,6 @@ FactoryBot.define do
     account
     sequence(:name) { |n| "example-project-#{n}" }
     sequence(:namespace) { |n| "example-project-#{n}" }
-    sequence(:slug) { |n| "example-project-#{n}" }
     managed_namespace { true }
     repository_url { "owner/repository" }
     status { :creating }

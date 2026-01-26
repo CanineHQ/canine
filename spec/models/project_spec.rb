@@ -165,6 +165,22 @@ RSpec.describe Project, type: :model do
     end
   end
 
+  describe '#generate_slug' do
+    it 'uses the name as slug when available' do
+      project = create(:project, name: 'unique-name')
+      expect(project.slug).to eq('unique-name')
+    end
+
+    it 'appends a uuid suffix when the slug is taken' do
+      existing_project = create(:project, name: 'taken-name')
+      other_cluster = create(:cluster)
+      new_project = create(:project, name: 'taken-name', cluster: other_cluster)
+
+      expect(new_project.slug).to start_with('taken-name-')
+      expect(new_project.slug).not_to eq(existing_project.slug)
+    end
+  end
+
   describe '#container_registry_url' do
     it 'uses branch name as tag for GitHub' do
       github_project = create(:project, :github, repository_url: 'owner/repo', branch: 'feature/test')

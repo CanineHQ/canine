@@ -13,12 +13,12 @@ class AddSlugToProjects < ActiveRecord::Migration[7.2]
     change_column_null :projects, :slug, false
     add_index :projects, :slug, unique: true
     remove_index :services, :project_id
-    add_index :services, [:project_id, :name], unique: true
+    add_index :services, [ :project_id, :name ], unique: true
   end
 
   def down
     remove_column :projects, :slug
     add_index :services, :project_id
-    remove_index :services, [:project_id, :name]
+    remove_index :services, [ :project_id, :name ]
   end
 end
