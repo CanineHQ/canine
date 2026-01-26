@@ -31,6 +31,15 @@
             <% end %>
             permissions.
           </div>
+        <% elsif params[:provider_type] == Provider::BITBUCKET_PROVIDER %>
+          <%= link_to "Create your Bitbucket App Password →", "https://bitbucket.org/account/settings/app-passwords/", target: "_blank", class: "text-sm text-gray-500 " %>
+          <div class="mt-2">
+            Select the
+            <% Providers::CreateBitbucketProvider::EXPECTED_SCOPES.each do |scope| %>
+              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
+            <% end %>
+            permissions.
+          </div>
         <% end %>
       </div>
     </div>

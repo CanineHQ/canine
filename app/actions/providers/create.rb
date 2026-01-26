@@ -17,6 +17,10 @@ module Providers
         with(provider:).reduce(
           Providers::CreateGitlabProvider,
         )
+      elsif provider.bitbucket?
+        with(provider:).reduce(
+          Providers::CreateBitbucketProvider,
+        )
       end
     end
   end

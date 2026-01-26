@@ -30,6 +30,7 @@ class ProjectCredentialProvider < ApplicationRecord
   delegate :github?, to: :provider
   delegate :container_registry?, to: :provider
   delegate :gitlab?, to: :provider
+  delegate :bitbucket?, to: :provider
   delegate :git?, to: :provider
 
   def github_username
