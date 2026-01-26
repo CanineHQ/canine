@@ -11,7 +11,7 @@ class Dns::Client
   end
 
   def self.default
-    Dns::Cloudflare.new(api_token: ENV["CLOUDFLARE_API_KEY"], zone_id: ENV["CLOUDFLARE_ZONE_ID"])
+    Dns::Cloudflare.new
   end
 
   # Interface methods - subclasses must implement these

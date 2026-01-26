@@ -21,7 +21,7 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
 
   def destroy
     @domain = @project.domains.find(params[:id])
-    @domain.destroy
+    Domains::Destroy.execute(domain: @domain)
 
     respond_to(&:turbo_stream)
   end
