@@ -84,6 +84,8 @@ class Deployments::BaseDeploymentService
   end
 
   def setup_automatic_dns(service)
-    Dns::AutoSetupService.new(service, connection: @connection, logger: @logger).call
+    service.domains.where(auto_managed: true).find_each do |domain|
+      Dns::AutoSetupService.new(domain, connection: @connection, logger: @logger).call
+    end
   end
 end

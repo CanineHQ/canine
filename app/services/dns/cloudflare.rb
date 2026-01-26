@@ -1,12 +1,15 @@
 class Dns::Cloudflare < Dns::Client
   BASE_URL = "https://api.cloudflare.com/client/v4"
+  API_TOKEN = ENV["CLOUDFLARE_API_TOKEN"]
+  ZONE_ID = ENV["CLOUDFLARE_ZONE_ID"]
+  DOMAIN = ENV["CLOUDFLARE_DOMAIN"] || "oncanine.run"
 
   attr_reader :api_token, :zone_id, :domain
 
   def initialize(api_token: nil, zone_id: nil, domain: nil)
-    @api_token = api_token || default_api_token
-    @zone_id = zone_id || default_zone_id
-    @domain = domain || default_domain
+    @api_token = api_token || API_TOKEN
+    @zone_id = zone_id || ZONE_ID
+    @domain = domain || DOMAIN
   end
 
   def create_a_record(subdomain:, ip_address:, proxied: false, ttl: 1)
@@ -58,6 +61,25 @@ class Dns::Cloudflare < Dns::Client
     response = connection.get("zones/#{zone_id}/dns_records", params)
     data = handle_response(response)
     data["result"]
+  end
+
+  def list_all_records(type: nil)
+    params = { per_page: 100, page: 1 }
+    params[:type] = type if type
+
+    all_records = []
+    loop do
+      response = connection.get("zones/#{zone_id}/dns_records", params)
+      data = handle_response(response)
+      all_records.concat(data["result"])
+
+      result_info = data["result_info"]
+      break if params[:page] >= result_info["total_pages"]
+
+      params[:page] += 1
+    end
+
+    all_records
   end
 
   def verify_connection
@@ -123,17 +145,5 @@ class Dns::Cloudflare < Dns::Client
     end
 
     body
-  end
-
-  def default_api_token
-    ENV["CLOUDFLARE_API_TOKEN"] || Rails.application.credentials.dig(:cloudflare, :api_token)
-  end
-
-  def default_zone_id
-    ENV["CLOUDFLARE_ZONE_ID"] || Rails.application.credentials.dig(:cloudflare, :zone_id)
-  end
-
-  def default_domain
-    ENV["CLOUDFLARE_DOMAIN"] || Rails.application.credentials.dig(:cloudflare, :domain) || "oncanine.run"
   end
 end
