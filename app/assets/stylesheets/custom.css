@@ -109,3 +109,33 @@
   color: oklch(var(--in)) !important;
   border: 0 !important;
 }
+
+.badge-success {
+  background-color: oklch(var(--su) / 0.1) !important;
+  color: oklch(var(--su)) !important;
+  border: 0 !important;
+}
+
+.badge-error {
+  background-color: oklch(var(--er) / 0.1) !important;
+  color: oklch(var(--er)) !important;
+  border: 0 !important;
+}
+
+.badge-warning {
+  background-color: oklch(var(--wa) / 0.1) !important;
+  color: oklch(var(--wa)) !important;
+  border: 0 !important;
+}
+
+.badge-info {
+  background-color: oklch(var(--in) / 0.1) !important;
+  color: oklch(var(--in)) !important;
+  border: 0 !important;
+}
+
+.badge-secondary {
+  background-color: oklch(var(--s) / 0.1) !important;
+  color: oklch(var(--s)) !important;
+  border: 0 !important;
+}
