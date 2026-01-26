@@ -85,3 +85,19 @@
 .slider::-moz-range-thumb {
   @apply w-4 h-4 rounded-full bg-primary cursor-pointer border-0;
 }
+
+.alert-success {
+  @apply !bg-success/10 !text-success !border-0;
+}
+
+.alert-error {
+  @apply !bg-error/10 !text-error !border-0;
+}
+
+.alert-warning {
+  @apply !bg-warning/10 !text-warning !border-0;
+}
+
+.alert-info {
+  @apply !bg-info/10 !text-info !border-0;
+}

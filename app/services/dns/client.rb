@@ -5,16 +5,13 @@ class Dns::Client
     case provider.to_sym
     when :cloudflare
       Dns::Cloudflare.new
-    when :route53
-      Dns::Route53.new
     else
       raise Error, "Unsupported DNS provider: #{provider}"
     end
   end
 
   def self.default
-    provider = ENV["DNS_PROVIDER"] || Rails.application.credentials.dig(:dns, :provider) || "cloudflare"
-    for_provider(provider)
+    Dns::Cloudflare.new(api_token: ENV["CLOUDFLARE_API_KEY"], zone_id: ENV["CLOUDFLARE_ZONE_ID"])
   end
 
   # Interface methods - subclasses must implement these

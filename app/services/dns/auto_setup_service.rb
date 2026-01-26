@@ -8,7 +8,7 @@ class Dns::AutoSetupService
   end
 
   def self.enabled?
-    ENV["ENABLE_AUTOMATIC_DNS_MAPPING"] == "true"
+    ENV["ENABLE_AUTOMATIC_DNS_MAPPING"] == "true" && ENV["CLOUDFLARE_API_KEY"].present? && ENV["CLOUDFLARE_ZONE_ID"].present?
   end
 
   def call
