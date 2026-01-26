@@ -11,7 +11,7 @@
   end
 %>
 <div class="text-right">
-  <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+  <div aria-label="Badge" class="badge badge-<%= badge_color %> font-medium capitalize">
     <%= service.friendly_status %>
   </div>
   <% if service.web_service? %>
