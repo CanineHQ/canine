@@ -18,6 +18,7 @@
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
+#  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
@@ -28,6 +29,7 @@
 #
 #  index_projects_on_cluster_id  (cluster_id)
 #  index_projects_on_name        (name)
+#  index_projects_on_slug        (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -80,6 +82,7 @@ class Project < ApplicationRecord
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
   validates_presence_of :deployment_configuration
+  before_create :generate_slug
 
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
@@ -100,6 +103,13 @@ class Project < ApplicationRecord
   }, prefix: :forks
   delegate :git?, :github?, :gitlab?, to: :project_credential_provider
   delegate :container_registry?, to: :project_credential_provider
+
+  def generate_slug
+    self.slug = self.name
+    while Project.exists?(slug: self.slug)
+      self.slug = "#{self.name}-#{SecureRandom.uuid[0..7]}"
+    end
+  end
 
   def project_fork_cluster_id_is_owned_by_account
     if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)

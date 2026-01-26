@@ -18,6 +18,7 @@
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
+#  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
@@ -28,6 +29,7 @@
 #
 #  index_projects_on_cluster_id  (cluster_id)
 #  index_projects_on_name        (name)
+#  index_projects_on_slug        (slug) UNIQUE
 #
 # Foreign Keys
 #
@@ -160,6 +162,22 @@ RSpec.describe Project, type: :model do
 
     it 'destroys the fork when the parent project is destroyed' do
       expect { project.destroy }.to change { ProjectFork.count }.by(-1)
+    end
+  end
+
+  describe '#generate_slug' do
+    it 'uses the name as slug when available' do
+      project = create(:project, name: 'unique-name')
+      expect(project.slug).to eq('unique-name')
+    end
+
+    it 'appends a uuid suffix when the slug is taken' do
+      existing_project = create(:project, name: 'taken-name')
+      other_cluster = create(:cluster)
+      new_project = create(:project, name: 'taken-name', cluster: other_cluster)
+
+      expect(new_project.slug).to start_with('taken-name-')
+      expect(new_project.slug).not_to eq(existing_project.slug)
     end
   end
 

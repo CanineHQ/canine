@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_24_193354) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_233309) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -210,6 +210,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_24_193354) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
+    t.boolean "auto_managed", default: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -555,8 +556,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_24_193354) do
     t.integer "project_fork_status", default: 0
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
+    t.string "slug", null: false
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["name"], name: "index_projects_on_name"
+    t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
 
   create_table "providers", force: :cascade do |t|
@@ -623,7 +626,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_24_193354) do
     t.datetime "updated_at", null: false
     t.text "description"
     t.jsonb "pod_yaml"
-    t.index ["project_id"], name: "index_services_on_project_id"
+    t.index ["project_id", "name"], name: "index_services_on_project_id_and_name", unique: true
   end
 
   create_table "sso_providers", force: :cascade do |t|

@@ -1,21 +1,21 @@
 require 'rails_helper'
 
 RSpec.describe Networks::CheckDns do
-  let(:cluster) { create(:cluster) }
+  let(:cluster) { create(:cluster, cluster_type: :k3s) }
   let(:user) { create(:user) }
   let(:project) { create(:project, cluster: cluster) }
   let(:service) { create(:service, project: project) }
   let(:connection) { K8::Connection.new(cluster, user) }
   let(:ingress) { K8::Stateless::Ingress.new(service).connect(connection) }
 
-  describe '.infer_expected_dns' do
+  describe 'Dns::Utils.infer_expected_hostname' do
     context 'when ingress returns public IP' do
       before do
         allow(ingress).to receive(:hostname).and_return({ value: '8.8.8.8', type: :ip_address })
       end
 
       it 'returns the IP' do
-        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "8.8.8.8", type: :ip_address })
+        expect(Dns::Utils.infer_expected_hostname(ingress, connection)).to eq({ value: "8.8.8.8", type: :ip_address })
       end
     end
 
@@ -25,8 +25,16 @@ RSpec.describe Networks::CheckDns do
         allow(Resolv).to receive(:getaddress).with('example.com').and_return('1.2.3.4')
       end
 
-      it 'resolves and returns public IP' do
-        expect(described_class.infer_expected_dns(ingress, connection)).to eq({ value: "1.2.3.4", type: :ip_address })
+      context 'when cluster is a single node cluster' do
+        it 'resolves and returns public IP' do
+          expect(Dns::Utils.infer_expected_hostname(ingress, connection)).to eq({ value: "1.2.3.4", type: :ip_address })
+        end
+      end
+      context 'when cluster is not a single node cluster' do
+        let(:cluster) { create(:cluster, cluster_type: :k8s) }
+        it 'raises an error' do
+          expect { Dns::Utils.infer_expected_hostname(ingress, connection) }.to raise_error("Private IP address detected for cluster type: k8s")
+        end
       end
     end
 
@@ -49,7 +57,7 @@ RSpec.describe Networks::CheckDns do
       end
 
       it 'returns the hostname IP' do
-        expect(described_class.infer_expected_dns(ingress, connection)).to(eq({ value: "1.2.3.4", type: :ip_address }))
+        expect(Dns::Utils.infer_expected_hostname(ingress, connection)).to(eq({ value: "1.2.3.4", type: :ip_address }))
       end
     end
   end

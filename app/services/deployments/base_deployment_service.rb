@@ -82,4 +82,8 @@ class Deployments::BaseDeploymentService
 
     DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
   end
+
+  def setup_automatic_dns(service)
+    Dns::AutoSetupService.new(service, connection: @connection, logger: @logger).call
+  end
 end
