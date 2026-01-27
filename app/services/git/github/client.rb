@@ -53,23 +53,21 @@ class Git::Github::Client < Git::Client
   end
 
   def register_webhook!
-    if webhook_exists?
-      return
-    end
+    config = {
+      url: Rails.application.routes.url_helpers.inbound_webhooks_github_index_url,
+      content_type: "json",
+      secret: webhook_secret
+    }
+    options = {
+      events: [ "push", "pull_request" ],
+      active: true
+    }
 
-    client.create_hook(
-      repository_url,
-      "web",
-      {
-        url: Rails.application.routes.url_helpers.inbound_webhooks_github_index_url,
-        content_type: "json",
-        secret: webhook_secret
-      },
-      {
-        events: [ "push" ],
-        active: true
-      }
-    )
+    if webhook_exists?
+      client.edit_hook(repository_url, webhook.id, "web", config, options)
+    else
+      client.create_hook(repository_url, "web", config, options)
+    end
   end
 
   def webhook_exists?

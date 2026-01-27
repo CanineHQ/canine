@@ -55,20 +55,29 @@ class Git::Gitlab::Client < Git::Client
   end
 
   def register_webhook!
+    webhook_config = {
+      url: Rails.application.routes.url_helpers.inbound_webhooks_gitlab_index_url,
+      name: "canine-webhook",
+      push_events: true,
+      merge_requests_events: true,
+      enable_ssl_verification: true,
+      token: GITLAB_WEBHOOK_SECRET
+    }
+
     if webhook_exists?
-      return
+      response = HTTParty.put(
+        "#{gitlab_api_base}/projects/#{encoded_url}/hooks/#{webhook['id']}",
+        headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
+        body: webhook_config.to_json
+      )
+    else
+      response = HTTParty.post(
+        "#{gitlab_api_base}/projects/#{encoded_url}/hooks",
+        headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
+        body: webhook_config.to_json
+      )
     end
-    response = HTTParty.post(
-      "#{gitlab_api_base}/projects/#{encoded_url}/hooks",
-      headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
-      body: {
-        url: Rails.application.routes.url_helpers.inbound_webhooks_gitlab_index_url,
-        name: "canine-webhook",
-        push_events: true,
-        enable_ssl_verification: true,
-        token: GITLAB_WEBHOOK_SECRET
-      }.to_json
-    )
+
     unless response.success?
       raise "Failed to register webhook: #{response.body}"
     end

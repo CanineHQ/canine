@@ -6,8 +6,6 @@ class ProjectForks::PostForkComment
     project_fork = context.project_fork
     parent_project = project_fork.parent_project
 
-    next unless parent_project.project_fork_comment_enabled?
-
     client = Git::Client.from_project(parent_project)
     comment_body = build_comment_body(project_fork)
     client.add_pull_request_comment(project_fork.number, comment_body)

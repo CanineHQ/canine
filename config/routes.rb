@@ -144,6 +144,7 @@ Rails.application.routes.draw do
   resources :projects do
     member do
       post :restart
+      post :register_webhook
     end
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
