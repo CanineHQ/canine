@@ -20,7 +20,7 @@
 #
 # Indexes
 #
-#  index_services_on_project_id  (project_id)
+#  index_services_on_project_id_and_name  (project_id,name) UNIQUE
 #
 # Foreign Keys
 #

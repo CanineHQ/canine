@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "errors": [],
+  "messages": [],
+  "result": {
+    "id": "token123",
+    "status": "active"
+  }
+}

@@ -6,6 +6,8 @@ class Avo::ImpersonationsController < Avo::ApplicationController
   def create
     user = User.find(params[:user_id])
     impersonate_user(user)
+    # Set account to the impersonated user's first account
+    session[:account_id] = user.accounts.first&.id
     redirect_to main_app.root_path, notice: "Now impersonating #{user.name}"
   end
 

@@ -20,7 +20,7 @@
 #
 # Indexes
 #
-#  index_services_on_project_id  (project_id)
+#  index_services_on_project_id_and_name  (project_id,name) UNIQUE
 #
 # Foreign Keys
 #
@@ -57,6 +57,16 @@ class Service < ApplicationRecord
   def internal_url
     # Kubernetes internal URL
     K8::Stateless::Service.new(self).internal_url
+  end
+
+  def auto_subdomain
+    "#{name}-#{project.namespace}"
+  end
+
+  def auto_domain
+    return nil unless allow_public_networking?
+
+    "#{auto_subdomain}.#{Dns::Client.default.domain}"
   end
 
   def friendly_status

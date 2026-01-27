@@ -1,0 +1,25 @@
+<tr id="<%= dom_id(notifier) %>">
+  <td><%= notifier.name %></td>
+  <td>
+    <span class="badge badge-outline">
+      <%= notifier.provider_type.titleize %>
+    </span>
+  </td>
+  <td>
+    <% if notifier.enabled? %>
+      <span class="badge badge-success">Enabled</span>
+    <% else %>
+      <span class="badge badge-ghost">Disabled</span>
+    <% end %>
+  </td>
+  <td class="flex gap-2 justify-end">
+    <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost", data: { turbo_frame: "notifiers" } %>
+    <%= button_to(
+      "Delete",
+      project_notifier_path(notifier.project, notifier),
+      method: :delete,
+      data: { turbo_confirm: "Are you sure you want to delete this #{notifier.provider_type} notifier?" },
+      class: "btn btn-sm btn-ghost text-error"
+    ) %>
+  </td>
+</tr>

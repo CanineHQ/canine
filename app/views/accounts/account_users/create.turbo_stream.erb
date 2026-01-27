@@ -1,0 +1,67 @@
+<%= turbo_stream.replace "team_member_modal" do %>
+  <dialog aria-label="Modal" class="modal modal-open" id="team_member_modal">
+    <div class="modal-box">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2" onclick="window.location.reload()">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <div class="mb-4 w-full text-xl font-bold flex items-center gap-2">
+        <iconify-icon icon="lucide:check-circle" class="text-success" height="24"></iconify-icon>
+        Invitation Created
+      </div>
+      <p class="text-sm text-base-content/70 mb-4">
+        Share these credentials with the new team member. They will be prompted to change their password on first login.
+      </p>
+      <div class="space-y-3">
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Login URL</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 bg-base-200">
+            <span class="truncate flex-1 text-sm"><%= @invite_credentials[:login_url] %></span>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText('<%= @invite_credentials[:login_url] %>')">
+              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+            </button>
+          </div>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Email</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 bg-base-200">
+            <span class="truncate flex-1 text-sm"><%= @invite_credentials[:email] %></span>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText('<%= @invite_credentials[:email] %>')">
+              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+            </button>
+          </div>
+        </div>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text font-semibold">Temporary Password</span>
+          </label>
+          <div class="input input-bordered flex items-center gap-2 bg-base-200">
+            <code class="truncate flex-1 text-sm"><%= @invite_credentials[:password] %></code>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText('<%= @invite_credentials[:password] %>')">
+              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-block mt-4" onclick="navigator.clipboard.writeText(`Login URL: <%= @invite_credentials[:login_url] %>\nEmail: <%= @invite_credentials[:email] %>\nTemporary Password: <%= @invite_credentials[:password] %>`); this.innerHTML = '<iconify-icon icon=&quot;lucide:check&quot; height=&quot;16&quot;></iconify-icon> Copied!'; setTimeout(() => this.innerHTML = '<iconify-icon icon=&quot;lucide:copy&quot; height=&quot;16&quot;></iconify-icon> Copy All', 2000)">
+        <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+        Copy All
+      </button>
+      <div class="alert alert-warning mt-4">
+        <iconify-icon icon="lucide:alert-triangle" height="16"></iconify-icon>
+        <span class="text-sm">This password will not be shown again. Make sure to copy it now.</span>
+      </div>
+      <div class="modal-action">
+        <button class="btn btn-primary" onclick="window.location.reload()">Done</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button onclick="window.location.reload()">close</button>
+    </form>
+  </dialog>
+<% end %>

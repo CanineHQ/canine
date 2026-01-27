@@ -18,6 +18,7 @@
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
+#  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
@@ -28,6 +29,7 @@
 #
 #  index_projects_on_cluster_id  (cluster_id)
 #  index_projects_on_name        (name)
+#  index_projects_on_slug        (slug) UNIQUE
 #
 # Foreign Keys
 #

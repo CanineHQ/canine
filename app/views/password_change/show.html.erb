@@ -1,0 +1,47 @@
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h1 class="text-2xl font-bold text-center">Change Your Password</h1>
+      <p class="text-center text-sm text-base-content/70">
+        You must change your temporary password before continuing.
+      </p>
+
+      <%= form_with(model: current_user, url: password_change_path, method: :patch, html: { class: "space-y-4 mt-4" }) do |f| %>
+        <% if current_user.errors.any? %>
+          <div class="alert alert-error">
+            <iconify-icon icon="lucide:alert-triangle" class="mr-2"></iconify-icon>
+            <span><%= current_user.errors.full_messages.to_sentence %></span>
+          </div>
+        <% end %>
+
+        <div class="form-control">
+          <%= f.label :current_password, class: "label" do %>
+            <span class="label-text">Current Password</span>
+          <% end %>
+          <%= f.password_field :current_password, autocomplete: "current-password", class: "input input-bordered w-full", required: true %>
+          <label class="label">
+            <span class="label-text-alt">Enter the temporary password you were given</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password, "New Password", class: "label" do %>
+            <span class="label-text">New Password</span>
+          <% end %>
+          <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered w-full", required: true %>
+        </div>
+
+        <div class="form-control">
+          <%= f.label :password_confirmation, class: "label" do %>
+            <span class="label-text">Confirm New Password</span>
+          <% end %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input input-bordered w-full", required: true %>
+        </div>
+
+        <div class="form-control mt-6">
+          <%= f.submit "Change Password", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

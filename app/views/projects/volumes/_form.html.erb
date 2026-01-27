@@ -1,4 +1,4 @@
-<%= form_with model: volume, url: project_volumes_path(volume.project), method: :post, data: { turbo_frame: "new_volume" } do |f| %>
+<%= form_with model: volume, url: project_volumes_path(volume.project), method: :post do |f| %>
   <div class="form-control mt-1 w-full max-w-xs">
     <label class="label">
       <span class="label-text">Name</span>
@@ -45,6 +45,7 @@
   </div>
 
   <div class="form-footer">
-    <%= f.button "Submit", class: "btn btn-primary", data: { turbo: false } %>
+    <%= f.submit "Create Volume", class: "btn btn-primary" %>
+    <%= link_to "Cancel", project_volumes_path(volume.project), class: "btn btn-ghost", data: { turbo_frame: "volumes" } %>
   </div>
 <% end %>

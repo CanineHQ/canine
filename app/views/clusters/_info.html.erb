@@ -1,3 +1,7 @@
-<div class="text-sm text-gray-500">
-  <%= K8::Client.new(K8::Connection.new(cluster, current_user)).server %>
-</div>
+<%= render(
+  "shared/partials/async_renderer",
+  view_model: Async::K8::InfoViewModel.new(
+    current_user,
+    cluster_id: cluster.id
+  )
+) %>

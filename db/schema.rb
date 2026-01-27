@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_233309) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -210,6 +210,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
+    t.boolean "auto_managed", default: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -432,6 +433,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "notifiers", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "name", null: false
+    t.integer "provider_type", default: 0, null: false
+    t.string "webhook_url", null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_notifiers_on_project_id"
+  end
+
   create_table "oauth_access_grants", force: :cascade do |t|
     t.bigint "resource_owner_id", null: false
     t.bigint "application_id", null: false
@@ -544,8 +556,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
     t.integer "project_fork_status", default: 0
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
+    t.string "slug", null: false
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["name"], name: "index_projects_on_name"
+    t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
 
   create_table "providers", force: :cascade do |t|
@@ -612,7 +626,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
     t.datetime "updated_at", null: false
     t.text "description"
     t.jsonb "pod_yaml"
-    t.index ["project_id"], name: "index_services_on_project_id"
+    t.index ["project_id", "name"], name: "index_services_on_project_id_and_name", unique: true
   end
 
   create_table "sso_providers", force: :cascade do |t|
@@ -683,7 +697,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
     t.boolean "admin", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.boolean "password_change_required", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -721,6 +747,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_16_173824) do
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
+  add_foreign_key "notifiers", "projects"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

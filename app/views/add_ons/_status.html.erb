@@ -9,7 +9,7 @@
     "warning"
   end
 %>
-<div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+<div aria-label="Badge" class="badge badge-<%= badge_color %> font-medium capitalize">
   <%= add_on.status.humanize %>
   <% if add_on.updating? || add_on.installing? %>
     <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>

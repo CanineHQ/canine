@@ -3,6 +3,7 @@
 # Table name: domains
 #
 #  id            :bigint           not null, primary key
+#  auto_managed  :boolean          default(FALSE)
 #  domain_name   :string           not null
 #  status        :integer          default("checking_dns")
 #  status_reason :string

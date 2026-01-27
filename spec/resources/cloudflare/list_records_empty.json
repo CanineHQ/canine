@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "errors": [],
+  "messages": [],
+  "result": [],
+  "result_info": {
+    "page": 1,
+    "per_page": 100,
+    "total_pages": 1,
+    "count": 0,
+    "total_count": 0
+  }
+}

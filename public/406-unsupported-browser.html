@@ -1,65 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Your browser is not supported (406)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
+    :root {
+      --primary: #167bff;
+      --base-100: #191e23;
+      --base-200: #252b32;
+      --base-content: #dcebfa;
+      --warning: #f97316;
+    }
 
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    body.error-page {
+      background-color: var(--base-100);
+      color: var(--base-content);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
 
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
+    .container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
 
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    .content-wrapper {
+      max-width: 56rem;
+      width: 100%;
+    }
+
+    .grid {
+      display: grid;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .content-section > * + * {
+      margin-top: 1.5rem;
+    }
+
+    .error-code {
+      font-size: 6rem;
+      line-height: 1;
+      font-weight: 700;
+      color: #f97316;
+    }
+
+    .error-title {
+      font-size: 2.25rem;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--base-content);
+    }
+
+    .error-description {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+      color: var(--base-content);
+      opacity: 0.8;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: opacity 200ms;
+      background-color: #f97316;
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .illustration-section {
+      display: flex;
+      justify-content: center;
+    }
+
+    .illustration {
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      .error-title {
+        font-size: 3rem;
+        line-height: 1;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .illustration-section {
+        justify-content: flex-end;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+
+      .error-title {
+        font-size: 3.75rem;
+      }
+    }
   </style>
 </head>
 
-<body class="rails-default-error-page">
-  <!-- This file lives in public/406-unsupported-browser.html -->
-  <div class="dialog">
-    <div>
-      <h1>Your browser is not supported.</h1>
-      <p>Please upgrade your browser to continue.</p>
+<body class="error-page">
+  <div class="container">
+    <div class="content-wrapper">
+      <div class="grid">
+        <!-- Left side - Content -->
+        <div class="content-section">
+          <div class="error-code">406</div>
+          <h1 class="error-title">
+            Sorry,<br>
+            your browser<br>
+            is not supported.
+          </h1>
+
+          <p class="error-description">
+            Please upgrade your browser to continue.
+          </p>
+
+          <div class="button-group">
+            <a href="/" class="btn-primary">
+              Take me home
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Right side - Illustration -->
+        <div class="illustration-section">
+          <img src="/images/illustrations/design_2.webp" alt="Error illustration" class="illustration">
+        </div>
+      </div>
     </div>
   </div>
 </body>

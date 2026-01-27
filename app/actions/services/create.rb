@@ -5,6 +5,7 @@ class Services::Create
     with(service:, params:).reduce(
       Services::CreateAssociations,
       Services::Save,
+      Domains::AttachAutoManagedDomain
     )
   end
 end

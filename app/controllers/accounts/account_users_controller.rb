@@ -1,14 +1,43 @@
 class Accounts::AccountUsersController < ApplicationController
   include SettingsHelper
   def create
-    user = User.find_or_initialize_by(email: user_params[:email]) do |user|
-      user.first_name = user_params[:email].split("@").first
-      user.password = Devise.friendly_token[0, 20]
-      user.save!
-    end
-    AccountUser.create!(account: current_account, user: user)
+    email = user_params[:email].downcase
+    existing_member = current_account.users.find_by(email: email)
 
-    redirect_to account_users_path, notice: "User was successfully added."
+    if existing_member
+      redirect_to account_users_path, alert: "This user is already a member of this account."
+      return
+    end
+
+    user = User.find_by(email: email)
+
+    if user
+      AccountUser.create!(account: current_account, user: user)
+      redirect_to account_users_path, notice: "User was successfully added."
+    else
+      temp_password = generate_temp_password
+      user = User.new(
+        email: user_params[:email],
+        password: temp_password,
+        password_confirmation: temp_password,
+        first_name: user_params[:email].split("@").first,
+        password_change_required: true
+      )
+      user.skip_invitation = true
+      user.save!
+      AccountUser.create!(account: current_account, user: user)
+
+      @invite_credentials = {
+        email: user.email,
+        password: temp_password,
+        login_url: new_user_session_url
+      }
+
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to account_users_path, notice: "User was successfully invited." }
+      end
+    end
   end
 
   def update
@@ -40,5 +69,9 @@ class Accounts::AccountUsersController < ApplicationController
 
   def account_user_params
     params.require(:account_user).permit(:role)
+  end
+
+  def generate_temp_password
+    "#{SecureRandom.alphanumeric(8)}!#{SecureRandom.alphanumeric(4)}"
   end
 end

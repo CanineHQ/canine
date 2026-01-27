@@ -11,6 +11,7 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     predeploy
     deploy_services
     @chart_builder.install_chart(@project.name)
+    setup_dns_for_services
     kill_one_off_containers
     postdeploy
 
@@ -68,5 +69,11 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
 
   def mark_services_healthy
     @project.services.each(&:healthy!)
+  end
+
+  def setup_dns_for_services
+    @project.services.each do |service|
+      setup_automatic_dns(service)
+    end
   end
 end

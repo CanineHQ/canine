@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
+  before_action :check_password_change_required
 
   layout :determine_layout
 
@@ -70,5 +71,14 @@ class ApplicationController < ActionController::Base
     def user_not_authorized
       flash[:alert] = "You are not authorized to perform this action."
       redirect_back(fallback_location: root_path)
+    end
+
+    def check_password_change_required
+      return if devise_controller?
+      return unless user_signed_in?
+      return if true_user != current_user # Skip when impersonating
+      return unless current_user.password_change_required?
+
+      redirect_to password_change_path, alert: "Please change your password to continue."
     end
 end

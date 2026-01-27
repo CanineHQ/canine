@@ -9,6 +9,7 @@ class Projects::BuildJob < ApplicationJob
   def perform(build, user)
     project = build.project
     build.in_progress!
+    notify_build(project, build)
     # If its a container registry deploy, we don't need to build the docker image
     if project.container_registry?
       build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
@@ -50,6 +51,7 @@ class Projects::BuildJob < ApplicationJob
     unless build.killed?
       build.error(e.message)
       build.failed!
+      notify_build(project, build)
     end
     raise e
   end
@@ -77,6 +79,7 @@ class Projects::BuildJob < ApplicationJob
 
   def complete_build!(build, user)
     build.completed!
+    notify_build(build.project, build)
     deployment = Deployment.create!(build:)
     Projects::DeploymentJob.perform_later(deployment, user)
   end
@@ -90,5 +93,11 @@ class Projects::BuildJob < ApplicationJob
       # Use the Docker builder to build the image
       image_builder.build_image(repository_path)
     end
+  end
+
+  def notify_build(project, build)
+    return unless project.notifiers.enabled.any?
+
+    BuildNotifier.with(project: project, build: build).deliver_later
   end
 end
