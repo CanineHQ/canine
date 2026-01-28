@@ -60,7 +60,8 @@ class Projects::ProjectForksController < Projects::BaseController
 
     result = ProjectForks::Create.call(
       parent_project: @project,
-      pull_request:
+      pull_request:,
+      current_user:
     )
     if result.success?
       Projects::DeployLatestCommit.execute(project: result.project_fork.child_project, current_user:)

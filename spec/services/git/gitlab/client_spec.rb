@@ -16,12 +16,27 @@ RSpec.describe Git::Gitlab::Client do
     end
 
     context 'when webhook already exists' do
+      let(:webhook) { { 'id' => 123 } }
+
       before do
         allow(client).to receive(:webhook_exists?).and_return(true)
+        allow(client).to receive(:webhook).and_return(webhook)
       end
 
-      it 'returns early without creating webhook' do
-        expect(HTTParty).not_to receive(:post)
+      it 'updates the existing webhook' do
+        expect(HTTParty).to receive(:put).with(
+          "#{gitlab_api_base}/projects/#{client.encoded_url}/hooks/#{webhook['id']}",
+          headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
+          body: {
+            url: webhook_url,
+            name: "canine-webhook",
+            push_events: true,
+            merge_requests_events: true,
+            enable_ssl_verification: true,
+            token: described_class::GITLAB_WEBHOOK_SECRET
+          }.to_json
+        ).and_return(success_response)
+
         client.register_webhook!
       end
     end
@@ -39,6 +54,7 @@ RSpec.describe Git::Gitlab::Client do
             url: webhook_url,
             name: "canine-webhook",
             push_events: true,
+            merge_requests_events: true,
             enable_ssl_verification: true,
             token: described_class::GITLAB_WEBHOOK_SECRET
           }.to_json

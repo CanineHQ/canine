@@ -113,7 +113,7 @@ class Git::Github::Client < Git::Client
   end
 
   def add_pull_request_comment(pr_number, body)
-    client.add_comment(repository_url, pr_number, body)
+    client.add_comment(repository_url, pr_number, "[canine] #{body}")
   end
 
   def get_file(file_path, branch)

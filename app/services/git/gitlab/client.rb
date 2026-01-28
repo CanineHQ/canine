@@ -158,7 +158,7 @@ class Git::Gitlab::Client < Git::Client
     response = HTTParty.post(
       "#{gitlab_api_base}/projects/#{encoded_url}/merge_requests/#{pr_number}/notes",
       headers: { "Authorization" => "Bearer #{access_token}", "Content-Type" => "application/json" },
-      body: { body: body }.to_json
+      body: { body: "[canine] #{body}" }.to_json
     )
     raise "Failed to add comment: #{response.body}" unless response.success?
 
