@@ -18,6 +18,8 @@ spec:
       app: <%= service.name %>
   template:
     metadata:
+      annotations:
+        rolloutTimestamp: "<%= Time.current.to_i %>"
       labels:
         app: <%= service.name %>
     spec:

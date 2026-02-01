@@ -44,5 +44,19 @@ RSpec.describe AddOn, type: :model do
         expect(new_add_on.errors[:name]).to include("has already been taken")
       end
     end
+
+    context 'when name or namespace is reserved' do
+      it 'is not valid when name is reserved' do
+        add_on.name = 'canine-system'
+        expect(add_on).not_to be_valid
+        expect(add_on.errors[:name]).to include("is a reserved keyword and cannot be used")
+      end
+
+      it 'is not valid when namespace is reserved' do
+        add_on.namespace = 'kube-public'
+        expect(add_on).not_to be_valid
+        expect(add_on.errors[:namespace]).to include("is a reserved keyword and cannot be used")
+      end
+    end
   end
 end
