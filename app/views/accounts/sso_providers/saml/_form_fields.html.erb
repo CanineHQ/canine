@@ -16,7 +16,7 @@
       label: "IdP SSO Service URL",
       description: "The Identity Provider's Single Sign-On service URL"
     )) do %>
-      <%= saml_form.text_field :idp_sso_service_url, class: "input input-bordered w-full", required: true, placeholder: "https://idp.example.com/saml/sso" %>
+      <%= saml_form.text_field :idp_sso_service_url, inputmode: "url", class: "input input-bordered w-full", required: true, placeholder: "https://idp.example.com/saml/sso" %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>
@@ -43,7 +43,7 @@
           label: "IdP SLO Service URL",
           description: "The Identity Provider's Single Logout service URL (optional)"
         )) do %>
-          <%= saml_form.text_field :idp_slo_service_url, class: "input input-bordered w-full", placeholder: "https://idp.example.com/saml/slo" %>
+          <%= saml_form.text_field :idp_slo_service_url, inputmode: "url", class: "input input-bordered w-full", placeholder: "https://idp.example.com/saml/slo" %>
         <% end %>
 
         <%= render(FormFieldComponent.new(

@@ -71,7 +71,7 @@
         <label class="label">
           <span class="label-text">Host URL</span>
         </label>
-        <%= form.text_field :registry_url, class: "input input-bordered", placeholder: provider_type == Provider::GITHUB_PROVIDER ? "https://github.example.com" : "https://gitlab.example.com" %>
+        <%= form.text_field :registry_url, inputmode: "url", class: "input input-bordered", placeholder: provider_type == Provider::GITHUB_PROVIDER ? "https://github.example.com" : "https://gitlab.example.com" %>
         <label class="label">
           <span class="label-text-alt text-gray-400">Enter your <%= provider_name %> Enterprise server URL</span>
         </label>
