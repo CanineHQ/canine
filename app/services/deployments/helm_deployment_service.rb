@@ -17,6 +17,10 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
 
     mark_services_healthy
     complete_deployment!
+  rescue StandardError => e
+    @logger.error("Deployment failed: #{e.message}")
+    puts e.full_message
+    @deployment.failed!
   end
 
   private
