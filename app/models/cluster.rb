@@ -57,17 +57,8 @@ class Cluster < ApplicationRecord
     k3s: 1,
     local_k3s: 2
   }
-  RESERVED_NAMESPACES = [
-    "default",
-    "kube-system",
-    "kube-public",
-    "kube-node-lease",
-    "kube-flannel",
-    "canine-system"
-  ]
-
   def namespaces
-    RESERVED_NAMESPACES + projects.pluck(:namespace) + add_ons.pluck(:namespace)
+    projects.pluck(:namespace) + add_ons.pluck(:namespace)
   end
 
   def create_build_cloud!(attributes = {})

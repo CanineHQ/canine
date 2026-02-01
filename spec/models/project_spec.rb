@@ -65,6 +65,20 @@ RSpec.describe Project, type: :model do
         expect(new_project.errors[:name]).to include("has already been taken")
       end
     end
+
+    context 'when name or namespace is reserved' do
+      it 'is not valid when name is reserved' do
+        project.name = 'kube-system'
+        expect(project).not_to be_valid
+        expect(project.errors[:name]).to include("is a reserved keyword and cannot be used")
+      end
+
+      it 'is not valid when namespace is reserved' do
+        project.namespace = 'default'
+        expect(project).not_to be_valid
+        expect(project.errors[:namespace]).to include("is a reserved keyword and cannot be used")
+      end
+    end
   end
 
   describe '#current_deployment' do
