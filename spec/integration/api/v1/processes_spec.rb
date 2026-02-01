@@ -77,5 +77,23 @@ RSpec.describe Api::V1::Projects::ProcessesController, :swagger, type: :request 
         run_test!
       end
     end
+
+    delete('Delete Process') do
+      tags 'Processes'
+      operationId 'deleteProcess'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :project_id, in: :path, type: :string, description: 'Project name'
+      parameter name: :id, in: :path, type: :string, description: 'Pod name'
+
+      before do
+        allow_any_instance_of(K8::Client).to receive(:delete_pod).and_return(true)
+      end
+
+      response(200, 'successful') do
+        schema type: :object, properties: { message: { type: :string } }
+        run_test!
+      end
+    end
   end
 end

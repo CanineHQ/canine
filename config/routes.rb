@@ -8,7 +8,7 @@ Rails.application.routes.draw do
           post :deploy
           post :restart
         end
-        resources :processes, only: %i[index show create], module: :projects
+        resources :processes, only: %i[index show create destroy], module: :projects
       end
       resources :builds, only: %i[index show] do
         member do

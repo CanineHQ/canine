@@ -24,6 +24,13 @@ module Api
           render :create, status: :created
         end
 
+        def destroy
+          client = K8::Client.new(active_connection)
+          client.delete_pod(params[:id], @project.namespace)
+
+          render json: { message: "Pod #{params[:id]} terminating" }, status: :ok
+        end
+
         private
 
         def active_connection
