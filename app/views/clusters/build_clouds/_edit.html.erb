@@ -14,9 +14,10 @@
               <span>Replicas</span>
             </div>
 
-            <%= form.number_field :replicas, 
-                class: "input input-bordered w-full", 
+            <%= form.number_field :replicas,
+                class: "input input-bordered w-full",
                 min: 1, max: 10,
+                inputmode: "numeric",
                 placeholder: "2" %>
             <div class="label">
               <span class="label-text-alt text-gray-500">Number of parallel builders (1-10)</span>
@@ -34,9 +35,10 @@
                 <%= form.label :cpu_requests, class: "label" do %>
                   <span class="label-text font-medium">CPU Request (millicores)</span>
                 <% end %>
-                <%= form.number_field :cpu_requests, 
-                    class: "input input-bordered w-full", 
+                <%= form.number_field :cpu_requests,
+                    class: "input input-bordered w-full",
                     min: 100, step: 100,
+                    inputmode: "numeric",
                     placeholder: "500" %>
                 <div class="label flex justify-between">
                   <span class="label-text-alt text-gray-500">
@@ -52,9 +54,10 @@
                 <%= form.label :cpu_limits, class: "label" do %>
                   <span class="label-text font-medium">CPU Limits (millicores)</span>
                 <% end %>
-                <%= form.number_field :cpu_limits, 
-                    class: "input input-bordered w-full", 
+                <%= form.number_field :cpu_limits,
+                    class: "input input-bordered w-full",
                     min: 100, step: 100,
+                    inputmode: "numeric",
                     placeholder: "2000" %>
                 <div class="label flex justify-between">
                   <span class="label-text-alt text-gray-500">The maximum amount of CPU the build cloud can use.</span>
@@ -76,9 +79,10 @@
                 <%= form.label :memory_requests, class: "label" do %>
                   <span class="font-medium text-sm">Memory Request (bytes)</span>
                 <% end %>
-                <%= form.number_field :memory_requests, 
-                    class: "input input-bordered w-full", 
+                <%= form.number_field :memory_requests,
+                    class: "input input-bordered w-full",
                     min: 134217728, step: 134217728,
+                    inputmode: "numeric",
                     placeholder: "536870912" %>
                 <div class="label flex justify-between">
                   <span class="label-text-alt text-gray-500">
@@ -94,10 +98,11 @@
                 <%= form.label :memory_limits, class: "label" do %>
                   <span class="label-text font-medium">Memory Limits (bytes)</span>
                 <% end %>
-                <%= form.number_field :memory_limits, 
-                    class: "input input-bordered w-full", 
+                <%= form.number_field :memory_limits,
+                    class: "input input-bordered w-full",
                     value: build_cloud.memory_limits,
                     min: 134217728, step: 134217728,
+                    inputmode: "numeric",
                     placeholder: "4294967296" %>
                 <div class="label flex justify-between">
                   <span class="label-text-alt text-gray-500">

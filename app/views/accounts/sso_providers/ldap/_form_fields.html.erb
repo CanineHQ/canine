@@ -14,7 +14,7 @@
       label: "Port",
       description: "LDAP server port"
     )) do %>
-      <%= ldap_form.number_field :port, class: "input input-bordered w-full", required: true, placeholder: "389" %>
+      <%= ldap_form.number_field :port, inputmode: "numeric", class: "input input-bordered w-full", required: true, placeholder: "389" %>
       <label class="label">
         <span class="label-text-alt">Default: 389 (LDAP), 636 (LDAPS)</span>
       </label>

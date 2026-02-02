@@ -70,7 +70,7 @@
     <label class="label">
       <span class="label-text">Webhook URL</span>
     </label>
-    <%= f.text_field :webhook_url, class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
+    <%= f.text_field :webhook_url, inputmode: "url", class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
   </div>
 
   <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">

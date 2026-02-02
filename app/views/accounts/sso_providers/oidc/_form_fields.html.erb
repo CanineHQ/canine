@@ -6,7 +6,7 @@
       label: "Issuer URL",
       description: "The OIDC provider's issuer URL (used for discovery)"
     )) do %>
-      <%= oidc_form.text_field :issuer, class: "input input-bordered w-full", required: true, placeholder: "https://auth.example.com" %>
+      <%= oidc_form.text_field :issuer, inputmode: "url", class: "input input-bordered w-full", required: true, placeholder: "https://auth.example.com" %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>
@@ -58,28 +58,28 @@
           label: "Authorization Endpoint",
           description: "URL for authorization requests"
         )) do %>
-          <%= oidc_form.text_field :authorization_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/authorize" %>
+          <%= oidc_form.text_field :authorization_endpoint, inputmode: "url", class: "input input-bordered w-full", placeholder: "https://auth.example.com/authorize" %>
         <% end %>
 
         <%= render(FormFieldComponent.new(
           label: "Token Endpoint",
           description: "URL for token requests"
         )) do %>
-          <%= oidc_form.text_field :token_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/oauth/token" %>
+          <%= oidc_form.text_field :token_endpoint, inputmode: "url", class: "input input-bordered w-full", placeholder: "https://auth.example.com/oauth/token" %>
         <% end %>
 
         <%= render(FormFieldComponent.new(
           label: "UserInfo Endpoint",
           description: "URL for fetching user information"
         )) do %>
-          <%= oidc_form.text_field :userinfo_endpoint, class: "input input-bordered w-full", placeholder: "https://auth.example.com/userinfo" %>
+          <%= oidc_form.text_field :userinfo_endpoint, inputmode: "url", class: "input input-bordered w-full", placeholder: "https://auth.example.com/userinfo" %>
         <% end %>
 
         <%= render(FormFieldComponent.new(
           label: "JWKS URI",
           description: "URL for JSON Web Key Set"
         )) do %>
-          <%= oidc_form.text_field :jwks_uri, class: "input input-bordered w-full", placeholder: "https://auth.example.com/.well-known/jwks.json" %>
+          <%= oidc_form.text_field :jwks_uri, inputmode: "url", class: "input input-bordered w-full", placeholder: "https://auth.example.com/.well-known/jwks.json" %>
         <% end %>
       </div>
 

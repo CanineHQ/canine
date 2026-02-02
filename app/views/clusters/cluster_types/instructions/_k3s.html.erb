@@ -4,7 +4,7 @@
       1. Enter the IP address of your server:
       <div class="form-group mt-4">
         <%= form.label :ip_address, "IP Address" %>
-        <%= form.text_field :ip_address, class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
+        <%= form.text_field :ip_address, inputmode: "decimal", class: "input input-bordered w-full max-w-sm", data: { "k3s-instructions-target": "ipAddress" } %>
         <div class="form-hint" data-k3s-instructions-target="ipAddressMessage">
         </div>
       </div>

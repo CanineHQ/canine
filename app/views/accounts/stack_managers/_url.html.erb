@@ -4,6 +4,7 @@
     <%= form.text_field(
       :provider_url,
       name: "stack_manager[provider_url]",
+      inputmode: "url",
       class: "input input-bordered w-full",
       placeholder: "http://portainer.portainer.svc.cluster.local:9000",
       data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
