@@ -8,11 +8,19 @@
       <%= turbo_stream_from dom_id(@build, :status) %>
       <%= render "projects/deployments/status", build: @build %>
       <% if @build.in_progress? %>
-        <%= button_to "Kill Build", 
-            kill_project_deployment_path(@project, @build), 
+        <%= button_to "Kill Build",
+            kill_project_deployment_path(@project, @build),
             method: :patch,
             class: "btn btn-sm btn-error",
             confirm: "Are you sure you want to kill this build? This action cannot be undone.",
+            data: { turbo_method: :patch } %>
+      <% end %>
+      <% if @build.deployment&.in_progress? %>
+        <%= button_to "Kill Deploy",
+            kill_deploy_project_deployment_path(@project, @build),
+            method: :patch,
+            class: "btn btn-sm btn-error",
+            confirm: "Are you sure you want to kill this deployment? This action cannot be undone.",
             data: { turbo_method: :patch } %>
       <% end %>
     </div>

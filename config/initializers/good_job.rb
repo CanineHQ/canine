@@ -30,6 +30,11 @@ Rails.application.configure do
         class: "Scheduled::CancelHangingBuildsJob",
         description: "Cancel hanging builds every hour"
       },
+      cancel_hanging_deploys: {
+        cron: "0 * * * *",
+        class: "Scheduled::CancelHangingDeploysJob",
+        description: "Cancel hanging deploys every hour"
+      },
       cleanup_closed_pr_projects: {
         cron: "*/30 * * * *",
         class: "CleanupClosedPrProjectsJob",

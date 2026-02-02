@@ -1,6 +1,6 @@
 class Projects::DeploymentsController < Projects::BaseController
   before_action :set_project
-  before_action :set_build, only: %i[show redeploy kill]
+  before_action :set_build, only: %i[show redeploy kill kill_deploy]
 
   def index
     @pagy, @events = pagy(@project.events.includes(eventable: [ :user, :deployment ]).order(created_at: :desc))
@@ -45,6 +45,17 @@ class Projects::DeploymentsController < Projects::BaseController
       redirect_to project_deployment_path(@project, @build), notice: "Build has been killed."
     else
       redirect_to project_deployment_path(@project, @build), alert: "Build cannot be killed (not in progress)."
+    end
+  end
+
+  def kill_deploy
+    deployment = @build.deployment
+    if deployment&.in_progress?
+      deployment.killed!
+      deployment.error("Deployment was killed by #{current_user.email}")
+      redirect_to project_deployment_path(@project, @build), notice: "Deployment has been killed."
+    else
+      redirect_to project_deployment_path(@project, @build), alert: "Deployment cannot be killed (not in progress)."
     end
   end
 
