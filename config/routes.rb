@@ -175,6 +175,7 @@ Rails.application.routes.draw do
       member do
         post :redeploy
         patch :kill
+        patch :kill_deploy
       end
     end
   end

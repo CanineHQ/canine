@@ -21,16 +21,19 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
 
     complete_deployment!
   rescue StandardError => e
-    @logger.error("Deployment failed: #{e.message}")
-    puts e.full_message
-    @deployment.failed!
+    # Don't overwrite status if it was already set to killed
+    unless @deployment.killed?
+      @logger.error("Deployment failed: #{e.message}")
+      puts e.full_message
+      @deployment.failed!
+    end
   end
 
   private
 
   def setup_connection
     @connection = K8::Connection.new(@project, @user, allow_anonymous: true)
-    runner = Cli::RunAndLog.new(@deployment)
+    runner = Cli::RunAndLog.new(@deployment, killable: @deployment)
     @kubectl = K8::Kubectl.new(@connection, runner)
   end
 

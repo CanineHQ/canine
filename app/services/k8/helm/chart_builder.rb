@@ -14,7 +14,7 @@ class K8::Helm::ChartBuilder < K8::Base
   end
 
   def connect(connection)
-    @client = K8::Helm::Client.connect(connection, Cli::RunAndLog.new(logger))
+    @client = K8::Helm::Client.connect(connection, Cli::RunAndLog.new(logger, killable: logger))
     super(connection)
   end
 

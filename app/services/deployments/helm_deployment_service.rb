@@ -18,9 +18,12 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     mark_services_healthy
     complete_deployment!
   rescue StandardError => e
-    @logger.error("Deployment failed: #{e.message}")
-    puts e.full_message
-    @deployment.failed!
+    # Don't overwrite status if it was already set to killed
+    unless @deployment.killed?
+      @logger.error("Deployment failed: #{e.message}")
+      puts e.full_message
+      @deployment.failed!
+    end
   end
 
   private
