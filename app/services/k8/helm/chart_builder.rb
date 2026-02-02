@@ -32,7 +32,7 @@ appVersion: #{version}
     YAML
   end
 
-  def install_chart(namespace)
+  def install_chart(namespace, atomic: true, wait: true)
     Dir.mktmpdir do |chart_directory|
       logger.info("Creating chart directory #{chart_directory}...")
       # Create /templates directory
@@ -54,9 +54,9 @@ appVersion: #{version}
         chart_directory,
         version,
         namespace: namespace,
-        atomic: true,
+        atomic:,
         timeout: "5m0s",
-        wait: true,
+        wait:,
         history_max: 10
       )
     end

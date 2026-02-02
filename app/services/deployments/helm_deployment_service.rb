@@ -10,7 +10,7 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     deploy_volumes
     predeploy
     deploy_services
-    @chart_builder.install_chart(@project.name)
+    @chart_builder.install_chart(@project.name, atomic: false, wait: false)
     setup_dns_for_services
     kill_one_off_containers
     postdeploy
