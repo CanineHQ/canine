@@ -12,10 +12,52 @@ class Git::Gitlab::Client < Git::Client
     )
   end
 
-  def initialize(access_token:, repository_url:, api_base_url: nil)
+  def self.build_client(access_token:, api_base_url: nil)
+    new(access_token:, api_base_url:)
+  end
+
+  def initialize(access_token:, repository_url: nil, api_base_url: nil)
     @access_token = access_token
     @repository_url = repository_url
     @api_base_url = api_base_url || "https://gitlab.com"
+  end
+
+  def repos(page: 1, per_page: 20)
+    response = HTTParty.get(
+      "#{gitlab_api_base}/projects",
+      headers: { "Authorization" => "Bearer #{access_token}" },
+      query: { membership: true, page:, per_page:, order_by: "last_activity_at" }
+    )
+    unless response.success?
+      raise "Failed to fetch repositories: #{response.body}"
+    end
+
+    response.map { |repo| GitlabRepository.new(repo) }
+  end
+
+  def search_repos(query)
+    response = HTTParty.get(
+      "#{gitlab_api_base}/projects",
+      headers: { "Authorization" => "Bearer #{access_token}" },
+      query: { membership: true, search: query, order_by: "last_activity_at" }
+    )
+    unless response.success?
+      raise "Failed to search repositories: #{response.body}"
+    end
+
+    response.map { |repo| GitlabRepository.new(repo) }
+  end
+
+  class GitlabRepository
+    attr_reader :id, :full_name, :name, :description, :web_url
+
+    def initialize(data)
+      @id = data["id"]
+      @full_name = data["path_with_namespace"]
+      @name = data["name"]
+      @description = data["description"]
+      @web_url = data["web_url"]
+    end
   end
 
   def gitlab_api_base
