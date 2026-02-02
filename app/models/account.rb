@@ -55,6 +55,20 @@ class Account < ApplicationRecord
     @_github_account ||= owner.providers.find_by(provider: "github")
   end
 
+  def gitlab_username
+    return unless gitlab_provider
+
+    JSON.parse(gitlab_provider.auth)["info"]["nickname"]
+  end
+
+  def gitlab_access_token
+    gitlab_provider&.access_token
+  end
+
+  def gitlab_provider
+    @_gitlab_provider ||= owner.providers.find_by(provider: "gitlab")
+  end
+
   def sso_enabled?
     sso_provider&.enabled?
   end
