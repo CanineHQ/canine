@@ -7,11 +7,11 @@ class Integrations::Github::RepositoriesController < ApplicationController
     )
     if params[:q].present?
       client.auto_paginate = true
-      @repositories = client.repos(provider.username)
+      @repositories = client.repos
       @repositories = @repositories.select { |repo| repo.full_name.downcase.include?(params[:q].downcase) }
     else
       page = params[:page] || 1
-      @repositories = client.repos(provider.username, page:)
+      @repositories = client.repos(nil, page:)
     end
 
     respond_to do |format|
