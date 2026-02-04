@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_25_233309) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_04_022653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -162,6 +162,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_233309) do
     t.string "commit_sha", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "digest"
     t.index ["project_id"], name: "index_builds_on_project_id"
   end
 

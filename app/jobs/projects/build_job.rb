@@ -40,8 +40,10 @@ class Projects::BuildJob < ApplicationJob
       image_builder.login_to_registry
 
       # Clone repository and build
-      clone_repository_and_build_image(project, build, image_builder)
+      digest = clone_repository_and_build_image(project, build, image_builder)
       image_builder.cleanup
+
+      build.update!(digest: digest) if digest.present?
     end
 
     complete_build!(build, user)
