@@ -81,7 +81,7 @@ class Builders::Frontends::BuildpackBuilder
 
   # Override in including class if push happens during build
   def publish_during_build?
-    false
+    true
   end
 
   # Override in including class to implement image push logic
