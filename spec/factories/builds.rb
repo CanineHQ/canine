@@ -5,6 +5,7 @@
 #  id             :bigint           not null, primary key
 #  commit_message :string
 #  commit_sha     :string           not null
+#  digest         :string
 #  git_sha        :string
 #  repository_url :string
 #  status         :integer          default("in_progress")

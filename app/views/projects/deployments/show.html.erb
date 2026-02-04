@@ -35,6 +35,11 @@
       ) %>
       <span class="font-light"><%= @build.commit_message.truncate(75) %></span>
     </div>
+    <% if @build.digest.present? %>
+      <div class="text-sm text-base-content/60">
+        <span class="font-mono"><%= @build.digest.truncate(30) %></span>
+      </div>
+    <% end %>
   </div>
   <hr class="mt-2 mb-6 border-base-content/10" />
   <h2 class="text-2xl font-bold">Build Logs</h2>
