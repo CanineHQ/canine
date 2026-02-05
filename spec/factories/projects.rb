@@ -36,7 +36,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
-#  fk_rails_...  (current_deployment_id => deployments.id)
+#  fk_rails_...  (current_deployment_id => deployments.id) ON DELETE => nullify
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 FactoryBot.define do
