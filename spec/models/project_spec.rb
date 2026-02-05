@@ -204,9 +204,9 @@ RSpec.describe Project, type: :model do
       expect(github_project.container_image_reference).to eq('ghcr.io/owner/repo:feature-test')
     end
 
-    it 'uses latest tag for Docker Hub' do
-      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'feature/test')
-      expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest')
+    it 'uses branch as tag for container registry without gsub' do
+      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'latest-cpu')
+      expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest-cpu')
     end
   end
 end
