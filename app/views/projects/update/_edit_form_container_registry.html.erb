@@ -13,10 +13,7 @@
 
     <% end %>
 
-    <%= render(FormFieldComponent.new(
-      label: "Image Tag",
-      description: "The tag of the image to deploy (e.g., latest, v1.0.0, latest-cpu)."
-    )) do %>
+    <%= render(FormFieldComponent.new(label: "Image Tag")) do %>
       <%= form.text_field(
         :branch,
         class: "input input-bordered w-full focus:outline-offset-0",

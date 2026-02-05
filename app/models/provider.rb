@@ -138,4 +138,22 @@ class Provider < ApplicationRecord
       raise "Unknown registry url"
     end
   end
+
+  REGISTRY_WEB_URLS = {
+    "docker.io" => "https://hub.docker.com/r",
+    "ghcr.io" => "https://github.com/orgs/%{owner}/packages",
+    "registry.gitlab.com" => "https://gitlab.com/%{owner}/%{repo}/container_registry"
+  }.freeze
+
+  def registry_web_url(repository_url)
+    base = registry_base_url
+    template = REGISTRY_WEB_URLS[base]
+
+    if template
+      owner, repo = repository_url.split("/", 2)
+      format(template, owner: owner, repo: repo)
+    else
+      "https://#{base}"
+    end
+  end
 end
