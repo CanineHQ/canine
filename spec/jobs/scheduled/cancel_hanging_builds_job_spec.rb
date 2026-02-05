@@ -6,7 +6,7 @@ RSpec.describe Scheduled::CancelHangingBuildsJob do
   describe '#perform' do
     let!(:recent_pending_build) { create(:build, status: :in_progress, created_at: 30.minutes.ago) }
     let!(:old_pending_build) { create(:build, status: :in_progress, created_at: 2.hours.ago) }
-    let!(:old_completed_build) { create(:build, status: :completed, created_at: 2.hours.ago) }
+    let!(:old_completed_build) { create(:build, status: :completed, digest: "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4", created_at: 2.hours.ago) }
     let!(:old_failed_build) { create(:build, status: :failed, created_at: 2.hours.ago) }
 
     it 'marks old pending builds as failed' do

@@ -73,6 +73,7 @@ class Deployments::BaseDeploymentService
 
   def complete_deployment!
     @deployment.completed!
+    @project.update!(current_deployment: @deployment)
     @project.deployed!
     notify_deployment
   end

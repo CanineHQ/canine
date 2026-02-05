@@ -29,7 +29,12 @@ class Projects::DeployLatestCommit
     context.build = build
     if context.skip_build
       build.info("Skipping build...", color: :yellow)
-      build.update!(status: :completed)
+      previous_digest = project.current_deployment&.build&.digest
+      if previous_digest.blank?
+        build.update!(status: :failed)
+        context.fail_and_return!("Cannot skip build: no previous deployment with a valid digest")
+      end
+      build.update!(status: :completed, digest: previous_digest)
       deployment = Deployment.create!(build:)
       Projects::DeploymentJob.perform_later(deployment, current_user)
     else

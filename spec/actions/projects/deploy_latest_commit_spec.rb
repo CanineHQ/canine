@@ -39,10 +39,24 @@ RSpec.describe Projects::DeployLatestCommit do
   context 'skip_build' do
     let(:subject) { described_class.execute(project:, skip_build: true) }
 
-    it 'starts a deployment' do
-      expect(Projects::DeploymentJob).to receive(:perform_later)
+    it 'starts a deployment and copies digest from current deployment' do
+      previous_digest = "sha256:a3ed95caeb02ffe68cdd9fd84406680ae93d633cb16422d00e8a7c22955b46d4"
+      previous_build = create(:build, project: project, status: :completed, digest: previous_digest)
+      create(:deployment, build: previous_build, status: :completed)
+      project.reload
 
-      expect { subject }.to change { project.deployments.count }.by(1)
+      expect(Projects::DeploymentJob).to receive(:perform_later)
+      result = subject
+
+      expect(result.build.digest).to eq(previous_digest)
+    end
+
+    it 'fails when no previous deployment with digest exists' do
+      result = subject
+
+      expect(result).to be_failure
+      expect(result.message).to eq("Cannot skip build: no previous deployment with a valid digest")
+      expect(result.build.status).to eq("failed")
     end
   end
 end
