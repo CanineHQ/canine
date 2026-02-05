@@ -30,6 +30,7 @@ class Build < ApplicationRecord
   has_one :deployment, dependent: :destroy
 
   validates :digest, presence: true, if: -> { completed? && project.git? }
+  validates :digest, format: { with: /\Asha256:[a-f0-9]{64}\z/, message: "must be a valid SHA256 digest" }, allow_blank: true
 
   enum :status, {
     in_progress: 0,

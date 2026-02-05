@@ -77,7 +77,7 @@ class Builders::Frontends::BuildpackBuilder
   end
 
   def publish_during_build?
-    false
+    true
   end
 
   def parse_digest_from_report(report_dir)
