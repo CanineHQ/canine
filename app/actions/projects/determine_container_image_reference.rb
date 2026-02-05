@@ -10,7 +10,7 @@ class Projects::DetermineContainerImageReference
     context.container_image_reference = if project.build_configuration.present? && project.git?
       project.build_configuration.container_image_reference
     else
-      tag = project.git? ? project.branch.gsub('/', '-') : 'latest'
+      tag = project.git? ? project.branch.gsub('/', '-') : project.branch
       "#{project.project_credential_provider.provider.registry_base_url}/#{project.repository_url}:#{tag}"
     end
   end
