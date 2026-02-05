@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_04_022653) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_04_063801) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -558,7 +558,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_04_022653) do
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
     t.string "slug", null: false
+    t.bigint "current_deployment_id"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
+    t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
     t.index ["name"], name: "index_projects_on_name"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
@@ -761,6 +763,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_04_022653) do
   add_foreign_key "project_forks", "projects", column: "parent_project_id"
   add_foreign_key "projects", "clusters"
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
+  add_foreign_key "projects", "deployments", column: "current_deployment_id"
   add_foreign_key "providers", "sso_providers"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"

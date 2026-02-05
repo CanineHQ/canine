@@ -23,17 +23,20 @@
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  current_deployment_id          :bigint
 #  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
-#  index_projects_on_cluster_id  (cluster_id)
-#  index_projects_on_name        (name)
-#  index_projects_on_slug        (slug) UNIQUE
+#  index_projects_on_cluster_id             (cluster_id)
+#  index_projects_on_current_deployment_id  (current_deployment_id)
+#  index_projects_on_name                   (name)
+#  index_projects_on_slug                   (slug) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (current_deployment_id => deployments.id)
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
@@ -43,10 +46,13 @@ class Project < ApplicationRecord
   include AccountUniqueName
   broadcasts_refreshes
 
+  attr_accessor :intended_deployment
+
   def self.ransackable_attributes(auth_object = nil)
     %w[name]
   end
   belongs_to :cluster
+  belongs_to :current_deployment, class_name: "Deployment", optional: true
   has_one :account, through: :cluster
   has_many :users, through: :account
 
@@ -118,7 +124,7 @@ class Project < ApplicationRecord
   end
 
   def current_deployment
-    deployments.order(created_at: :desc).where(status: :completed).first
+    super || deployments.order(created_at: :desc).where(status: :completed).first
   end
 
   def last_build
@@ -178,7 +184,10 @@ class Project < ApplicationRecord
   def container_image_reference
     result = Projects::DetermineContainerImageReference.execute(project: self)
     raise result.message if result.failure?
-    result.container_image_reference
+
+    ref = result.container_image_reference
+    digest = (intended_deployment || current_deployment)&.build&.digest
+    digest.present? ? "#{ref}@#{digest}" : ref
   end
 
   # Forks

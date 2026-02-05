@@ -30,20 +30,17 @@ class Builders::Frontends::BuildpackBuilder
     # Generate and execute pack command
     report_dir = File.join(repository_path, "pack-report")
     FileUtils.mkdir_p(report_dir)
-    command = generate_pack_command(repository_path, build_config, report_dir: report_dir)
+    command = generate_pack_command(repository_path, build_config, report_dir)
 
     build.info("Running pack build...", color: :green)
     run_pack_command(command)
-
-    # Push image if not published during build
-    push_image_after_build unless publish_during_build?
 
     parse_digest_from_report(report_dir)
   end
 
   private
 
-  def generate_pack_command(repository_path, build_config, report_dir: nil)
+  def generate_pack_command(repository_path, build_config, report_dir)
     image_name = build_config.container_image_reference
     context_path = File.join(repository_path, build_config.context_directory)
 
@@ -67,7 +64,7 @@ class Builders::Frontends::BuildpackBuilder
     # Trust builder (required for some builders)
     command << "--trust-builder"
 
-    command += [ "--report-output-dir", report_dir ] if report_dir
+    command += [ "--report-output-dir", report_dir ]
 
     command.shelljoin
   end
@@ -79,15 +76,8 @@ class Builders::Frontends::BuildpackBuilder
     raise Projects::BuildJob::BuildFailure, "Pack build failed: #{e.message}"
   end
 
-  # Override in including class if push happens during build
   def publish_during_build?
     false
-  end
-
-  # Override in including class to implement image push logic
-  def push_image_after_build
-    # Default: assume publish_during_build? is true
-    # Concrete builders should override if they need separate push
   end
 
   def parse_digest_from_report(report_dir)
@@ -95,10 +85,15 @@ class Builders::Frontends::BuildpackBuilder
     return nil unless File.exist?(report_file)
 
     content = File.read(report_file)
-    match = content.match(/image-id\s*=\s*"([^"]+)"/)
-    return nil unless match
 
-    image_id = match.captures.first
+    # Prefer registry digest (present when --publish is used), fall back to local image-id
+    digest_match = content.match(/digest\s*=\s*"([^"]+)"/)
+    return digest_match.captures.first if digest_match
+
+    id_match = content.match(/image-id\s*=\s*"([^"]+)"/)
+    return nil unless id_match
+
+    image_id = id_match.captures.first
     image_id.start_with?("sha256:") ? image_id : "sha256:#{image_id}"
   end
 end

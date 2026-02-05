@@ -23,17 +23,20 @@
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  current_deployment_id          :bigint
 #  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
-#  index_projects_on_cluster_id  (cluster_id)
-#  index_projects_on_name        (name)
-#  index_projects_on_slug        (slug) UNIQUE
+#  index_projects_on_cluster_id             (cluster_id)
+#  index_projects_on_current_deployment_id  (current_deployment_id)
+#  index_projects_on_name                   (name)
+#  index_projects_on_slug                   (slug) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (current_deployment_id => deployments.id)
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 require 'rails_helper'

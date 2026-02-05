@@ -29,6 +29,8 @@ class Build < ApplicationRecord
   belongs_to :project
   has_one :deployment, dependent: :destroy
 
+  validates :digest, presence: true, if: -> { completed? && project.git? }
+
   enum :status, {
     in_progress: 0,
     completed: 1,
