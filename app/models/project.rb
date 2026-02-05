@@ -184,8 +184,11 @@ class Project < ApplicationRecord
   def container_image_reference
     result = Projects::DetermineContainerImageReference.execute(project: self)
     raise result.message if result.failure?
+    result.container_image_reference
+  end
 
-    ref = result.container_image_reference
+  def container_image_reference_with_digest
+    ref = container_image_reference
     digest = (intended_deployment || current_deployment)&.build&.digest
     digest.present? ? "#{ref}@#{digest}" : ref
   end

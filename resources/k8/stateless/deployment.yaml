@@ -28,8 +28,8 @@ spec:
       <% end %>
       containers:
       - name: <%= project.name %>
-        image: <%= project.container_image_reference %>
-        imagePullPolicy: Always
+        image: <%= project.container_image_reference_with_digest %>
+        imagePullPolicy: IfNotPresent
         <% if service.command.present? %>
         command: <%= service.command.split.to_json %>
         <% end %>
