@@ -1,0 +1,10 @@
+<div class="text-sm flex items-center gap-2">
+  <% if webhook_exists %>
+    Webhook connected <span class="text-green-500">✓</span>
+  <% else %>
+    Webhook not found <span class="text-red-500">✗</span>
+    <% if Rails.application.config.cloud_mode %>
+      <%= link_to "Create webhook", register_webhook_project_path(project), data: { turbo_method: :post }, class: "btn btn-xs btn-primary" %>
+    <% end %>
+  <% end %>
+</div>
