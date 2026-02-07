@@ -47,9 +47,10 @@ class Provider < ApplicationRecord
 
   PORTAINER_PROVIDER = "portainer"
 
+  PROVIDERS_WITH_CONTAINER_REGISTRY = [ GITHUB_PROVIDER, GITLAB_PROVIDER ].freeze
   AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
-  scope :has_container_registry, -> { where(provider: [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ]) }
+  scope :has_container_registry, -> { where(provider: PROVIDERS_WITH_CONTAINER_REGISTRY + [ CUSTOM_REGISTRY_PROVIDER ]) }
   scope :non_sso, -> { where(sso_provider_id: nil) }
 
   belongs_to :user
@@ -95,6 +96,10 @@ class Provider < ApplicationRecord
 
   def bitbucket?
     provider == BITBUCKET_PROVIDER
+  end
+
+  def has_native_container_registry?
+    PROVIDERS_WITH_CONTAINER_REGISTRY.include?(provider)
   end
 
   def enterprise?

@@ -1,4 +1,4 @@
-<div data-controller="new-project" data-new-project-providers-value="<%= selectable_providers.to_json %>">
+<div data-controller="new-project" data-new-project-providers-value="<%= selectable_providers_json(selectable_providers) %>">
   <%= form_with(model: project, data: { turbo: false }) do |form| %>
     <h2 class="text-2xl font-bold">Create a new project from Git repository</h2>
     <%= link_to(

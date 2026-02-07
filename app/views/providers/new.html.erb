@@ -32,7 +32,7 @@
             permissions.
           </div>
         <% elsif params[:provider_type] == Provider::BITBUCKET_PROVIDER %>
-          <%= link_to "Create your Bitbucket App Password →", "https://bitbucket.org/account/settings/app-passwords/", target: "_blank", class: "text-sm text-gray-500 " %>
+          <%= link_to "Create your Bitbucket App Password →", "https://id.atlassian.com/manage-profile/security/api-tokens", target: "_blank", class: "text-sm text-gray-500 " %>
           <div class="mt-2">
             Select the
             <% Providers::CreateBitbucketProvider::EXPECTED_SCOPES.each do |scope| %>
