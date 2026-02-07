@@ -160,7 +160,7 @@ class Project < ApplicationRecord
       elsif gitlab?
         "https://gitlab.com/#{repository_url}"
       else
-        "https://hub.docker.com/r/#{repository_url}"
+        provider.registry_web_url(repository_url)
       end
     end
   end
