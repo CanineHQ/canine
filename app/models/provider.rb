@@ -140,8 +140,8 @@ class Provider < ApplicationRecord
   end
 
   REGISTRY_WEB_URLS = {
-    "docker.io" => "https://hub.docker.com/r",
-    "ghcr.io" => "https://github.com/orgs/%{owner}/packages",
+    "docker.io" => "https://hub.docker.com/r/%{repo}/%{owner}",
+    "ghcr.io" => "https://ghcr.io/%{owner}/%{repo}",
     "registry.gitlab.com" => "https://gitlab.com/%{owner}/%{repo}/container_registry"
   }.freeze
 
