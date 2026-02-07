@@ -2,7 +2,7 @@ class AddOns::EndpointsController < AddOns::BaseController
   before_action :set_add_on
 
   def edit
-    @ip_address = Networks::CheckDns.infer_public_ip_from_cluster(active_connection)
+    @ip_address = Dns::Utils.infer_public_ip(active_connection)
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
   end
