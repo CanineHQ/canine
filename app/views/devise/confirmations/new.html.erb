@@ -7,7 +7,7 @@
 
       <div class="mb-3">
         <%= f.label :email, class: 'form-label' %><br />
-        <%= f.email_field :email, autofocus: true, class: 'form-control', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+        <%= f.email_field :email, autofocus: true, inputmode: "email", class: 'form-control', value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
       </div>
 
       <div class="actions d-grid">

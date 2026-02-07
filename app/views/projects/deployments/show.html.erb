@@ -8,11 +8,19 @@
       <%= turbo_stream_from dom_id(@build, :status) %>
       <%= render "projects/deployments/status", build: @build %>
       <% if @build.in_progress? %>
-        <%= button_to "Kill Build", 
-            kill_project_deployment_path(@project, @build), 
+        <%= button_to "Kill Build",
+            kill_project_deployment_path(@project, @build),
             method: :patch,
             class: "btn btn-sm btn-error",
             confirm: "Are you sure you want to kill this build? This action cannot be undone.",
+            data: { turbo_method: :patch } %>
+      <% end %>
+      <% if @build.deployment&.in_progress? %>
+        <%= button_to "Kill Deploy",
+            kill_deploy_project_deployment_path(@project, @build),
+            method: :patch,
+            class: "btn btn-sm btn-error",
+            confirm: "Are you sure you want to kill this deployment? This action cannot be undone.",
             data: { turbo_method: :patch } %>
       <% end %>
     </div>
@@ -27,6 +35,11 @@
       ) %>
       <span class="font-light"><%= @build.commit_message.truncate(75) %></span>
     </div>
+    <% if @build.digest.present? %>
+      <div class="text-sm text-base-content/60">
+        <span class="font-mono"><%= @build.digest.truncate(30) %></span>
+      </div>
+    <% end %>
   </div>
   <hr class="mt-2 mb-6 border-base-content/10" />
   <h2 class="text-2xl font-bold">Build Logs</h2>

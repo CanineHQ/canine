@@ -20,8 +20,8 @@ spec:
       <% end %>
           containers:
           - name: <%= project.name %>
-            image: <%= project.container_image_reference %>
-            imagePullPolicy: Always
+            image: <%= project.container_image_reference_with_digest %>
+            imagePullPolicy: IfNotPresent
             command: <% service.command.split(' ').each do |c| %>
               - <%= c %>
             <% end %>

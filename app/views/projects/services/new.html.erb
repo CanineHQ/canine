@@ -86,11 +86,11 @@
           <h3 class="text-lg font-bold">Networking</h3>
           <div class="form-group">
             <%= form.label :container_port %>
-            <%= form.number_field :container_port, class: "input input-bordered w-full max-w-sm", placeholder: "3000" %>
+            <%= form.number_field :container_port, inputmode: "numeric", class: "input input-bordered w-full max-w-sm", placeholder: "3000" %>
           </div>
           <div class="form-group">
             <%= form.label :healthcheck_url %>
-            <%= form.text_field :healthcheck_url, class: "input input-bordered w-full max-w-sm", placeholder: "/health" %>
+            <%= form.text_field :healthcheck_url, inputmode: "url", class: "input input-bordered w-full max-w-sm", placeholder: "/health" %>
           </div>
           <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
             <label class="label mt-1">
@@ -105,7 +105,7 @@
           <h3 class="text-lg font-bold mt-4">Resources</h3>
           <div class="form-group">
             <%= form.label :replicas %>
-            <%= form.number_field :replicas, class: "input input-bordered w-full max-w-sm", placeholder: "1" %>
+            <%= form.number_field :replicas, inputmode: "numeric", class: "input input-bordered w-full max-w-sm", placeholder: "1" %>
           </div>
         </div>
 

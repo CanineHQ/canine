@@ -73,6 +73,20 @@ class Deployments::BaseDeploymentService
 
   def complete_deployment!
     @deployment.completed!
+    @project.update!(current_deployment: @deployment)
     @project.deployed!
+    notify_deployment
+  end
+
+  def notify_deployment
+    return unless @project.notifiers.enabled.any?
+
+    DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
+  end
+
+  def setup_automatic_dns(service)
+    service.domains.where(auto_managed: true).find_each do |domain|
+      Dns::AutoSetupService.new(domain, connection: @connection, logger: @logger).call
+    end
   end
 end

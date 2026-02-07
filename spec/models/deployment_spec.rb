@@ -24,6 +24,17 @@ RSpec.describe Deployment, type: :model do
   let(:build) { create(:build) }
   let(:deployment) { create(:deployment, build: build) }
 
+  describe 'current_deployment nullification' do
+    it 'sets project current_deployment_id to null when deployment is deleted' do
+      project = build.project
+      project.update!(current_deployment: deployment)
+
+      deployment.destroy!
+
+      expect(project.reload.current_deployment_id).to be_nil
+    end
+  end
+
   describe '#stamp_version' do
     it 'sets version based on project deployment count' do
       project = build.project

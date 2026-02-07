@@ -1,4 +1,8 @@
 class Projects::VolumesController < Projects::BaseController
+  def index
+    render partial: "index", locals: { project: @project }
+  end
+
   def new
     @volume = @project.volumes.new
   end
@@ -7,19 +11,16 @@ class Projects::VolumesController < Projects::BaseController
     @volume = @project.volumes.build(volume_params)
     @project.updated!
     if @volume.save
-      redirect_to edit_project_path(@project), notice: "Volume saved and will be created on the next deployment"
+      render partial: "index", locals: { project: @project }
     else
-      redirect_to edit_project_path(@project), alert: "Failed to create volume"
+      render :new, status: :unprocessable_entity
     end
   end
 
   def destroy
     @volume = @project.volumes.find(params[:id])
-    if @volume.destroy
-      redirect_to edit_project_path(@project), notice: "Volume deleted and will be removed on the next deployment"
-    else
-      redirect_to edit_project_path(@project), alert: "Failed to delete volume"
-    end
+    @volume.destroy
+    render partial: "index", locals: { project: @project }
   end
 
   private

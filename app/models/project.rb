@@ -18,20 +18,25 @@
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
+#  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  current_deployment_id          :bigint
 #  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
-#  index_projects_on_cluster_id  (cluster_id)
-#  index_projects_on_name        (name)
+#  index_projects_on_cluster_id             (cluster_id)
+#  index_projects_on_current_deployment_id  (current_deployment_id)
+#  index_projects_on_name                   (name)
+#  index_projects_on_slug                   (slug) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (current_deployment_id => deployments.id) ON DELETE => nullify
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 class Project < ApplicationRecord
@@ -41,10 +46,13 @@ class Project < ApplicationRecord
   include AccountUniqueName
   broadcasts_refreshes
 
+  attr_accessor :intended_deployment
+
   def self.ransackable_attributes(auth_object = nil)
     %w[name]
   end
   belongs_to :cluster
+  belongs_to :current_deployment, class_name: "Deployment", optional: true
   has_one :account, through: :cluster
   has_many :users, through: :account
 
@@ -55,6 +63,7 @@ class Project < ApplicationRecord
   has_many :domains, through: :services
   has_many :events, dependent: :destroy
   has_many :volumes, dependent: :destroy
+  has_many :notifiers, dependent: :destroy
 
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy
@@ -79,6 +88,7 @@ class Project < ApplicationRecord
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
   validates_presence_of :deployment_configuration
+  before_create :generate_slug
 
   after_save_commit do
     broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
@@ -100,6 +110,13 @@ class Project < ApplicationRecord
   delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider
   delegate :container_registry?, to: :project_credential_provider
 
+  def generate_slug
+    self.slug = self.name
+    while Project.exists?(slug: self.slug)
+      self.slug = "#{self.name}-#{SecureRandom.uuid[0..7]}"
+    end
+  end
+
   def project_fork_cluster_id_is_owned_by_account
     if project_fork_cluster_id.present? && !account.clusters.exists?(id: project_fork_cluster_id)
       errors.add(:project_fork_cluster_id, "must be owned by the account")
@@ -107,7 +124,7 @@ class Project < ApplicationRecord
   end
 
   def current_deployment
-    deployments.order(created_at: :desc).where(status: :completed).first
+    super || deployments.order(created_at: :desc).where(status: :completed).first
   end
 
   def last_build
@@ -147,7 +164,7 @@ class Project < ApplicationRecord
       elsif bitbucket?
         "https://bitbucket.org/#{repository_url}"
       else
-        "https://hub.docker.com/r/#{repository_url}"
+        provider.registry_web_url(repository_url)
       end
     end
   end
@@ -172,6 +189,12 @@ class Project < ApplicationRecord
     result = Projects::DetermineContainerImageReference.execute(project: self)
     raise result.message if result.failure?
     result.container_image_reference
+  end
+
+  def container_image_reference_with_digest
+    ref = container_image_reference
+    digest = (intended_deployment || current_deployment)&.build&.digest
+    digest.present? ? "#{ref}@#{digest}" : ref
   end
 
   # Forks

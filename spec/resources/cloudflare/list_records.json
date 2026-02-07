@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "errors": [],
+  "messages": [],
+  "result": [
+    {
+      "id": "abc123",
+      "type": "A",
+      "name": "test.oncanine.run",
+      "content": "192.168.1.1",
+      "proxied": false,
+      "ttl": 1,
+      "zone_id": "zone123",
+      "zone_name": "oncanine.run",
+      "created_on": "2025-01-15T10:00:00Z",
+      "modified_on": "2025-01-15T10:00:00Z"
+    }
+  ],
+  "result_info": {
+    "page": 1,
+    "per_page": 100,
+    "total_pages": 1,
+    "count": 1,
+    "total_count": 1
+  }
+}

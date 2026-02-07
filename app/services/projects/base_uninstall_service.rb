@@ -49,6 +49,6 @@ class Projects::BaseUninstallService
 
   def delete_namespace
     @logger.info("Deleting namespace: #{@project.namespace}", color: :yellow)
-    @kubectl.call("delete namespace #{@project.namespace}")
+    @kubectl.call("delete namespace #{@project.namespace} --ignore-not-found")
   end
 end

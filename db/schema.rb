@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_05_175739) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -162,6 +162,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
     t.string "commit_sha", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "digest"
     t.index ["project_id"], name: "index_builds_on_project_id"
   end
 
@@ -210,6 +211,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
+    t.boolean "auto_managed", default: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -440,7 +442,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
     t.boolean "enabled", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_id", "name"], name: "index_notifiers_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_notifiers_on_project_id"
   end
 
@@ -556,8 +557,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
     t.integer "project_fork_status", default: 0
     t.string "namespace", null: false
     t.boolean "managed_namespace", default: true
+    t.string "slug", null: false
+    t.bigint "current_deployment_id"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
+    t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
     t.index ["name"], name: "index_projects_on_name"
+    t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
 
   create_table "providers", force: :cascade do |t|
@@ -624,7 +629,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
     t.datetime "updated_at", null: false
     t.text "description"
     t.jsonb "pod_yaml"
-    t.index ["project_id"], name: "index_services_on_project_id"
+    t.index ["project_id", "name"], name: "index_services_on_project_id_and_name", unique: true
   end
 
   create_table "sso_providers", force: :cascade do |t|
@@ -758,6 +763,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_190444) do
   add_foreign_key "project_forks", "projects", column: "parent_project_id"
   add_foreign_key "projects", "clusters"
   add_foreign_key "projects", "clusters", column: "project_fork_cluster_id"
+  add_foreign_key "projects", "deployments", column: "current_deployment_id", on_delete: :nullify
   add_foreign_key "providers", "sso_providers"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"

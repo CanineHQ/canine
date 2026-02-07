@@ -4,6 +4,7 @@ class Projects::DestroyJob < ApplicationJob
 
     uninstall_service_class(project).new(project, user).call
 
+    cleanup_auto_managed_domains(project)
     remove_github_webhook(project) if should_remove_webhook?(project)
     project.destroy!
   end
@@ -30,5 +31,11 @@ class Projects::DestroyJob < ApplicationJob
     client.remove_webhook!
   rescue Octokit::NotFound
     # If the hook is not found, do nothing
+  end
+
+  def cleanup_auto_managed_domains(project)
+    project.domains.where(auto_managed: true).find_each do |domain|
+      Domains::Destroy.cleanup_dns_record(domain)
+    end
   end
 end

@@ -39,7 +39,7 @@ class Event < ApplicationRecord
     elsif project.bitbucket?
       "https://bitbucket.org/#{project.repository_url}/commits/#{eventable.commit_sha}"
     else
-      "https://hub.docker.com/r/#{project.repository_url}/tags"
+      project.provider.registry_web_url(project.repository_url)
     end
   end
 end

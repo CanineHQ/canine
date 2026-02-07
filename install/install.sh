@@ -94,6 +94,16 @@ if [ -t 0 ]; then  # Only prompt if running in interactive terminal
     port=${port:-3456}
 fi
 
+echo -n "Generating secrets..."
+# Generate SECRET_KEY_BASE if not already set in .env
+if [ -f .env ] && grep -q "^SECRET_KEY_BASE=" .env; then
+    echo " [OK] (using existing)"
+else
+    SECRET_KEY_BASE=$(openssl rand -hex 64)
+    echo "SECRET_KEY_BASE=$SECRET_KEY_BASE" >> .env
+    echo " [OK]"
+fi
+
 echo "Pulling latest Docker images..."
 
 # Pull latest images and start docker compose

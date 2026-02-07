@@ -1,13 +1,19 @@
+<% if repositories.empty? %>
+  <li class="flex justify-center items-center h-full text-gray-400">
+    No repositories found
+  </li>
+<% else %>
   <% repositories.each do |repo| %>
     <li
       class="border-b border-b-gray-500 flex justify-between items-center px-4 py-2"
-      data-github-select-repository-target="repositories"
+      data-git-select-repository-target="repositories"
     >
       <span><%= repo.full_name %></span>
       <button
         type="button"
         class="btn btn-outline btn-sm"
-        data-action="github-select-repository#selectRepository"
+        data-action="git-select-repository#selectRepository"
         data-repository-name="<%= repo.full_name %>">Connect</button>
     </li>
   <% end %>
+<% end %>

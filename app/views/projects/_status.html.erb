@@ -1,11 +1,11 @@
 <%= turbo_stream_from project, :status %>
 <div id="<%= dom_id(project, :status) %>">
   <% if project.last_build&.in_progress? %>
-    <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
+    <div aria-label="Badge" class="badge badge-warning font-medium capitalize">
       Building <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
     </div>
   <% elsif project.last_deployment&.in_progress? %>
-    <div aria-label="Badge" class="badge border-0 bg-warning/10 font-medium capitalize text-warning">
+    <div aria-label="Badge" class="badge badge-warning font-medium capitalize">
       Deploying <iconify-icon class="ml-1 animate-spin" icon="lucide:loader-circle"></iconify-icon>
     </div>
   <% else %>
@@ -19,7 +19,7 @@
         "error"
       end
     %>
-    <div aria-label="Badge" class="badge border-0 bg-<%= badge_color %>/10 font-medium capitalize text-<%= badge_color %>">
+    <div aria-label="Badge" class="badge badge-<%= badge_color %> font-medium capitalize">
       <%= project.status %>
     </div>
   <% end %>

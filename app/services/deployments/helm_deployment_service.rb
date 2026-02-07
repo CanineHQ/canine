@@ -10,12 +10,20 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     deploy_volumes
     predeploy
     deploy_services
-    @chart_builder.install_chart(@project.name)
+    @chart_builder.install_chart(@project.name, atomic: false, wait: false)
+    setup_dns_for_services
     kill_one_off_containers
     postdeploy
 
     mark_services_healthy
     complete_deployment!
+  rescue StandardError => e
+    # Don't overwrite status if it was already set to killed
+    unless @deployment.killed?
+      @logger.error("Deployment failed: #{e.message}")
+      puts e.full_message
+      @deployment.failed!
+    end
   end
 
   private
@@ -68,5 +76,11 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
 
   def mark_services_healthy
     @project.services.each(&:healthy!)
+  end
+
+  def setup_dns_for_services
+    @project.services.each do |service|
+      setup_automatic_dns(service)
+    end
   end
 end

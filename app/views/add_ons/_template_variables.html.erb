@@ -34,6 +34,7 @@
       <%= form.number_field(
         variable['key'],
         name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}]",
+        inputmode: "numeric",
         class: "input input-bordered",
         value: form.object.metadata.dig('template', variable['key']) || variable['default']
       ) %>
@@ -51,6 +52,7 @@
         name: "add_on[metadata][#{chart['name']}][template][#{variable['key']}][value]",
         class: "input input-bordered",
         type: 'number',
+        inputmode: "numeric",
         value: form.object.metadata.dig('template', variable['key'], 'value') || variable['default'][..-3]
       ) %>
       <%= form.select(

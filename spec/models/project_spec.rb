@@ -18,20 +18,25 @@
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
 #  repository_url                 :string           not null
+#  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
 #  created_at                     :datetime         not null
 #  updated_at                     :datetime         not null
 #  cluster_id                     :bigint           not null
+#  current_deployment_id          :bigint
 #  project_fork_cluster_id        :bigint
 #
 # Indexes
 #
-#  index_projects_on_cluster_id  (cluster_id)
-#  index_projects_on_name        (name)
+#  index_projects_on_cluster_id             (cluster_id)
+#  index_projects_on_current_deployment_id  (current_deployment_id)
+#  index_projects_on_name                   (name)
+#  index_projects_on_slug                   (slug) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (current_deployment_id => deployments.id) ON DELETE => nullify
 #  fk_rails_...  (project_fork_cluster_id => clusters.id)
 #
 require 'rails_helper'
@@ -61,6 +66,20 @@ RSpec.describe Project, type: :model do
 
         expect(new_project).not_to be_valid
         expect(new_project.errors[:name]).to include("has already been taken")
+      end
+    end
+
+    context 'when name or namespace is reserved' do
+      it 'is not valid when name is reserved' do
+        project.name = 'kube-system'
+        expect(project).not_to be_valid
+        expect(project.errors[:name]).to include("is a reserved keyword and cannot be used")
+      end
+
+      it 'is not valid when namespace is reserved' do
+        project.namespace = 'default'
+        expect(project).not_to be_valid
+        expect(project.errors[:namespace]).to include("is a reserved keyword and cannot be used")
       end
     end
   end
@@ -163,15 +182,31 @@ RSpec.describe Project, type: :model do
     end
   end
 
+  describe '#generate_slug' do
+    it 'uses the name as slug when available' do
+      project = create(:project, name: 'unique-name')
+      expect(project.slug).to eq('unique-name')
+    end
+
+    it 'appends a uuid suffix when the slug is taken' do
+      existing_project = create(:project, name: 'taken-name')
+      other_cluster = create(:cluster)
+      new_project = create(:project, name: 'taken-name', cluster: other_cluster)
+
+      expect(new_project.slug).to start_with('taken-name-')
+      expect(new_project.slug).not_to eq(existing_project.slug)
+    end
+  end
+
   describe '#container_registry_url' do
     it 'uses branch name as tag for GitHub' do
       github_project = create(:project, :github, repository_url: 'owner/repo', branch: 'feature/test')
       expect(github_project.container_image_reference).to eq('ghcr.io/owner/repo:feature-test')
     end
 
-    it 'uses latest tag for Docker Hub' do
-      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'feature/test')
-      expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest')
+    it 'uses branch as tag for container registry without gsub' do
+      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'latest-cpu')
+      expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest-cpu')
     end
   end
 end

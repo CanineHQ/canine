@@ -13,6 +13,14 @@
 
     <% end %>
 
+    <%= render(FormFieldComponent.new(label: "Image Tag")) do %>
+      <%= form.text_field(
+        :branch,
+        class: "input input-bordered w-full focus:outline-offset-0",
+        placeholder: "latest",
+      ) %>
+    <% end %>
+
     <%= render(FormFieldComponent.new(label: "Predeploy command")) do %>
       <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm" %>
     <% end %>

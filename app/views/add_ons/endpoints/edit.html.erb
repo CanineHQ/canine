@@ -25,7 +25,7 @@
 
     <div class="form-control">
       <%= f.label :domains, "Domains", class: "label" %>
-      <%= f.text_field :domains, class: "input input-bordered" %>
+      <%= f.text_field :domains, inputmode: "url", class: "input input-bordered" %>
       <p class="text-sm text-gray-500">Comma separated list of domains to use for this endpoint</p>
     </div>
     <div class="my-4 alert alert-warning inline-block">

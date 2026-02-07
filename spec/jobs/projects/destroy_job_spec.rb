@@ -19,6 +19,8 @@ RSpec.describe Projects::DestroyJob do
     let!(:domain) { create(:domain, service: service) }
     let!(:environment_variable) { create(:environment_variable, project: project) }
 
+    before { project.update!(current_deployment: deployment) }
+
     it 'destroys the project, builds, deployments, volumes, envvars, and services' do
       expect(mock_service).to receive(:call)
       expect(job).to receive(:remove_github_webhook)
