@@ -25,7 +25,14 @@ class Async::Helm::ValuesYamlViewModel < Async::BaseViewModel
           <% flatten_hash(service.values_yaml).each do |key, value| %>
             <tr>
               <td><%= key %></td>
-              <td><%= value %></td>
+              <td>
+                <div class="flex flex-row items-center" data-controller="toggle-password" data-toggle-password-mask-length-value="true">
+                  <input type="password" readonly class="input input-sm w-full bg-transparent border-none focus:outline-none" value="<%= value %>" data-toggle-password-target="input">
+                  <button class="btn btn-sm btn-ghost" type="button" data-action="click->toggle-password#toggle">
+                    <iconify-icon icon="lucide:eye" data-toggle-password-target="icon"></iconify-icon>
+                  </button>
+                </div>
+              </td>
             </tr>
           <% end %>
         </tbody>
