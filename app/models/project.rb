@@ -107,7 +107,7 @@ class Project < ApplicationRecord
     disabled: 0,
     manually_create: 1
   }, prefix: :forks
-  delegate :git?, :github?, :gitlab?, to: :project_credential_provider
+  delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider
   delegate :container_registry?, to: :project_credential_provider
 
   def generate_slug
@@ -153,12 +153,16 @@ class Project < ApplicationRecord
         "https://github.com/#{repository_url}/pull/#{child_fork.number}"
       elsif gitlab?
         "https://gitlab.com/#{repository_url}/merge_requests/#{child_fork.number}"
+      elsif bitbucket?
+        "https://bitbucket.org/#{repository_url}/pull-requests/#{child_fork.number}"
       end
     else
       if github?
         "https://github.com/#{repository_url}"
       elsif gitlab?
         "https://gitlab.com/#{repository_url}"
+      elsif bitbucket?
+        "https://bitbucket.org/#{repository_url}"
       else
         provider.registry_web_url(repository_url)
       end

@@ -13,8 +13,12 @@
         <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
           <li>
             <%= link_to "Github", new_provider_path(provider_type: Provider::GITHUB_PROVIDER) %>
+          </li>
           <li>
             <%= link_to "Gitlab", new_provider_path(provider_type: Provider::GITLAB_PROVIDER) %>
+          </li>
+          <li>
+            <%= link_to "Bitbucket", new_provider_path(provider_type: Provider::BITBUCKET_PROVIDER) %>
           </li>
           <li>
             <%= link_to "Container Registry", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER) %>
