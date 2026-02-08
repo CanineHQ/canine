@@ -51,7 +51,7 @@
       <% end %>
       <hr class="-mx-2 my-1 border-base-content/10">
       <li class="text-error">
-        <%= link_to destroy_user_session_path, method: :delete do %>
+        <%= link_to destroy_user_session_path, data: { turbo_method: :delete } do %>
           <iconify-icon icon="lucide:log-out" height="16"></iconify-icon>
           Logout
         <% end %>
