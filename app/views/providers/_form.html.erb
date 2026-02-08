@@ -28,7 +28,7 @@
           </button>
         </div>
       </div>
-      
+
       <div class="form-control mt-1 w-full max-w-sm">
         <label class="label">
           <span class="label-text">Registry URL</span>
@@ -48,6 +48,18 @@
         <span class="label-text">Username</span>
       </label>
       <%= form.text_field :username_param, class: "input input-bordered", required: true %>
+    </div>
+  <% end %>
+
+  <% if params[:provider_type] == Provider::BITBUCKET_PROVIDER || form.object.provider == Provider::BITBUCKET_PROVIDER %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Atlassian Account Email</span>
+      </label>
+      <%= form.text_field :username_param, inputmode: "email", class: "input input-bordered", required: true %>
+      <label class="label">
+        <span class="label-text-alt text-gray-400">The email associated with your Atlassian account</span>
+      </label>
     </div>
   <% end %>
 

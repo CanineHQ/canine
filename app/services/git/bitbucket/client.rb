@@ -1,18 +1,20 @@
 class Git::Bitbucket::Client < Git::Client
   BITBUCKET_WEBHOOK_SECRET = ENV["BITBUCKET_WEBHOOK_SECRET"]
-  attr_accessor :access_token, :repository_url, :api_base_url
+  attr_accessor :access_token, :email, :repository_url, :api_base_url
 
   def self.from_project(project)
     provider = project.project_credential_provider.provider
     raise "Project is not a Bitbucket project" unless provider.bitbucket?
     new(
+      email: provider.email,
       access_token: provider.access_token,
       repository_url: project.repository_url,
       api_base_url: provider.api_base_url
     )
   end
 
-  def initialize(access_token:, repository_url:, api_base_url: nil)
+  def initialize(access_token:, repository_url:, email: nil, api_base_url: nil)
+    @email = email
     @access_token = access_token
     @repository_url = repository_url
     @api_base_url = api_base_url || "https://api.bitbucket.org"
@@ -156,7 +158,8 @@ class Git::Bitbucket::Client < Git::Client
   end
 
   def auth_headers
-    { "Authorization" => "Bearer #{access_token}" }
+    encoded = Base64.strict_encode64("#{email}:#{access_token}")
+    { "Authorization" => "Basic #{encoded}" }
   end
 
   def extract_email(raw_author)

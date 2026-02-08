@@ -69,6 +69,11 @@ class Provider < ApplicationRecord
     JSON.parse(auth).dig("info", "nickname") || JSON.parse(auth).dig("info", "username")
   end
 
+  def email
+    return unless auth
+    JSON.parse(auth).dig("info", "email")
+  end
+
   def git?
     github? || gitlab? || bitbucket?
   end

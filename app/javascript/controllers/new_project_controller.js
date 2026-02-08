@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["provider", "gitProviderLabel", "gitRepository", "githubConnectButton", "gitlabConnectButton", "repositoryUrl", "buildSettings"];
+  static targets = ["provider", "gitProviderLabel", "gitRepository", "githubConnectButton", "gitlabConnectButton", "repositoryUrl"];
   static values = { providers: String }
 
   connect() {
@@ -23,11 +23,6 @@ export default class extends Controller {
     // Set provider label
     const labels = { github: "Github", gitlab: "Gitlab", bitbucket: "Bitbucket" };
     this.gitProviderLabelTargets.forEach(label => label.textContent = labels[provider.provider] || provider.provider);
-
-    // Show build settings when provider lacks a native container registry
-    if (this.hasBuildSettingsTarget) {
-      this.buildSettingsTarget.dataset.requiresRegistry = !provider.has_native_container_registry;
-    }
   }
 
   selectProvider(event) {
