@@ -15,8 +15,9 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       var container = document.getElementById("cli-demo");
+      var castFile = window.innerWidth < 768 ? "/resources/demo-mobile.cast" : "/resources/demo.cast";
       var player = AsciinemaPlayer.create(
-        "/resources/demo.cast",
+        castFile,
         container,
         {
           autoPlay: false,
@@ -24,7 +25,6 @@
           speed: 1.5,
           theme: "dracula",
           fit: "width",
-          cols: 100,
           rows: 18
         }
       );
