@@ -70,7 +70,7 @@ export default class extends Controller {
 
   async reveal(event) {
     event.preventDefault();
-    const button = event.target;
+    const button = event.currentTarget;
     const wrapper = button.closest('[data-env-id]');
     const envId = wrapper.dataset.envId;
     const input = wrapper.querySelector('input[name="environment_variables[][value]"]');
