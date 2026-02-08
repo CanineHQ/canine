@@ -1,0 +1,43 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.10.0/dist/bundle/asciinema-player.css" />
+<script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.10.0/dist/bundle/asciinema-player.min.js"></script>
+
+<div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-32 lg:px-8">
+  <div class="mx-auto max-w-2xl text-center">
+    <h2 class="text-base font-semibold leading-7 text-indigo-400">Built for the terminal</h2>
+    <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">A CLI that gets out of your way</p>
+    <p class="mt-6 text-lg leading-8 text-gray-300">
+      Kick off a shell, tail logs, deploy — all from your terminal. No context switching required.
+    </p>
+  </div>
+  <div class="relative mt-16 overflow-hidden rounded-xl shadow-2xl ring-1 ring-white/10">
+    <div id="cli-demo" class="w-full"></div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var container = document.getElementById("cli-demo");
+      var player = AsciinemaPlayer.create(
+        "/resources/demo.cast",
+        container,
+        {
+          autoPlay: false,
+          loop: true,
+          speed: 1.5,
+          theme: "dracula",
+          fit: "width",
+          cols: 100,
+          rows: 18
+        }
+      );
+
+      var started = false;
+      var observer = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting && !started) {
+          started = true;
+          player.play();
+          observer.disconnect();
+        }
+      }, { threshold: 0.3 });
+      observer.observe(container);
+    });
+  </script>
+</div>
