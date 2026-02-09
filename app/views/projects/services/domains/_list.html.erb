@@ -1,10 +1,10 @@
-<table class="table">
+<table class="table table-fixed">
   <thead>
     <tr>
-      <th>Domain</th>
-      <th>DNS Type / Value</th>
-      <th>DNS Status</th>
-      <th></th>
+      <th class="w-1/4">Domain</th>
+      <th class="w-5/12">DNS Type / Value</th>
+      <th class="w-1/6">DNS Status</th>
+      <th class="w-1/12"></th>
     </tr>
   </thead>
   <tbody>
@@ -18,7 +18,7 @@
             </div>
           <% end %>
         </td>
-        <td>
+        <td class="overflow-hidden">
           <%= render(
             "shared/partials/async_renderer",
             view_model: Async::K8::ClusterIpViewModel.new(

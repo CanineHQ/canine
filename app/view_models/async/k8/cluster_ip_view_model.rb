@@ -16,15 +16,15 @@ class Async::K8::ClusterIpViewModel < Async::BaseViewModel
     if record[:type] == :ip_address
       ip = record[:value]
       <<~HTML
-      <div class='flex items-center gap-2'>
-        <pre>A Record</pre> / <pre class='cursor-pointer' data-controller='clipboard' data-clipboard-text='#{ip}'>#{ip}</pre>
+      <div class='flex items-center gap-2 min-w-0'>
+        <pre class='shrink-0'>A Record</pre> / <pre class='cursor-pointer truncate' data-controller='clipboard' data-clipboard-text='#{ip}'>#{ip}</pre>
       </div>
       HTML
     else
       hostname = record[:value]
       <<~HTML
-      <div class='flex items-center gap-2'>
-        <pre>CNAME Record</pre> / <pre class='cursor-pointer' data-controller='clipboard' data-clipboard-text='#{hostname}'>#{hostname}</pre>
+      <div class='flex items-center gap-2 min-w-0'>
+        <pre class='shrink-0'>CNAME Record</pre> / <pre class='cursor-pointer truncate' data-controller='clipboard' data-clipboard-text='#{hostname}'>#{hostname}</pre>
       </div>
       HTML
     end
