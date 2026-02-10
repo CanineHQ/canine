@@ -29,9 +29,15 @@
       <p class="text-sm text-gray-500">Comma separated list of domains to use for this endpoint</p>
     </div>
     <div class="my-4 alert alert-warning">
-      <span>Make sure to create an A Record to
-      <code class="font-semibold cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= @ip_address %>"><%= @ip_address %></code>
-      for any domain you add here.</span>
+      <% if @dns_record[:type] == :ip_address %>
+        <span>Make sure to create an A Record to
+        <code class="font-semibold cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= @dns_record[:value] %>"><%= @dns_record[:value] %></code>
+        for any domain you add here.</span>
+      <% else %>
+        <span>Make sure to create a CNAME Record to
+        <code class="font-semibold cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= @dns_record[:value] %>"><%= @dns_record[:value] %></code>
+        for any domain you add here.</span>
+      <% end %>
     </div>
 
     <div class="form-footer">
