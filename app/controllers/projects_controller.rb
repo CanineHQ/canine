@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
-  before_action :set_project, only: %i[show edit update destroy restart]
+  before_action :set_project, only: %i[show edit update destroy restart register_webhook]
   before_action :set_provider_type, only: %i[new create]
 
   def index
@@ -23,6 +23,19 @@ class ProjectsController < ApplicationController
       else
         format.html { redirect_to project_url(@project), alert: "Failed to restart all services" }
         format.json { render json: { message: "Failed to restart all services" }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def register_webhook
+    return head :forbidden unless Rails.application.config.cloud_mode
+
+    result = Projects::RegisterGitWebhook.execute(project: @project)
+    respond_to do |format|
+      if result.success?
+        format.html { redirect_to edit_project_url(@project), notice: "Webhook registered successfully" }
+      else
+        format.html { redirect_to edit_project_url(@project), alert: "Failed to register webhook" }
       end
     end
   end

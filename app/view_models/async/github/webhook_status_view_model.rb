@@ -18,16 +18,9 @@ class Async::Github::WebhookStatusViewModel < Async::BaseViewModel
   end
 
   def async_render
-    template = <<-HTML
-      <div class="text-sm">
-        <% if client.webhook_exists? %>
-          Webhook connected <span class="text-green-500">✓</span>
-        <% else %>
-          Webhook not found <span class="text-red-500">✗</span>
-        <% end %>
-      </div>
-    HTML
-
-    ERB.new(template).result(binding)
+    render "async/github/webhook_status", locals: {
+      webhook_exists: client.webhook_exists?,
+      project: project
+    }
   end
 end
