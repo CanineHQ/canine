@@ -3,6 +3,9 @@
 module Tools
   class GetProjectDetails < MCP::Tool
     include Tools::Concerns::Authentication
+    title "Get project details"
+    idempotent_hint true
+    read_only_hint true
 
     description "Get detailed information about a project including services, domains, volumes, and current deployment manifests"
 
