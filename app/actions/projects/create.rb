@@ -62,14 +62,15 @@ class Projects::Create
   end
 
   def self.build_default_build_configuration(project)
+    git_provider = project.project_credential_provider.provider
     {
-      provider: project.project_credential_provider.provider,
+      provider: git_provider.has_native_container_registry? ? git_provider : nil,
       driver: BuildConfiguration::DEFAULT_BUILDER,
       build_type: :dockerfile,
       image_repository: project.repository_url,
       context_directory: ".",
       dockerfile_path: "./Dockerfile"
-    }
+    }.compact
   end
 
   def self.create_steps(provider)

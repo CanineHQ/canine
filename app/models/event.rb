@@ -36,6 +36,8 @@ class Event < ApplicationRecord
       "https://github.com/#{project.repository_url}/commit/#{eventable.commit_sha}"
     elsif project.gitlab?
       "https://gitlab.com/#{project.repository_url}/-/commit/#{eventable.commit_sha}"
+    elsif project.bitbucket?
+      "https://bitbucket.org/#{project.repository_url}/commits/#{eventable.commit_sha}"
     else
       project.provider.registry_web_url(project.repository_url)
     end

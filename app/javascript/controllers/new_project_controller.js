@@ -15,15 +15,14 @@ export default class extends Controller {
       return;
     }
     this.gitRepositoryTarget.classList.remove("hidden");
-    if (provider.provider === "github") {
-      this.githubConnectButtonTarget.classList.remove("hidden");
-      this.gitlabConnectButtonTarget.classList.add("hidden");
-      this.gitProviderLabelTargets.forEach(label => label.textContent = "Github");
-    } else if (provider.provider === "gitlab") {
-      this.githubConnectButtonTarget.classList.add("hidden");
-      this.gitlabConnectButtonTarget.classList.remove("hidden");
-      this.gitProviderLabelTargets.forEach(label => label.textContent = "Gitlab");
-    }
+
+    // Show/hide connect buttons based on provider type
+    this.githubConnectButtonTarget.classList.toggle("hidden", provider.provider !== "github");
+    this.gitlabConnectButtonTarget.classList.toggle("hidden", provider.provider !== "gitlab");
+
+    // Set provider label
+    const labels = { github: "Github", gitlab: "Gitlab", bitbucket: "Bitbucket" };
+    this.gitProviderLabelTargets.forEach(label => label.textContent = labels[provider.provider] || provider.provider);
   }
 
   selectProvider(event) {

@@ -28,7 +28,7 @@
           </button>
         </div>
       </div>
-      
+
       <div class="form-control mt-1 w-full max-w-sm">
         <label class="label">
           <span class="label-text">Registry URL</span>
@@ -51,6 +51,18 @@
     </div>
   <% end %>
 
+  <% if params[:provider_type] == Provider::BITBUCKET_PROVIDER || form.object.provider == Provider::BITBUCKET_PROVIDER %>
+    <div class="form-control mt-1 w-full max-w-sm">
+      <label class="label">
+        <span class="label-text">Atlassian Account Email</span>
+      </label>
+      <%= form.text_field :username_param, inputmode: "email", class: "input input-bordered", required: true %>
+      <label class="label">
+        <span class="label-text-alt text-gray-400">The email associated with your Atlassian account</span>
+      </label>
+    </div>
+  <% end %>
+
   <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
       <span class="label-text">Access Token</span>
@@ -59,8 +71,12 @@
   </div>
 
   <% provider_type = params[:provider_type] || form.object.provider %>
-  <% if provider_type == Provider::GITHUB_PROVIDER || provider_type == Provider::GITLAB_PROVIDER %>
-    <% provider_name = provider_type == Provider::GITHUB_PROVIDER ? "GitHub" : "GitLab" %>
+  <% if provider_type == Provider::GITHUB_PROVIDER || provider_type == Provider::GITLAB_PROVIDER || provider_type == Provider::BITBUCKET_PROVIDER %>
+    <% provider_name = case provider_type
+                       when Provider::GITHUB_PROVIDER then "GitHub"
+                       when Provider::GITLAB_PROVIDER then "GitLab"
+                       when Provider::BITBUCKET_PROVIDER then "Bitbucket"
+                       end %>
     <div data-controller="expandable-optional-input">
       <div>
         <a data-action="expandable-optional-input#show" class="btn btn-ghost btn-sm mt-2">
@@ -71,7 +87,12 @@
         <label class="label">
           <span class="label-text">Host URL</span>
         </label>
-        <%= form.text_field :registry_url, inputmode: "url", class: "input input-bordered", placeholder: provider_type == Provider::GITHUB_PROVIDER ? "https://github.example.com" : "https://gitlab.example.com" %>
+        <% placeholder = case provider_type
+                         when Provider::GITHUB_PROVIDER then "https://github.example.com"
+                         when Provider::GITLAB_PROVIDER then "https://gitlab.example.com"
+                         when Provider::BITBUCKET_PROVIDER then "https://bitbucket.example.com"
+                         end %>
+        <%= form.text_field :registry_url, inputmode: "url", class: "input input-bordered", placeholder: placeholder %>
         <label class="label">
           <span class="label-text-alt text-gray-400">Enter your <%= provider_name %> Enterprise server URL</span>
         </label>

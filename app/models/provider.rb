@@ -36,18 +36,21 @@ class Provider < ApplicationRecord
   CUSTOM_REGISTRY_PROVIDER = "container_registry"
   GITLAB_PROVIDER = "gitlab"
   GITLAB_API_BASE = "https://gitlab.com"
+  BITBUCKET_PROVIDER = "bitbucket"
+  BITBUCKET_API_BASE = "https://api.bitbucket.org"
   GIT_TYPE = "git"
   REGISTRY_TYPE = "registry"
   PROVIDER_TYPES = {
-    GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER ],
+    GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER ],
     REGISTRY_TYPE => [ CUSTOM_REGISTRY_PROVIDER ]
   }
 
   PORTAINER_PROVIDER = "portainer"
 
-  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
+  PROVIDERS_WITH_CONTAINER_REGISTRY = [ GITHUB_PROVIDER, GITLAB_PROVIDER ].freeze
+  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
-  scope :has_container_registry, -> { where(provider: [ GITHUB_PROVIDER, GITLAB_PROVIDER, CUSTOM_REGISTRY_PROVIDER ]) }
+  scope :has_container_registry, -> { where(provider: PROVIDERS_WITH_CONTAINER_REGISTRY + [ CUSTOM_REGISTRY_PROVIDER ]) }
   scope :non_sso, -> { where(sso_provider_id: nil) }
 
   belongs_to :user
@@ -66,8 +69,13 @@ class Provider < ApplicationRecord
     JSON.parse(auth).dig("info", "nickname") || JSON.parse(auth).dig("info", "username")
   end
 
+  def email
+    return unless auth
+    JSON.parse(auth).dig("info", "email")
+  end
+
   def git?
-    github? || gitlab?
+    github? || gitlab? || bitbucket?
   end
 
   def expired?
@@ -91,8 +99,16 @@ class Provider < ApplicationRecord
     provider == GITLAB_PROVIDER
   end
 
+  def bitbucket?
+    provider == BITBUCKET_PROVIDER
+  end
+
+  def has_native_container_registry?
+    PROVIDERS_WITH_CONTAINER_REGISTRY.include?(provider)
+  end
+
   def enterprise?
-    (github? || gitlab?) && registry_url.present?
+    (github? || gitlab? || bitbucket?) && registry_url.present?
   end
 
   def api_base_url
@@ -102,6 +118,8 @@ class Provider < ApplicationRecord
       GITHUB_API_BASE
     elsif gitlab?
       GITLAB_API_BASE
+    elsif bitbucket?
+      BITBUCKET_API_BASE
     end
   end
 
