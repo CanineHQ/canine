@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: <%= endpoint.metadata.name %>
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'true'
+spec:
+  parentRefs:
+    - name: canine-gateway
+      namespace: canine-system
+  hostnames:
+  <% domains.each do |domain| %>
+    - <%= domain %>
+  <% end %>
+  rules:
+    - backendRefs:
+        - name: <%= endpoint.metadata.name %>
+          port: <%= port %>

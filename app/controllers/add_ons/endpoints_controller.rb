@@ -9,7 +9,7 @@ class AddOns::EndpointsController < AddOns::BaseController
 
   def show
     # Aggregate all the services and the ingresses for the services
-    ingresses = @service.get_ingresses
+    httproutes = @service.get_httproutes
   end
 
   def update
@@ -21,7 +21,7 @@ class AddOns::EndpointsController < AddOns::BaseController
     @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
     kubectl = K8::Kubectl.new(active_connection)
     kubectl.apply_yaml(
-      K8::AddOns::Ingress.new(
+      K8::AddOns::HttpRoute.new(
         @add_on,
         @endpoint,
         params[:port].to_i,
@@ -29,8 +29,8 @@ class AddOns::EndpointsController < AddOns::BaseController
       ).to_yaml
     )
     if @errors.empty?
-      @ingresses = @service.get_ingresses
-      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
+      @httproutes = @service.get_httproutes
+      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, httproutes: @httproutes }
     else
       set_dns_record
       render "add_ons/endpoints/edit"
@@ -51,8 +51,8 @@ class AddOns::EndpointsController < AddOns::BaseController
   end
 
   def set_dns_record
-    client = K8::Client.new(active_connection)
-    hostname = K8::Stateless::Ingress.hostname(client)
+    gateway_manager = K8::Shared::GatewayManager.new.connect(active_connection)
+    hostname = gateway_manager.hostname
     if hostname[:type] == :ip_address && Dns::Utils.private_ip?(hostname[:value])
       hostname = { type: :ip_address, value: Dns::Utils.infer_public_ip(active_connection) }
     end

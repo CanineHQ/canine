@@ -69,7 +69,7 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
       @chart_builder << build_resource("Deployment", service)
       @chart_builder << build_resource("Service", service)
       if service.domains.any? && service.allow_public_networking?
-        @chart_builder << build_resource("Ingress", service)
+        @chart_builder << build_resource("HttpRoute", service)
       end
     end
   end
@@ -80,6 +80,9 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
 
   def setup_dns_for_services
     @project.services.each do |service|
+      if service.web_service? && service.domains.any? && service.allow_public_networking?
+        setup_gateway_tls(service)
+      end
       setup_automatic_dns(service)
     end
   end

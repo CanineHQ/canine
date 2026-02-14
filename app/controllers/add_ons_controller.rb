@@ -34,7 +34,7 @@ class AddOnsController < ApplicationController
   # GET /add_ons/1/edit
   def edit
     @endpoints = @service.get_endpoints
-    @ingresses = @service.get_ingresses
+    @httproutes = @service.get_httproutes
   end
 
   # POST /add_ons or /add_ons.json

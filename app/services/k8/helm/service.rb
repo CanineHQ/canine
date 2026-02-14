@@ -29,8 +29,8 @@ class K8::Helm::Service
     kubectl.call("rollout restart deployment -n #{add_on.name}")
   end
 
-  def get_ingresses
-    @client.get_ingresses(namespace: add_on.name)
+  def get_httproutes
+    @client.get_httproutes(namespace: add_on.name)
   end
 
   def get_endpoints

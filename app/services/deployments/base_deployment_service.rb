@@ -1,7 +1,7 @@
 class Deployments::BaseDeploymentService
   class DeploymentFailure < StandardError; end
 
-  DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Ingress Pv Pvc].freeze
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service HttpRoute Pv Pvc].freeze
 
   def initialize(deployment, user)
     @deployment = deployment
@@ -82,6 +82,18 @@ class Deployments::BaseDeploymentService
     return unless @project.notifiers.enabled.any?
 
     DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
+  end
+
+  def setup_gateway_tls(service)
+    @logger.info("Setting up Gateway TLS for #{service.name}", color: :yellow)
+    reference_grant = K8::Stateless::ReferenceGrant.new(@project)
+    @kubectl.apply_yaml(reference_grant.to_yaml)
+
+    certificate = K8::Stateless::Certificate.new(service)
+    @kubectl.apply_yaml(certificate.to_yaml)
+
+    gateway_manager = K8::Shared::GatewayManager.new.connect(@connection)
+    gateway_manager.ensure_certificate_ref(service)
   end
 
   def setup_automatic_dns(service)

@@ -29,8 +29,8 @@ module K8
       # Base64.decode64(JSON.parse(r)['auths']['registry.gitlab.com']['auth'])
     end
 
-    def get_ingresses(namespace:)
-      result = K8::Kubectl.new(@connection).call("get ingresses -n #{namespace} -o json")
+    def get_httproutes(namespace:)
+      result = K8::Kubectl.new(@connection).call("get httproutes -n #{namespace} -o json")
       JSON.parse(result, object_class: OpenStruct).items
     end
 

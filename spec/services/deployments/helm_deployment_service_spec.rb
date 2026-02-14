@@ -94,12 +94,12 @@ RSpec.describe Deployments::HelmDeploymentService do
       expect(yaml.dig('spec', 'selector', 'app')).to eq('web')
     end
 
-    it 'generates an Ingress with domain' do
-      resource = find_resource('Ingress', 'web-ingress')
+    it 'generates an HTTPRoute with domain' do
+      resource = find_resource('HTTPRoute', 'web-httproute')
       expect(resource).to be_present
 
       yaml = parse_yaml(resource)
-      expect(yaml.dig('spec', 'rules', 0, 'host')).to eq('example.com')
+      expect(yaml.dig('spec', 'hostnames', 0)).to eq('example.com')
     end
   end
 
