@@ -17,7 +17,7 @@ class AddOns::InstallHelmChart
     charts = K8::Helm::Client::CHARTS['helm']['charts']
     chart = charts.find { |chart| chart['name'] == add_on.chart_type }
 
-    client = K8::Helm::Client.connect(context.connection, Cli::RunAndLog.new(add_on))
+    client = K8::Helm::Client.connect(context.connection, Cli::RunAndLog.new(add_on, log_command: true))
 
     chart_url = add_on.chart_url
 
@@ -31,7 +31,7 @@ class AddOns::InstallHelmChart
         package_details['repository']['url'],
         add_on.version,
         values: add_on.values,
-        namespace: add_on.name
+        namespace: add_on.namespace
       )
     else
       client.add_repo(
@@ -48,7 +48,7 @@ class AddOns::InstallHelmChart
         chart_url,
         add_on.version,
         values: add_on.values,
-        namespace: add_on.name
+        namespace: add_on.namespace
       )
     end
     add_on.installed!

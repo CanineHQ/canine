@@ -11,12 +11,13 @@ module Cli
 
   class RunAndLog
     attr_reader :output
-    def initialize(loggable, killable: nil)
+    def initialize(loggable, killable: nil, log_command: false)
       @loggable = loggable
       @killable = killable
       @process = nil
       @monitor_thread = nil
       @output = ""
+      @log_command = log_command
     end
 
     def call(command, envs: {}, clear_output: true)
@@ -24,6 +25,7 @@ module Cli
         @output = ""
       end
       command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
+      @loggable.info("Running command: #{command}") if @log_command
 
       # Start monitoring thread if killable is provided
       start_monitor_thread if @killable
