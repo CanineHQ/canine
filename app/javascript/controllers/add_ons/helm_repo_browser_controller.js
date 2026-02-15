@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { debounce } from "../utils"
+import { debounce } from "../../utils"
 
 export default class extends Controller {
   static targets = [
@@ -8,9 +8,7 @@ export default class extends Controller {
     "error",
     "errorMessage",
     "chartSelector",
-    "chartSelect",
-    "versionSelector",
-    "versionSelect"
+    "chartSelect"
   ]
 
   connect() {
@@ -19,6 +17,13 @@ export default class extends Controller {
   }
 
   onInput() {
+    // Sync the display field with the actual hidden repository_url field (no change event)
+    const repoUrl = this.repoUrlTarget.value.trim()
+    const repositoryUrlInput = document.querySelector('input[name="add_on[repository_url]"]')
+    if (repositoryUrlInput) {
+      repositoryUrlInput.value = repoUrl
+    }
+
     this.debouncedFetchCharts()
   }
 
@@ -101,27 +106,28 @@ export default class extends Controller {
     const selectedChartUrl = this.chartSelectTarget.value
 
     if (!selectedChartUrl) {
-      this.hideVersionSelector()
       return
     }
 
-    // Extract the actual chart name from the selected option
-    const selectedOption = this.chartSelectTarget.options[this.chartSelectTarget.selectedIndex]
-    const chartName = selectedOption.dataset.chartName
-    const versions = this.charts[chartName]
+    // Set the chart_url input (format: repo/chart_name)
+    const chartUrlInput = document.querySelector('input[name="add_on[chart_url]"]')
+    if (chartUrlInput) {
+      chartUrlInput.value = selectedChartUrl
+      chartUrlInput.dispatchEvent(new Event('change'))
+    }
 
-    // Clear existing options
-    this.versionSelectTarget.innerHTML = '<option value="">Latest version</option>'
+    // Trigger version fetch after chart is selected
+    this.triggerVersionFetch()
+  }
 
-    // Add version options (sorted by version, newest first)
-    versions.forEach(version => {
-      const option = document.createElement('option')
-      option.value = version
-      option.textContent = version
-      this.versionSelectTarget.appendChild(option)
-    })
-
-    this.showVersionSelector()
+  triggerVersionFetch() {
+    const versionSelectorController = this.application.getControllerForElementAndIdentifier(
+      document.querySelector('[data-controller*="add-ons--version-selector"]'),
+      'add-ons--version-selector'
+    )
+    if (versionSelectorController) {
+      versionSelectorController.fetchVersions()
+    }
   }
 
   showLoading() {
@@ -147,14 +153,5 @@ export default class extends Controller {
 
   hideChartSelector() {
     this.chartSelectorTarget.classList.add('hidden')
-    this.hideVersionSelector()
-  }
-
-  showVersionSelector() {
-    this.versionSelectorTarget.classList.remove('hidden')
-  }
-
-  hideVersionSelector() {
-    this.versionSelectorTarget.classList.add('hidden')
   }
 }

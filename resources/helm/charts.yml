@@ -2,6 +2,7 @@ helm:
   charts:
     - name: postgresql
       chart_url: bitnami/postgresql
+      repository_url: https://charts.bitnami.com/bitnami
       display_name: PostgreSQL
       logo: /images/helm/postgresql.webp
       template:
@@ -12,6 +13,7 @@ helm:
           required: true
     - name: redis
       chart_url: bitnami/redis
+      repository_url: https://charts.bitnami.com/bitnami
       display_name: Redis
       logo: /images/helm/redis.webp
       template:
@@ -28,9 +30,11 @@ helm:
     - name: openclaw
       logo: /images/helm/openclaw.webp
       chart_url: easy-openclaw/openclaw
+      repository_url: https://caninehq.github.io/openclaw-helm
       display_name: OpenClaw
     - name: metabase
       chart_url: pmint93/metabase
+      repository_url: https://pmint93.github.io/helm-charts
       display_name: Metabase
       logo: /images/helm/metabase.webp
       template:
@@ -48,6 +52,7 @@ helm:
     - name: elasticsearch
       logo: /images/helm/elasticsearch.webp
       chart_url: bitnami/elasticsearch
+      repository_url: https://charts.bitnami.com/bitnami
       display_name: Elasticsearch
       template:
         - name: Storage size
@@ -58,6 +63,7 @@ helm:
     - name: clickhouse
       logo: /images/helm/clickhouse.webp
       chart_url: bitnami/clickhouse
+      repository_url: https://charts.bitnami.com/bitnami
       display_name: ClickHouse
       template:
         - name: Storage Size
@@ -85,11 +91,14 @@ helm:
       display_name: Airbyte
       logo: /images/helm/airbyte.webp
       chart_url: airbyte/airbyte
-      
+      repository_url: https://airbytehq.github.io/helm-charts
+
     - name: prometheus
       logo: /images/helm/prometheus.webp
       chart_url: prometheus-community/prometheus
-      
+      repository_url: https://prometheus-community.github.io/helm-charts
+
     - name: portainer
       logo: /images/helm/portainer.webp
       chart_url: portainer/portainer
+      repository_url: https://portainer.github.io/k8s/

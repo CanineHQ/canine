@@ -76,6 +76,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_15_080537) do
     t.boolean "managed_namespace", default: true
     t.string "version", null: false
     t.string "repository_url", null: false
+    t.string "artifact_hub_package_id"
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
     t.index ["name"], name: "index_add_ons_on_name"

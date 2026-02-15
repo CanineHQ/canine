@@ -2,20 +2,21 @@
 #
 # Table name: add_ons
 #
-#  id                :bigint           not null, primary key
-#  chart_type        :string           not null
-#  chart_url         :string
-#  managed_namespace :boolean          default(TRUE)
-#  metadata          :jsonb
-#  name              :string           not null
-#  namespace         :string           not null
-#  repository_url    :string           not null
-#  status            :integer          default("installing"), not null
-#  values            :jsonb
-#  version           :string           not null
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  cluster_id        :bigint           not null
+#  id                      :bigint           not null, primary key
+#  chart_type              :string           not null
+#  chart_url               :string
+#  managed_namespace       :boolean          default(TRUE)
+#  metadata                :jsonb
+#  name                    :string           not null
+#  namespace               :string           not null
+#  repository_url          :string           not null
+#  status                  :integer          default("installing"), not null
+#  values                  :jsonb
+#  version                 :string           not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  artifact_hub_package_id :string
+#  cluster_id              :bigint           not null
 #
 # Indexes
 #
@@ -41,7 +42,7 @@ class AddOn < ApplicationRecord
 
   def self.valid_chart_types
     chart_names = K8::Helm::Client::CHARTS["helm"]["charts"].map { |chart| chart["name"] }
-    chart_names + ["custom_repository", "helm_chart"]
+    chart_names + [ "custom_repository", "helm_chart" ]
   end
 
   has_one :account, through: :cluster
@@ -57,10 +58,9 @@ class AddOn < ApplicationRecord
 
   validates :chart_type, presence: true, inclusion: { in: ->(record) { AddOn.valid_chart_types } }
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
-  validates :chart_url, presence: true
+  validates :chart_url, presence: true, format: { with: %r{\A[^/]+/[^/]+\z}, message: "must be in format 'repository/chart'" }
   validates :version, presence: true
-  validates :repository_url, presence: true, if: -> { chart_type == 'custom_repository' }
-  validate :has_package_details, if: :helm_chart?
+  validates :repository_url, presence: true
   after_update_commit do
     broadcast_replace_later_to [ self, :install_stage ], target: dom_id(self, :install_stage), partial: "add_ons/install_stage", locals: { add_on: self }
   end
@@ -74,19 +74,13 @@ class AddOn < ApplicationRecord
     metadata['install_stage'] || 0
   end
 
-  def has_package_details
-    if metadata['package_details'].blank?
-      errors.add(:metadata, "is missing required keys: package_details")
-    end
-  end
-
-  def helm_chart?
-    chart_type == 'helm_chart'
-  end
-
   def chart_definition
     charts = K8::Helm::Client::CHARTS["helm"]["charts"]
-    charts.find { |chart| chart["name"] == chart_type }
+    charts.find { |chart| chart["chart_url"] == chart_url }
+  end
+
+  def repository_name
+    chart_url&.split('/')&.first
   end
 
   protected

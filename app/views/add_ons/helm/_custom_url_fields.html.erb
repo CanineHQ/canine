@@ -1,30 +1,29 @@
-<div class="space-y-4" data-controller="helm-repo-browser">
+<div class="space-y-4" data-controller="add-ons--helm-repo-browser">
   <div class="form-group">
     <%= form.label "Helm Repository URL" %>
-    <%= form.text_field :repository_url,
-        class: "input input-bordered w-full max-w-md font-mono text-sm",
-        placeholder: "e.g., https://czhu12.github.io/openclaw-helm",
-        data: {
-          'helm-repo-browser-target': 'repoUrl',
-          'action': 'input->helm-repo-browser#onInput'
-        } %>
+    <input type="text"
+        name="repository_url_display"
+        class="input input-bordered w-full max-w-md font-mono text-sm"
+        placeholder="e.g., https://czhu12.github.io/openclaw-helm"
+        data-add-ons--helm-repo-browser-target="repoUrl"
+        data-action="input->add-ons--helm-repo-browser#onInput">
     <label class="label">
       <span class="label-text-alt">Enter a Helm chart repository URL</span>
     </label>
-    <div data-helm-repo-browser-target="loading" class="hidden">
+    <div data-add-ons--helm-repo-browser-target="loading" class="hidden">
       <div class="flex items-center gap-2 text-sm text-gray-500 mt-2">
         <span class="loading loading-spinner loading-sm"></span>
         Fetching available charts...
       </div>
     </div>
-    <div data-helm-repo-browser-target="error" class="hidden">
+    <div data-add-ons--helm-repo-browser-target="error" class="hidden">
       <div class="alert alert-error text-sm mt-2">
-        <span data-helm-repo-browser-target="errorMessage"></span>
+        <span data-add-ons--helm-repo-browser-target="errorMessage"></span>
       </div>
     </div>
   </div>
 
-  <div data-helm-repo-browser-target="chartSelector" class="hidden space-y-4">
+  <div data-add-ons--helm-repo-browser-target="chartSelector" class="hidden space-y-4">
     <div class="form-group">
       <%= form.label "Chart" %>
       <%= form.select :chart_url,
@@ -32,21 +31,9 @@
           { include_blank: "Select a chart..." },
           class: "select select-bordered w-full max-w-md",
           data: {
-            'helm-repo-browser-target': 'chartSelect',
-            'action': 'change->helm-repo-browser#onChartChange'
+            'add-ons--helm-repo-browser-target': 'chartSelect',
+            'action': 'change->add-ons--helm-repo-browser#onChartChange'
           } %>
-    </div>
-
-    <div data-helm-repo-browser-target="versionSelector" class="hidden form-group">
-      <%= form.label "Version" %>
-      <%= form.select :version,
-          [],
-          { include_blank: "Latest version" },
-          class: "select select-bordered w-full max-w-md",
-          data: { 'helm-repo-browser-target': 'versionSelect' } %>
-      <label class="label">
-        <span class="label-text-alt">Select a specific version or leave blank for latest</span>
-      </label>
     </div>
   </div>
 </div>

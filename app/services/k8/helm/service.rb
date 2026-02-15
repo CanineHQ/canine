@@ -22,7 +22,7 @@ class K8::Helm::Service
   end
 
   def friendly_name
-    add_on.chart_definition['friendly_name'] || add_on.chart_definition['name'].titleize
+    add_on.chart_definition['display_name'] || add_on.chart_definition['name'].titleize
   end
 
   def restart

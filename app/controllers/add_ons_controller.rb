@@ -78,20 +78,34 @@ class AddOnsController < ApplicationController
   end
 
   def fetch_helm_repository_index
-    result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repo_url: params[:repo_url])
+    cache_key = "helm_repository_index:#{Digest::SHA256.hexdigest(params[:repo_url])}"
 
-    if result.success?
-      render json: { charts: result.charts }
+    cached_result = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repo_url: params[:repo_url])
+
+      if result.success?
+        { success: true, charts: result.charts }
+      else
+        { success: false, error: result.message }
+      end
+    end
+
+    if cached_result[:success]
+      render json: { charts: cached_result[:charts] }
     else
-      render json: { error: result.message }, status: :unprocessable_entity
+      render json: { error: cached_result[:error] }, status: :unprocessable_entity
     end
   end
 
   def metadata
-    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{params[:chart_url]}:#{params[:version]}")}"
+    artifact_hub_package_id = "helm/#{params[:chart_url]}"
+    cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{artifact_hub_package_id}:#{params[:version]}")}"
 
     metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-      result = AddOns::FetchChartDetailsFromArtifactHub.execute(chart_url: params[:chart_url], version: params[:version])
+      result = AddOns::FetchChartDetailsFromArtifactHub.execute(
+        artifact_hub_package_id: artifact_hub_package_id,
+        version: params[:version]
+      )
       next { schema: {}, default_values: nil } if result.failure?
 
       package = result.response
