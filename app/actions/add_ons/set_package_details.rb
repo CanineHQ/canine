@@ -4,7 +4,7 @@ class AddOns::SetPackageDetails
 
   executed do |context|
     add_on = context.add_on
-    result = AddOns::HelmChartDetails.execute(chart_url: add_on.chart_url)
+    result = AddOns::FetchChartDetailsFromArtifactHub.execute(chart_url: add_on.chart_url)
 
     if result.failure?
       add_on.errors.add(:base, "Failed to fetch package details")

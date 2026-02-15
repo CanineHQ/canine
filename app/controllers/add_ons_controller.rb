@@ -78,7 +78,7 @@ class AddOnsController < ApplicationController
   end
 
   def fetch_helm_repository_index
-    result = AddOns::FetchHelmRepositoryIndex.execute(repo_url: params[:repo_url])
+    result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repo_url: params[:repo_url])
 
     if result.success?
       render json: { charts: result.charts }
@@ -91,7 +91,7 @@ class AddOnsController < ApplicationController
     cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{params[:chart_url]}:#{params[:version]}")}"
 
     metadata = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-      result = AddOns::HelmChartDetails.execute(chart_url: params[:chart_url], version: params[:version])
+      result = AddOns::FetchChartDetailsFromArtifactHub.execute(chart_url: params[:chart_url], version: params[:version])
       next { schema: {}, default_values: nil } if result.failure?
 
       package = result.response

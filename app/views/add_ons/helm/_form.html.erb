@@ -3,15 +3,15 @@
   <hr class="mt-2 mb-6 border-base-content/10" />
 
   <!-- Hidden field that will be updated based on radio selection -->
-  <%= form.hidden_field :chart_type, value: "artifact_hub", data: { 'helm-chart-type-target': 'chartType' } %>
+  <%= form.hidden_field :chart_type, value: "helm_chart", data: { 'helm-chart-type-target': 'chartType' } %>
 
   <div class="form-control mt-4">
-    <%= render "shared/partials/radio_selector", selected: "artifact_hub", options: [
+    <%= render "shared/partials/radio_selector", selected: "helm_chart", options: [
       {
         icon: "carbon:search",
         name: "helm_source_type",
         label: "Search Artifact Hub",
-        value: "artifact_hub",
+        value: "helm_chart",
         description: "Search for Helm charts from Artifact Hub's curated repository.",
         partial: "add_ons/helm/artifact_hub_fields",
         locals: { form: form }
@@ -20,7 +20,7 @@
         icon: "carbon:link",
         name: "helm_source_type",
         label: "Custom Repository",
-        value: "helm_repo",
+        value: "custom_repository",
         description: "Provide your own Helm chart repository URL.",
         partial: "add_ons/helm/custom_url_fields",
         locals: { form: form }

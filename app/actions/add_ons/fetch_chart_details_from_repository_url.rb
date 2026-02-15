@@ -1,5 +1,5 @@
 module AddOns
-  class FetchHelmRepositoryIndex
+  class FetchChartDetailsFromRepositoryUrl
     extend LightService::Action
 
     expects :repo_url

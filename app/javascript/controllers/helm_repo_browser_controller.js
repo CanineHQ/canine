@@ -22,6 +22,18 @@ export default class extends Controller {
     this.debouncedFetchCharts()
   }
 
+  // Extract repository alias from URL
+  // e.g., "https://czhu12.github.io/openclaw-helm" -> "openclaw-helm"
+  getRepoAlias(repoUrl) {
+    try {
+      const url = new URL(repoUrl)
+      const pathParts = url.pathname.split('/').filter(p => p.length > 0)
+      return pathParts[pathParts.length - 1] || url.hostname.replace(/\./g, '-')
+    } catch (e) {
+      return 'custom-repo'
+    }
+  }
+
   async fetchCharts() {
     const repoUrl = this.repoUrlTarget.value.trim()
 
@@ -69,27 +81,34 @@ export default class extends Controller {
   }
 
   populateChartSelector() {
+    const repoUrl = this.repoUrlTarget.value.trim()
+    const repoAlias = this.getRepoAlias(repoUrl)
+
     // Clear existing options
     this.chartSelectTarget.innerHTML = '<option value="">Select a chart...</option>'
 
-    // Add chart options
+    // Add chart options with repo-alias/chart-name format
     Object.keys(this.charts).sort().forEach(chartName => {
       const option = document.createElement('option')
-      option.value = chartName
+      option.value = `${repoAlias}/${chartName}`
       option.textContent = chartName
+      option.dataset.chartName = chartName
       this.chartSelectTarget.appendChild(option)
     })
   }
 
   onChartChange() {
-    const selectedChart = this.chartSelectTarget.value
+    const selectedChartUrl = this.chartSelectTarget.value
 
-    if (!selectedChart) {
+    if (!selectedChartUrl) {
       this.hideVersionSelector()
       return
     }
 
-    const versions = this.charts[selectedChart]
+    // Extract the actual chart name from the selected option
+    const selectedOption = this.chartSelectTarget.options[this.chartSelectTarget.selectedIndex]
+    const chartName = selectedOption.dataset.chartName
+    const versions = this.charts[chartName]
 
     // Clear existing options
     this.versionSelectTarget.innerHTML = '<option value="">Latest version</option>'

@@ -9,6 +9,7 @@
 #  metadata          :jsonb
 #  name              :string           not null
 #  namespace         :string           not null
+#  repository_url    :string           not null
 #  status            :integer          default("installing"), not null
 #  values            :jsonb
 #  version           :string           not null

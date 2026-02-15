@@ -9,6 +9,7 @@
 #  metadata          :jsonb
 #  name              :string           not null
 #  namespace         :string           not null
+#  repository_url    :string           not null
 #  status            :integer          default("installing"), not null
 #  values            :jsonb
 #  version           :string           not null
@@ -37,6 +38,12 @@ class AddOn < ApplicationRecord
   def self.ransackable_attributes(auth_object = nil)
     %w[name chart_type]
   end
+
+  def self.valid_chart_types
+    chart_names = K8::Helm::Client::CHARTS["helm"]["charts"].map { |chart| chart["name"] }
+    chart_names + ["custom_repository", "helm_chart"]
+  end
+
   has_one :account, through: :cluster
 
   enum :status, {
@@ -48,11 +55,11 @@ class AddOn < ApplicationRecord
     updating: 5
   }
 
-  validates :chart_type, presence: true
-  validate :chart_type_exists
+  validates :chart_type, presence: true, inclusion: { in: ->(record) { AddOn.valid_chart_types } }
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :chart_url, presence: true
   validates :version, presence: true
+  validates :repository_url, presence: true, if: -> { chart_type == 'custom_repository' }
   validate :has_package_details, if: :helm_chart?
   after_update_commit do
     broadcast_replace_later_to [ self, :install_stage ], target: dom_id(self, :install_stage), partial: "add_ons/install_stage", locals: { add_on: self }
@@ -83,12 +90,6 @@ class AddOn < ApplicationRecord
   end
 
   protected
-
-  def chart_type_exists
-    if chart_definition.nil?
-      errors.add(:chart_type, "does not exist")
-    end
-  end
 
   def validate_keys(required_keys)
     missing_keys = required_keys - metadata.keys

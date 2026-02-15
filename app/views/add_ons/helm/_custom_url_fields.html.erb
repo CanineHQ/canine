@@ -1,7 +1,7 @@
 <div class="space-y-4" data-controller="helm-repo-browser">
   <div class="form-group">
     <%= form.label "Helm Repository URL" %>
-    <%= form.text_field "custom_repo_url",
+    <%= form.text_field :repository_url,
         class: "input input-bordered w-full max-w-md font-mono text-sm",
         placeholder: "e.g., https://czhu12.github.io/openclaw-helm",
         data: {
@@ -27,7 +27,7 @@
   <div data-helm-repo-browser-target="chartSelector" class="hidden space-y-4">
     <div class="form-group">
       <%= form.label "Chart" %>
-      <%= form.select "custom_chart_name",
+      <%= form.select :chart_url,
           [],
           { include_blank: "Select a chart..." },
           class: "select select-bordered w-full max-w-md",
@@ -39,9 +39,9 @@
 
     <div data-helm-repo-browser-target="versionSelector" class="hidden form-group">
       <%= form.label "Version" %>
-      <%= form.select "custom_chart_version",
+      <%= form.select :version,
           [],
-          { include_blank: "Select a version..." },
+          { include_blank: "Latest version" },
           class: "select select-bordered w-full max-w-md",
           data: { 'helm-repo-browser-target': 'versionSelect' } %>
       <label class="label">

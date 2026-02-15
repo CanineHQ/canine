@@ -1,4 +1,4 @@
-class AddOns::HelmChartDetails
+class AddOns::FetchChartDetailsFromArtifactHub
   Package = Struct.new(:chart_url, :response) do
   end
   extend LightService::Action

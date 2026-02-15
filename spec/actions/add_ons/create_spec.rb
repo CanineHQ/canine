@@ -7,7 +7,7 @@ RSpec.describe AddOns::Create do
 
   before do
     allow(Namespaced::ValidateNamespace).to receive(:execute)
-    allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
+    allow(AddOns::FetchChartDetailsFromArtifactHub).to receive(:execute).and_return(
       double(success?: true, failure?: false, response: chart_details)
     )
   end

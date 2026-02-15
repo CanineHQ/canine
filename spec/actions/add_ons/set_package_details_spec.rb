@@ -5,7 +5,7 @@ RSpec.describe AddOns::SetPackageDetails do
   let(:chart_details) { { 'name' => 'test-chart', 'version' => '1.0.0' } }
 
   before do
-    allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
+    allow(AddOns::FetchChartDetailsFromArtifactHub).to receive(:execute).and_return(
       double(success?: true, failure?: false, response: chart_details)
     )
   end
@@ -17,7 +17,7 @@ RSpec.describe AddOns::SetPackageDetails do
 
   context 'when package details fetch fails' do
     before do
-      allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
+      allow(AddOns::FetchChartDetailsFromArtifactHub).to receive(:execute).and_return(
         double(success?: false, failure?: true)
       )
     end
