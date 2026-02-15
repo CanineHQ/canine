@@ -4,7 +4,7 @@ class Clusters::Install
   DEFAULT_RECIPE = [
     Clusters::IsReady,
     Clusters::CreateNamespace,
-    Clusters::InstallNginxIngress,
+    Clusters::InstallEnvoyGateway,
     Clusters::InstallAcmeIssuer,
     Clusters::InstallMetricServer,
     Clusters::InstallTelepresence

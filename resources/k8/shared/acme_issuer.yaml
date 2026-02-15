@@ -11,5 +11,7 @@ spec:
       name: letsencrypt-secret
     solvers:
     - http01:
-        ingress:
-          class: nginx
+        gatewayHTTPRoute:
+          parentRefs:
+            - name: canine-gateway
+              namespace: canine-system

@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: <%= certificate_name %>
+  namespace: <%= project.namespace %>
+  labels:
+    caninemanaged: 'true'
+spec:
+  secretName: <%= certificate_name %>
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  dnsNames:
+  <% service.domains.each do |domain| %>
+    - <%= domain.domain_name %>
+  <% end %>
