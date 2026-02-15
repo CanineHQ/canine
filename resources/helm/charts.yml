@@ -93,13 +93,3 @@ helm:
     - name: portainer
       logo: /images/helm/portainer.webp
       chart_url: portainer/portainer
-      
-    - name: helm_chart
-      friendly_name: "Helm Chart"
-      logo: /images/helm/helm_chart.webp
-      controller: "helm-search"
-      metadata:
-        - name: Name
-          key: helm_chart.name
-          type: string
-          hidden: false

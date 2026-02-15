@@ -77,6 +77,16 @@ class AddOnsController < ApplicationController
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
+  def fetch_helm_repository_index
+    result = AddOns::FetchHelmRepositoryIndex.execute(repo_url: params[:repo_url])
+
+    if result.success?
+      render json: { charts: result.charts }
+    else
+      render json: { error: result.message }, status: :unprocessable_entity
+    end
+  end
+
   def metadata
     cache_key = "helm_metadata:#{Digest::SHA256.hexdigest("#{params[:chart_url]}:#{params[:version]}")}"
 
