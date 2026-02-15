@@ -25,6 +25,10 @@ helm:
           type: integer
           default: 0
           hidden: true
+    - name: openclaw
+      logo: /images/helm/openclaw.webp
+      chart_url: easy-openclaw/openclaw
+      friendly_name: OpenClaw
     - name: metabase
       chart_url: pmint93/metabase
       friendly_name: Metabase
@@ -81,11 +85,6 @@ helm:
       friendly_name: Airbyte
       logo: /images/helm/airbyte.webp
       chart_url: airbyte/airbyte
-      
-    - name: minio
-      logo: /images/helm/minio.webp
-      chart_url: bitnami/minio
-      friendly_name: MinIO
       
     - name: prometheus
       logo: /images/helm/prometheus.webp

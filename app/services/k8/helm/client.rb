@@ -68,7 +68,7 @@ class K8::Helm::Client
   end
 
   def self.add_repo(repository_name, repository_url, runner)
-    add_repo_command = "helm repo add #{repository_name} #{repository_url}"
+    add_repo_command = "helm repo add #{repository_name} #{repository_url} --force-update"
     runner.(add_repo_command)
   end
 
