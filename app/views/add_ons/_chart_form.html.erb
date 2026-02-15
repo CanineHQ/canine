@@ -1,14 +1,8 @@
-<div
-  <% if chart['controller'] %>
-    data-controller="<%= chart['controller'] %>"
-  <% end %>
->
-  <% (chart['metadata'] || []).each do |variable| %>
-    <div class="<%= variable['hidden'] ? 'hidden' : '' %> form-group">
-      <%= form.label variable['name'] %>
-      <%= form.text_field "metadata][#{chart['name']}][#{variable['key']}", class: "input input-bordered w-full max-w-md" %>
-    </div>
-  <% end %>
+<% (chart['metadata'] || []).each do |variable| %>
+  <div class="<%= variable['hidden'] ? 'hidden' : '' %> form-group">
+    <%= form.label variable['name'] %>
+    <%= form.text_field "metadata][#{chart['name']}][#{variable['key']}", class: "input input-bordered w-full max-w-md" %>
+  </div>
+<% end %>
 
-  <%= render "add_ons/template_variables", chart: chart, form: form %>
-</div>
+<%= render "add_ons/template_variables", chart: chart, form: form %>

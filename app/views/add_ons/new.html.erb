@@ -36,9 +36,9 @@
           <%= render "shared/partials/namespace_input_group", form: %>
         </div>
 
-        <div data-controller="card-select">
+        <div data-controller="addon-chart-select">
           <div class="form-group">
-            <%= form.text_field :chart_type, class: "hidden", data: { 'card-select-target': "input" } %>
+            <%= form.text_field :chart_type, class: "hidden", data: { 'addon-chart-select-target': "input" } %>
           </div>
 
           <h4>Select a chart</h4>
@@ -54,10 +54,10 @@
                 </div>
               <% end %>
               <div class="card bg-base-100 shadow-xl <%= chart['coming_soon'] ? 'cursor-not-allowed' : 'cursor-pointer' %> overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
-                  data-card-select-target="card"
+                  data-addon-chart-select-target="card"
                   data-chart-url="<%= chart['chart_url'] %>"
                   <% unless chart['coming_soon'] %>
-                    data-action="click->card-select#selectCard"
+                    data-action="click->addon-chart-select#selectCard"
                   <% end %>
                   data-card-name="<%= chart['name'] %>">
                 <figure class="px-4 pt-8 overflow-visible">
@@ -74,6 +74,8 @@
               </div>
             </div>
             <% end %>
+
+            <%= render "add_ons/helm/card" %>
           </div>
 
           <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
@@ -86,7 +88,9 @@
             </div>
           <% end %>
 
-          <%= form.text_field "chart_url", class: "hidden", data: { 'card-select-target': "chartUrl" } %>
+          <%= render "add_ons/helm/form", form: form %>
+
+          <%= form.text_field "chart_url", class: "hidden", data: { 'addon-chart-select-target': "chartUrl" } %>
 
           <div>
             <div class="collapse">

@@ -130,6 +130,7 @@ Rails.application.routes.draw do
     collection do
       get :search
       get :metadata
+      post :fetch_helm_repository_index
     end
     member do
       post :restart
