@@ -2,16 +2,17 @@
 #
 # Table name: shell_tokens
 #
-#  id         :bigint           not null, primary key
-#  container  :string
-#  expires_at :datetime         not null
-#  namespace  :string           not null
-#  pod_name   :string           not null
-#  token      :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
-#  user_id    :bigint           not null
+#  id           :bigint           not null, primary key
+#  connected_at :datetime
+#  container    :string
+#  expires_at   :datetime         not null
+#  namespace    :string           not null
+#  pod_name     :string           not null
+#  token        :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  cluster_id   :bigint           not null
+#  user_id      :bigint           not null
 #
 # Indexes
 #
@@ -120,15 +121,58 @@ RSpec.describe ShellToken, type: :model do
     end
   end
 
+  describe "#mark_connected!" do
+    it "sets connected_at timestamp" do
+      shell_token = create(:shell_token)
+      expect(shell_token.connected_at).to be_nil
+
+      shell_token.mark_connected!
+      expect(shell_token.connected_at).to be_within(1.second).of(Time.current)
+    end
+  end
+
+  describe ".active_session_count" do
+    it "counts only connected sessions for a user" do
+      user = create(:user)
+      create(:shell_token, user: user)
+      connected = create(:shell_token, user: user)
+      connected.mark_connected!
+
+      other_user = create(:user)
+      other_connected = create(:shell_token, user: other_user)
+      other_connected.mark_connected!
+
+      expect(described_class.active_session_count(user)).to eq(1)
+    end
+  end
+
   describe ".cleanup_expired!" do
-    it "deletes expired tokens and keeps active ones" do
+    it "deletes expired pending tokens but keeps connected ones" do
       active_token = create(:shell_token)
-      expired_token = create(:shell_token)
-      expired_token.update_column(:expires_at, 1.minute.ago)
+      expired_pending = create(:shell_token)
+      expired_pending.update_column(:expires_at, 1.minute.ago)
+      expired_connected = create(:shell_token)
+      expired_connected.mark_connected!
+      expired_connected.update_column(:expires_at, 1.minute.ago)
 
       expect { described_class.cleanup_expired! }.to change(described_class, :count).by(-1)
       expect(described_class.exists?(active_token.id)).to be true
-      expect(described_class.exists?(expired_token.id)).to be false
+      expect(described_class.exists?(expired_connected.id)).to be true
+      expect(described_class.exists?(expired_pending.id)).to be false
+    end
+  end
+
+  describe ".cleanup_stale_sessions!" do
+    it "deletes connected sessions older than the idle timeout" do
+      recent = create(:shell_token)
+      recent.mark_connected!
+
+      stale = create(:shell_token)
+      stale.update!(connected_at: 31.minutes.ago)
+
+      expect { described_class.cleanup_stale_sessions! }.to change(described_class, :count).by(-1)
+      expect(described_class.exists?(recent.id)).to be true
+      expect(described_class.exists?(stale.id)).to be false
     end
   end
 end

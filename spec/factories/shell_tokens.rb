@@ -2,16 +2,17 @@
 #
 # Table name: shell_tokens
 #
-#  id         :bigint           not null, primary key
-#  container  :string
-#  expires_at :datetime         not null
-#  namespace  :string           not null
-#  pod_name   :string           not null
-#  token      :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
-#  user_id    :bigint           not null
+#  id           :bigint           not null, primary key
+#  connected_at :datetime
+#  container    :string
+#  expires_at   :datetime         not null
+#  namespace    :string           not null
+#  pod_name     :string           not null
+#  token        :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  cluster_id   :bigint           not null
+#  user_id      :bigint           not null
 #
 # Indexes
 #

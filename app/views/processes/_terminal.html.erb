@@ -23,20 +23,47 @@
   ></div>
 
   <div class="mt-4 collapse collapse-arrow bg-base-200 rounded-lg">
-    <input type="checkbox" />
+    <input type="checkbox" class="w-full">
     <div class="collapse-title text-sm font-medium">
       Prefer using your own terminal?
     </div>
-    <div class="collapse-content text-sm">
-      <p class="mb-2 text-base-content/70">Install the Canine CLI to connect to pods from your local terminal:</p>
-      <div class="mockup-code text-xs mb-3">
-        <pre data-prefix="$"><code>curl -sSL https://raw.githubusercontent.com/CanineHQ/cli/main/install.sh | sh</code></pre>
-        <pre data-prefix="$"><code>canine auth login --token YOUR_API_TOKEN</code></pre>
-        <pre data-prefix="$"><code>canine projects run --project <%= local_assigns[:project_name] || namespace %> /bin/sh</code></pre>
+    <div class="collapse-content text-sm" data-controller="tabs" data-tabs-active-class="tab-active">
+      <div role="tablist" class="tabs tabs-bordered mb-4">
+        <a role="tab" class="tab tab-active" data-action="click->tabs#select" data-tabs-target="tab" data-tab="canine-cli">Canine CLI</a>
+        <a role="tab" class="tab" data-action="click->tabs#select" data-tabs-target="tab" data-tab="kubectl">kubectl</a>
       </div>
-      <p class="text-base-content/50">
-        Or install via Homebrew: <code class="bg-base-300 px-1 rounded">brew tap CanineHQ/canine && brew install canine</code>
-      </p>
+
+      <div data-tabs-target="panel" data-tab="canine-cli">
+        <p class="mb-2 text-base-content/70">Install the Canine CLI to connect from your local terminal:</p>
+        <div class="rounded-lg overflow-hidden border border-gray-700">
+          <div class="flex items-center gap-2 px-4 py-2 bg-gray-900">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          </div>
+          <pre class="bg-gray-800 text-gray-100 text-sm font-mono p-4 overflow-x-auto"><code><span class="text-gray-400"># Install the CLI</span>
+<span class="text-green-400">$</span> brew tap CanineHQ/canine && brew install canine
+
+<span class="text-gray-400"># Authenticate and connect</span>
+<span class="text-green-400">$</span> canine auth login --token YOUR_API_TOKEN
+<span class="text-green-400">$</span> canine projects run --project <%= local_assigns[:project_name] || namespace %> /bin/sh</code></pre>
+        </div>
+      </div>
+
+      <div data-tabs-target="panel" data-tab="kubectl" class="hidden">
+        <p class="mb-2 text-base-content/70">
+          <%= link_to "Download your kubeconfig", download_kubeconfig_cluster_path(cluster), class: "link link-primary", target: "_blank" %> and run:
+        </p>
+        <div class="rounded-lg overflow-hidden border border-gray-700">
+          <div class="flex items-center gap-2 px-4 py-2 bg-gray-900">
+            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          </div>
+          <pre class="bg-gray-800 text-gray-100 text-sm font-mono p-4 overflow-x-auto"><code><span class="text-gray-400"># Connect to your pod</span>
+<span class="text-green-400">$</span> KUBECONFIG=/path/to/<%= cluster.name %>-kubeconfig.yml kubectl exec -it -n <%= namespace %> <%= pod_name %> -- /bin/bash</code></pre>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -2,16 +2,17 @@
 #
 # Table name: shell_tokens
 #
-#  id         :bigint           not null, primary key
-#  container  :string
-#  expires_at :datetime         not null
-#  namespace  :string           not null
-#  pod_name   :string           not null
-#  token      :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  cluster_id :bigint           not null
-#  user_id    :bigint           not null
+#  id           :bigint           not null, primary key
+#  connected_at :datetime
+#  container    :string
+#  expires_at   :datetime         not null
+#  namespace    :string           not null
+#  pod_name     :string           not null
+#  token        :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  cluster_id   :bigint           not null
+#  user_id      :bigint           not null
 #
 # Indexes
 #
@@ -26,6 +27,8 @@
 #
 class ShellToken < ApplicationRecord
   TOKEN_TTL = 5.minutes
+  IDLE_TIMEOUT = 30.minutes
+  MAX_SESSIONS_PER_USER = 5
 
   # Kubernetes resource names: lowercase alphanumeric, hyphens, dots; max 253 chars
   K8S_NAME_FORMAT = /\A[a-z0-9][a-z0-9.\-]{0,251}[a-z0-9]\z/
@@ -42,9 +45,19 @@ class ShellToken < ApplicationRecord
   before_validation :set_expiry, if: :new_record?
 
   scope :active, -> { where("expires_at > ?", Time.current) }
+  scope :connected, -> { where.not(connected_at: nil) }
+  scope :pending, -> { where(connected_at: nil) }
 
   def expired?
     expires_at < Time.current
+  end
+
+  def connected?
+    connected_at.present?
+  end
+
+  def mark_connected!
+    update!(connected_at: Time.current)
   end
 
   def self.generate_for(user:, cluster:, pod_name:, namespace:, container: nil)
@@ -57,8 +70,16 @@ class ShellToken < ApplicationRecord
     )
   end
 
+  def self.active_session_count(user)
+    where(user: user).connected.count
+  end
+
   def self.cleanup_expired!
-    where("expires_at < ?", Time.current).delete_all
+    where("expires_at < ?", Time.current).pending.delete_all
+  end
+
+  def self.cleanup_stale_sessions!
+    connected.where("connected_at < ?", IDLE_TIMEOUT.ago).delete_all
   end
 
   private

@@ -8,6 +8,7 @@ class CreateShellTokens < ActiveRecord::Migration[7.2]
       t.string :namespace, null: false
       t.string :container
       t.datetime :expires_at, null: false
+      t.datetime :connected_at
 
       t.timestamps
     end

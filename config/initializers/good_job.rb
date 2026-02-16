@@ -40,6 +40,11 @@ Rails.application.configure do
         class: "CleanupClosedPrProjectsJob",
         description: "Cleanup closed PR projects every 30 minutes"
       },
+      cleanup_shell_sessions: {
+        cron: "*/10 * * * *",
+        class: "Scheduled::CleanupShellSessionsJob",
+        description: "Cleanup stale shell sessions and expired tokens every 10 minutes"
+      },
       check_for_new_commits: {
         # Run in cloud mode every 5 minutes, in local mode every minute
         cron: Rails.application.config.cloud_mode ? "*/5 * * * *" : "* * * * *",

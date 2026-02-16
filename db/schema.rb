@@ -642,6 +642,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.string "namespace", null: false
     t.string "container"
     t.datetime "expires_at", null: false
+    t.datetime "connected_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_shell_tokens_on_cluster_id"
