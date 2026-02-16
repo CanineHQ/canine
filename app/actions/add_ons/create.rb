@@ -3,12 +3,12 @@ class AddOns::Create
     if params[:add_on][:values_yaml].present?
       params[:add_on][:values] = YAML.safe_load(params[:add_on][:values_yaml])
     end
-    if params[:add_on][:metadata].present?
-      params[:add_on][:metadata] = params[:add_on][:metadata][params[:add_on][:chart_type]]
+    if params[:add_on][:metadata].present? && params[:add_on][:chart_url].present?
+      chart_name = params[:add_on][:chart_url].split('/').last
+      params[:add_on][:metadata] = params[:add_on][:metadata][chart_name]
     end
     params.require(:add_on).permit(
       :cluster_id,
-      :chart_type,
       :chart_url,
       :name,
       :version,

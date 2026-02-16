@@ -11,7 +11,6 @@ RSpec.describe AddOns::ApplyTemplateToValues do
 
   before do
     add_on.metadata['template'] = template
-    add_on.chart_type = "redis"
   end
 
   it 'applies template values correctly' do

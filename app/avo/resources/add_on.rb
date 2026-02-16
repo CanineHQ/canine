@@ -1,7 +1,7 @@
 class Avo::Resources::AddOn < Avo::BaseResource
   self.includes = [ :cluster ]
   self.search = {
-    query: -> { query.ransack(name_cont: params[:q], chart_type_cont: params[:q], m: "or").result(distinct: false) },
+    query: -> { query.ransack(name_cont: params[:q], chart_url_cont: params[:q], m: "or").result(distinct: false) },
     item: -> {
       {
         title: record.name
@@ -15,9 +15,7 @@ class Avo::Resources::AddOn < Avo::BaseResource
       record.chart_definition&.dig("logo")
     end
     field :name, as: :text, link_to_record: true
-    field :chart_type, as: :text, name: "Type" do
-      record.chart_definition&.dig("friendly_name") || record.chart_type&.titleize
-    end
+    field :chart_url, as: :text, name: "Chart"
     field :version, as: :text
     field :status, as: :badge, options: { success: [ :installed ], warning: [ :installing, :updating, :uninstalling ], danger: [ :failed, :uninstalled ] }
     field :namespace, as: :text

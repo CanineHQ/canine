@@ -34,7 +34,7 @@ module Tools
             id: a.id,
             name: a.name,
             namespace: a.namespace,
-            chart_type: a.chart_type,
+            chart_url: a.chart_url,
             version: a.version,
             status: a.status,
             cluster: a.cluster.name

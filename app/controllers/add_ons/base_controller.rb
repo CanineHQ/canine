@@ -2,13 +2,7 @@ class AddOns::BaseController < ApplicationController
   before_action :set_add_on
 
   def set_service
-    if @add_on.chart_type == "redis"
-      @service = K8::Helm::Redis.new(active_connection)
-    elsif @add_on.chart_type == "postgresql"
-      @service = K8::Helm::Postgresql.new(active_connection)
-    else
-      @service = K8::Helm::Service.new(active_connection)
-    end
+    @service = K8::Helm::Service.create_from_add_on(active_connection)
   end
 
   def active_connection

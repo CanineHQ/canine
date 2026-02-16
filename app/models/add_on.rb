@@ -37,12 +37,7 @@ class AddOn < ApplicationRecord
   belongs_to :cluster
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[name chart_type]
-  end
-
-  def self.valid_chart_types
-    chart_names = K8::Helm::Client::CHARTS["helm"]["charts"].map { |chart| chart["name"] }
-    chart_names + [ "custom_repository", "helm_chart" ]
+    %w[name chart_url]
   end
 
   has_one :account, through: :cluster
@@ -56,7 +51,6 @@ class AddOn < ApplicationRecord
     updating: 5
   }
 
-  validates :chart_type, presence: true, inclusion: { in: ->(record) { AddOn.valid_chart_types } }
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :chart_url, presence: true, format: { with: %r{\A[^/]+/[^/]+\z}, message: "must be in format 'repository/chart'" }
   validates :version, presence: true

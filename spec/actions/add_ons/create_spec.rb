@@ -28,7 +28,6 @@ RSpec.describe AddOns::Create do
     ActionController::Parameters.new({
       add_on: {
         name: 'redis-main',
-        chart_type: 'redis',
         chart_url: 'bitnami/redis',
         repository_url: 'https://charts.bitnami.com/bitnami',
         version: '7.2.3',

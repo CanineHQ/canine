@@ -2,10 +2,7 @@
   <h4 class="text-lg font-bold">Helm Chart Settings</h4>
   <hr class="mt-2 mb-6 border-base-content/10" />
 
-  <!-- Hidden field that will be updated based on radio selection -->
-  <%= form.hidden_field :chart_type, value: "helm_chart", data: { 'add-ons--chart-type-target': 'chartType' } %>
-
-  <div class="form-control mt-4">
+<div class="form-control mt-4">
     <%= render "shared/partials/radio_selector", selected: "helm_chart", options: [
       {
         icon: "carbon:search",

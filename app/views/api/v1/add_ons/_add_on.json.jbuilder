@@ -3,7 +3,6 @@
 json.id add_on.id
 json.name add_on.name
 json.namespace add_on.namespace
-json.chart_type add_on.chart_type
 json.chart_url add_on.chart_url
 json.version add_on.version
 json.status add_on.status
