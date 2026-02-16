@@ -104,10 +104,15 @@
             'add-ons--chart-select-target': "artifactHubPackageId"
           } %>
 
-          <div>
-            <div class="collapse">
-              <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
-              <div class="collapse-title text-md font-medium">Advanced Settings</div>
+          <div class="mt-8">
+            <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+              <input type="checkbox" aria-label="Advanced Settings" class="w-full">
+              <div class="collapse-title text-md font-medium">
+                <div class="flex flex-col gap-1">
+                  <span>Advanced Settings</span>
+                  <span class="text-sm font-normal text-gray-500">Configure version and custom values.yaml</span>
+                </div>
+              </div>
               <div class="collapse-content">
                 <!-- Version Selector -->
                 <div data-add-ons--version-selector-target="versionSelector" class="hidden mb-6">

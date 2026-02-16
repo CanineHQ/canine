@@ -33,6 +33,7 @@ FactoryBot.define do
     cluster
     chart_url { 'bitnami/redis' }
     chart_type { "helm_chart" }
+    repository_url { "https://charts.bitnami.com/bitnami" }
     version { "1.0.0" }
     sequence(:name) { |n| "example-addon-#{n}" }
     sequence(:namespace) { |n| "example-addon-#{n}" }

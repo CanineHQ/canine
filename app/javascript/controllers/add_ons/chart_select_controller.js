@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["input", "card", "chartUrl", "repositoryUrl", "artifactHubPackageId"]
 
   connect() {
-    console.log('ChartSelectController connected')
   }
 
   selectCard(event) {

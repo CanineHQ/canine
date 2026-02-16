@@ -76,7 +76,7 @@ class AddOn < ApplicationRecord
 
   def chart_definition
     charts = K8::Helm::Client::CHARTS["helm"]["charts"]
-    charts.find { |chart| chart["chart_url"] == chart_url }
+    charts.find { |chart| chart["chart_url"] == chart_url } || {}
   end
 
   def repository_name

@@ -16,6 +16,14 @@
         <% end %>
       </div>
       <%= form_with(model: @add_on) do |form| %>
+        <%= render(
+          "shared/partials/async_renderer",
+          view_model: Async::AddOns::VersionSelectorViewModel.new(
+            current_user,
+            add_on_id: @add_on.id
+          )
+        ) %>
+
         <div class="form-group"
              data-controller="yaml-autocomplete"
              data-yaml-autocomplete-metadata-url-value="<%= metadata_add_ons_path %>"

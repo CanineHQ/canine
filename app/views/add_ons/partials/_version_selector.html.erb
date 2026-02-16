@@ -1,0 +1,13 @@
+<div class="form-group mb-6">
+  <%= label_tag :version, "Version", class: "label" %>
+  <%= select_tag :version,
+      options_for_select(
+        versions.map { |v| [v == versions.first ? "#{v} (Latest)" : v, v] },
+        add_on.version
+      ),
+      class: "select select-bordered w-full max-w-md",
+      name: "add_on[version]" %>
+  <label class="label">
+    <span class="label-text-alt">Select a version to upgrade/downgrade to</span>
+  </label>
+</div>

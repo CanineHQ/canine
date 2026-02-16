@@ -18,7 +18,7 @@ class MockChartBuilder
     @resources << resource
   end
 
-  def install_chart(namespace)
+  def install_chart(namespace, atomic: true, wait: true)
   end
 end
 
