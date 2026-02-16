@@ -14,4 +14,17 @@ class AddOns::ProcessesController < AddOns::BaseController
     flash[:alert] = "Pod #{params[:id]} not found"
     redirect_to add_on_processes_path(@add_on)
   end
+
+  def shell
+    @pod_name = params[:id]
+    @namespace = @add_on.name
+    @container = params[:container]
+    @shell_token = ShellToken.generate_for(
+      user: current_user,
+      cluster: @add_on.cluster,
+      pod_name: @pod_name,
+      namespace: @namespace,
+      container: @container
+    )
+  end
 end

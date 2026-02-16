@@ -1,0 +1,8 @@
+<%= add_on_layout(@add_on) do %>
+  <%= render "processes/terminal",
+    shell_token: @shell_token,
+    pod_name: @pod_name,
+    namespace: @namespace,
+    back_path: add_on_processes_path(@add_on)
+  %>
+<% end %>

@@ -1,0 +1,9 @@
+<%= project_layout(@project) do %>
+  <%= render "processes/terminal",
+    shell_token: @shell_token,
+    pod_name: @pod_name,
+    namespace: @namespace,
+    back_path: project_processes_path(@project),
+    project_name: @project.name
+  %>
+<% end %>

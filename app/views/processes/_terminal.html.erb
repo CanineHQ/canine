@@ -1,0 +1,42 @@
+<div
+  data-controller="terminal"
+  data-terminal-token-value="<%= shell_token.token %>"
+  class="flex flex-col h-[calc(100vh-12rem)]"
+>
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h3 class="text-lg font-medium">Shell</h3>
+      <p class="text-sm text-base-content/60">
+        Connected to <span class="font-mono font-semibold"><%= pod_name %></span>
+        in namespace <span class="font-mono font-semibold"><%= namespace %></span>
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="badge badge-sm" data-terminal-target="status">Connecting...</div>
+      <%= link_to "Back", back_path, class: "btn btn-sm btn-outline" %>
+    </div>
+  </div>
+
+  <div
+    data-terminal-target="container"
+    class="flex-1 rounded-lg overflow-hidden border border-base-300 bg-gray-800"
+  ></div>
+
+  <div class="mt-4 collapse collapse-arrow bg-base-200 rounded-lg">
+    <input type="checkbox" />
+    <div class="collapse-title text-sm font-medium">
+      Prefer using your own terminal?
+    </div>
+    <div class="collapse-content text-sm">
+      <p class="mb-2 text-base-content/70">Install the Canine CLI to connect to pods from your local terminal:</p>
+      <div class="mockup-code text-xs mb-3">
+        <pre data-prefix="$"><code>curl -sSL https://raw.githubusercontent.com/CanineHQ/cli/main/install.sh | sh</code></pre>
+        <pre data-prefix="$"><code>canine auth login --token YOUR_API_TOKEN</code></pre>
+        <pre data-prefix="$"><code>canine projects run --project <%= local_assigns[:project_name] || namespace %> /bin/sh</code></pre>
+      </div>
+      <p class="text-base-content/50">
+        Or install via Homebrew: <code class="bg-base-300 px-1 rounded">brew tap CanineHQ/canine && brew install canine</code>
+      </p>
+    </div>
+  </div>
+</div>

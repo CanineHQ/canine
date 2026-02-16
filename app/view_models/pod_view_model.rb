@@ -15,6 +15,14 @@ class PodViewModel
     end
   end
 
+  def shell_path
+    if parent.is_a?(Project)
+      shell_project_process_path(parent, pod.metadata.name)
+    elsif parent.is_a?(AddOn)
+      shell_add_on_process_path(parent, pod.metadata.name)
+    end
+  end
+
   def show_delete_pod_path?
     parent.is_a?(Project)
   end
