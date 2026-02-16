@@ -11,7 +11,7 @@
 
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
-      <%= form_with(model: @add_on) do |form| %>
+      <%= form_with(model: @add_on, data: { controller: "add-ons--version-selector" }) do |form| %>
         <div class="space-y-8">
           <%= render(FormFieldComponent.new(
             label: "Name",
@@ -36,9 +36,9 @@
           <%= render "shared/partials/namespace_input_group", form: %>
         </div>
 
-        <div data-controller="card-select">
+        <div data-controller="add-ons--chart-select">
           <div class="form-group">
-            <%= form.text_field :chart_type, class: "hidden", data: { 'card-select-target': "input" } %>
+            <%= form.text_field :chart_type, class: "hidden", data: { 'add-ons--chart-select-target': "input" } %>
           </div>
 
           <h4>Select a chart</h4>
@@ -54,10 +54,12 @@
                 </div>
               <% end %>
               <div class="card bg-base-100 shadow-xl <%= chart['coming_soon'] ? 'cursor-not-allowed' : 'cursor-pointer' %> overflow-hidden border hover:border-solid border-base-100 hover:border-base-300"
-                  data-card-select-target="card"
+                  data-add-ons--chart-select-target="card"
                   data-chart-url="<%= chart['chart_url'] %>"
+                  data-repository-url="<%= chart['repository_url'] %>"
+                  data-artifact-hub-package-id="helm/<%= chart['chart_url'] %>"
                   <% unless chart['coming_soon'] %>
-                    data-action="click->card-select#selectCard"
+                    data-action="click->add-ons--chart-select#selectCard"
                   <% end %>
                   data-card-name="<%= chart['name'] %>">
                 <figure class="px-4 pt-8 overflow-visible">
@@ -74,6 +76,8 @@
               </div>
             </div>
             <% end %>
+
+            <%= render "add_ons/helm/card" %>
           </div>
 
           <% K8::Helm::Client::CHARTS['helm']['charts'].each do |chart| %>
@@ -86,21 +90,67 @@
             </div>
           <% end %>
 
-          <%= form.text_field "chart_url", class: "hidden", data: { 'card-select-target': "chartUrl" } %>
+          <%= render "add_ons/helm/form", form: form %>
 
-          <div>
-            <div class="collapse">
-              <input aria-label="Accordion radio" type="checkbox" name="accordion" class="w-full">
-              <div class="collapse-title text-md font-medium">Advanced Settings</div>
+          <%= form.text_field :chart_url, class: "hidden", data: {
+            'add-ons--chart-select-target': "chartUrl",
+            'add-ons--version-selector-target': "chartUrl"
+          } %>
+          <%= form.text_field :repository_url, class: "hidden", data: {
+            'add-ons--chart-select-target': "repositoryUrl",
+            'add-ons--version-selector-target': "repositoryUrl"
+          } %>
+          <%= form.text_field :artifact_hub_package_id, class: "hidden", data: {
+            'add-ons--chart-select-target': "artifactHubPackageId"
+          } %>
+
+          <div class="mt-8">
+            <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+              <input type="checkbox" aria-label="Advanced Settings" class="w-full">
+              <div class="collapse-title text-md font-medium">
+                <div class="flex flex-col gap-1">
+                  <span>Advanced Settings</span>
+                  <span class="text-sm font-normal text-gray-500">Configure version and custom values.yaml</span>
+                </div>
+              </div>
               <div class="collapse-content">
+                <!-- Version Selector -->
+                <div data-add-ons--version-selector-target="versionSelector" class="hidden mb-6">
+                  <div data-add-ons--version-selector-target="loading" class="hidden mb-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-500">
+                      <span class="loading loading-spinner loading-sm"></span>
+                      Fetching available versions...
+                    </div>
+                  </div>
+
+                  <div data-add-ons--version-selector-target="error" class="hidden mb-4">
+                    <div class="alert alert-error text-sm">
+                      <span data-add-ons--version-selector-target="errorMessage"></span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <%= form.label :version, "Version" %>
+                    <%= form.select :version,
+                        [],
+                        {},
+                        class: "select select-bordered w-full max-w-md",
+                        data: { 'add-ons--version-selector-target': 'versionSelect' } %>
+                    <label class="label">
+                      <span class="label-text-alt">Select a version to install (defaults to latest)</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Values YAML -->
                 <div
                   data-controller="yaml-autocomplete"
                   data-yaml-autocomplete-metadata-url-value="<%= metadata_add_ons_path %>"
                   data-yaml-autocomplete-chart-url-input-id-value="add_on_chart_url"
                 >
-                  <%= form.text_area :values_yaml, 
-                      class: "code textarea textarea-bordered w-full", 
-                      placeholder: "Paste your values.yaml here.", 
+                  <%= form.text_area :values_yaml,
+                      class: "code textarea textarea-bordered w-full",
+                      placeholder: "Paste your values.yaml here.",
                       rows: 10,
                       data: { 'yaml-autocomplete-target': 'textarea' } %>
                   <div class="relative">
@@ -117,7 +167,10 @@
         </div>
 
         <div class="form-footer">
-          <%= form.button "Create Add On", class: "btn btn-primary", data: { turbo_submits_with: "Creating..." } %>
+          <%= form.button "Create Add On", class: "btn btn-primary", data: {
+            turbo_submits_with: "Creating...",
+            'add-ons--version-selector-target': 'submitButton'
+          } %>
 
           <% if form.object.new_record? %>
             <%= link_to t("cancel"), add_ons_path, class: "btn btn-secondary" %>

@@ -14,38 +14,33 @@ class AddOns::InstallHelmChart
       add_on.installing!
     end
 
-    charts = K8::Helm::Client::CHARTS['helm']['charts']
-    chart = charts.find { |chart| chart['name'] == add_on.chart_type }
-
     client = K8::Helm::Client.connect(context.connection, Cli::RunAndLog.new(add_on, log_command: true))
 
-    chart_url = add_on.chart_url
-
-    package_details = add_on.metadata['package_details']
-
     add_on.update_install_stage!(1)
-    if package_details['repository']['url'].include?("oci://")
+    if add_on.repository_url.include?("oci://")
+      # OCI registry - install directly from repository URL
       add_on.update_install_stage!(3)
       client.install(
         add_on.name,
-        package_details['repository']['url'],
+        add_on.repository_url,
         add_on.version,
         values: add_on.values,
         namespace: add_on.namespace
       )
     else
+      # HTTP repository - add repo, update, then install
       client.add_repo(
-        package_details['repository']['name'],
-        package_details['repository']['url']
+        add_on.repository_name,
+        add_on.repository_url
       )
 
       add_on.update_install_stage!(2)
-      client.repo_update(repo_name: chart_url.split('/').first)
+      client.repo_update(repo_name: add_on.repository_name)
 
       add_on.update_install_stage!(3)
       client.install(
         add_on.name,
-        chart_url,
+        add_on.chart_url,
         add_on.version,
         values: add_on.values,
         namespace: add_on.namespace

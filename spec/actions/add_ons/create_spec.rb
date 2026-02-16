@@ -7,7 +7,7 @@ RSpec.describe AddOns::Create do
 
   before do
     allow(Namespaced::ValidateNamespace).to receive(:execute)
-    allow(AddOns::HelmChartDetails).to receive(:execute).and_return(
+    allow(AddOns::FetchChartDetailsFromArtifactHub).to receive(:execute).and_return(
       double(success?: true, failure?: false, response: chart_details)
     )
   end
@@ -30,6 +30,8 @@ RSpec.describe AddOns::Create do
         name: 'redis-main',
         chart_type: 'redis',
         chart_url: 'bitnami/redis',
+        repository_url: 'https://charts.bitnami.com/bitnami',
+        version: '7.2.3',
         cluster_id: cluster.id,
         metadata: {
           redis: {

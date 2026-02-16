@@ -1,0 +1,30 @@
+<div class="mt-8 card-form hidden card-helm_chart" data-controller="add-ons--chart-type">
+  <h4 class="text-lg font-bold">Helm Chart Settings</h4>
+  <hr class="mt-2 mb-6 border-base-content/10" />
+
+  <!-- Hidden field that will be updated based on radio selection -->
+  <%= form.hidden_field :chart_type, value: "helm_chart", data: { 'add-ons--chart-type-target': 'chartType' } %>
+
+  <div class="form-control mt-4">
+    <%= render "shared/partials/radio_selector", selected: "helm_chart", options: [
+      {
+        icon: "carbon:search",
+        name: "helm_source_type",
+        label: "Search Artifact Hub",
+        value: "helm_chart",
+        description: "Search for Helm charts from Artifact Hub's curated repository.",
+        partial: "add_ons/helm/artifact_hub_fields",
+        locals: { form: form }
+      },
+      {
+        icon: "carbon:link",
+        name: "helm_source_type",
+        label: "Custom Repository",
+        value: "custom_repository",
+        description: "Provide your own Helm chart repository URL.",
+        partial: "add_ons/helm/custom_url_fields",
+        locals: { form: form }
+      }
+    ] %>
+  </div>
+</div>

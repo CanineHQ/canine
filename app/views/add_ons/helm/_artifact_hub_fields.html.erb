@@ -1,0 +1,8 @@
+<div data-controller="add-ons--artifact-hub-search">
+  <div class="form-group">
+    <%= form.label "Search for a Helm chart" %>
+    <%= form.text_field "metadata][helm_chart][helm_chart.name",
+        class: "input input-bordered w-full max-w-md",
+        placeholder: "Search Artifact Hub..." %>
+  </div>
+</div>

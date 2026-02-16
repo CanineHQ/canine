@@ -12,6 +12,8 @@ class AddOns::Create
       :chart_url,
       :name,
       :version,
+      :repository_url,
+      :artifact_hub_package_id,
       metadata: {},
       values: {}
     )

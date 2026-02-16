@@ -2,7 +2,8 @@ helm:
   charts:
     - name: postgresql
       chart_url: bitnami/postgresql
-      friendly_name: PostgreSQL
+      repository_url: https://charts.bitnami.com/bitnami
+      display_name: PostgreSQL
       logo: /images/helm/postgresql.webp
       template:
         - name: Storage
@@ -12,7 +13,8 @@ helm:
           required: true
     - name: redis
       chart_url: bitnami/redis
-      friendly_name: Redis
+      repository_url: https://charts.bitnami.com/bitnami
+      display_name: Redis
       logo: /images/helm/redis.webp
       template:
         - name: Storage
@@ -25,9 +27,15 @@ helm:
           type: integer
           default: 0
           hidden: true
+    - name: openclaw
+      logo: /images/helm/openclaw.webp
+      chart_url: easy-openclaw/openclaw
+      repository_url: https://caninehq.github.io/openclaw-helm
+      display_name: OpenClaw
     - name: metabase
       chart_url: pmint93/metabase
-      friendly_name: Metabase
+      repository_url: https://pmint93.github.io/helm-charts
+      display_name: Metabase
       logo: /images/helm/metabase.webp
       template:
         - name: Connection URI
@@ -44,7 +52,8 @@ helm:
     - name: elasticsearch
       logo: /images/helm/elasticsearch.webp
       chart_url: bitnami/elasticsearch
-      friendly_name: Elasticsearch
+      repository_url: https://charts.bitnami.com/bitnami
+      display_name: Elasticsearch
       template:
         - name: Storage size
           key: resources.limits.storage
@@ -54,7 +63,8 @@ helm:
     - name: clickhouse
       logo: /images/helm/clickhouse.webp
       chart_url: bitnami/clickhouse
-      friendly_name: ClickHouse
+      repository_url: https://charts.bitnami.com/bitnami
+      display_name: ClickHouse
       template:
         - name: Storage Size
           key: persistence.size
@@ -78,29 +88,17 @@ helm:
           default: 1
 
     - name: airbyte
-      friendly_name: Airbyte
+      display_name: Airbyte
       logo: /images/helm/airbyte.webp
       chart_url: airbyte/airbyte
-      
-    - name: minio
-      logo: /images/helm/minio.webp
-      chart_url: bitnami/minio
-      friendly_name: MinIO
-      
+      repository_url: https://airbytehq.github.io/helm-charts
+
     - name: prometheus
       logo: /images/helm/prometheus.webp
       chart_url: prometheus-community/prometheus
-      
+      repository_url: https://prometheus-community.github.io/helm-charts
+
     - name: portainer
       logo: /images/helm/portainer.webp
       chart_url: portainer/portainer
-      
-    - name: helm_chart
-      friendly_name: "Helm Chart"
-      logo: /images/helm/helm_chart.webp
-      controller: "helm-search"
-      metadata:
-        - name: Name
-          key: helm_chart.name
-          type: string
-          hidden: false
+      repository_url: https://portainer.github.io/k8s/

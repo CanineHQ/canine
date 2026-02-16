@@ -7,7 +7,7 @@
       </h2>
       <p class="card-text">
         <%= render "add_ons/status", add_on: add_on %>
-        <%= add_on.chart_type.titleize %>
+        <%= add_on.metadata['display_name'] || add_on.chart_url %>
       </p>
     </div>
   </div>

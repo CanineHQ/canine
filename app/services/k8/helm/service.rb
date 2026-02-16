@@ -3,11 +3,11 @@ class K8::Helm::Service
 
   def self.create_from_add_on(connection)
     add_on = connection.add_on
-    if add_on.chart_type == "redis"
+    if add_on.chart_url == "bitnami/redis"
       K8::Helm::Redis.new(connection)
-    elsif add_on.chart_type == "postgresql"
+    elsif add_on.chart_url == "bitnami/postgresql"
       K8::Helm::Postgresql.new(connection)
-    elsif add_on.chart_type == "clickhouse"
+    elsif add_on.chart_url == "bitnami/clickhouse"
       K8::Helm::Clickhouse.new(connection)
     else
       K8::Helm::Service.new(connection)
@@ -22,7 +22,7 @@ class K8::Helm::Service
   end
 
   def friendly_name
-    add_on.chart_definition['friendly_name'] || add_on.chart_definition['name'].titleize
+    add_on.metadata['display_name'] || add_on.chart_url
   end
 
   def restart

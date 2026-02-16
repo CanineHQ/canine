@@ -25,7 +25,7 @@
           <td>
             <div class="font-medium"><%= link_to add_on.name, add_on, class: "text-inherit hover:underline" %></div>
           </td>
-          <td class="py-4"><%= add_on.chart_type %></td>
+          <td class="py-4"><%= add_on.metadata['display_name'] || add_on.chart_url %></td>
           <td class="py-4"><%= link_to add_on.cluster.name, add_on.cluster, class: "text-inherit hover:underline" %></td>
           <td class="py-4"><%= render "add_ons/status", add_on: %></td>
           <td>
