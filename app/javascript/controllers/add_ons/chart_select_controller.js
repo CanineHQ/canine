@@ -1,14 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "card", "chartUrl", "repositoryUrl", "artifactHubPackageId"]
+  static targets = ["card", "chartUrl", "repositoryUrl", "artifactHubPackageId"]
 
   connect() {
   }
 
   selectCard(event) {
     event.preventDefault()
-    this.inputTarget.value = event.currentTarget.dataset.cardName
     this.cardTargets.forEach(card => card.classList.remove('ring', 'ring-primary'))
     event.currentTarget.classList.add('ring', 'ring-primary')
 
