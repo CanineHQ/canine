@@ -4,6 +4,7 @@
 
 @import "tippy.js/dist/tippy.css";
 @import 'tippy.js/themes/light.css';
+@import "@xterm/xterm/css/xterm.css";
 @import "./main.css";
 @import "components/nav";
 @import "./forms.css";

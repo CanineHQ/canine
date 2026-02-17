@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_15_080537) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -634,6 +634,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_15_080537) do
     t.index ["project_id", "name"], name: "index_services_on_project_id_and_name", unique: true
   end
 
+  create_table "shell_tokens", force: :cascade do |t|
+    t.string "token", null: false
+    t.bigint "user_id", null: false
+    t.bigint "cluster_id", null: false
+    t.string "pod_name", null: false
+    t.string "namespace", null: false
+    t.string "container"
+    t.datetime "expires_at", null: false
+    t.datetime "connected_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id"], name: "index_shell_tokens_on_cluster_id"
+    t.index ["token"], name: "index_shell_tokens_on_token", unique: true
+    t.index ["user_id"], name: "index_shell_tokens_on_user_id"
+  end
+
   create_table "sso_providers", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.string "configuration_type", null: false
@@ -769,6 +785,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_15_080537) do
   add_foreign_key "providers", "sso_providers"
   add_foreign_key "providers", "users"
   add_foreign_key "services", "projects"
+  add_foreign_key "shell_tokens", "clusters"
+  add_foreign_key "shell_tokens", "users"
   add_foreign_key "sso_providers", "accounts"
   add_foreign_key "stack_managers", "accounts"
   add_foreign_key "team_memberships", "teams"

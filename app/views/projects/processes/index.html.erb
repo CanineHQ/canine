@@ -1,6 +1,5 @@
 <%= project_layout(@project) do %>
-  <div data-controller="processes">
-    <%= render "projects/processes/connect_modal", cluster: @project.cluster %>
+  <div>
     <div class="mb-4">
       <h3 class="text-lg font-medium">Processes</h3>
       <%= button_to project_processes_path(@project), method: :post, class: "btn btn-sm btn-primary" do %>

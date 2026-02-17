@@ -28,6 +28,19 @@ class Projects::ProcessesController < Projects::BaseController
     redirect_to project_processes_path(@project)
   end
 
+  def shell
+    @pod_name = params[:id]
+    @namespace = @project.namespace
+    @container = params[:container]
+    @shell_token = ShellToken.generate_for(
+      user: current_user,
+      cluster: @project.cluster,
+      pod_name: @pod_name,
+      namespace: @namespace,
+      container: @container
+    )
+  end
+
   def destroy
     client = K8::Client.new(active_connection)
     client.delete_pod(params[:id], @project.namespace)

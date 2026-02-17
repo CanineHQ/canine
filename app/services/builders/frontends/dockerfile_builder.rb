@@ -28,7 +28,7 @@ class Builders::Frontends::DockerfileBuilder
       "buildx",
       "build",
       "--progress=plain",
-      "--platform", "linux/amd64",
+      "--platform", "linux/amd64,linux/arm64",
       "-t", project.container_image_reference,
       "-f", File.join(repository_path, project.build_configuration.dockerfile_path)
     ]
