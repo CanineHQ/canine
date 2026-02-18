@@ -11,7 +11,7 @@ class Projects::DetermineContainerImageReference
       project.build_configuration.container_image_reference
     else
       tag = project.git? ? project.branch.gsub('/', '-') : project.branch
-      "#{project.project_credential_provider.provider.registry_base_url}/#{project.repository_url}:#{tag}"
+      "#{project.project_credential_provider.provider.registry_base_url}/#{project.repository_url.downcase}:#{tag}"
     end
   end
 end
