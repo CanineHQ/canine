@@ -85,7 +85,7 @@ Rails.application.routes.draw do
       end
     end
     member do
-      get :switch
+      put :switch
     end
   end
 

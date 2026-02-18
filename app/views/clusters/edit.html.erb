@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <% if Flipper.enabled?(:build_configuration, current_account) %>
+    <% if Rails.configuration.build_configuration_enabled || Flipper.enabled?(:build_configuration, current_account) %>
       <%= render "clusters/build_clouds/section", cluster: @cluster %>
     <% end %>
 

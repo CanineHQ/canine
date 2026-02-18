@@ -30,7 +30,7 @@
           <li class="menu-title text-xs opacity-60 px-4 py-2 mt-2">OTHER ORGANIZATIONS</li>
           <% other_accounts.each do |account| %>
             <li>
-              <%= link_to switch_account_path(account), class: "flex items-center gap-3 px-4 py-3" do %>
+              <%= link_to switch_account_path(account), data: { turbo_method: :put }, class: "flex items-center gap-3 px-4 py-3" do %>
                 <span class="font-semibold"><%= truncate(account.name, length: 24) %></span>
               <% end %>
             </li>

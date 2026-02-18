@@ -48,7 +48,7 @@
       <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm" %>
     <% end %>
 
-    <% if Flipper.enabled?(:build_configuration, current_account) %>
+    <% if Rails.configuration.build_configuration_enabled || Flipper.enabled?(:build_configuration, current_account) %>
       <%= render(FormFieldComponent.new(label: "Build configuration")) do %>
         <%= render "projects/build_configurations/form", form: form, project: project %>
       <% end %>
