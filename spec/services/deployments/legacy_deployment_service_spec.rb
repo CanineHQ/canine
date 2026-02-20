@@ -89,12 +89,12 @@ RSpec.describe Deployments::LegacyDeploymentService do
       expect(yaml.dig('spec', 'selector', 'app')).to eq('web')
     end
 
-    it 'applies an Ingress with domain' do
-      yaml_str = find_applied_resource('Ingress', 'web-ingress')
+    it 'applies an HTTPRoute with domain' do
+      yaml_str = find_applied_resource('HTTPRoute', 'web-httproute')
       expect(yaml_str).to be_present
 
       yaml = parse_yaml(yaml_str)
-      expect(yaml.dig('spec', 'rules', 0, 'host')).to eq('example.com')
+      expect(yaml.dig('spec', 'hostnames', 0)).to eq('example.com')
     end
   end
 

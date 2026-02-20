@@ -66,7 +66,8 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       apply_resource("Deployment", service)
       apply_resource("Service", service)
       if service.domains.any? && service.allow_public_networking?
-        apply_resource("Ingress", service)
+        apply_resource("HttpRoute", service)
+        setup_gateway_tls(service)
       end
       restart_deployment(service)
       setup_automatic_dns(service)

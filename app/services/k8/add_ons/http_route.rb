@@ -1,4 +1,4 @@
-class K8::AddOns::Ingress < K8::Base
+class K8::AddOns::HttpRoute < K8::Base
   attr_reader :add_on, :endpoint, :port, :domains
 
   def initialize(add_on, endpoint, port, domains)

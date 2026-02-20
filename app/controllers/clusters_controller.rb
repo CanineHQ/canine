@@ -81,7 +81,7 @@ class ClustersController < ApplicationController
       @cluster.projects.each do |project|
         # Create a directory for each project
         # Export services, deployments, ingress and cron jobs from a kubernetes namespace
-        %w[services deployments ingress cronjobs].each do |resource|
+        %w[services deployments httproutes cronjobs].each do |resource|
           yaml_content = K8::Kubectl.new(
             K8::Connection.new(@cluster, current_user)
           ).call("get #{resource} -n #{project.namespace} -o yaml")

@@ -16,7 +16,7 @@
   <div>
     <h4 class="text-sm font-bold text-gray-500 uppercase">External URLs</h4>
     <p>
-      <% urls = ingresses.select { |ingress| ingress.spec.rules.any? { |rule| rule.http.paths.any? { |path| path.backend.service.name == endpoint.metadata.name } } }.map { |ingress| ingress.spec.rules.map { |rule| rule.host } }.flatten %>
+      <% urls = httproutes.select { |route| route.spec.rules.any? { |rule| rule.backendRefs.any? { |ref| ref.name == endpoint.metadata.name } } }.flat_map { |route| route.spec.hostnames }.compact %>
       <% urls.each do |url| %>
         <div>
           <a href="https://<%= url %>" target="_blank"><%= url %></a>

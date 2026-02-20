@@ -21,7 +21,7 @@ RSpec.describe "Add Ons", type: :system do
     allow(K8::Helm::Service).to receive(:create_from_add_on).and_return(helm_service)
     allow(helm_service).to receive_messages(
       get_endpoints: [],
-      get_ingresses: [],
+      get_httproutes: [],
       friendly_name: "Test Add On",
       pods: [],
       revision: "1"

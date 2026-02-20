@@ -10,7 +10,8 @@ class Clusters::InstallAcmeIssuer
   CERT_MANAGER_VALUES = {
     crds: {
       enabled: true
-    }
+    },
+    featureGates: "ExperimentalGatewayAPISupport=true"
   }.freeze
 
   expects :cluster, :kubectl, :connection

@@ -51,8 +51,8 @@ class Dns::AutoSetupService
   end
 
   def fetch_expected_hostname
-    ingress = K8::Stateless::Ingress.new(service)
-    Dns::Utils.infer_expected_hostname(ingress, connection)
+    http_route = K8::Stateless::HttpRoute.new(service)
+    Dns::Utils.infer_expected_hostname(http_route, connection)
   end
 
   def create_dns_record(hostname)
