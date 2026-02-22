@@ -19,5 +19,15 @@ module K8
       end
       kubeconfig_hash
     end
+
+    def self.remap_localhost(address, remap_host = Rails.configuration.remap_localhost)
+      uri = URI.parse(address)
+      if uri.host == "127.0.0.1" || uri.host == "localhost"
+        uri.host = remap_host
+        uri.to_s
+      else
+        address
+      end
+    end
   end
 end
