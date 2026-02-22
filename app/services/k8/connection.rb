@@ -20,13 +20,23 @@ class K8::Connection
   end
 
   def kubeconfig
-    # If the cluster has a kubeconfig, use it.
-    if cluster.kubeconfig.present?
+    config = if cluster.kubeconfig.present?
       cluster.kubeconfig
     else
       raise StandardError.new("No stack manager found") if stack_manager.blank?
       stack = stack_manager.stack.connect(user, allow_anonymous:)
       stack.fetch_kubeconfig(cluster)
+    end
+
+    if Rails.configuration.remap_localhost.present?
+      remap_host = Rails.configuration.remap_localhost
+      config.dup.tap do |remapped|
+        remapped['clusters']&.each do |c|
+          c['cluster']['server'] = K8::Kubeconfig.remap_localhost(c['cluster']['server'], remap_host)
+        end
+      end
+    else
+      config
     end
   end
 

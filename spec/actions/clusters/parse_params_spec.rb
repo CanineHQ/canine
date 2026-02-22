@@ -87,20 +87,4 @@ RSpec.describe Clusters::ParseParams do
       expect(result).not_to have_key(:some_random_field)
     end
   end
-
-  describe ".remap_cluster_address" do
-    it "remaps localhost to the given host" do
-      kubeconfig = YAML.safe_load(kubeconfig_yaml)
-      kubeconfig['clusters'][0]['cluster']['server'] = "https://localhost:6443"
-
-      result = described_class.remap_cluster_address(kubeconfig, "host.docker.internal")
-      expect(result["clusters"][0]["cluster"]["server"]).to include("host.docker.internal")
-    end
-
-    it "doesn't remap non-localhost servers" do
-      kubeconfig = YAML.safe_load(kubeconfig_yaml)
-      result = described_class.remap_cluster_address(kubeconfig, "host.docker.internal")
-      expect(result["clusters"][0]["cluster"]["server"]).not_to include("host.docker.internal")
-    end
-  end
 end
