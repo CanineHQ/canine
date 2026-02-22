@@ -25,8 +25,14 @@ class Portainer::Stack
   end
 
   def connect(user, allow_anonymous: false)
+    provider_url = if Rails.configuration.remap_localhost.present?
+      K8::Kubeconfig.remap_localhost(stack_manager.provider_url)
+    else
+      stack_manager.provider_url
+    end
+
     @_client = Portainer::Client.new(
-      stack_manager.provider_url,
+      provider_url,
       retrieve_access_token(user, allow_anonymous:),
     )
     self

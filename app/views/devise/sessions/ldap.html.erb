@@ -30,12 +30,13 @@
         <%= render 'shared/error_messages', resource: resource %>
 
         <div class="form-control">
-          <%= f.label :username, class: "label" do %>
+          <%= f.label :username, autocomplete: "username", class: "label" do %>
             <span class="label-text">LDAP Username</span>
           <% end %>
           <%= f.text_field(
             :username,
             autofocus: true,
+            autocomplete: "password",
             placeholder: "Enter your username",
             class: "input input-bordered w-full",
             required: true,
