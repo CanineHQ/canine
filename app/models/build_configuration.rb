@@ -71,6 +71,6 @@ class BuildConfiguration < ApplicationRecord
 
   def container_image_reference
     tag = project.git? ? project.branch.gsub('/', '-') : 'latest'
-    "#{provider.registry_base_url}/#{image_repository}:#{tag}"
+    "#{provider.registry_base_url}/#{image_repository.downcase}:#{tag}"
   end
 end
