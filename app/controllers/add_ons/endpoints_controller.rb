@@ -5,6 +5,7 @@ class AddOns::EndpointsController < AddOns::BaseController
     set_dns_record
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
+    @ingress_endpoint = @add_on.ingress_endpoints.find_by(endpoint_name: @endpoint.metadata.name)
   end
 
   def show
@@ -19,16 +20,26 @@ class AddOns::EndpointsController < AddOns::BaseController
     @errors = []
     @errors << 'Invalid domain format' unless domains.all? { |domain| valid_domain?(domain) }
     @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
-    kubectl = K8::Kubectl.new(active_connection)
-    kubectl.apply_yaml(
-      K8::AddOns::Ingress.new(
-        @add_on,
-        @endpoint,
-        params[:port].to_i,
-        domains,
-      ).to_yaml
-    )
+
     if @errors.empty?
+      @ingress_endpoint = @add_on.ingress_endpoints.find_or_create_by!(
+        endpoint_name: @endpoint.metadata.name,
+        port: params[:port].to_i
+      )
+
+      # Sync domain records: remove old, add new
+      existing_names = @ingress_endpoint.domains.pluck(:domain_name)
+      to_remove = existing_names - domains
+      to_add = domains - existing_names
+
+      @ingress_endpoint.domains.where(domain_name: to_remove).destroy_all if to_remove.any?
+      to_add.each { |d| @ingress_endpoint.domains.create!(domain_name: d) }
+
+      kubectl = K8::Kubectl.new(active_connection)
+      kubectl.apply_yaml(
+        K8::AddOns::Ingress.new(@add_on, @ingress_endpoint).to_yaml
+      )
+
       @ingresses = @service.get_ingresses
       render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
     else
@@ -36,6 +47,7 @@ class AddOns::EndpointsController < AddOns::BaseController
       render "add_ons/endpoints/edit"
     end
   rescue StandardError => e
+    @errors ||= []
     @errors << e.message
     set_dns_record
     render "add_ons/endpoints/edit"

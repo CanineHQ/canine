@@ -1,10 +1,14 @@
 class Networks::CheckDns
   extend LightService::Action
-  expects :ingress, :connection
+  expects :ingress_endpoint, :connection
 
   executed do |context|
-    expected_dns = Dns::Utils.infer_expected_hostname(context.ingress, context.connection)
-    context.ingress.service.domains.each do |domain|
+    client = K8::Client.new(context.connection)
+    expected_dns = Dns::Utils.infer_expected_hostname(
+      K8::Stateless::Ingress.new(context.ingress_endpoint.endpointable),
+      context.connection
+    )
+    context.ingress_endpoint.domains.each do |domain|
       if expected_dns[:type] == :ip_address
         ip_addresses = Resolv::DNS.open do |dns|
           dns.getresources(domain.domain_name, Resolv::DNS::Resource::IN::A).map do |resource|

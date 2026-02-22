@@ -9,7 +9,7 @@
 #  status_reason :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  service_id    :bigint           not null
+#  service_id    :bigint
 #
 # Indexes
 #
@@ -17,7 +17,7 @@
 #
 FactoryBot.define do
   factory :domain do
-    service
+    ingress_endpoint
     sequence(:domain_name) { |n| "example#{n}.com" }
     status { :checking_dns }
   end

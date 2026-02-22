@@ -9,11 +9,12 @@ class Domains::AttachAutoManagedDomain
     service = context.service
     next unless service.allow_public_networking?
     next unless service.web_service?
-    next if service.domains.exists?(auto_managed: true)
+    next unless service.ingress_endpoint
+    next if service.ingress_endpoint.domains.exists?(auto_managed: true)
 
     domain_name = "#{service.name}-#{service.project.slug}.oncanine.run"
 
-    service.domains.create!(
+    service.ingress_endpoint.domains.create!(
       domain_name: domain_name,
       auto_managed: true
     )

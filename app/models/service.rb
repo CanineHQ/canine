@@ -44,15 +44,14 @@ class Service < ApplicationRecord
 
   has_one :cron_schedule, dependent: :destroy
   has_one :resource_constraint, dependent: :destroy
+  has_one :ingress_endpoint, as: :endpointable, dependent: :destroy
+  has_many :domains, through: :ingress_endpoint
 
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
-  has_many :domains, dependent: :destroy
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :project_id }
-
-  accepts_nested_attributes_for :domains, allow_destroy: true
 
   def internal_url
     # Kubernetes internal URL

@@ -1,5 +1,5 @@
 class K8::Stateless::Ingress < K8::Base
-  attr_accessor :service, :project, :domains, :cluster
+  attr_accessor :service, :project, :cluster
 
   def initialize(service)
     @service = service
@@ -7,12 +7,16 @@ class K8::Stateless::Ingress < K8::Base
     @cluster = @project.cluster
   end
 
+  def ingress_endpoint
+    @service.ingress_endpoint
+  end
+
   def name
     "#{@service.name}-ingress"
   end
 
   def certificate_status
-    return nil unless @service.domains.any?
+    return nil unless ingress_endpoint&.domains&.any?
     return nil unless @service.allow_public_networking?
 
     kubectl.call("get certificate #{certificate_name} -n #{@project.namespace} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"

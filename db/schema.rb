@@ -207,13 +207,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   end
 
   create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
     t.boolean "auto_managed", default: false
+    t.bigint "service_id"
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
