@@ -16,13 +16,22 @@ module K8
       kubeconfig_hash = kubeconfig_hash.deep_dup
       kubeconfig_hash['clusters']&.each do |cluster|
         cluster['cluster']['insecure-skip-tls-verify'] = true
+        cluster['cluster'].delete('certificate-authority')
+        cluster['cluster'].delete('certificate-authority-data')
       end
       kubeconfig_hash
     end
 
+    def self.is_localhost?(address)
+      host = URI.parse(address).host
+      host == "127.0.0.1" || host == "localhost"
+    rescue URI::InvalidURIError
+      false
+    end
+
     def self.remap_localhost(address, remap_host = Rails.configuration.remap_localhost)
-      uri = URI.parse(address)
-      if uri.host == "127.0.0.1" || uri.host == "localhost"
+      if is_localhost?(address)
+        uri = URI.parse(address)
         uri.host = remap_host
         uri.to_s
       else

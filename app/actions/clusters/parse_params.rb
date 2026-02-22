@@ -47,6 +47,18 @@ class Clusters::ParseParams
       params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
     end
 
+    if Rails.configuration.remap_localhost.present? && kubeconfig_has_localhost?(params[:cluster][:kubeconfig])
+      params[:cluster][:skip_tls_verify] = true
+    end
+
     params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, kubeconfig: {})
+  end
+
+  def self.kubeconfig_has_localhost?(kubeconfig)
+    return false if kubeconfig.blank?
+
+    kubeconfig['clusters']&.any? do |cluster|
+      K8::Kubeconfig.is_localhost?(cluster['cluster']['server'])
+    end
   end
 end
