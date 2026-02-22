@@ -48,7 +48,7 @@ class Clusters::ParseParams
     end
 
     if Rails.configuration.remap_localhost.present?
-      params[:cluster][:kubeconfig] = remap_localhost(
+      params[:cluster][:kubeconfig] = remap_cluster_address(
         params[:cluster][:kubeconfig],
         Rails.configuration.remap_localhost
       )
@@ -57,15 +57,21 @@ class Clusters::ParseParams
     params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, kubeconfig: {})
   end
 
-  def self.remap_localhost(kubeconfig, remap_host)
+  def self.remap_cluster_address(kubeconfig, remap_host)
     kubeconfig.dup.tap do |remapped|
       remapped['clusters'].each do |cluster|
-        uri = URI.parse(cluster['cluster']['server'])
-        if is_localhost?(uri.host)
-          uri.host = remap_host
-          cluster['cluster']['server'] = uri.to_s
-        end
+        cluster['cluster']['server'] = remap_localhost(address)
       end
+    end
+  end
+
+  def self.remap_localhost(address)
+    uri = URI.parse(address)
+    if is_localhost?(uri.host)
+      uri.host = remap_host
+      uri.to_s
+    else
+      address
     end
   end
 
