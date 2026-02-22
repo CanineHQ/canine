@@ -68,7 +68,8 @@ curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/inst
 Or run manually if you prefer:
 ```bash
 git clone https://github.com/CanineHQ/canine.git
-cd canine/install
+cd canine
+echo "SECRET_KEY_BASE=$(openssl rand -hex 64)" > .env
 docker compose up -d
 ```
 and open http://localhost:3000 in a browser.
