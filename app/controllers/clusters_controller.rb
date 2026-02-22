@@ -104,8 +104,8 @@ class ClustersController < ApplicationController
   end
 
   def create
-    @cluster = current_account.clusters.new(cluster_params)
-    result = Clusters::Create.call(@cluster, current_user)
+    result = Clusters::Create.call(@cluster, current_account_user)
+    @cluster = result.cluster
 
     respond_to do |format|
       if result.success?
@@ -122,6 +122,7 @@ class ClustersController < ApplicationController
 
   def update
     respond_to do |format|
+      cluster_params = Cluster::ParseParams.execute(user: current_user, params:).params
       if @cluster.update(cluster_params)
         format.html { redirect_to @cluster, notice: "Cluster was successfully updated." }
         format.json { render :show, status: :ok, location: @cluster }
@@ -163,51 +164,5 @@ class ClustersController < ApplicationController
     @cluster = clusters.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to clusters_path
-  end
-
-  def cluster_params
-    # Handle kubeconfig from YAML editor
-    if params[:cluster][:kubeconfig_yaml_format] == "true" && params[:cluster][:kubeconfig].present?
-      params[:cluster][:kubeconfig] = YAML.safe_load(params[:cluster][:kubeconfig])
-    elsif params[:cluster][:cluster_type] == "k3s"
-      ip_address = params[:cluster][:ip_address]
-      kubeconfig_output = params[:cluster][:k3s_kubeconfig_output]
-      if ip_address.blank? || kubeconfig_output.blank?
-        message = "IP address and kubeconfig output are required for K3s clusters"
-        flash[:error] = message
-        raise message
-      end
-
-      begin
-        data = YAML.safe_load(kubeconfig_output)
-        data["clusters"][0]["cluster"]["server"] = "https://#{ip_address}:6443"
-      rescue StandardError => e
-        message = "Invalid kubeconfig output"
-        flash[:error] = message
-        raise message
-      end
-      params[:cluster][:kubeconfig] = data
-    elsif params[:cluster][:cluster_type] == "local_k3s"
-      kubeconfig_output = params[:cluster][:local_k3s_kubeconfig_output]
-      if kubeconfig_output.blank?
-        message = "Kubeconfig output is required for local K3s clusters"
-        flash[:error] = message
-        raise message
-      end
-
-      begin
-        params[:cluster][:kubeconfig] = YAML.safe_load(kubeconfig_output)
-      rescue StandardError => e
-        message = "Invalid kubeconfig output"
-        flash[:error] = message
-        raise message
-      end
-    elsif (kubeconfig_file = params[:cluster][:kubeconfig_file]).present?
-      yaml_content = kubeconfig_file.read
-
-      params[:cluster][:kubeconfig] = YAML.safe_load(yaml_content)
-    end
-
-    params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, kubeconfig: {})
   end
 end
