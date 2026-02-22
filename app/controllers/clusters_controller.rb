@@ -104,7 +104,7 @@ class ClustersController < ApplicationController
   end
 
   def create
-    result = Clusters::Create.call(@cluster, current_account_user)
+    result = Clusters::Create.call(params, current_account_user)
     @cluster = result.cluster
 
     respond_to do |format|
@@ -122,7 +122,7 @@ class ClustersController < ApplicationController
 
   def update
     respond_to do |format|
-      cluster_params = Cluster::ParseParams.execute(user: current_user, params:).params
+      cluster_params = Clusters::ParseParams.parse_params(params)
       if @cluster.update(cluster_params)
         format.html { redirect_to @cluster, notice: "Cluster was successfully updated." }
         format.json { render :show, status: :ok, location: @cluster }
