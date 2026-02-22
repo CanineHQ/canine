@@ -1,3 +1,4 @@
+/.claude/worktrees/
 **/charts/*.tgz
 .vscode/
 coverage/
