@@ -27,9 +27,10 @@ services:
 
   web:
     restart: unless-stopped
-    image: ghcr.io/caninehq/canine:latest
-    # Overrides default command so things don't shut down after the process ends.
-    # command: sleep infinity
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: canine-local:dev
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,7 +48,10 @@ services:
 
   worker:
     restart: unless-stopped
-    image: ghcr.io/caninehq/canine:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: canine-local:dev
     command: bundle exec good_job start
     depends_on:
       postgres:
