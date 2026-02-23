@@ -20,7 +20,7 @@ module Canine
     config.cluster_mode = config.boot_mode == "cluster"
     config.onboarding_methods = ENV.fetch("ONBOARDING_METHODS", "").split(",")
     config.account_sign_in_only = ENV.fetch("ACCOUNT_SIGN_IN_ONLY", "") == "true"
-    config.build_configuration_enabled = ENV.fetch("BUILD_CONFIGURATION_ENABLED", "false") == "true"
+    config.build_configuration_enabled = ENV.fetch("BUILD_CONFIGURATION_ENABLED", "true") != "false"
     config.remap_localhost = ENV.fetch("REMAP_LOCALHOST", "")
 
     config.assets.css_compressor = nil
