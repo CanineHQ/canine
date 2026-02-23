@@ -62,8 +62,10 @@ export default class extends Controller {
 
   disableSubmitButton() {
     if (this.hasSubmitButtonTarget) {
+      this.originalButtonText = this.submitButtonTarget.innerHTML
       this.submitButtonTarget.disabled = true
       this.submitButtonTarget.classList.add('btn-disabled')
+      this.submitButtonTarget.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Loading chart...'
     }
   }
 
@@ -71,6 +73,7 @@ export default class extends Controller {
     if (this.hasSubmitButtonTarget) {
       this.submitButtonTarget.disabled = false
       this.submitButtonTarget.classList.remove('btn-disabled')
+      this.submitButtonTarget.innerHTML = this.originalButtonText || 'Create Add On'
     }
   }
 
