@@ -3,6 +3,9 @@
 module Tools
   class ListAddOns < MCP::Tool
     include Tools::Concerns::Authentication
+    title "List add-ons"
+    idempotent_hint true
+    read_only_hint true
 
     description "List all add-ons (databases, caches, etc.) accessible to the current user"
 
