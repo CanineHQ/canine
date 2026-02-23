@@ -65,7 +65,7 @@ export default class extends Controller {
       this.originalButtonText = this.submitButtonTarget.innerHTML
       this.submitButtonTarget.disabled = true
       this.submitButtonTarget.classList.add('btn-disabled')
-      this.submitButtonTarget.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Loading versions...'
+      this.submitButtonTarget.innerHTML = '<span class="loading loading-spinner loading-sm"></span> Loading chart...'
     }
   }
 
