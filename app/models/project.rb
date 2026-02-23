@@ -105,7 +105,8 @@ class Project < ApplicationRecord
   }
   enum :project_fork_status, {
     disabled: 0,
-    manually_create: 1
+    manually_create: 1,
+    automatic: 2
   }, prefix: :forks
   delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider
   delegate :container_registry?, to: :project_credential_provider
