@@ -1,5 +1,5 @@
 class StaticController < ApplicationController
-  INSTALL_SCRIPT = "curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/install/install.sh | bash"
+  INSTALL_SCRIPT = "curl -sSL https://canine.sh/install.sh | bash"
   MAC_INSTALL_SCRIPT = "brew tap CanineHQ/canine && brew install canine"
   MAC_START_SCRIPT = "canine local start"
   skip_before_action :authenticate_user!
@@ -71,5 +71,10 @@ class StaticController < ApplicationController
 
   def swagger
     render plain: File.read(Rails.root.join('swagger', 'v1', 'swagger.yaml')), layout: false
+  end
+
+  def install
+    GoogleAnalytics.track("install_script_download", client_id: request.remote_ip, params: { user_agent: request.user_agent.to_s })
+    send_file Rails.root.join("install", "install.sh"), type: "text/plain", disposition: "inline"
   end
 end
