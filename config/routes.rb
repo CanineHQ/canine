@@ -236,6 +236,7 @@ Rails.application.routes.draw do
   get "/api-docs", to: "static#docs"
   get "/swagger", to: "static#swagger"
 
+  get "/install.sh", to: "static#install"
   get "/calculator", to: "static#calculator"
   # Public marketing homepage
   if Rails.application.config.local_mode
