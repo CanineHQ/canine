@@ -1,4 +1,4 @@
-<div class="mt-32 sm:mt-56">
+<div>
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <div class="mx-auto max-w-2xl sm:text-center">
       <h2 class="text-base font-semibold leading-7 text-indigo-400">Open Source</h2>
@@ -6,17 +6,34 @@
       <p class="mt-6 text-lg leading-8 text-gray-300">Bring your own servers, or use our hosted version.</p>
     </div>
   </div>
-  <div class="relative overflow-hidden pt-16">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mockup-code cursor-pointer group" data-controller="clipboard" data-clipboard-text="<%= StaticController::INSTALL_SCRIPT %>">
-        <pre data-prefix="$" class="text-white"><code class="group-hover:text-blue-300 transition-all"><%= StaticController::INSTALL_SCRIPT %></code></pre>
-        <pre data-prefix=">" class="text-warning"><code>Checking docker is installed...</code></pre>
-        <pre data-prefix=">" class="text-warning"><code>Checking docker-compose is installed...</code></pre>
-        <pre data-prefix=">" class="text-warning"><code>Enter the port you want to host Canine on (default: 3456):</code></pre>
-        <pre data-prefix=">" class="text-success"><code>Running on <span class="underline underline-offset-2">http://localhost:3456</span></code></pre>
+  <div class="relative overflow-hidden pt-6">
+    <div class="mx-auto max-w-5xl px-6 lg:px-8" data-controller="tabs">
+      <div class="rounded-lg overflow-hidden border border-gray-700">
+        <div class="flex items-center gap-2 px-4 py-2 bg-gray-900">
+          <span class="w-3 h-3 rounded-full bg-red-500"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+          <div role="tablist" class="tabs tabs-bordered ml-4">
+            <a role="tab" class="tab tab-active text-gray-300" data-action="click->tabs#select" data-tabs-target="tab" data-tab="linux">Linux</a>
+            <a role="tab" class="tab text-gray-300" data-action="click->tabs#select" data-tabs-target="tab" data-tab="mac">macOS</a>
+          </div>
+        </div>
+
+        <div data-tabs-target="panel" data-tab="linux" class="cursor-pointer group" data-controller="clipboard" data-clipboard-text="<%= StaticController::INSTALL_SCRIPT %>">
+          <pre class="bg-gray-800 text-gray-100 text-sm font-mono px-4 py-2 overflow-x-auto"><code><span class="text-gray-400"># Install & run with Docker</span>
+<span class="text-green-400">$</span> <span class="group-hover:text-blue-300 transition-all"><%= StaticController::INSTALL_SCRIPT %></span></code></pre>
+        </div>
+
+        <div data-tabs-target="panel" data-tab="mac" class="hidden cursor-pointer group" data-controller="clipboard" data-clipboard-text="<%= StaticController::MAC_INSTALL_SCRIPT %> && <%= StaticController::MAC_START_SCRIPT %>">
+          <pre class="bg-gray-800 text-gray-100 text-sm font-mono px-4 py-2 overflow-x-auto"><code><span class="text-gray-400"># Install via Homebrew</span>
+<span class="text-green-400">$</span> <span class="group-hover:text-blue-300 transition-all"><%= StaticController::MAC_INSTALL_SCRIPT %></span>
+
+<span class="text-gray-400"># Start Canine locally</span>
+<span class="text-green-400">$</span> <span class="group-hover:text-blue-300 transition-all"><%= StaticController::MAC_START_SCRIPT %></span></code></pre>
+        </div>
       </div>
-      <div class="mt-2 text-sm text-gray-200">
-        (Run this on your laptop, not your cluster)
+      <div class="mt-2 text-sm text-gray-400 text-center">
+        Click to copy. Run this on your laptop, not your cluster.
       </div>
     </div>
   </div>
