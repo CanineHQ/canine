@@ -1,5 +1,7 @@
 class StaticController < ApplicationController
   INSTALL_SCRIPT = "curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/install/install.sh | bash"
+  MAC_INSTALL_SCRIPT = "brew tap CanineHQ/canine && brew install canine"
+  MAC_START_SCRIPT = "canine local start"
   skip_before_action :authenticate_user!
   ILLUSTRATIONS = [
     {
