@@ -1,7 +1,7 @@
 x-shared-env: &shared-env
   DATABASE_URL: postgres://postgres:password@postgres:5432
   BOOT_MODE: local
-  SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required}
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
   APP_HOST: http://localhost:${PORT:-3000}
   LOCAL_MODE_PASSWORDLESS: true
   REMAP_LOCALHOST: "host.docker.internal"
@@ -14,7 +14,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_MULTIPLE_DATABASES=canine_production,canine_development
+      - POSTGRES_MULTIPLE_DATABASES=canine_development
     ports:
       - "5432:5432"
     volumes:
@@ -29,8 +29,7 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
-    image: canine-local:dev
+      dockerfile: Dockerfile.dev
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,16 +41,20 @@ services:
     environment:
       <<: *shared-env
       PORT: ${PORT:-3000}
+      BINDING: "0.0.0.0"
       ACCOUNT_SIGN_IN_ONLY: "true"
     volumes:
+      - .:/rails
+      - bundle:/usr/local/bundle
+      - node_modules:/rails/node_modules
+      - /rails/tmp
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
 
   worker:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile
-    image: canine-local:dev
+      dockerfile: Dockerfile.dev
     command: bundle exec good_job start
     depends_on:
       postgres:
@@ -60,7 +63,13 @@ services:
       <<: *shared-env
       LOCAL_MODE: "true"
     volumes:
+      - .:/rails
+      - bundle:/usr/local/bundle
+      - node_modules:/rails/node_modules
+      - /rails/tmp
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
 
 volumes:
   postgres:
+  bundle:
+  node_modules:
