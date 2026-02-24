@@ -26,6 +26,11 @@ module Portainer
     end
 
     def self.reachable?(provider_url)
+      provider_url = if Rails.configuration.remap_localhost.present?
+        K8::Kubeconfig.remap_localhost(provider_url)
+      else
+        provider_url
+      end
       HTTParty.get("#{provider_url}/system/status", verify: false)
       true
     rescue Socket::ResolutionError, Net::ReadTimeout, StandardError
