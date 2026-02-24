@@ -1,65 +1,70 @@
-# FROM ruby:3.3
+# syntax = docker/dockerfile:1
+
+# Development Dockerfile - installs all dependencies but expects
+# the application code to be mounted as a volume for hot reloading.
+
 ARG RUBY_VERSION=3.3.4
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM docker.io/library/ruby:$RUBY_VERSION-slim
 
-# Install dependencies for building Ruby
-RUN apt-get update && apt-get install -y build-essential curl wget autoconf git
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    gnupg && \
-    curl -k https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list && \
-    apt-get update && \
-    apt-get install -y docker-ce-cli && \
-    rm -rf /var/lib/apt/lists/*
-
-ARG NODE_VERSION=20.11.0
-ARG YARN_VERSION=1.22.21
-ENV BINDING="0.0.0.0" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="omit" \
-    GEM_HOME="/usr/local/bundle"
-
-RUN gem update --system && gem cleanup
-
-# Install JavaScript dependencies
-ENV PATH=/usr/local/node/bin:$PATH
-RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
-    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
-    npm install -g yarn@$YARN_VERSION && \
-    rm -rf /tmp/node-build-master
-
-# App dependencies
-# Install necessary packages and setup kubectl and helm
-RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends ca-certificates imagemagick libvips libvips-dev libvips-tools poppler-utils libpq-dev postgresql-client && \
-    update-ca-certificates && \
-    curl -k -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -k -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
-    chmod +x ./kubectl && \
-    mv ./kubectl /usr/local/bin/kubectl && \
-    curl -k -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
-    chmod +x get_helm.sh && \
-    ./get_helm.sh && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt
-
-# App
 WORKDIR /rails
 
-COPY ./Gemfile* ./.ruby-version /rails/
-RUN bundle install --jobs $(nproc) --retry 5
+# Install system packages (runtime + build dependencies together since this is dev)
+ARG KUBECTL_VERSION=v1.31.0
+ARG HELM_VERSION=v3.16.3
+ARG TARGETOS
+ARG TARGETARCH
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      curl libjemalloc2 libvips postgresql-client \
+      build-essential git libpq-dev pkg-config \
+      ca-certificates gnupg && \
+    curl -k -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl && \
+    chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-COPY package.json yarn.lock /rails/
+# Install Helm
+RUN set -eux; \
+    os="${TARGETOS:-linux}"; \
+    arch="${TARGETARCH:-amd64}"; \
+    url="https://get.helm.sh/helm-${HELM_VERSION}-${os}-${arch}.tar.gz"; \
+    curl -fsSLO "$url"; \
+    curl -fsSLO "${url}.sha256sum"; \
+    sha256sum -c "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum"; \
+    tar -xzf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz"; \
+    install -m 0755 "${os}-${arch}/helm" /usr/local/bin/helm; \
+    rm -rf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz" "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum" "${os}-${arch}"
+
+# Install Docker CLI
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y docker-ce-cli docker-buildx-plugin && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install Node.js and Yarn
+ARG NODE_VERSION=23.10.0
+ARG YARN_VERSION=1.22.21
+RUN ARCH=$(case "${TARGETARCH}" in amd64) echo x64 ;; arm64) echo arm64 ;; *) echo "${TARGETARCH}" ;; esac) && \
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${ARCH}.tar.xz" \
+    | tar -xJ --strip-components=1 -C /usr/local/ && \
+    npm install -g yarn@$YARN_VERSION
+
+# Set development environment
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    DOCKER_API_VERSION="1.44"
+
+# Install gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Install JS dependencies
+COPY package.json yarn.lock ./
 RUN yarn install
 
-COPY . .
-
-RUN gem install foreman
-
-# Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 CMD ["./bin/dev"]

@@ -98,7 +98,19 @@ if (process.argv.includes("--reload")) {
   buildAndReload()
 } else if (process.argv.includes("--watch")) {
   let context = await esbuild.context({...config, logLevel: 'info'})
-  context.watch()
+  await context.rebuild()
+  console.log("[watch] initial build succeeded")
+
+  chokidar
+    .watch(["./app/javascript/**/*.js"], { ignoreInitial: true })
+    .on("all", async (event, changedPath) => {
+      try {
+        await context.rebuild()
+        console.log(`[watch] build finished`)
+      } catch (error) {
+        console.error("[watch] build failed", error)
+      }
+    })
 } else {
   esbuild.build(config)
 }

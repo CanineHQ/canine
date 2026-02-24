@@ -5,6 +5,7 @@ module Accounts
     before_action :set_stack_manager, only: [ :show, :edit, :update, :destroy, :sync_clusters, :sync_registries ]
     before_action :set_stack, only: [ :sync_clusters, :sync_registries ]
     skip_before_action :authenticate_user!, only: [ :verify_url, :check_reachable, :verify_connectivity ]
+    skip_before_action :verify_authenticity_token, only: [ :verify_url, :check_reachable, :verify_connectivity ]
 
     def check_reachable
       url = params[:stack_manager][:url]
