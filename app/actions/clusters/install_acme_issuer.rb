@@ -24,7 +24,7 @@ class Clusters::InstallAcmeIssuer
     cluster.info("Checking if acme issuer is already installed", color: :yellow)
 
     begin
-      kubectl.("get clusterissuer letsencrypt -n #{namespace}")
+      kubectl.call("get clusterissuer letsencrypt")
       cluster.success("Acme issuer is already installed")
     rescue Cli::CommandFailedError => e
       cluster.info("Acme issuer not detected, installing...", color: :yellow)

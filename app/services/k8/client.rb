@@ -30,7 +30,11 @@ module K8
     end
 
     def get_ingresses(namespace:)
-      result = K8::Kubectl.new(@connection).call("get ingresses -n #{namespace} -o json")
+      get_http_routes(namespace:)
+    end
+
+    def get_http_routes(namespace:)
+      result = K8::Kubectl.new(@connection).call("get httproutes.gateway.networking.k8s.io -n #{namespace} -o json")
       JSON.parse(result, object_class: OpenStruct).items
     end
 

@@ -2,6 +2,12 @@
 <%= link_to project_path(project) do %>
   <div class="card bg-base-200">
     <div class="card-body">
+      <% if project.cluster.gateway_based? %>
+        <div class="alert alert-warning mb-2 py-2">
+          <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+          <span>This cluster uses Gateway API. Redeploy to upgrade.</span>
+        </div>
+      <% end %>
       <h2 class="card-title">
         <%= project.name %>
       </h2>

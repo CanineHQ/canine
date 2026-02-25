@@ -3,6 +3,14 @@
     <%= link_to "← Back to original project", project_path(project.parent_project), class: "btn btn-ghost" %>
   </div>
 <% end %>
+<% if project.cluster.gateway_based? %>
+  <div class="alert alert-warning mb-3">
+    <iconify-icon icon="lucide:triangle-alert"></iconify-icon>
+    <span>
+      This cluster uses Gateway API. Redeploy this project to upgrade networking resources.
+    </span>
+  </div>
+<% end %>
 <div class="flex flex-col md:flex-row items-center justify-between mb-4">
   <div class="self-stretch">
     <div>
