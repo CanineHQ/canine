@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -166,6 +166,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.datetime "updated_at", null: false
     t.string "digest"
     t.index ["project_id"], name: "index_builds_on_project_id"
+  end
+
+  create_table "cluster_packages", force: :cascade do |t|
+    t.bigint "cluster_id", null: false
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.jsonb "config", default: {}
+    t.datetime "installed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id", "name"], name: "index_cluster_packages_on_cluster_id_and_name", unique: true
+    t.index ["cluster_id"], name: "index_cluster_packages_on_cluster_id"
   end
 
   create_table "clusters", force: :cascade do |t|
@@ -642,7 +654,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.string "namespace", null: false
     t.string "container"
     t.datetime "expires_at", null: false
-    t.datetime "connected_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_shell_tokens_on_cluster_id"
@@ -761,6 +772,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   add_foreign_key "build_configurations", "providers"
   add_foreign_key "build_packs", "build_configurations"
   add_foreign_key "builds", "projects"
+  add_foreign_key "cluster_packages", "clusters"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployment_configurations", "projects"

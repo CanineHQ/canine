@@ -35,6 +35,7 @@ class Cluster < ApplicationRecord
 
   has_many :projects, dependent: :destroy
   has_many :add_ons, dependent: :destroy
+  has_many :cluster_packages, dependent: :destroy
   has_many :domains, through: :projects
   has_many :metrics, dependent: :destroy
   has_many :users, through: :account

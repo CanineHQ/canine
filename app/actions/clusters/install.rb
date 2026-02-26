@@ -4,10 +4,7 @@ class Clusters::Install
   DEFAULT_RECIPE = [
     Clusters::IsReady,
     Clusters::CreateNamespace,
-    Clusters::InstallNginxIngress,
-    Clusters::InstallAcmeIssuer,
-    Clusters::InstallMetricServer,
-    Clusters::InstallTelepresence
+    Clusters::InstallComponents
   ]
 
   def self.recipe(cluster, user)
