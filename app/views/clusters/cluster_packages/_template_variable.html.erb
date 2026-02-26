@@ -1,0 +1,35 @@
+<% prefix = local_assigns[:definition] ? "package_config[#{definition['name']}]" : "config" %>
+<div class="form-group">
+  <% if variable['type'] == 'string' %>
+    <label class="label"><span class="label-text"><%= variable['name'] %></span></label>
+    <input type="text"
+           name="<%= prefix %>[<%= variable['key'] %>]"
+           class="input input-bordered w-full max-w-md"
+           value="<%= variable['default'] %>"
+           <%= 'required' if variable['required'] %> />
+  <% elsif variable['type'] == 'boolean' %>
+    <label class="label cursor-pointer mt-1">
+      <input type="checkbox"
+             name="<%= prefix %>[<%= variable['key'] %>]"
+             class="checkbox"
+             value="true"
+             <%= 'checked' if variable['default'] %> />
+      <span class="label-text ml-2"><%= variable['name'] %></span>
+    </label>
+  <% elsif variable['type'] == 'integer' %>
+    <label class="label"><span class="label-text"><%= variable['name'] %></span></label>
+    <input type="number"
+           name="<%= prefix %>[<%= variable['key'] %>]"
+           class="input input-bordered"
+           inputmode="numeric"
+           value="<%= variable['default'] %>"
+           <%= 'required' if variable['required'] %> />
+  <% elsif variable['type'] == 'enum' %>
+    <label class="label"><span class="label-text"><%= variable['name'] %></span></label>
+    <select name="<%= prefix %>[<%= variable['key'] %>]" class="select select-bordered w-full max-w-md">
+      <% variable['options'].each do |opt| %>
+        <option value="<%= opt %>"><%= opt %></option>
+      <% end %>
+    </select>
+  <% end %>
+</div>

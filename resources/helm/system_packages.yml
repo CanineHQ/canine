@@ -1,0 +1,87 @@
+packages:
+  - name: nginx-ingress
+    display_name: Nginx Ingress
+    description: Ingress controller for routing external traffic to cluster services
+    icon: simple-icons:nginx
+    default: true
+    install_type: helm
+    repo_name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+    chart_name: ingress-nginx
+    chart_url: ingress-nginx/ingress-nginx
+    check_command: get deployment ingress-nginx-controller
+    values:
+      controller:
+        config:
+          use-forwarded-headers: "true"
+          proxy-real-ip-cidr: "0.0.0.0/0"
+          enable-underscores-in-headers: "true"
+          proxy-pass-headers: "*"
+          proxy-body-size: "0"
+          proxy-buffer-size: "16k"
+          proxy-buffers-number: "8"
+          proxy-busy-buffers-size: "32k"
+          proxy-read-timeout: "3600"
+          proxy-send-timeout: "3600"
+          h2-backend: "true"
+          hsts: "true"
+          hsts-max-age: "63072000"
+          hsts-include-subdomains: "true"
+          hsts-preload: "true"
+          enable-gzip: "true"
+          gzip-types: "text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript"
+
+  - name: cert-manager
+    display_name: Cert Manager
+    description: Automatic TLS certificate management with Let's Encrypt
+    icon: mdi:certificate-outline
+    default: true
+    install_type: helm_and_manifest
+    repo_name: jetstack
+    repo_url: https://charts.jetstack.io
+    chart_name: cert-manager
+    chart_url: jetstack/cert-manager
+    chart_version: v1.15.3
+    check_command: get clusterissuer letsencrypt
+    values:
+      crds:
+        enabled: true
+
+  - name: metrics-server
+    display_name: Metrics Server
+    description: Cluster resource metrics collection for autoscaling and monitoring
+    icon: mdi:chart-line
+    default: true
+    install_type: manifest
+    manifest_path: resources/k8/shared/metrics_server.yaml
+    check_command: get deployment metrics-server
+    check_namespace: kube-system
+
+  - name: telepresence
+    display_name: Telepresence
+    description: Local development against a remote Kubernetes cluster
+    icon: mdi:remote-desktop
+    default: true
+    install_type: helm
+    repo_name: datawire
+    repo_url: https://getambassador.io
+    chart_name: traffic-manager
+    chart_url: datawire/telepresence
+    check_command: get deployment traffic-manager
+
+  - name: cloudflared
+    display_name: Cloudflare Tunnel
+    description: Secure tunnel to expose cluster services through Cloudflare
+    icon: simple-icons:cloudflare
+    default: false
+    install_type: helm
+    repo_name: cloudflare
+    repo_url: https://cloudflare.github.io/helm-charts
+    chart_name: cloudflare-tunnel
+    chart_url: cloudflare/cloudflare-tunnel
+    check_command: get deployment cloudflare-tunnel
+    template:
+      - name: Tunnel Token
+        key: credentials.token
+        type: string
+        required: true

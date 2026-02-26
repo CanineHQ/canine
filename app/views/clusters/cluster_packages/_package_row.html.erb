@@ -1,0 +1,70 @@
+<div class="flex items-center justify-between p-4 bg-base-200 rounded-lg">
+  <div class="flex items-center gap-3">
+    <iconify-icon icon="<%= definition['icon'] %>" height="28"></iconify-icon>
+    <div>
+      <h4 class="font-semibold"><%= definition['display_name'] %></h4>
+      <p class="text-sm text-gray-400"><%= definition['description'] %></p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <% if package.present? && !package.new_record? %>
+      <%= render "clusters/cluster_packages/status", package: package %>
+
+      <% if package.installed? || package.failed? %>
+        <%= button_to cluster_cluster_package_path(cluster, package),
+              method: :delete,
+              class: "btn btn-sm btn-outline btn-error",
+              form: { data: { turbo_confirm: "Are you sure you want to uninstall #{definition['display_name']}?" } } do %>
+          <iconify-icon icon="lucide:trash-2" height="14"></iconify-icon>
+          Remove
+        <% end %>
+      <% end %>
+
+      <% if package.failed? %>
+        <%= button_to cluster_cluster_packages_path(cluster),
+              params: { name: definition['name'] },
+              class: "btn btn-sm btn-outline btn-warning" do %>
+          <iconify-icon icon="lucide:rotate-cw" height="14"></iconify-icon>
+          Retry
+        <% end %>
+      <% end %>
+    <% else %>
+      <% if definition['template'].present? %>
+        <div data-controller="content-toggle">
+          <button type="button"
+                  class="btn btn-sm btn-outline btn-primary"
+                  data-action="click->content-toggle#toggleEdit"
+                  data-content-toggle-target="editButton">
+            <iconify-icon icon="lucide:plus" height="14"></iconify-icon>
+            Install
+          </button>
+
+          <div data-content-toggle-target="editorContainer" class="hidden mt-3">
+            <%= form_with url: cluster_cluster_packages_path(cluster), method: :post, class: "space-y-3" do |f| %>
+              <input type="hidden" name="name" value="<%= definition['name'] %>" />
+              <% definition['template'].each do |variable| %>
+                <%= render "clusters/cluster_packages/template_variable", variable: variable %>
+              <% end %>
+              <div class="flex gap-2">
+                <%= f.submit "Install", class: "btn btn-sm btn-primary" %>
+                <button type="button"
+                        class="btn btn-sm btn-outline"
+                        data-action="click->content-toggle#cancelEdit">
+                  Cancel
+                </button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <%= button_to cluster_cluster_packages_path(cluster),
+              params: { name: definition['name'] },
+              class: "btn btn-sm btn-outline btn-primary" do %>
+          <iconify-icon icon="lucide:plus" height="14"></iconify-icon>
+          Install
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

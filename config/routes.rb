@@ -200,6 +200,7 @@ Rails.application.routes.draw do
     end
     resource :metrics, only: [ :show ], module: :clusters
     resource :build_cloud, only: [ :show, :edit, :update, :create, :destroy ], module: :clusters
+    resources :cluster_packages, only: [ :create, :destroy ], module: :clusters
     member do
       post :test_connection
       post :retry_install

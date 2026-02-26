@@ -36,6 +36,40 @@
       </div>
     </div>
 
+    <div>
+      <label class="mb-4 inline-block font-semibold">System Packages</label>
+      <p class="text-sm text-gray-400 mb-4">Select packages to install on your cluster.</p>
+      <div class="space-y-3">
+        <% ClusterPackage.definitions.each do |definition| %>
+          <div data-controller="content-toggle">
+            <label class="flex items-center gap-3 p-3 bg-base-200 rounded-lg cursor-pointer">
+              <input type="checkbox"
+                     name="package_names[]"
+                     value="<%= definition['name'] %>"
+                     class="checkbox"
+                     <%= 'checked' if definition['default'] %>
+                     <% if definition['template'].present? %>
+                       data-action="change->content-toggle#toggleEdit"
+                     <% end %> />
+              <iconify-icon icon="<%= definition['icon'] %>" height="24"></iconify-icon>
+              <div>
+                <span class="font-semibold"><%= definition['display_name'] %></span>
+                <p class="text-sm text-gray-400"><%= definition['description'] %></p>
+              </div>
+            </label>
+
+            <% if definition['template'].present? %>
+              <div data-content-toggle-target="editorContainer" class="hidden pl-10 pt-2 space-y-2">
+                <% definition['template'].each do |variable| %>
+                  <%= render "clusters/cluster_packages/template_variable", variable: variable, definition: definition %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
   </div>
 
 <% end %>
