@@ -38,6 +38,7 @@ class ProjectsController < ApplicationController
 
   def edit
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
+    @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
   end
 
   def create

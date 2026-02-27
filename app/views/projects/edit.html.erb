@@ -40,6 +40,33 @@
     </div>
 
     <div>
+      <h2 class="text-2xl font-bold">Cluster Migration</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <p class="text-sm text-gray-500 mb-4">
+        This will create a copy of the project on the target cluster and trigger a deployment.
+        The original project will remain on the current cluster.
+      </p>
+      <% if @clusters.any? %>
+        <%= form_with(url: project_cluster_migration_path(@project), method: :post, class: "space-y-4") do |form| %>
+          <%= render(FormFieldComponent.new(label: "Target Cluster")) do %>
+            <%= form.select :cluster_id,
+              options_for_select(@clusters.map { |c| [c.name, c.id] }),
+              { prompt: "Select a cluster" },
+              { class: "select select-bordered w-full" } %>
+          <% end %>
+          <div class="form-footer">
+            <%= form.submit "Migrate Project", class: "btn btn-primary", data: { turbo_submits_with: "Migrating..." } %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="alert alert-warning">
+          <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
+          <span>No other running clusters available for migration.</span>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="mt-6">
