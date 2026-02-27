@@ -61,7 +61,7 @@ Unlike hosted PaaS solutions, you maintain complete control over your infrastruc
 
 ## Installation
 ```bash
-curl -sSL https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/install/install.sh | bash
+curl -sSL https://canine.sh/install.sh | bash
 ```
 ---
 
