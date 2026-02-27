@@ -63,8 +63,8 @@ class Projects::ProjectForksController < Projects::BaseController
       pull_request:
     )
     if result.success?
-      Projects::DeployLatestCommit.execute(project: result.project_fork.child_project, current_user:)
-      redirect_to project_path(result.project_fork.child_project), notice: "Preview app created"
+      Projects::DeployLatestCommit.execute(project: result.project, current_user:)
+      redirect_to project_path(result.project), notice: "Preview app created"
     else
       redirect_to project_project_forks_path(@project), alert: "Failed to create preview app: #{result.message}"
     end

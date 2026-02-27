@@ -4,14 +4,14 @@ class Projects::ClusterMigrationsController < Projects::BaseController
   def create
     target_cluster = current_account.clusters.running.find(params[:cluster_id])
 
-    result = ClusterMigrations::MigrateProject.execute(
+    result = ClusterMigrations::MigrateProject.call(
       source_project: @project,
       target_cluster: target_cluster
     )
 
     if result.success?
-      Projects::DeployLatestCommit.execute(project: result.migrated_project, current_user:)
-      redirect_to project_path(result.migrated_project), notice: "Project migrated successfully"
+      Projects::DeployLatestCommit.execute(project: result.project, current_user:)
+      redirect_to project_path(result.project), notice: "Project migrated successfully"
     else
       redirect_to edit_project_path(@project), alert: result.message
     end

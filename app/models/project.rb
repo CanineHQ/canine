@@ -225,4 +225,96 @@ class Project < ApplicationRecord
       project_credential_provider.provider
     end
   end
+
+  def to_canine_config
+    config = {
+      "project" => {
+        "name" => name,
+        "repository_url" => repository_url,
+        "branch" => branch,
+        "dockerfile_path" => dockerfile_path,
+        "docker_build_context_directory" => docker_build_context_directory,
+        "container_registry_url" => container_registry_url,
+        "managed_namespace" => managed_namespace,
+        "autodeploy" => autodeploy
+      }.compact,
+      "credential_provider" => { "provider_id" => project_credential_provider.provider_id },
+      "scripts" => {
+        "predeploy" => predeploy_command,
+        "postdeploy" => postdeploy_command,
+        "predestroy" => predestroy_command,
+        "postdestroy" => postdestroy_command
+      }.compact,
+      "services" => services.map { |s| serialize_service(s) },
+      "environment_variables" => environment_variables.map { |e|
+        { "name" => e.name, "value" => e.value, "storage_type" => e.storage_type }
+      },
+      "volumes" => volumes.map { |v|
+        { "name" => v.name, "size" => v.size, "mount_path" => v.mount_path, "access_mode" => v.access_mode }
+      },
+      "notifiers" => notifiers.map { |n|
+        { "name" => n.name, "provider_type" => n.provider_type, "webhook_url" => n.webhook_url, "enabled" => n.enabled }
+      }
+    }
+    config.delete("scripts") if config["scripts"].empty?
+
+    if build_configuration.present?
+      bc = build_configuration
+      config["build_configuration"] = {
+        "build_type" => bc.build_type,
+        "driver" => bc.driver,
+        "dockerfile_path" => bc.dockerfile_path,
+        "context_directory" => bc.context_directory,
+        "image_repository" => bc.image_repository,
+        "buildpack_base_builder" => bc.buildpack_base_builder,
+        "provider_id" => bc.provider_id,
+        "build_cloud_id" => bc.build_cloud_id
+      }.compact
+    end
+
+    if deployment_configuration.present?
+      config["deployment_configuration"] = {
+        "deployment_method" => deployment_configuration.deployment_method
+      }
+    end
+
+    config
+  end
+
+  private
+
+  def serialize_service(service)
+    hash = {
+      "name" => service.name,
+      "service_type" => service.service_type,
+      "command" => service.command,
+      "container_port" => service.container_port,
+      "healthcheck_url" => service.healthcheck_url,
+      "replicas" => service.replicas,
+      "description" => service.description,
+      "allow_public_networking" => service.allow_public_networking,
+      "pod_yaml" => service.pod_yaml
+    }.compact
+
+    if service.domains.any?
+      hash["domains"] = service.domains.map { |d| { "domain_name" => d.domain_name } }
+    end
+
+    if service.resource_constraint.present?
+      rc = service.resource_constraint
+      hash["resource_constraint"] = {
+        "cpu_request" => rc.cpu_request,
+        "cpu_limit" => rc.cpu_limit,
+        "memory_request" => rc.memory_request,
+        "memory_limit" => rc.memory_limit,
+        "gpu_request" => rc.gpu_request
+      }.compact
+    end
+
+    if service.cron_schedule.present?
+      hash["cron_schedule"] = { "schedule" => service.cron_schedule.schedule }
+    end
+
+    hash
+  end
 end
