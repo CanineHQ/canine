@@ -2,7 +2,7 @@
 
 class Projects::Services::DomainsController < Projects::Services::BaseController
   def create
-    @domain = @service.domains.new(domain_params)
+    @domain = @service.ingress_endpoint.domains.new(domain_params)
     if @domain.save
       @service.updated!
       render partial: "projects/services/domains/index", locals: { service: @service }
@@ -13,7 +13,7 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
 
   def check_dns
     Networks::CheckDns.execute(
-      ingress: K8::Stateless::Ingress.new(@service),
+      ingress_endpoint: @service.ingress_endpoint,
       connection: active_connection,
     )
     render partial: "projects/services/domains/index", locals: { service: @service, refreshed: true }

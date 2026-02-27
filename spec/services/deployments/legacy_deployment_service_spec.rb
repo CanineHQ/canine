@@ -14,7 +14,7 @@ RSpec.describe Deployments::LegacyDeploymentService do
       name: 'web',
       service_type: :web_service,
       allow_public_networking: true
-    ).tap { |s| create(:domain, service: s, domain_name: 'example.com') }
+    ).tap { |s| create(:domain, ingress_endpoint: s.ingress_endpoint, domain_name: 'example.com') }
   end
 
   let!(:worker_service) do

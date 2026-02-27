@@ -13,7 +13,9 @@ class Services::Update
         context.params[:service][:cron_schedule].permit(:schedule))
     end
 
-    if !was_public && context.service.allow_public_networking?
+    if !was_public && context.service.allow_public_networking? && context.service.web_service?
+      Services::CreateIngressEndpoint.execute(service: context.service) unless context.service.ingress_endpoint
+      context.service.reload
       Domains::AttachAutoManagedDomain.execute(service: context.service)
     end
 

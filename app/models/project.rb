@@ -57,10 +57,11 @@ class Project < ApplicationRecord
   has_many :users, through: :account
 
   has_many :services, dependent: :destroy
+  has_many :ingress_endpoints, through: :services
   has_many :environment_variables, dependent: :destroy
   has_many :builds, dependent: :destroy
   has_many :deployments, through: :builds
-  has_many :domains, through: :services
+  has_many :domains, through: :ingress_endpoints
   has_many :events, dependent: :destroy
   has_many :volumes, dependent: :destroy
   has_many :notifiers, dependent: :destroy

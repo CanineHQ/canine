@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: <%= endpoint.metadata.name %>
+  name: <%= endpoint_name %>
   namespace: <%= add_on.name %>
   labels:
     caninemanaged: 'true'
@@ -12,19 +12,19 @@ spec:
   tls:
   - hosts:
     <% domains.each do |domain| %>
-    - <%= domain %>
+    - <%= domain.domain_name %>
     <% end %>
-    secretName: <%= endpoint.metadata.name %>-tls
+    secretName: <%= endpoint_name %>-tls
   rules:
   <% domains.each do |domain| %>
-  - host: <%= domain %>
+  - host: <%= domain.domain_name %>
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: <%= endpoint.metadata.name %>
+            name: <%= endpoint_name %>
             port:
               number: <%= port %>
   <% end %>

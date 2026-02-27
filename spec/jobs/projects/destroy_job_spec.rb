@@ -16,7 +16,7 @@ RSpec.describe Projects::DestroyJob do
     let!(:deployment) { create(:deployment, build: build) }
     let!(:service) { create(:service, project: project) }
     let!(:volume) { create(:volume, project: project) }
-    let!(:domain) { create(:domain, service: service) }
+    let!(:domain) { create(:domain, ingress_endpoint: service.ingress_endpoint) }
     let!(:environment_variable) { create(:environment_variable, project: project) }
 
     before { project.update!(current_deployment: deployment) }

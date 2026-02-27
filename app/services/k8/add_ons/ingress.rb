@@ -1,10 +1,10 @@
 class K8::AddOns::Ingress < K8::Base
-  attr_reader :add_on, :endpoint, :port, :domains
+  attr_reader :add_on, :ingress_endpoint
 
-  def initialize(add_on, endpoint, port, domains)
-    @endpoint = endpoint
-    @port = port
+  delegate :endpoint_name, :port, :domains, to: :ingress_endpoint
+
+  def initialize(add_on, ingress_endpoint)
     @add_on = add_on
-    @domains = domains
+    @ingress_endpoint = ingress_endpoint
   end
 end

@@ -12,12 +12,12 @@ spec:
   ingressClassName: "nginx"
   tls:
   - hosts:
-    <% service.domains.each do |domain| %>
+    <% ingress_endpoint.domains.each do |domain| %>
     - <%= domain.domain_name %>
     <% end %>
     secretName: <%= certificate_name %>
   rules:
-  <% service.domains.each do |domain| %>
+  <% ingress_endpoint.domains.each do |domain| %>
   - host: <%= domain.domain_name %>
     http:
       paths:
@@ -25,7 +25,7 @@ spec:
         path: "/"
         backend:
           service:
-            name: <%= service.name %>-service
+            name: <%= ingress_endpoint.endpoint_name %>
             port:
-              number: 80
+              number: <%= ingress_endpoint.port %>
   <% end %>

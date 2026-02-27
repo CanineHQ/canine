@@ -34,6 +34,13 @@ FactoryBot.define do
     status { :pending }
     service_type { :web_service }
 
+    after(:create) do |service|
+      if service.web_service? && service.ingress_endpoint.nil?
+        create(:ingress_endpoint, endpointable: service, endpoint_name: "#{service.name}-service", port: 80)
+        service.reload
+      end
+    end
+
     trait :cron_job do
       service_type { :cron_job }
       command { "rails runner 'puts \"Hello World\"'" }

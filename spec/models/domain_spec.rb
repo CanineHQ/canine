@@ -9,7 +9,7 @@
 #  status_reason :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  service_id    :bigint           not null
+#  service_id    :bigint
 #
 # Indexes
 #
@@ -47,6 +47,14 @@ RSpec.describe Domain, type: :model do
       domain.domain_name = "example.com"
       domain.valid?
       expect(domain.errors[:domain_name]).to be_empty
+    end
+  end
+
+  describe '#service' do
+    it 'returns the service when endpointable is a Service' do
+      service = create(:service)
+      domain = create(:domain, ingress_endpoint: service.ingress_endpoint)
+      expect(domain.service).to eq(service)
     end
   end
 end

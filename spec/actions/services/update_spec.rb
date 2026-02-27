@@ -32,7 +32,7 @@ RSpec.describe Services::Update do
 
       it 'does not create a domain when public networking was already on' do
         service = create(:service, project: project, allow_public_networking: true, service_type: :web_service)
-        create(:domain, service: service, auto_managed: true)
+        create(:domain, ingress_endpoint: service.ingress_endpoint, auto_managed: true)
         params = ActionController::Parameters.new({ service: { replicas: 2 } })
 
         expect { described_class.execute(service: service, params: params) }

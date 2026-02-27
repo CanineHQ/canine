@@ -35,6 +35,8 @@ class AddOn < ApplicationRecord
   include Favoriteable
   include AccountUniqueName
   belongs_to :cluster
+  has_many :ingress_endpoints, as: :endpointable, dependent: :destroy
+  has_many :domains, through: :ingress_endpoints
 
   def self.ransackable_attributes(auth_object = nil)
     %w[name chart_url]

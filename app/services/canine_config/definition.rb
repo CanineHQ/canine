@@ -74,8 +74,9 @@ class CanineConfig::Definition
         # Ensure allow_public_networking is true when domains are specified
         service_instance.allow_public_networking = true
 
+        ie = service_instance.build_ingress_endpoint(endpoint_name: "#{service_instance.name}-service", port: 80)
         service['domains'].each do |domain_name|
-          service_instance.domains.build(domain_name: domain_name)
+          ie.domains.build(domain_name: domain_name)
         end
       end
 

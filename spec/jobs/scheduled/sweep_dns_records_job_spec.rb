@@ -37,7 +37,7 @@ RSpec.describe Scheduled::SweepDnsRecordsJob do
       end
 
       it 'deletes stale records matching auto-managed pattern but not in database' do
-        create(:domain, service: service, domain_name: 'web-myapp.oncanine.run', auto_managed: true)
+        create(:domain, ingress_endpoint: service.ingress_endpoint, domain_name: 'web-myapp.oncanine.run', auto_managed: true)
 
         all_records = [
           { "id" => "abc123", "type" => "A", "name" => "web-myapp.oncanine.run" },

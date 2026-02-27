@@ -6,7 +6,7 @@ RSpec.describe Domains::Destroy do
 
   describe '.execute' do
     it 'destroys the domain' do
-      domain = create(:domain, service: service)
+      domain = create(:domain, ingress_endpoint: service.ingress_endpoint)
 
       expect { described_class.execute(domain: domain) }.to change { Domain.count }.by(-1)
     end
@@ -20,7 +20,7 @@ RSpec.describe Domains::Destroy do
       end
 
       it 'deletes the DNS record and destroys the domain' do
-        domain = create(:domain, service: service, domain_name: 'test-app.oncanine.run', auto_managed: true)
+        domain = create(:domain, ingress_endpoint: service.ingress_endpoint, domain_name: 'test-app.oncanine.run', auto_managed: true)
 
         expect(dns_client).to receive(:delete_record).with(subdomain: 'test-app')
 
@@ -29,7 +29,7 @@ RSpec.describe Domains::Destroy do
       end
 
       it 'still destroys the domain if DNS deletion fails' do
-        domain = create(:domain, service: service, domain_name: 'test-app.oncanine.run', auto_managed: true)
+        domain = create(:domain, ingress_endpoint: service.ingress_endpoint, domain_name: 'test-app.oncanine.run', auto_managed: true)
 
         allow(dns_client).to receive(:delete_record).and_raise(Dns::Client::Error, 'API error')
 
@@ -43,7 +43,7 @@ RSpec.describe Domains::Destroy do
       end
 
       it 'does not attempt DNS cleanup' do
-        domain = create(:domain, service: service, auto_managed: false)
+        domain = create(:domain, ingress_endpoint: service.ingress_endpoint, auto_managed: false)
 
         expect(Dns::Client).not_to receive(:default)
 
@@ -57,7 +57,7 @@ RSpec.describe Domains::Destroy do
       end
 
       it 'does not attempt DNS cleanup' do
-        domain = create(:domain, service: service, auto_managed: true)
+        domain = create(:domain, ingress_endpoint: service.ingress_endpoint, auto_managed: true)
 
         expect(Dns::Client).not_to receive(:default)
 

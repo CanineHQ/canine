@@ -9,17 +9,15 @@
 #  status_reason :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  service_id    :bigint           not null
+#  service_id    :bigint
 #
 # Indexes
 #
 #  index_domains_on_service_id  (service_id)
 #
 class Domain < ApplicationRecord
-  belongs_to :service
-  has_one :project, through: :service
-  has_one :cluster, through: :project
-  validates :domain_name, presence: true, uniqueness: { scope: [ :service_id ] }
+  belongs_to :ingress_endpoint
+  validates :domain_name, presence: true, uniqueness: { scope: [ :ingress_endpoint_id ] }
   validate :domain_name_has_tld
   before_save :downcase_domain_name
   before_save :strip_protocol
@@ -28,6 +26,20 @@ class Domain < ApplicationRecord
     dns_verified: 1,
     dns_incorrect: 2
   }
+
+  def cluster
+    ingress_endpoint.cluster
+  end
+
+  def service
+    endpointable = ingress_endpoint.endpointable
+    endpointable if endpointable.is_a?(Service)
+  end
+
+  def add_on
+    endpointable = ingress_endpoint.endpointable
+    endpointable if endpointable.is_a?(AddOn)
+  end
 
   private
 
