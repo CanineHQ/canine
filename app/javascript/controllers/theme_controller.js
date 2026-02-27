@@ -3,16 +3,20 @@ import { Controller } from "@hotwired/stimulus"
 const NARROW_WIDTH = 768;
 export default class extends Controller {
   connect() {
-    // If the window is narrow, hide the left bar
+    const html = document.querySelector("html");
+    // If the window is narrow, hide the left bar and set mobile mode
     if (window.innerWidth < NARROW_WIDTH) {
-      document.querySelector("html").setAttribute("data-leftbar-hide", "true");
+      html.setAttribute("data-leftbar-hide", "true");
+      html.setAttribute("data-leftbar-type", "mobile");
     }
     // Also, if the window is resized, check again
     window.addEventListener("resize", () => {
       if (window.innerWidth < NARROW_WIDTH) {
-        document.querySelector("html").setAttribute("data-leftbar-hide", "true");
+        html.setAttribute("data-leftbar-hide", "true");
+        html.setAttribute("data-leftbar-type", "mobile");
       } else {
-        document.querySelector("html").removeAttribute("data-leftbar-hide");
+        html.removeAttribute("data-leftbar-hide");
+        html.removeAttribute("data-leftbar-type");
       }
     });
   }
