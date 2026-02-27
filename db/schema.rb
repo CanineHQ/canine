@@ -179,6 +179,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.string "external_id"
     t.jsonb "options", default: {}, null: false
     t.boolean "skip_tls_verify", default: false, null: false
+    t.jsonb "metadata", default: {}, null: false
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
