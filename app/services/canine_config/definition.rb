@@ -65,18 +65,30 @@ class CanineConfig::Definition
   end
 
   def services
+    return [] if definition['services'].blank?
+
     definition['services'].map do |service|
       params = Service.permitted_params(ActionController::Parameters.new(service:))
       service_instance = Service.new(params)
 
       # Handle domains if present and service is a web_service
       if service['service_type'] == 'web_service' && service['domains'].present?
-        # Ensure allow_public_networking is true when domains are specified
         service_instance.allow_public_networking = true
 
-        service['domains'].each do |domain_name|
-          service_instance.domains.build(domain_name: domain_name)
+        service['domains'].each do |domain|
+          domain_attrs = domain.is_a?(Hash) ? domain : { domain_name: domain }
+          service_instance.domains.build(domain_attrs)
         end
+      end
+
+      # Handle nested resource_constraint
+      if service['resource_constraint'].present?
+        service_instance.build_resource_constraint(service['resource_constraint'])
+      end
+
+      # Handle nested cron_schedule
+      if service['cron_schedule'].present?
+        service_instance.build_cron_schedule(service['cron_schedule'])
       end
 
       service_instance
@@ -84,8 +96,40 @@ class CanineConfig::Definition
   end
 
   def environment_variables
+    return [] if definition['environment_variables'].blank?
+
     definition['environment_variables'].map do |env|
-      EnvironmentVariable.new(name: env['name'], value: env['value'])
+      EnvironmentVariable.new(
+        name: env['name'],
+        value: env['value'],
+        storage_type: env['storage_type'] || 'config'
+      )
+    end
+  end
+
+  def volumes
+    return [] if definition['volumes'].blank?
+
+    definition['volumes'].map do |vol|
+      Volume.new(
+        name: vol['name'],
+        size: vol['size'],
+        mount_path: vol['mount_path'],
+        access_mode: vol['access_mode'] || 'read_write_once'
+      )
+    end
+  end
+
+  def notifiers
+    return [] if definition['notifiers'].blank?
+
+    definition['notifiers'].map do |notifier|
+      Notifier.new(
+        name: notifier['name'],
+        provider_type: notifier['provider_type'],
+        webhook_url: notifier['webhook_url'],
+        enabled: notifier.fetch('enabled', true)
+      )
     end
   end
 

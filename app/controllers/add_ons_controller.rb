@@ -35,6 +35,7 @@ class AddOnsController < ApplicationController
   def edit
     @endpoints = @service.get_endpoints
     @ingresses = @service.get_ingresses
+    @clusters = current_account.clusters.running.where.not(id: @add_on.cluster_id)
   end
 
   # POST /add_ons or /add_ons.json
