@@ -191,7 +191,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
     t.string "external_id"
     t.jsonb "options", default: {}, null: false
     t.boolean "skip_tls_verify", default: false, null: false
-    t.jsonb "metadata", default: {}, null: false
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
@@ -220,13 +219,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
   end
 
   create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
     t.boolean "auto_managed", default: false
+    t.bigint "service_id", null: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -655,6 +654,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
     t.string "namespace", null: false
     t.string "container"
     t.datetime "expires_at", null: false
+    t.datetime "connected_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_shell_tokens_on_cluster_id"

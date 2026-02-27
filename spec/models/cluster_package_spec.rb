@@ -44,4 +44,17 @@ RSpec.describe ClusterPackage, type: :model do
     non_configurable_pkg = build(:cluster_package, name: "nginx-ingress")
     expect(non_configurable_pkg.configurable?).to be false
   end
+
+  it "resolves the correct installer class for each package" do
+    expect(build(:cluster_package, name: "nginx-ingress").installer).to be_a(ClusterPackage::Installer::NginxIngress)
+    expect(build(:cluster_package, name: "cert-manager").installer).to be_a(ClusterPackage::Installer::CertManager)
+    expect(build(:cluster_package, name: "metrics-server").installer).to be_a(ClusterPackage::Installer::MetricsServer)
+    expect(build(:cluster_package, name: "telepresence").installer).to be_a(ClusterPackage::Installer::Telepresence)
+    expect(build(:cluster_package, name: "cloudflared").installer).to be_a(ClusterPackage::Installer::Cloudflared)
+  end
+
+  it "falls back to Base installer for unknown packages" do
+    pkg = build(:cluster_package, name: "unknown-package")
+    expect(pkg.installer).to be_a(ClusterPackage::Installer::Base)
+  end
 end

@@ -41,8 +41,8 @@
       <p class="text-sm text-gray-400 mb-4">Select packages to install on your cluster.</p>
       <div class="space-y-3">
         <% ClusterPackage.definitions.each do |definition| %>
-          <div data-controller="content-toggle">
-            <label class="flex items-center gap-3 p-3 bg-base-200 rounded-lg cursor-pointer">
+          <div <%= "data-controller=content-toggle" if definition['template'].present? %> class="bg-base-200 rounded-lg">
+            <label class="flex items-center gap-3 p-3 cursor-pointer">
               <input type="checkbox"
                      name="package_names[]"
                      value="<%= definition['name'] %>"
@@ -59,7 +59,10 @@
             </label>
 
             <% if definition['template'].present? %>
-              <div data-content-toggle-target="editorContainer" class="hidden pl-10 pt-2 space-y-2">
+              <div data-content-toggle-target="editorContainer" class="hidden px-3 pb-3 pl-11 space-y-2">
+                <% if definition['help_text'].present? %>
+                  <div class="text-sm text-gray-400"><%= definition['help_text'].html_safe %></div>
+                <% end %>
                 <% definition['template'].each do |variable| %>
                   <%= render "clusters/cluster_packages/template_variable", variable: variable, definition: definition %>
                 <% end %>
