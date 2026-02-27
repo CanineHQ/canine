@@ -90,8 +90,8 @@ class Service < ApplicationRecord
       :pod_yaml
     )
 
-    # Convert YAML text to JSON if pod_yaml is present
-    if permitted[:pod_yaml].present?
+    # Convert YAML text to JSON if pod_yaml is a string
+    if permitted[:pod_yaml].present? && permitted[:pod_yaml].is_a?(String)
       begin
         permitted[:pod_yaml] = YAML.safe_load(permitted[:pod_yaml])
       rescue Psych::SyntaxError => e
