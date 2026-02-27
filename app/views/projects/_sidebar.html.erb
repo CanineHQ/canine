@@ -37,6 +37,12 @@
       </div>
     <% end %>
   <% end %>
+  <%= link_to new_project_cluster_migration_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(new_project_cluster_migration_path(project))}" do %>
+    <div class="flex items-center gap-2">
+      Migrate
+      <iconify-icon icon="lucide:arrow-right-left"></iconify-icon>
+    </div>
+  <% end %>
   <%= link_to edit_project_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_project_path(project))}" do %>
     <div class="flex items-center gap-2">
       Settings
