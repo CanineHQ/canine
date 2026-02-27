@@ -75,7 +75,7 @@ jobs:
           bin/bundle exec rspec --exclude-pattern spec/system/local/**/*_spec.rb
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: coverage-report
@@ -83,7 +83,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Keep screenshots from failed system tests
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: screenshots
