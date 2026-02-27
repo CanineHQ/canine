@@ -36,10 +36,16 @@ class ClusterPackage < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :cluster_id }
 
+  after_update_commit :broadcast_package
+
   DEFINITIONS = YAML.load_file(Rails.root.join("resources", "helm", "system_packages.yml"))["packages"]
 
   def definition
     DEFINITIONS.find { |d| d["name"] == name }
+  end
+
+  def installer
+    ClusterPackage::Installer.for(self)
   end
 
   def configurable?
@@ -52,5 +58,12 @@ class ClusterPackage < ApplicationRecord
 
   def self.default_package_names
     DEFINITIONS.select { |d| d["default"] }.map { |d| d["name"] }
+  end
+
+  def broadcast_package
+    broadcast_replace_later_to [ cluster, :cluster_packages ],
+      target: "cluster_package_#{name}",
+      partial: "clusters/cluster_packages/package_row",
+      locals: { cluster: cluster, definition: definition, package: self }
   end
 end

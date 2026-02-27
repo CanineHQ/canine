@@ -9,6 +9,6 @@ class CreateClusterPackages < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    add_index :cluster_packages, [:cluster_id, :name], unique: true
+    add_index :cluster_packages, [ :cluster_id, :name ], unique: true
   end
 end

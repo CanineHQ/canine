@@ -6,7 +6,7 @@
            name="<%= prefix %>[<%= variable['key'] %>]"
            class="input input-bordered w-full max-w-md"
            value="<%= variable['default'] %>"
-           <%= 'required' if variable['required'] %> />
+           <%= 'required' if variable['required'] && !local_assigns[:definition] %> />
   <% elsif variable['type'] == 'boolean' %>
     <label class="label cursor-pointer mt-1">
       <input type="checkbox"
@@ -23,7 +23,7 @@
            class="input input-bordered"
            inputmode="numeric"
            value="<%= variable['default'] %>"
-           <%= 'required' if variable['required'] %> />
+           <%= 'required' if variable['required'] && !local_assigns[:definition] %> />
   <% elsif variable['type'] == 'enum' %>
     <label class="label"><span class="label-text"><%= variable['name'] %></span></label>
     <select name="<%= prefix %>[<%= variable['key'] %>]" class="select select-bordered w-full max-w-md">

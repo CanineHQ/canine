@@ -80,6 +80,7 @@ packages:
     chart_name: cloudflare-tunnel
     chart_url: cloudflare/cloudflare-tunnel
     check_command: get deployment cloudflare-tunnel
+    help_text: 'To find your tunnel token: go to <a href="https://one.dash.cloudflare.com/" target="_blank" class="link link-primary">Cloudflare Zero Trust</a> → Networks → Tunnels → select your tunnel → Install and run a connector. Copy the token from the install command (the value after --token).'
     template:
       - name: Tunnel Token
         key: credentials.token

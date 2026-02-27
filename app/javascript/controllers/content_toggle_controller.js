@@ -5,19 +5,24 @@ export default class extends Controller {
 
   connect() {
     // Ensure initial state is correct
-    this.placeholderTarget.classList.remove("hidden")
-    this.editorContainerTarget.classList.add("hidden")
+    if (this.hasPlaceholderTarget) this.placeholderTarget.classList.remove("hidden")
+    if (this.hasEditorContainerTarget) this.editorContainerTarget.classList.add("hidden")
   }
 
   toggleEdit() {
-    this.placeholderTarget.classList.add("hidden")
-    this.editorContainerTarget.classList.remove("hidden")
-    this.editButtonTarget.classList.add("hidden")
+    const isHidden = this.hasEditorContainerTarget && this.editorContainerTarget.classList.contains("hidden")
+    if (isHidden) {
+      if (this.hasPlaceholderTarget) this.placeholderTarget.classList.add("hidden")
+      if (this.hasEditorContainerTarget) this.editorContainerTarget.classList.remove("hidden")
+      if (this.hasEditButtonTarget) this.editButtonTarget.classList.add("hidden")
+    } else {
+      this.cancelEdit()
+    }
   }
 
   cancelEdit() {
-    this.placeholderTarget.classList.remove("hidden")
-    this.editorContainerTarget.classList.add("hidden")
-    this.editButtonTarget.classList.remove("hidden")
+    if (this.hasPlaceholderTarget) this.placeholderTarget.classList.remove("hidden")
+    if (this.hasEditorContainerTarget) this.editorContainerTarget.classList.add("hidden")
+    if (this.hasEditButtonTarget) this.editButtonTarget.classList.remove("hidden")
   }
 }
