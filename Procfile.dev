@@ -1,4 +1,4 @@
-web: bin/rails server -p ${PORT:-3000}
+web: bin/rails server -b ${BIND:-127.0.0.1} -p ${PORT:-3000}
 worker: bundle exec good_job start
 js: yarn build --watch
 css: bin/rails tailwindcss:watch
