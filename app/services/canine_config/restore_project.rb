@@ -31,12 +31,13 @@ class CanineConfig::RestoreProject
       end
 
       # Generate unique name and slug
-      base_name = project_attrs["name"] || project_attrs["repository_url"]&.split("/")&.last
+      base_name = context[:custom_name] || project_attrs["name"] || project_attrs["repository_url"]&.split("/")&.last
       project.name = base_name
       while Project.joins(:cluster).where(clusters: { account_id: target_cluster.account_id }, name: project.name).exists?
         project.name = "#{base_name}-#{SecureRandom.hex(4)}"
       end
-      project.namespace = project.name
+      project.namespace = context[:custom_namespace] || project.name
+      project.managed_namespace = context[:managed_namespace] if context[:custom_namespace].present?
       project.generate_slug
 
       # Credential provider

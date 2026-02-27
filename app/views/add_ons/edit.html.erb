@@ -69,6 +69,10 @@
               { prompt: "Select a cluster" },
               { class: "select select-bordered w-full" } %>
           <% end %>
+          <%= render(FormFieldComponent.new(label: "Name", description: "Name for the migrated add-on. Leave blank to use the original name.")) do %>
+            <%= form.text_field :name, class: "input input-bordered w-full", placeholder: @add_on.name %>
+          <% end %>
+          <%= render "shared/partials/namespace_input_group", form: %>
           <div class="form-footer">
             <%= form.submit "Migrate Add-On", class: "btn btn-primary", data: { turbo_submits_with: "Migrating..." } %>
           </div>

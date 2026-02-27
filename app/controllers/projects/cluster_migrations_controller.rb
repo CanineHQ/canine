@@ -6,7 +6,10 @@ class Projects::ClusterMigrationsController < Projects::BaseController
 
     result = ClusterMigrations::MigrateProject.call(
       source_project: @project,
-      target_cluster: target_cluster
+      target_cluster: target_cluster,
+      custom_name: params[:name].presence,
+      custom_namespace: params[:namespace].presence,
+      managed_namespace: params[:managed_namespace] == "1"
     )
 
     if result.success?

@@ -9,7 +9,7 @@ RSpec.describe ClusterMigrations::MigrateAddOn do
   describe '#execute' do
     context 'when successful' do
       it 'creates a new add-on on the target cluster with correct attributes' do
-        result = described_class.execute(source_add_on:, target_cluster:)
+        result = described_class.execute(source_add_on:, target_cluster:, custom_name: nil, custom_namespace: nil, managed_namespace: false)
 
         expect(result).to be_success
         migrated = result.migrated_add_on
@@ -25,7 +25,7 @@ RSpec.describe ClusterMigrations::MigrateAddOn do
       end
 
       it 'preserves package details metadata' do
-        result = described_class.execute(source_add_on:, target_cluster:)
+        result = described_class.execute(source_add_on:, target_cluster:, custom_name: nil, custom_namespace: nil, managed_namespace: false)
         migrated = result.migrated_add_on
 
         expect(migrated.metadata["package_details"]).to eq({ "name" => "redis" })
@@ -35,7 +35,7 @@ RSpec.describe ClusterMigrations::MigrateAddOn do
     context 'when transaction fails' do
       it 'returns failure context' do
         allow(ActiveRecord::Base).to receive(:transaction).and_raise(StandardError.new("database error"))
-        result = described_class.execute(source_add_on:, target_cluster:)
+        result = described_class.execute(source_add_on:, target_cluster:, custom_name: nil, custom_namespace: nil, managed_namespace: false)
 
         expect(result).to be_failure
         expect(result.message).to include("Failed to migrate add-on")
