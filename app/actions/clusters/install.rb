@@ -4,7 +4,8 @@ class Clusters::Install
   DEFAULT_RECIPE = [
     Clusters::IsReady,
     Clusters::CreateNamespace,
-    Clusters::InstallNginxIngress,
+    Clusters::InstallGatewayApi,
+    Clusters::InstallTraefik,
     Clusters::InstallAcmeIssuer,
     Clusters::InstallMetricServer,
     Clusters::InstallTelepresence
@@ -23,12 +24,21 @@ class Clusters::Install
     with(params).reduce(recipe)
   end
 
+  def self.networking_mode_for(recipe)
+    return "gateway" if recipe.include?(Clusters::InstallGatewayApi) || recipe.include?(Clusters::InstallTraefik)
+
+    "ingress"
+  end
+
   def self.call(cluster, user)
     connection = K8::Connection.new(cluster, user)
     kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
     recipe = self.recipe(cluster, user)
     result = self.run_install(recipe, { cluster:, user:, kubectl:, connection: })
-    cluster.running! if result.success?
+    if result.success?
+      cluster.networking_mode = networking_mode_for(recipe)
+      cluster.running!
+    end
     cluster.failed! if result.failure?
     result
   rescue StandardError => e

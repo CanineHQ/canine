@@ -52,7 +52,7 @@ class AddOns::EndpointsController < AddOns::BaseController
 
   def set_dns_record
     client = K8::Client.new(active_connection)
-    hostname = K8::Stateless::Ingress.hostname(client)
+    hostname = K8::Stateless::Gateway.hostname(client)
     if hostname[:type] == :ip_address && Dns::Utils.private_ip?(hostname[:value])
       hostname = { type: :ip_address, value: Dns::Utils.infer_public_ip(active_connection) }
     end

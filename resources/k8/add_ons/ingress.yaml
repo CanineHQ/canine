@@ -1,30 +1,64 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
 metadata:
-  name: <%= endpoint.metadata.name %>
+  name: <%= gateway_name %>
   namespace: <%= add_on.name %>
   labels:
     caninemanaged: 'true'
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
-  ingressClassName: "nginx"
-  tls:
-  - hosts:
-    <% domains.each do |domain| %>
-    - <%= domain %>
-    <% end %>
-    secretName: <%= endpoint.metadata.name %>-tls
-  rules:
+  gatewayClassName: traefik
+  listeners:
   <% domains.each do |domain| %>
-  - host: <%= domain %>
-    http:
-      paths:
-      - pathType: Prefix
-        path: "/"
-        backend:
-          service:
-            name: <%= endpoint.metadata.name %>
-            port:
-              number: <%= port %>
+  - name: <%= domain.gsub(/[^a-z0-9]/i, '-').downcase %>
+    protocol: HTTPS
+    port: 443
+    hostname: <%= domain %>
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: <%= certificate_name %>
+    allowedRoutes:
+      namespaces:
+        from: Same
+  <% end %>
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: <%= route_name %>
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'true'
+spec:
+  parentRefs:
+  - name: <%= gateway_name %>
+  hostnames:
+  <% domains.each do |domain| %>
+  - <%= domain %>
+  <% end %>
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: <%= endpoint.metadata.name %>
+      port: <%= port %>
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: <%= endpoint.metadata.name %>-certificate
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'true'
+spec:
+  secretName: <%= certificate_name %>
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+  <% domains.each do |domain| %>
+  - <%= domain %>
   <% end %>
