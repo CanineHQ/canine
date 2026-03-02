@@ -1,0 +1,32 @@
+<% case package.status %>
+<% when "installed" %>
+  <span class="badge badge-success gap-1">
+    <iconify-icon icon="lucide:check-circle" height="14"></iconify-icon>
+    Installed
+  </span>
+<% when "installing" %>
+  <span class="badge badge-info gap-1">
+    <span class="loading loading-spinner loading-xs"></span>
+    Installing
+  </span>
+<% when "failed" %>
+  <span class="badge badge-error gap-1">
+    <iconify-icon icon="lucide:x-circle" height="14"></iconify-icon>
+    Failed
+  </span>
+<% when "uninstalling" %>
+  <span class="badge badge-warning gap-1">
+    <span class="loading loading-spinner loading-xs"></span>
+    Uninstalling
+  </span>
+<% when "uninstalled" %>
+  <span class="badge badge-neutral gap-1">
+    <iconify-icon icon="lucide:circle-off" height="14"></iconify-icon>
+    Uninstalled
+  </span>
+<% when "pending" %>
+  <span class="badge badge-neutral gap-1">
+    <iconify-icon icon="lucide:clock" height="14"></iconify-icon>
+    Pending
+  </span>
+<% end %>

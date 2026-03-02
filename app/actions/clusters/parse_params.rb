@@ -6,6 +6,17 @@ class Clusters::ParseParams
   executed do |context|
     parsed = parse_params(context.params)
     context.cluster = context.account.clusters.new(parsed)
+    build_packages(context.cluster, context.params)
+  end
+
+  def self.build_packages(cluster, params)
+    package_names = params[:package_names] || ClusterPackage.default_package_names
+    package_config = params[:package_config]&.permit!&.to_h || {}
+
+    package_names.each do |name|
+      config = package_config[name]&.to_h || {}
+      cluster.cluster_packages.build(name: name, config: config)
+    end
   end
 
   def self.parse_params(params)

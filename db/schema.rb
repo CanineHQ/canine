@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -168,6 +168,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.index ["project_id"], name: "index_builds_on_project_id"
   end
 
+  create_table "cluster_packages", force: :cascade do |t|
+    t.bigint "cluster_id", null: false
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.jsonb "config", default: {}
+    t.datetime "installed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id", "name"], name: "index_cluster_packages_on_cluster_id_and_name", unique: true
+    t.index ["cluster_id"], name: "index_cluster_packages_on_cluster_id"
+  end
+
   create_table "clusters", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "kubeconfig", default: {}
@@ -179,7 +191,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.string "external_id"
     t.jsonb "options", default: {}, null: false
     t.boolean "skip_tls_verify", default: false, null: false
-    t.jsonb "metadata", default: {}, null: false
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
@@ -208,13 +219,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   end
 
   create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
     t.boolean "auto_managed", default: false
+    t.bigint "service_id", null: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 
@@ -762,6 +773,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   add_foreign_key "build_configurations", "providers"
   add_foreign_key "build_packs", "build_configurations"
   add_foreign_key "builds", "projects"
+  add_foreign_key "cluster_packages", "clusters"
   add_foreign_key "clusters", "accounts"
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployment_configurations", "projects"

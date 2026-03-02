@@ -1,6 +1,7 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Cluster") %>
 
 <%= cluster_layout(@cluster) do %>
+  <%= turbo_stream_from @cluster, :cluster_packages %>
   <div class="space-y-10">
     <div>
       <h2 class="text-2xl font-bold">General</h2>
@@ -51,6 +52,26 @@
             Changes to the kubeconfig will update how Canine connects to your cluster.
           </div>
         </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold">System Packages</h2>
+        <%= button_to sync_cluster_cluster_packages_path(@cluster), method: :post, class: "btn btn-sm btn-outline" do %>
+          <iconify-icon icon="lucide:refresh-cw" height="16"></iconify-icon>
+          Sync
+        <% end %>
+      </div>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <div class="space-y-3">
+        <% ClusterPackage.definitions.each do |definition| %>
+          <% package = @cluster.cluster_packages.find_by(name: definition['name']) %>
+          <%= render "clusters/cluster_packages/package_row",
+                     cluster: @cluster,
+                     definition: definition,
+                     package: package %>
+        <% end %>
       </div>
     </div>
 
