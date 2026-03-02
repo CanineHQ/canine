@@ -28,7 +28,7 @@
       <% if current_account.stack_manager&.stack&.provides_registries? %>
         <%= button_to sync_registries_stack_manager_path, class: "btn btn-outline btn-sm" do %>
           <iconify-icon icon="lucide:refresh-ccw" height="16"></iconify-icon>
-          <span class="hidden sm:inline">Sync Credentials</span>
+          <span class="hidden sm:inline">Sync Registries with Portainer</span>
         <% end %>
       <% end %>
     </div>
