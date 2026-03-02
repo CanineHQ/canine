@@ -136,6 +136,7 @@ Rails.application.routes.draw do
       post :restart
       get :download_values
     end
+    resource :cluster_migration, only: %i[create], module: :add_ons
     resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
     resources :processes, only: %i[index show], module: :add_ons do
@@ -156,6 +157,7 @@ Rails.application.routes.draw do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
     resources :project_forks, only: %i[index edit create], module: :projects
+    resource :cluster_migration, only: %i[create], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :notifiers, only: %i[index new create edit update destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects do
