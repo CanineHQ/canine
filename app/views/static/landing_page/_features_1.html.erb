@@ -1,65 +1,20 @@
 <div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-32 lg:px-8">
-  <div class="mx-auto max-w-2xl text-center">
+  <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
     <h2 class="text-base font-semibold leading-7 text-indigo-400">Deploy faster</h2>
     <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Everything you need to deploy your app</p>
     <p class="mt-6 text-lg leading-8 text-gray-300">A Heroku like experience for deploying your application.</p>
   </div>
   <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
     <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Github Integration',
-        description: 'Canine pulls your code and build your application when you push to Github',
-        icon: 'github'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'One Click Deployment & Rollbacks',
-        description: 'Manage your deployments and rollbacks in one place',
-        icon: 'rocket'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'SSL Certificate Management',
-        description: 'Let\'s Encrypt SSL certificates are automatically provisioned and managed for your applications',
-        icon: 'lock'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Simplifies Kubernetes',
-        description: 'Deploy any application that can run in a container in a single click',
-        icon: 'thumbs-up'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Any Workload',
-        description: 'Deploy web apps, background jobs, and even cron jobs from a single codebase',
-        icon: 'list-check'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Add Ons',
-        description: 'Extend the functionality of your application with popular open source projects, completely free',
-        icon: 'package'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'No Vendor Lock-In',
-        description: 'Over 200+ cloud providers supported. Never get gouged on pricing again.',
-        icon: 'lock'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Easy Autoscaling',
-        description: 'Easily upgrade servers, with a single click, with no downtime. Scale it back down when you don\'t need it.',
-        icon: 'cpu'
-      ) %>
-      <%= render(
-        'static/landing_page/feature_card',
-        title: 'Collaborative',
-        description: 'No more extra costs for a team plan. Invite whoever you want, we\'ll be happy to host them too!',
-        icon: 'users'
-      ) %>
+      <div data-aos="fade-up" data-aos-delay="0"><%= render('static/landing_page/feature_card', title: 'Github Integration', description: 'Canine pulls your code and build your application when you push to Github', icon: 'github') %></div>
+      <div data-aos="fade-up" data-aos-delay="80"><%= render('static/landing_page/feature_card', title: 'One Click Deployment & Rollbacks', description: 'Manage your deployments and rollbacks in one place', icon: 'rocket') %></div>
+      <div data-aos="fade-up" data-aos-delay="160"><%= render('static/landing_page/feature_card', title: 'SSL Certificate Management', description: 'Let\'s Encrypt SSL certificates are automatically provisioned and managed for your applications', icon: 'lock') %></div>
+      <div data-aos="fade-up" data-aos-delay="0"><%= render('static/landing_page/feature_card', title: 'Simplifies Kubernetes', description: 'Deploy any application that can run in a container in a single click', icon: 'thumbs-up') %></div>
+      <div data-aos="fade-up" data-aos-delay="80"><%= render('static/landing_page/feature_card', title: 'Any Workload', description: 'Deploy web apps, background jobs, and even cron jobs from a single codebase', icon: 'list-check') %></div>
+      <div data-aos="fade-up" data-aos-delay="160"><%= render('static/landing_page/feature_card', title: 'Add Ons', description: 'Extend the functionality of your application with popular open source projects, completely free', icon: 'package') %></div>
+      <div data-aos="fade-up" data-aos-delay="0"><%= render('static/landing_page/feature_card', title: 'No Vendor Lock-In', description: 'Over 200+ cloud providers supported. Never get gouged on pricing again.', icon: 'lock') %></div>
+      <div data-aos="fade-up" data-aos-delay="80"><%= render('static/landing_page/feature_card', title: 'Easy Autoscaling', description: 'Easily upgrade servers, with a single click, with no downtime. Scale it back down when you don\'t need it.', icon: 'cpu') %></div>
+      <div data-aos="fade-up" data-aos-delay="160"><%= render('static/landing_page/feature_card', title: 'Collaborative', description: 'No more extra costs for a team plan. Invite whoever you want, we\'ll be happy to host them too!', icon: 'users') %></div>
     </dl>
   </div>
 </div>

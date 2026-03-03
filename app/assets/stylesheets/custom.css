@@ -1,3 +1,7 @@
+[data-aos="fade-up"]:not(.aos-animate) {
+  transform: translate3d(0, 50px, 0);
+}
+
 .help-text {
   @apply text-sm text-base-content/80 italic;
 }
