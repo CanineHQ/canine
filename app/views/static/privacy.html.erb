@@ -1,6 +1,6 @@
-<div class="container mx-auto mt-8">
-  <h1 class="mb-4"><%= t(".title") %></h1>
-  <%= tag.p t("users.agreements.show.last_updated", date: l(@agreement.updated.to_date, format: :long)), class: "mb-4 text-gray-700 leading-normal" if @agreement %>
+<% content_for :title, "Privacy Policy" %>
+<% content_for :meta_description, "Read the Canine privacy policy to understand how we collect, use, and protect your data." %>
 
+<div class="container mx-auto mt-8 max-w-3xl">
   <%= render "users/agreements/privacy_policy" %>
 </div>

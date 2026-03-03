@@ -44,6 +44,12 @@ en:
   something_went_wrong: "Something went wrong"
   unauthorized: "You are not authorized to perform this action."
 
+  static:
+    terms:
+      title: "Terms of Service"
+    privacy:
+      title: "Privacy Policy"
+
   scaffold:
     edit:
       title: "Edit %{model}"

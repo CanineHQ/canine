@@ -2,18 +2,22 @@
   <h2 id="footer-heading" class="sr-only">Footer</h2>
   <div class="mx-auto max-w-7xl px-6 pb-8 pt-4 lg:px-8">
     <div class="border-t border-white/10 pt-8 md:flex md:items-center md:justify-between">
-      <div class="flex space-x-4 md:order-2">
-        <a href="https://github.com/CanineHQ/canine" class="text-gray-400 hover:text-gray-500">
+      <nav class="flex flex-wrap gap-x-6 gap-y-2 md:order-2" aria-label="Footer navigation">
+        <a href="https://github.com/CanineHQ/canine" class="text-gray-400 hover:text-gray-300 text-sm" target="_blank" rel="noopener noreferrer">
           <span class="sr-only">GitHub</span>
-          <iconify-icon icon="simple-icons:github" height="24"></iconify-icon>
+          <iconify-icon icon="simple-icons:github" height="20" class="inline"></iconify-icon>
         </a>
         <% if ENV['DISCORD_INVITE_URL'].present? %>
-          <a href="<%= ENV['DISCORD_INVITE_URL'] %>" class="text-gray-400 hover:text-gray-500">
+          <a href="<%= ENV['DISCORD_INVITE_URL'] %>" class="text-gray-400 hover:text-gray-300 text-sm" target="_blank" rel="noopener noreferrer">
             <span class="sr-only">Discord</span>
-            <iconify-icon icon="skill-icons:discord" height="24"></iconify-icon>
+            <iconify-icon icon="skill-icons:discord" height="20" class="inline"></iconify-icon>
           </a>
         <% end %>
-      </div>
+        <a href="https://docs.canine.sh" class="text-gray-400 hover:text-gray-300 text-sm" target="_blank" rel="noopener noreferrer">Docs</a>
+        <a href="/calculator" class="text-gray-400 hover:text-gray-300 text-sm">Cost Calculator</a>
+        <a href="/privacy" class="text-gray-400 hover:text-gray-300 text-sm">Privacy</a>
+        <a href="/terms" class="text-gray-400 hover:text-gray-300 text-sm">Terms</a>
+      </nav>
       <p class="mt-8 text-xs leading-5 text-gray-400 md:order-1 md:mt-0">© 2025 Canine, Inc. MIT License.</p>
     </div>
   </div>

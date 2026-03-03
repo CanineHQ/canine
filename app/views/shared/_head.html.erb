@@ -4,7 +4,15 @@
   <% end %>
   Canine - A Developer-friendly PaaS for your Kubernetes
 </title>
-<meta name="description" content="Canine is an open source deployment platform that makes it easy to deploy and manage your applications.">
+<meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Canine is an open source deployment platform that makes it easy to deploy and manage your applications." %>">
+<% if content_for?(:robots) %>
+  <meta name="robots" content="<%= yield :robots %>">
+<% end %>
+
+<link rel="canonical" href="<%= content_for?(:canonical_url) ? yield(:canonical_url) : request.base_url + request.path %>">
+
+<meta property="og:type" content="<%= content_for?(:og_type) ? yield(:og_type) : "website" %>" />
+<meta property="og:site_name" content="Canine" />
 
 <% if content_for?(:og_title) %>
   <meta property="og:title" content="<%= yield :og_title %>" />
@@ -15,7 +23,7 @@
 <% if content_for?(:og_url) %>
   <meta property="og:url" content="<%= yield :og_url %>" />
 <% else %>
-  <meta property="og:url" content="https://canine.sh" />
+  <meta property="og:url" content="<%= request.base_url + request.path %>" />
 <% end %>
 
 <% if content_for?(:og_description) %>
@@ -29,6 +37,7 @@
 <% else %>
   <meta property="og:image" content="https://canine.sh/images/deployment_styled.webp" />
 <% end %>
+
 <meta http-equiv="content-language" content="<%= I18n.locale %>"/>
 
 <meta charset="utf-8">
@@ -63,5 +72,10 @@
     gtag('js', new Date());
 
     gtag('config', '<%= ENV["GOOGLE_ANALYTICS_ID"] %>');
+  </script>
+<% end %>
+<% if content_for?(:schema_json) %>
+  <script type="application/ld+json">
+    <%= yield :schema_json %>
   </script>
 <% end %>
