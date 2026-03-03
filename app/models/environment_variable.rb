@@ -32,11 +32,8 @@ class EnvironmentVariable < ApplicationRecord
                     with: /\A[A-Z0-9_]+\z/,
                     message: "can only contain uppercase letters, numbers, and underscores"
                   }
-  validates :value, presence: true,
-                   format: {
-                    without: /[`\\|><;]/,
-                    message: "cannot contain special characters that might enable command injection"
-                   }
+  validates :value, presence: true
+  validate :value_does_not_contain_injection_characters
 
   before_validation :strip_whitespace
 
@@ -47,8 +44,21 @@ class EnvironmentVariable < ApplicationRecord
 
   private
 
+  # Characters that could enable command injection in shell contexts
+  # Allows newlines for multi-line values (certificates, keys, etc.)
+  INJECTION_CHARACTERS = /[`|><;]/.freeze
+
+  def value_does_not_contain_injection_characters
+    return unless value.present?
+
+    if value.match?(INJECTION_CHARACTERS)
+      errors.add(:value, "cannot contain special characters that might enable command injection")
+    end
+  end
+
   def strip_whitespace
     self.name = name.strip.upcase if name.present?
+    # Only strip leading/trailing whitespace, preserve internal newlines
     self.value = value.strip if value.present?
   end
 end
