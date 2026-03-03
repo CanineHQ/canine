@@ -10,7 +10,7 @@ class Clusters::ParseParams
   end
 
   def self.build_packages(cluster, params)
-    package_names = params[:package_names] || ClusterPackage.default_package_names
+    package_names = params.key?(:package_names) ? Array(params[:package_names]).reject(&:blank?) : ClusterPackage.default_package_names
     package_config = params[:package_config]&.permit!&.to_h || {}
 
     package_names.each do |name|

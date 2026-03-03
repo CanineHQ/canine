@@ -7,8 +7,6 @@ class Clusters::InstallComponents
     cluster = context.cluster
     kubectl = context.kubectl
 
-    ensure_default_packages(cluster)
-
     cluster.cluster_packages.where(status: [ :pending, :failed ]).find_each do |package|
       definition = package.definition
       next unless definition
@@ -35,13 +33,4 @@ class Clusters::InstallComponents
     end
   end
 
-  private
-
-  def self.ensure_default_packages(cluster)
-    return if cluster.cluster_packages.any?
-
-    ClusterPackage.default_package_names.each do |name|
-      cluster.cluster_packages.find_or_create_by!(name: name)
-    end
-  end
 end

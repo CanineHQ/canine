@@ -39,36 +39,21 @@
     <div>
       <label class="mb-4 inline-block font-semibold">System Packages</label>
       <p class="text-sm text-gray-400 mb-4">Select packages to install on your cluster.</p>
-      <div class="space-y-3">
-        <% ClusterPackage.definitions.each do |definition| %>
-          <div <%= "data-controller=content-toggle" if definition['template'].present? %> class="bg-base-200 rounded-lg">
-            <label class="flex items-center gap-3 p-3 cursor-pointer">
-              <input type="checkbox"
-                     name="package_names[]"
-                     value="<%= definition['name'] %>"
-                     class="checkbox"
-                     <%= 'checked' if definition['default'] %>
-                     <% if definition['template'].present? %>
-                       data-action="change->content-toggle#toggleEdit"
-                     <% end %> />
-              <iconify-icon icon="<%= definition['icon'] %>" height="24"></iconify-icon>
-              <div>
-                <span class="font-semibold"><%= definition['display_name'] %></span>
-                <p class="text-sm text-gray-400"><%= definition['description'] %></p>
-              </div>
-            </label>
+      <input type="hidden" name="package_names[]" value="" />
 
-            <% if definition['template'].present? %>
-              <div data-content-toggle-target="editorContainer" class="hidden px-3 pb-3 pl-11 space-y-2">
-                <% if definition['help_text'].present? %>
-                  <div class="text-sm text-gray-400"><%= definition['help_text'].html_safe %></div>
-                <% end %>
-                <% definition['template'].each do |variable| %>
-                  <%= render "clusters/cluster_packages/template_variable", variable: variable, definition: definition %>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
+      <h3 class="text-lg font-semibold mb-1">Recommended</h3>
+      <p class="text-sm text-gray-400 mb-3">Some features in Canine may not work without these packages.</p>
+      <div class="space-y-3 mb-6">
+        <% ClusterPackage.definitions.select { |d| d['recommended'] }.each do |definition| %>
+          <%= render "clusters/cluster_packages/form_row", definition: definition %>
+        <% end %>
+      </div>
+
+      <h3 class="text-lg font-semibold mb-1">Other</h3>
+      <p class="text-sm text-gray-400 mb-3">Optional packages for additional functionality.</p>
+      <div class="space-y-3">
+        <% ClusterPackage.definitions.reject { |d| d['recommended'] }.each do |definition| %>
+          <%= render "clusters/cluster_packages/form_row", definition: definition %>
         <% end %>
       </div>
     </div>

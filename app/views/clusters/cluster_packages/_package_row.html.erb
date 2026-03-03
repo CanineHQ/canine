@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "cluster_package_#{definition['name']}" do %>
+<%= turbo_frame_tag "cluster_#{cluster.id}_package_#{definition['name']}" do %>
   <div data-controller="content-toggle" class="bg-base-200 rounded-lg">
     <div class="flex items-center justify-between p-4">
       <div class="flex items-center gap-3">
@@ -16,7 +16,7 @@
           <% if package.installed? || package.failed? %>
             <%= button_to cluster_cluster_package_path(cluster, package),
                   method: :delete,
-                  class: "btn btn-sm btn-outline btn-error",
+                  class: "btn btn-xs btn-outline btn-error",
                   form: { data: { turbo_confirm: "Are you sure you want to uninstall #{definition['display_name']}?" } } do %>
               <iconify-icon icon="lucide:trash-2" height="14"></iconify-icon>
               Remove

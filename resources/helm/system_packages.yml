@@ -4,6 +4,7 @@ packages:
     description: Ingress controller for routing external traffic to cluster services
     icon: simple-icons:nginx
     default: true
+    recommended: true
     install_type: helm
     repo_name: ingress-nginx
     repo_url: https://kubernetes.github.io/ingress-nginx
@@ -36,6 +37,7 @@ packages:
     description: Automatic TLS certificate management with Let's Encrypt
     icon: mdi:certificate-outline
     default: true
+    recommended: true
     install_type: helm_and_manifest
     repo_name: jetstack
     repo_url: https://charts.jetstack.io
@@ -52,6 +54,7 @@ packages:
     description: Cluster resource metrics collection for autoscaling and monitoring
     icon: mdi:chart-line
     default: true
+    recommended: true
     install_type: manifest
     manifest_path: resources/k8/shared/metrics_server.yaml
     check_command: get deployment metrics-server
@@ -62,6 +65,7 @@ packages:
     description: Local development against a remote Kubernetes cluster
     icon: mdi:remote-desktop
     default: true
+    recommended: false
     install_type: helm
     repo_name: datawire
     repo_url: https://getambassador.io
@@ -74,6 +78,7 @@ packages:
     description: Secure tunnel to expose cluster services through Cloudflare
     icon: simple-icons:cloudflare
     default: false
+    recommended: false
     install_type: helm
     repo_name: cloudflare
     repo_url: https://cloudflare.github.io/helm-charts

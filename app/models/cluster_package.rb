@@ -62,7 +62,7 @@ class ClusterPackage < ApplicationRecord
 
   def broadcast_package
     broadcast_replace_later_to [ cluster, :cluster_packages ],
-      target: "cluster_package_#{name}",
+      target: "cluster_#{cluster_id}_package_#{name}",
       partial: "clusters/cluster_packages/package_row",
       locals: { cluster: cluster, definition: definition, package: self }
   end
