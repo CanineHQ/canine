@@ -1,4 +1,4 @@
-<% prefix = local_assigns[:definition] ? "package_config[#{definition['name']}]" : "config" %>
+<% prefix = local_assigns[:definition] ? "packages[#{definition['name']}][config]" : "config" %>
 <div class="form-group">
   <% if variable['type'] == 'string' %>
     <label class="label"><span class="label-text"><%= variable['name'] %></span></label>

@@ -40,12 +40,21 @@ class ClusterPackage < ApplicationRecord
 
   DEFINITIONS = YAML.load_file(Rails.root.join("resources", "helm", "system_packages.yml"))["packages"]
 
+  INSTALLER_REGISTRY = {
+    "nginx-ingress" => "ClusterPackage::Installer::NginxIngress",
+    "cert-manager" => "ClusterPackage::Installer::CertManager",
+    "metrics-server" => "ClusterPackage::Installer::MetricsServer",
+    "telepresence" => "ClusterPackage::Installer::Telepresence",
+    "cloudflared" => "ClusterPackage::Installer::Cloudflared"
+  }.freeze
+
   def definition
     DEFINITIONS.find { |d| d["name"] == name }
   end
 
   def installer
-    ClusterPackage::Installer.for(self)
+    class_name = INSTALLER_REGISTRY.fetch(name) { raise "No installer registered for package: #{name}" }
+    class_name.constantize.new(self)
   end
 
   def configurable?
@@ -58,6 +67,11 @@ class ClusterPackage < ApplicationRecord
 
   def self.default_package_names
     DEFINITIONS.select { |d| d["default"] }.map { |d| d["name"] }
+  end
+
+  def self.permitted_config_keys(package_name)
+    defn = DEFINITIONS.find { |d| d["name"] == package_name }
+    defn&.dig("template")&.map { |field| field["key"] } || []
   end
 
   def broadcast_package

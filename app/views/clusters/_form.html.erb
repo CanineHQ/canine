@@ -36,25 +36,30 @@
       </div>
     </div>
 
-    <div>
-      <label class="mb-4 inline-block font-semibold">System Packages</label>
-      <p class="text-sm text-gray-400 mb-4">Select packages to install on your cluster.</p>
-      <input type="hidden" name="package_names[]" value="" />
-
-      <h3 class="text-lg font-semibold mb-1">Recommended</h3>
-      <p class="text-sm text-gray-400 mb-3">Some features in Canine may not work without these packages.</p>
-      <div class="space-y-3 mb-6">
-        <% ClusterPackage.definitions.select { |d| d['recommended'] }.each do |definition| %>
-          <%= render "clusters/cluster_packages/form_row", definition: definition %>
-        <% end %>
+    <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+      <input type="checkbox" aria-label="System Packages" class="w-full">
+      <div class="collapse-title text-md font-medium">
+        <div class="flex flex-col gap-1">
+          <span>System Packages</span>
+          <span class="text-sm font-normal text-gray-500">Select packages to install on your cluster.</span>
+        </div>
       </div>
+      <div class="collapse-content">
+        <h3 class="text-lg font-semibold mb-1">Recommended</h3>
+        <p class="text-sm text-gray-400 mb-3">Some features in Canine may not work without these packages.</p>
+        <div class="space-y-3 mb-6">
+          <% ClusterPackage.definitions.select { |d| d['recommended'] }.each do |definition| %>
+            <%= render "clusters/cluster_packages/form_row", definition: definition %>
+          <% end %>
+        </div>
 
-      <h3 class="text-lg font-semibold mb-1">Other</h3>
-      <p class="text-sm text-gray-400 mb-3">Optional packages for additional functionality.</p>
-      <div class="space-y-3">
-        <% ClusterPackage.definitions.reject { |d| d['recommended'] }.each do |definition| %>
-          <%= render "clusters/cluster_packages/form_row", definition: definition %>
-        <% end %>
+        <h3 class="text-lg font-semibold mb-1">Other</h3>
+        <p class="text-sm text-gray-400 mb-3">Optional packages for additional functionality.</p>
+        <div class="space-y-3">
+          <% ClusterPackage.definitions.reject { |d| d['recommended'] }.each do |definition| %>
+            <%= render "clusters/cluster_packages/form_row", definition: definition %>
+          <% end %>
+        </div>
       </div>
     </div>
 

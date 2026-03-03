@@ -53,8 +53,8 @@ RSpec.describe ClusterPackage, type: :model do
     expect(build(:cluster_package, name: "cloudflared").installer).to be_a(ClusterPackage::Installer::Cloudflared)
   end
 
-  it "falls back to Base installer for unknown packages" do
+  it "raises for unknown packages" do
     pkg = build(:cluster_package, name: "unknown-package")
-    expect(pkg.installer).to be_a(ClusterPackage::Installer::Base)
+    expect { pkg.installer }.to raise_error(RuntimeError, /No installer registered for package: unknown-package/)
   end
 end

@@ -10,11 +10,20 @@ class Clusters::ParseParams
   end
 
   def self.build_packages(cluster, params)
-    package_names = params.key?(:package_names) ? Array(params[:package_names]).reject(&:blank?) : ClusterPackage.default_package_names
-    package_config = params[:package_config]&.permit!&.to_h || {}
+    unless params.key?(:packages)
+      ClusterPackage.default_package_names.each do |name|
+        cluster.cluster_packages.build(name: name)
+      end
+      return
+    end
 
-    package_names.each do |name|
-      config = package_config[name]&.to_h || {}
+    packages = params[:packages]
+    return unless packages.is_a?(ActionController::Parameters)
+
+    packages.each do |name, data|
+      next unless data[:enabled] == "1"
+      permitted_keys = ClusterPackage.permitted_config_keys(name)
+      config = data[:config]&.permit(*permitted_keys)&.to_h || {}
       cluster.cluster_packages.build(name: name, config: config)
     end
   end

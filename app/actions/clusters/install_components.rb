@@ -32,5 +32,4 @@ class Clusters::InstallComponents
       end
     end
   end
-
 end
