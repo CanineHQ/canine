@@ -1,3 +1,45 @@
+<% content_for :meta_description, "Canine is an open source PaaS for Kubernetes. Deploy apps to your own cluster with the simplicity of Heroku and the power of Kubernetes." %>
+<% content_for :og_description, "Canine is an open source PaaS for Kubernetes. Deploy apps to your own cluster with the simplicity of Heroku and the power of Kubernetes." %>
+<% content_for :schema_json do %>
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://canine.sh/#website",
+      "name": "Canine",
+      "url": "https://canine.sh",
+      "publisher": {
+        "@id": "https://canine.sh/#organization"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://canine.sh/#organization",
+      "name": "Canine",
+      "url": "https://canine.sh",
+      "logo": "https://canine.sh/icon.svg",
+      "sameAs": [
+        "https://github.com/CanineHQ/canine"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://canine.sh/#software",
+      "name": "Canine",
+      "description": "A Developer-friendly PaaS for Kubernetes. Deploy applications to your own cluster with the simplicity of Heroku.",
+      "url": "https://canine.sh",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  ]
+}
+<% end %>
 <div class="" style="">
   <%= render "static/landing_page/github_corner" %>
   

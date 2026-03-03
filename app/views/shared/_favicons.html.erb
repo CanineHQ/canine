@@ -3,26 +3,8 @@
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"><!-- 180×180 -->
 
-<%#
-<!-- Twitter
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@YourAccount">
-<meta name="twitter:creator" content="@YourAccount">
-<meta name="twitter:title" content="Title of your page">
-<meta name="twitter:url" content="URL of your page">
-<meta name="twitter:description" content="Your description here">
-<meta name="twitter:image:src" content="URL of image">
--->
-
-<!-- Open Graph
-<meta property="og:title" content="ENTER PAGE TITLE">
-<meta property="og:type" content="website">
-<meta property="og:url" content="ENTER PAGE URL">
-<meta property="og:image" content="URL OF IMAGE">
-<meta property="og:image:width" content="1240">
-<meta property="og:image:height" content="650">
-<meta property="og:site_name" content="ENTER YOUR SITE NAME">
-<meta property="og:description" content="ENTER YOUR PAGE DESCRIPTION">
-<meta property="fb:app_id" content="ENTER YOUR FB APP ID">
--->
-%>
+<meta name="twitter:site" content="@CanineHQ">
+<meta name="twitter:title" content="<%= content_for?(:og_title) ? yield(:og_title) : "Canine - A Developer-friendly PaaS for your Kubernetes" %>">
+<meta name="twitter:description" content="<%= content_for?(:og_description) ? yield(:og_description) : "Canine is an open source deployment platform that makes it easy to deploy and manage your applications." %>">
+<meta name="twitter:image" content="<%= content_for?(:og_image) ? yield(:og_image) : "https://canine.sh/images/deployment_styled.webp" %>">

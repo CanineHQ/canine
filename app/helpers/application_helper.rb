@@ -20,13 +20,13 @@ module ApplicationHelper
   end
 
   def pagy_nav_prev(pagy)
-    '<a aria-label="pagination-prev" class="btn btn-sm gap-2" href="' + pagy_url_for(pagy, pagy.prev) + '">' +
+    '<a rel="prev" aria-label="pagination-prev" class="btn btn-sm gap-2" href="' + pagy_url_for(pagy, pagy.prev) + '">' +
     '<iconify-icon icon="lucide:chevron-left" height="16"></iconify-icon>' +
     "</a>"
   end
 
   def pagy_nav_next(pagy)
-    '<a aria-label="pagination-prev" class="btn btn-sm gap-2" href="' + pagy_url_for(pagy, pagy.next) + '">' +
+    '<a rel="next" aria-label="pagination-next" class="btn btn-sm gap-2" href="' + pagy_url_for(pagy, pagy.next) + '">' +
     '<iconify-icon icon="lucide:chevron-right" height="16"></iconify-icon>' +
     "</a>"
   end

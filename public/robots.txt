@@ -1,1 +1,36 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+User-agent: *
+# Public marketing pages
+Allow: /$
+Allow: /privacy
+Allow: /terms
+Allow: /calculator
+Allow: /api-docs
+Allow: /sitemap.xml
+
+# Block authenticated app and internal pages
+Disallow: /projects
+Disallow: /clusters
+Disallow: /add_ons
+Disallow: /providers
+Disallow: /api_tokens
+Disallow: /notifications
+Disallow: /announcements
+Disallow: /accounts
+Disallow: /search
+Disallow: /favorites
+Disallow: /integrations
+Disallow: /oauth
+Disallow: /users/sign_in
+Disallow: /users/sign_up
+Disallow: /users/password
+Disallow: /users/confirmation
+Disallow: /users/unlock
+Disallow: /mcp
+Disallow: /api/
+Disallow: /up
+Disallow: /async_render
+Disallow: /admin/
+Disallow: /install.sh
+Disallow: /swagger
+
+Sitemap: https://canine.sh/sitemap.xml
