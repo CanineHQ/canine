@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_22_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -208,14 +208,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
   end
 
   create_table "domains", force: :cascade do |t|
-    t.bigint "service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
     t.boolean "auto_managed", default: false
-    t.index ["service_id"], name: "index_domains_on_service_id"
+    t.bigint "ingress_endpoint_id", null: false
+    t.index ["ingress_endpoint_id", "domain_name"], name: "index_domains_on_ingress_endpoint_id_and_domain_name", unique: true
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -377,6 +377,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_16_024025) do
     t.integer "status", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "ingress_endpoints", force: :cascade do |t|
+    t.string "endpointable_type", null: false
+    t.bigint "endpointable_id", null: false
+    t.string "endpoint_name", null: false
+    t.integer "port", default: 80, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpointable_type", "endpointable_id", "endpoint_name", "port"], name: "index_ingress_endpoints_uniqueness", unique: true
   end
 
   create_table "ldap_configurations", force: :cascade do |t|

@@ -2,18 +2,18 @@
 #
 # Table name: domains
 #
-#  id            :bigint           not null, primary key
-#  auto_managed  :boolean          default(FALSE)
-#  domain_name   :string           not null
-#  status        :integer          default("checking_dns")
-#  status_reason :string
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  service_id    :bigint           not null
+#  id                  :bigint           not null, primary key
+#  auto_managed        :boolean          default(FALSE)
+#  domain_name         :string           not null
+#  status              :integer          default("checking_dns")
+#  status_reason       :string
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#  ingress_endpoint_id :bigint           not null
 #
 # Indexes
 #
-#  index_domains_on_service_id  (service_id)
+#  index_domains_on_ingress_endpoint_id_and_domain_name  (ingress_endpoint_id,domain_name) UNIQUE
 #
 FactoryBot.define do
   factory :domain do

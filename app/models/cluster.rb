@@ -27,6 +27,7 @@ class Cluster < ApplicationRecord
   include TeamAccessible
   include Favoriteable
   broadcasts_refreshes
+  NETWORKING_MODES = %w[ingress gateway].freeze
 
   def self.ransackable_attributes(auth_object = nil)
     %w[name]
@@ -44,6 +45,9 @@ class Cluster < ApplicationRecord
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :account_id }
   validates_presence_of :kubeconfig, unless: :external?
+  validate :validate_networking_mode
+
+  before_validation :set_default_networking_mode
   enum :status, {
     initializing: 0,
     installing: 1,
@@ -70,7 +74,33 @@ class Cluster < ApplicationRecord
     external_id.present?
   end
 
+  def networking_mode
+    metadata&.dig("networking_mode").presence || "ingress"
+  end
+
+  def networking_mode=(value)
+    self.metadata = (metadata || {}).merge("networking_mode" => value)
+  end
+
+  def gateway_based?
+    networking_mode == "gateway"
+  end
+
+  def ingress_based?
+    networking_mode == "ingress"
+  end
+
   private
+
+  def set_default_networking_mode
+    self.networking_mode = "ingress" if metadata&.dig("networking_mode").blank?
+  end
+
+  def validate_networking_mode
+    return if NETWORKING_MODES.include?(networking_mode)
+
+    errors.add(:metadata, "networking_mode must be one of: #{NETWORKING_MODES.join(', ')}")
+  end
 
   def create_build_cloud_record!(attributes)
     build_cloud = BuildCloud.new(attributes.merge(cluster: self))

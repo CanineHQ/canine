@@ -1,5 +1,5 @@
 class Projects::LegacyUninstallService < Projects::BaseUninstallService
-  DELETABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Ingress Pvc].freeze
+  DELETABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Gateway Httproute Certificate Pvc].freeze
 
   private
 

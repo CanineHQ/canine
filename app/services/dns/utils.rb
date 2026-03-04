@@ -19,9 +19,9 @@ class Dns::Utils
       end
     end
 
-    def infer_expected_hostname(ingress, connection)
-      ingress.connect(connection)
-      hostname = ingress.hostname
+    def infer_expected_hostname(resource, connection)
+      resource.connect(connection)
+      hostname = resource.hostname
 
       # Only try to infer a public IP address if the cluster is a single node cluster (k3s, local_k3s)
       if !connection.cluster.k8s? && hostname[:type] == :ip_address && private_ip?(hostname[:value])

@@ -8,42 +8,19 @@ class K8::Stateless::Ingress < K8::Base
   end
 
   def name
-    "#{@service.name}-ingress"
+    gateway.name
   end
 
   def certificate_status
-    return nil unless @service.domains.any?
-    return nil unless @service.allow_public_networking?
-
-    kubectl.call("get certificate #{certificate_name} -n #{@project.namespace} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+    gateway.connect(connection).certificate_status
   end
 
   def certificate_name
-    "#{@service.name}-tls"
-  end
-
-  def get_ingress
-    result = kubectl.call('get ingresses -o yaml')
-    results = YAML.safe_load(result)
-    results['items'].find { |r| r['metadata']['name'] == "#{@service.project.namespace}-ingress" }
+    gateway.certificate_name
   end
 
   def self.hostname(client)
-    service = client.get_services.find { |s| s['metadata']['name'] == 'ingress-nginx-controller' }
-    if service.nil?
-      raise "Ingress-nginx-controller service not installed"
-    end
-    if service.status.loadBalancer.ingress[0].ip
-      {
-        value: service.status.loadBalancer.ingress[0].ip,
-        type: :ip_address
-      }
-    else
-      {
-        value: service.status.loadBalancer.ingress[0].hostname,
-        type: :hostname
-      }
-    end
+    K8::Stateless::Gateway.hostname(client)
   end
 
   def hostname
@@ -51,7 +28,25 @@ class K8::Stateless::Ingress < K8::Base
       self.class.hostname(self.client)
     end
   rescue StandardError => e
-    Rails.logger.error("Error getting ingress ip address: #{e.message}")
+    Rails.logger.error("Error getting gateway address: #{e.message}")
     nil
+  end
+
+  def to_yaml
+    [ gateway.to_yaml, http_route.to_yaml, certificate.to_yaml ].join("\n---\n")
+  end
+
+  private
+
+  def gateway
+    @gateway ||= K8::Stateless::Gateway.new(service)
+  end
+
+  def http_route
+    @http_route ||= K8::Stateless::Httproute.new(service)
+  end
+
+  def certificate
+    @certificate ||= K8::Stateless::Certificate.new(service)
   end
 end

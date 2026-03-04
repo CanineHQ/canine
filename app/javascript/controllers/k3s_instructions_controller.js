@@ -31,7 +31,7 @@ export default class extends Controller {
   }
 
   async setInstallCommand() {
-    const command = `curl -sfL https://get.k3s.io | sh -s - --disable traefik --tls-san ${this.ipAddressTarget.value}`;
+    const command = `curl -sfL https://get.k3s.io | sh -s - --tls-san ${this.ipAddressTarget.value}`;
     this.installCommandTarget.innerHTML = command;
     this.installCommandTarget.dataset.clipboardText = command;
   }
@@ -82,4 +82,3 @@ export default class extends Controller {
     this.instructionsTarget.classList.remove("hidden")
   }
 }
-

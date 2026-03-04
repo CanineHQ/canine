@@ -1,7 +1,7 @@
 class Deployments::BaseDeploymentService
   class DeploymentFailure < StandardError; end
 
-  DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Ingress Pv Pvc].freeze
+  DEPLOYABLE_RESOURCES = %w[ConfigMap Secrets Deployment CronJob Service Gateway Httproute Certificate Pv Pvc].freeze
 
   def initialize(deployment, user)
     @deployment = deployment
