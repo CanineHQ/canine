@@ -6,6 +6,25 @@ class Clusters::ParseParams
   executed do |context|
     parsed = parse_params(context.params)
     context.cluster = context.account.clusters.new(parsed)
+    build_packages(context.cluster, context.params)
+  end
+
+  def self.build_packages(cluster, params)
+    unless params.key?(:packages)
+      ClusterPackage.default_package_names.each do |name|
+        cluster.cluster_packages.build(name: name)
+      end
+      return
+    end
+
+    packages = params[:packages]
+
+    packages.each do |name, data|
+      next unless data[:enabled] == "1"
+      permitted_keys = ClusterPackage.permitted_config_keys(name)
+      config = data[:config]&.permit(*permitted_keys)&.to_h || {}
+      cluster.cluster_packages.build(name: name, config: config)
+    end
   end
 
   def self.parse_params(params)

@@ -1,0 +1,28 @@
+<div <%= "data-controller=checkbox-reveal" if definition['template'].present? %> class="bg-base-200 rounded-lg">
+  <label class="flex items-center gap-3 p-3 cursor-pointer">
+    <input type="checkbox"
+           name="packages[<%= definition['name'] %>][enabled]"
+           value="1"
+           class="checkbox"
+           <%= 'checked' if definition['default'] %>
+           <% if definition['template'].present? %>
+             data-action="change->checkbox-reveal#update"
+           <% end %> />
+    <iconify-icon icon="<%= definition['icon'] %>" height="24"></iconify-icon>
+    <div>
+      <span class="font-semibold"><%= definition['display_name'] %></span>
+      <p class="text-sm text-gray-400"><%= definition['description'] %></p>
+    </div>
+  </label>
+
+  <% if definition['template'].present? %>
+    <div data-checkbox-reveal-target="content" class="hidden px-3 pb-3 pl-11 space-y-2">
+      <% if definition['help_text'].present? %>
+        <div class="text-sm text-gray-400"><%= definition['help_text'].html_safe %></div>
+      <% end %>
+      <% definition['template'].each do |variable| %>
+        <%= render "clusters/cluster_packages/template_variable", variable: variable, definition: definition %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -23,10 +23,7 @@
 
   <div class="form-group">
     <%= form.label :local_k3s_kubeconfig_output, "Kubeconfig" %>
-    <%= form.text_area :local_k3s_kubeconfig_output, class: "textarea textarea-bordered w-full max-w-lg h-48", placeholder: "Paste your kubeconfig here..." %>
+    <%= form.text_area :local_k3s_kubeconfig_output, class: "textarea textarea-bordered w-full max-w-lg h-48", placeholder: "Paste your kubeconfig here...", data: { "cluster-form-target": "kubeconfigInput", action: "input->cluster-form#updateSubmitState" } %>
   </div>
 
-  <div>
-    <%= form.submit "Create Cluster", class: "btn btn-primary" %>
-  </div>
 </div>
