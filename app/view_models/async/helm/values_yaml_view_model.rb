@@ -27,7 +27,7 @@ class Async::Helm::ValuesYamlViewModel < Async::BaseViewModel
               <td><%= key %></td>
               <td>
                 <div class="flex flex-row items-center" data-controller="toggle-password" data-toggle-password-mask-length-value="true">
-                  <input type="password" readonly class="input input-sm w-full bg-transparent border-none focus:outline-none" value="<%= value %>" data-toggle-password-target="input">
+                  <input type="password" readonly class="input input-sm w-full bg-transparent border-none focus:outline-none" value="<%= ERB::Util.html_escape(value) %>" data-toggle-password-target="input">
                   <button class="btn btn-sm btn-ghost" type="button" data-action="click->toggle-password#toggle">
                     <iconify-icon icon="lucide:eye" data-toggle-password-target="icon"></iconify-icon>
                   </button>
