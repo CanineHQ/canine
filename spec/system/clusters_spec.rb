@@ -137,7 +137,7 @@ RSpec.describe "Clusters", type: :system do
       find('[data-card-name="k8s"]').click
 
       attach_file "cluster_kubeconfig_file", kubeconfig_file.path
-      click_button "Submit"
+      click_button "Create Cluster"
 
       expect(page).to have_content("Cluster was successfully created")
       expect(Cluster.last).to have_attributes(name: "my-k8s-cluster", cluster_type: "k8s")

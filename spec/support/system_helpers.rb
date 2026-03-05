@@ -9,6 +9,7 @@ module SystemHelpers
     fill_in "Email", with: user.email
     fill_in "Password", with: "password"
     click_button "Sign in"
+    expect(page).to have_no_current_path(new_user_session_path)
 
     { user: user, account: account }
   end
