@@ -18,7 +18,6 @@ class Clusters::ParseParams
     end
 
     packages = params[:packages]
-    return unless packages.is_a?(ActionController::Parameters)
 
     packages.each do |name, data|
       next unless data[:enabled] == "1"

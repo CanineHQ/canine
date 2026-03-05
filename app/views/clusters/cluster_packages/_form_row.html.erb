@@ -1,4 +1,4 @@
-<div <%= "data-controller=content-toggle" if definition['template'].present? %> class="bg-base-200 rounded-lg">
+<div <%= "data-controller=checkbox-reveal" if definition['template'].present? %> class="bg-base-200 rounded-lg">
   <label class="flex items-center gap-3 p-3 cursor-pointer">
     <input type="checkbox"
            name="packages[<%= definition['name'] %>][enabled]"
@@ -6,7 +6,7 @@
            class="checkbox"
            <%= 'checked' if definition['default'] %>
            <% if definition['template'].present? %>
-             data-action="change->content-toggle#toggleEdit"
+             data-action="change->checkbox-reveal#update"
            <% end %> />
     <iconify-icon icon="<%= definition['icon'] %>" height="24"></iconify-icon>
     <div>
@@ -16,7 +16,7 @@
   </label>
 
   <% if definition['template'].present? %>
-    <div data-content-toggle-target="editorContainer" class="hidden px-3 pb-3 pl-11 space-y-2">
+    <div data-checkbox-reveal-target="content" class="hidden px-3 pb-3 pl-11 space-y-2">
       <% if definition['help_text'].present? %>
         <div class="text-sm text-gray-400"><%= definition['help_text'].html_safe %></div>
       <% end %>

@@ -1,4 +1,4 @@
-<%= form_with(model: cluster) do |form| %>
+<%= form_with(model: cluster, data: { controller: "cluster-form" }) do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
 
   <div class="space-y-8">
@@ -61,6 +61,16 @@
           <% end %>
         </div>
       </div>
+    </div>
+
+    <div class="form-footer">
+      <%= form.button "Create Cluster", class: "btn btn-primary", disabled: true, data: { turbo_submits_with: "Submitting...", "cluster-form-target": "submit" } %>
+
+      <% if form.object.new_record? %>
+        <%= link_to t("cancel"), clusters_path, class: "btn btn-secondary" %>
+      <% else %>
+        <%= link_to t("cancel"), cluster_path(@cluster), class: "btn btn-secondary" %>
+      <% end %>
     </div>
 
   </div>
