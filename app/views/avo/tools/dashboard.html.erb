@@ -157,7 +157,7 @@
             <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
               <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                 <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Builds</h4>
-                <%= link_to "View all", avo.resources_builds_path, class: "text-sm", style: "color: #60a5fa;" %>
+                <%= link_to "View all", avo.resources_builds_path, class: "text-sm", style: "color: #818cf8;" %>
               </div>
               <div>
                 <% Build.order(created_at: :desc).limit(5).each do |build| %>
@@ -186,7 +186,7 @@
             <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
               <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                 <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Deployments</h4>
-                <%= link_to "View all", avo.resources_deployments_path, class: "text-sm", style: "color: #60a5fa;" %>
+                <%= link_to "View all", avo.resources_deployments_path, class: "text-sm", style: "color: #818cf8;" %>
               </div>
               <div>
                 <% Deployment.order(created_at: :desc).limit(5).each do |deployment| %>
