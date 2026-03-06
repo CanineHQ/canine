@@ -1,13 +1,13 @@
 <div id="user_tool_panel">
   <%= render Avo::PanelComponent.new(name: "Manage User") do |c| %>
     <% c.with_body do %>
-      <div style="border-top: 1px solid #f3f4f6;">
+      <div style="border-top: 1px solid #2a323c;">
         <!-- Login As -->
-        <div style="padding: 1rem; border-bottom: 1px solid #f3f4f6;">
+        <div style="padding: 1rem; border-bottom: 1px solid #2a323c;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div>
-              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Login as this user</h4>
-              <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Impersonate to see what they see</p>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #e0e6ed;">Login as this user</h4>
+              <p style="font-size: 0.75rem; color: #8b95a3; margin-top: 0.125rem;">Impersonate to see what they see</p>
             </div>
             <%= form_with url: avo.impersonation_path(user_id: @resource.record.id), method: :post, data: { turbo: false } do |f| %>
               <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: white; background-color: #2563eb; border: none; cursor: pointer;">
@@ -18,14 +18,14 @@
         </div>
 
         <!-- Reset Password -->
-        <div style="padding: 1rem; border-bottom: 1px solid #f3f4f6;">
+        <div style="padding: 1rem; border-bottom: 1px solid #2a323c;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div>
-              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Reset password</h4>
-              <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Generate a new temporary password</p>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #e0e6ed;">Reset password</h4>
+              <p style="font-size: 0.75rem; color: #8b95a3; margin-top: 0.125rem;">Generate a new temporary password</p>
             </div>
             <%= form_with url: avo.password_reset_path(user_id: @resource.record.id), method: :post do |f| %>
-              <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #374151; background-color: #f3f4f6; border: none; cursor: pointer;" data-confirm="Generate a new temporary password for <%= @resource.record.email %>?">
+              <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #a6adbb; background-color: #2a323c; border: none; cursor: pointer;" data-confirm="Generate a new temporary password for <%= @resource.record.email %>?">
                 Reset
               </button>
             <% end %>
@@ -36,16 +36,16 @@
         <div style="padding: 1rem;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div>
-              <h4 style="font-size: 0.875rem; font-weight: 500; color: #111827;">Site Admin</h4>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #e0e6ed;">Site Admin</h4>
               <% if @resource.record.admin? %>
-                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Remove site admin privileges</p>
+                <p style="font-size: 0.75rem; color: #8b95a3; margin-top: 0.125rem;">Remove site admin privileges</p>
               <% else %>
-                <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;">Promote this user to site admin</p>
+                <p style="font-size: 0.75rem; color: #8b95a3; margin-top: 0.125rem;">Promote this user to site admin</p>
               <% end %>
             </div>
             <% if @resource.record.admin? %>
               <%= form_with url: avo.promote_to_admin_path(user_id: @resource.record.id), method: :delete do |f| %>
-                <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #374151; background-color: #f3f4f6; border: none; cursor: pointer;" data-confirm="Demote <%= @resource.record.email %> from site admin?">
+                <button type="submit" style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: #a6adbb; background-color: #2a323c; border: none; cursor: pointer;" data-confirm="Demote <%= @resource.record.email %> from site admin?">
                   Demote
                 </button>
               <% end %>
