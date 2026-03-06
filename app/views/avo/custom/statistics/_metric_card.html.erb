@@ -1,13 +1,13 @@
 <%
   color_styles = {
-    'green' => { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' },
-    'yellow' => { bg: '#fefce8', text: '#ca8a04', border: '#fef08a' },
-    'red' => { bg: '#fef2f2', text: '#dc2626', border: '#fecaca' }
+    'green' => { bg: 'rgba(22, 163, 74, 0.1)', text: '#4ade80', border: 'rgba(22, 163, 74, 0.3)' },
+    'yellow' => { bg: 'rgba(202, 138, 4, 0.1)', text: '#facc15', border: 'rgba(202, 138, 4, 0.3)' },
+    'red' => { bg: 'rgba(220, 38, 38, 0.1)', text: '#f87171', border: 'rgba(220, 38, 38, 0.3)' }
   }
   colors = color_styles[color] || color_styles['green']
 %>
 <div style="background-color: <%= colors[:bg] %>; border: 1px solid <%= colors[:border] %>; border-radius: 0.5rem; padding: 1.25rem;">
-  <p style="font-size: 0.875rem; font-weight: 500; color: #4b5563; margin: 0 0 0.25rem 0;"><%= title %></p>
+  <p style="font-size: 0.875rem; font-weight: 500; color: #8a909a; margin: 0 0 0.25rem 0;"><%= title %></p>
   <p style="font-size: 1.875rem; font-weight: 700; color: <%= colors[:text] %>; margin: 0;"><%= value %></p>
-  <p style="font-size: 0.75rem; color: #6b7280; margin: 0.25rem 0 0 0;"><%= detail %></p>
+  <p style="font-size: 0.75rem; color: #787f8a; margin: 0.25rem 0 0 0;"><%= detail %></p>
 </div>

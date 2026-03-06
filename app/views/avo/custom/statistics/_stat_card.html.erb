@@ -1,15 +1,15 @@
 <%
   color_styles = {
-    'blue' => { bg: '#eff6ff', text: '#2563eb' },
-    'purple' => { bg: '#faf5ff', text: '#9333ea' },
-    'green' => { bg: '#f0fdf4', text: '#16a34a' },
-    'yellow' => { bg: '#fefce8', text: '#ca8a04' },
-    'indigo' => { bg: '#eef2ff', text: '#4f46e5' },
-    'pink' => { bg: '#fdf2f8', text: '#db2777' }
+    'blue' => { bg: 'rgba(37, 99, 235, 0.15)', text: '#60a5fa' },
+    'purple' => { bg: 'rgba(147, 51, 234, 0.15)', text: '#c084fc' },
+    'green' => { bg: 'rgba(22, 163, 74, 0.15)', text: '#4ade80' },
+    'yellow' => { bg: 'rgba(202, 138, 4, 0.15)', text: '#facc15' },
+    'indigo' => { bg: 'rgba(79, 70, 229, 0.15)', text: '#a5b4fc' },
+    'pink' => { bg: 'rgba(219, 39, 119, 0.15)', text: '#f472b6' }
   }
   colors = color_styles[color] || color_styles['blue']
 %>
-<div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
+<div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1rem;">
   <div style="display: flex; align-items: center; gap: 0.75rem;">
     <div style="flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; background-color: <%= colors[:bg] %>; color: <%= colors[:text] %>;">
       <% case icon %>
@@ -40,10 +40,10 @@
       <% end %>
     </div>
     <div>
-      <p style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0;"><%= value %></p>
-      <p style="font-size: 0.75rem; color: #6b7280; margin: 0;"><%= title %></p>
+      <p style="font-size: 1.5rem; font-weight: 700; color: #eaebee; margin: 0;"><%= value %></p>
+      <p style="font-size: 0.75rem; color: #8a909a; margin: 0;"><%= title %></p>
       <% if local_assigns[:subtitle] %>
-        <p style="font-size: 0.75rem; color: #9ca3af; margin: 0;"><%= subtitle %></p>
+        <p style="font-size: 0.75rem; color: #787f8a; margin: 0;"><%= subtitle %></p>
       <% end %>
     </div>
   </div>

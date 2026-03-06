@@ -1,4 +1,4 @@
-<div class="px-4" style="border-right: 1px solid #e0e0e0;">
+<div class="px-4" style="border-right: 1px solid #282d34;">
   <% @builds_count = Build.where(created_at: time_period.ago.., status: :completed).count.to_f %>
   <% @total_builds_count = Build.where(created_at: time_period.ago..).count.to_f %>
   <% @build_success_rate = @builds_count > 0 ? @builds_count / @total_builds_count * 100 : 0 %>

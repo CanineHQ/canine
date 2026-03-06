@@ -4,7 +4,7 @@
   <%= render Avo::PanelComponent.new(name: 'Dashboard', display_breadcrumbs: true) do |c| %>
     <% c.with_tools do %>
       <%= form_with url: dashboard_path, method: :get, local: true, class: "flex items-center gap-2" do %>
-        <span class="text-sm text-gray-600">Time period:</span>
+        <span class="text-sm" style="color: #8a909a;">Time period:</span>
         <%= select_tag :time_period,
             options_for_select([
               ["Last 7 days", 7],
@@ -12,7 +12,8 @@
               ["Last 90 days", 90],
               ["Last year", 365]
             ], params[:time_period].presence || 7),
-            class: "border border-gray-300 rounded-md text-sm px-3 py-1.5",
+            class: "rounded-md text-sm px-3 py-1.5",
+            style: "background-color: #14181c; border: 1px solid #282d34; color: #b0b5be;",
             onchange: "this.form.submit()" %>
       <% end %>
     <% end %>
@@ -21,8 +22,8 @@
       <div class="p-6">
         <!-- Overview Stats -->
         <div class="mb-8">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Overview</h3>
-          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+          <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Overview</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
             <%= render 'avo/custom/statistics/stat_card',
                 title: 'Total Users',
                 value: User.count,
@@ -69,8 +70,8 @@
 
         <!-- Performance Metrics -->
         <div class="mb-8">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Performance</h3>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+          <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Performance</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             <% builds_completed = Build.where(created_at: @time_period.ago.., status: :completed).count %>
             <% builds_total = Build.where(created_at: @time_period.ago..).count %>
             <% build_rate = builds_total > 0 ? (builds_completed.to_f / builds_total * 100).round : 0 %>
@@ -110,10 +111,10 @@
         </div>
 
         <!-- Status Breakdown -->
-        <div class="mb-8" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+        <div class="mb-8" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
           <!-- Cluster Status -->
-          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.25rem;">
-            <h4 class="text-sm font-semibold text-gray-700 mb-4">Cluster Status</h4>
+          <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1.25rem;">
+            <h4 class="text-sm font-semibold mb-4" style="color: #d5d8dd;">Cluster Status</h4>
             <div class="space-y-3">
               <% Cluster.statuses.keys.each do |status| %>
                 <% count = Cluster.where(status: status).count %>
@@ -121,17 +122,17 @@
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; <%= status_color_style(status) %>"></span>
-                    <span class="text-sm text-gray-600"><%= status.humanize %></span>
+                    <span class="text-sm" style="color: #b0b5be;"><%= status.humanize %></span>
                   </div>
-                  <span class="text-sm font-medium text-gray-900"><%= count %></span>
+                  <span class="text-sm font-medium" style="color: #eaebee;"><%= count %></span>
                 </div>
               <% end %>
             </div>
           </div>
 
           <!-- Add-on Status -->
-          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.25rem;">
-            <h4 class="text-sm font-semibold text-gray-700 mb-4">Add-on Status</h4>
+          <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1.25rem;">
+            <h4 class="text-sm font-semibold mb-4" style="color: #d5d8dd;">Add-on Status</h4>
             <div class="space-y-3">
               <% AddOn.statuses.keys.each do |status| %>
                 <% count = AddOn.where(status: status).count %>
@@ -139,9 +140,9 @@
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                   <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <span style="width: 8px; height: 8px; border-radius: 50%; <%= addon_status_color_style(status) %>"></span>
-                    <span class="text-sm text-gray-600"><%= status.humanize %></span>
+                    <span class="text-sm" style="color: #b0b5be;"><%= status.humanize %></span>
                   </div>
-                  <span class="text-sm font-medium text-gray-900"><%= count %></span>
+                  <span class="text-sm font-medium" style="color: #eaebee;"><%= count %></span>
                 </div>
               <% end %>
             </div>
@@ -150,24 +151,24 @@
 
         <!-- Recent Activity -->
         <div class="mb-8">
-          <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Recent Activity</h3>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+          <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Recent Activity</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
             <!-- Recent Builds -->
-            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
-              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
-                <h4 class="text-sm font-semibold text-gray-700">Recent Builds</h4>
-                <%= link_to "View all", avo.resources_builds_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+            <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
+              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
+                <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Builds</h4>
+                <%= link_to "View all", avo.resources_builds_path, class: "text-sm", style: "color: #a5b4fc;" %>
               </div>
               <div>
                 <% Build.order(created_at: :desc).limit(5).each do |build| %>
-                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                       <span style="width: 8px; height: 8px; border-radius: 50%; <%= build_status_color_style(build.status) %>"></span>
                       <div>
-                        <p class="text-sm font-medium text-gray-900">
-                          <%= link_to build.project&.name || "Build ##{build.id}", avo.resources_build_path(build), class: "hover:text-blue-600" %>
+                        <p class="text-sm font-medium" style="color: #eaebee; margin: 0;">
+                          <%= link_to build.project&.name || "Build ##{build.id}", avo.resources_build_path(build), style: "color: #eaebee;" %>
                         </p>
-                        <p class="text-xs text-gray-500"><%= time_ago_in_words(build.created_at) %> ago</p>
+                        <p class="text-xs" style="color: #787f8a; margin: 0;"><%= time_ago_in_words(build.created_at) %> ago</p>
                       </div>
                     </div>
                     <span style="<%= build_status_badge_style(build.status) %> font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500;">
@@ -176,27 +177,27 @@
                   </div>
                 <% end %>
                 <% if Build.count == 0 %>
-                  <div style="padding: 1rem 1.25rem; text-align: center;" class="text-sm text-gray-500">No builds yet</div>
+                  <div style="padding: 1rem 1.25rem; text-align: center; color: #787f8a;" class="text-sm">No builds yet</div>
                 <% end %>
               </div>
             </div>
 
             <!-- Recent Deployments -->
-            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
-              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between;">
-                <h4 class="text-sm font-semibold text-gray-700">Recent Deployments</h4>
-                <%= link_to "View all", avo.resources_deployments_path, class: "text-sm text-blue-600 hover:text-blue-800" %>
+            <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
+              <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
+                <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Deployments</h4>
+                <%= link_to "View all", avo.resources_deployments_path, class: "text-sm", style: "color: #a5b4fc;" %>
               </div>
               <div>
                 <% Deployment.order(created_at: :desc).limit(5).each do |deployment| %>
-                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between;">
+                  <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                       <span style="width: 8px; height: 8px; border-radius: 50%; <%= deployment_status_color_style(deployment.status) %>"></span>
                       <div>
-                        <p class="text-sm font-medium text-gray-900">
-                          <%= link_to deployment.build&.project&.name || "Deployment ##{deployment.id}", avo.resources_deployment_path(deployment), class: "hover:text-blue-600" %>
+                        <p class="text-sm font-medium" style="color: #eaebee; margin: 0;">
+                          <%= link_to deployment.build&.project&.name || "Deployment ##{deployment.id}", avo.resources_deployment_path(deployment), style: "color: #eaebee;" %>
                         </p>
-                        <p class="text-xs text-gray-500"><%= time_ago_in_words(deployment.created_at) %> ago</p>
+                        <p class="text-xs" style="color: #787f8a; margin: 0;"><%= time_ago_in_words(deployment.created_at) %> ago</p>
                       </div>
                     </div>
                     <span style="<%= deployment_status_badge_style(deployment.status) %> font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 9999px; font-weight: 500;">
@@ -205,7 +206,7 @@
                   </div>
                 <% end %>
                 <% if Deployment.count == 0 %>
-                  <div style="padding: 1rem 1.25rem; text-align: center;" class="text-sm text-gray-500">No deployments yet</div>
+                  <div style="padding: 1rem 1.25rem; text-align: center; color: #787f8a;" class="text-sm">No deployments yet</div>
                 <% end %>
               </div>
             </div>
@@ -218,37 +219,37 @@
         <% failed_builds = Build.where(status: :failed).where(created_at: 24.hours.ago..) %>
         <% if failed_clusters.any? || failed_addons.any? || failed_builds.any? %>
           <div>
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Attention Required</h3>
-            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1.25rem;">
+            <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Attention Required</h3>
+            <div style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 0.25rem; padding: 1.25rem;">
               <div class="space-y-3">
                 <% if failed_clusters.any? %>
                   <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span style="color: #ef4444;">
+                    <span style="color: #f87171;">
                       <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                       </svg>
                     </span>
-                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_clusters.count %></strong> cluster(s) in failed state</span>
+                    <span class="text-sm" style="color: #fca5a5;"><strong><%= failed_clusters.count %></strong> cluster(s) in failed state</span>
                   </div>
                 <% end %>
                 <% if failed_addons.any? %>
                   <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span style="color: #ef4444;">
+                    <span style="color: #f87171;">
                       <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                       </svg>
                     </span>
-                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_addons.count %></strong> add-on(s) in failed state</span>
+                    <span class="text-sm" style="color: #fca5a5;"><strong><%= failed_addons.count %></strong> add-on(s) in failed state</span>
                   </div>
                 <% end %>
                 <% if failed_builds.any? %>
                   <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span style="color: #ef4444;">
+                    <span style="color: #f87171;">
                       <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                       </svg>
                     </span>
-                    <span class="text-sm" style="color: #991b1b;"><strong><%= failed_builds.count %></strong> build(s) failed in the last 24 hours</span>
+                    <span class="text-sm" style="color: #fca5a5;"><strong><%= failed_builds.count %></strong> build(s) failed in the last 24 hours</span>
                   </div>
                 <% end %>
               </div>
