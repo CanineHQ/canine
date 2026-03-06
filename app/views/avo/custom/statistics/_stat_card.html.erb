@@ -9,7 +9,7 @@
   }
   colors = color_styles[color] || color_styles['blue']
 %>
-<div style="background: #242b33; border: 1px solid #2a323c; border-radius: 0.5rem; padding: 1rem;">
+<div style="background: #1e2328; border: 1px solid #282d34; border-radius: 0.25rem; padding: 1rem;">
   <div style="display: flex; align-items: center; gap: 0.75rem;">
     <div style="flex-shrink: 0; width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; background-color: <%= colors[:bg] %>; color: <%= colors[:text] %>;">
       <% case icon %>
@@ -40,10 +40,10 @@
       <% end %>
     </div>
     <div>
-      <p style="font-size: 1.5rem; font-weight: 700; color: #e0e6ed; margin: 0;"><%= value %></p>
-      <p style="font-size: 0.75rem; color: #8b95a3; margin: 0;"><%= title %></p>
+      <p style="font-size: 1.5rem; font-weight: 700; color: #eaebee; margin: 0;"><%= value %></p>
+      <p style="font-size: 0.75rem; color: #8a909a; margin: 0;"><%= title %></p>
       <% if local_assigns[:subtitle] %>
-        <p style="font-size: 0.75rem; color: #6b7785; margin: 0;"><%= subtitle %></p>
+        <p style="font-size: 0.75rem; color: #787f8a; margin: 0;"><%= subtitle %></p>
       <% end %>
     </div>
   </div>

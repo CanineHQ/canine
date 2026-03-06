@@ -10,16 +10,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </span>
-            <p class="text-sm" style="color: #a6adbb;">Share these credentials with the user.</p>
+            <p class="text-sm" style="color: #b0b5be;">Share these credentials with the user.</p>
           </div>
 
           <!-- Credentials -->
           <div class="space-y-3 mb-4">
             <div>
-              <label class="block text-xs font-medium mb-1" style="color: #8b95a3;">Login URL</label>
-              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #1d232a; border: 1px solid #2a323c;">
-                <span class="flex-1 text-sm truncate font-mono" style="color: #e0e6ed;"><%= @credentials[:login_url] %></span>
-                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:login_url] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8b95a3;">
+              <label class="block text-xs font-medium mb-1" style="color: #8a909a;">Login URL</label>
+              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #14181c; border: 1px solid #282d34;">
+                <span class="flex-1 text-sm truncate font-mono" style="color: #eaebee;"><%= @credentials[:login_url] %></span>
+                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:login_url] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8a909a;">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                   </svg>
@@ -28,10 +28,10 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium mb-1" style="color: #8b95a3;">Email</label>
-              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #1d232a; border: 1px solid #2a323c;">
-                <span class="flex-1 text-sm truncate" style="color: #e0e6ed;"><%= @credentials[:email] %></span>
-                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:email] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8b95a3;">
+              <label class="block text-xs font-medium mb-1" style="color: #8a909a;">Email</label>
+              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #14181c; border: 1px solid #282d34;">
+                <span class="flex-1 text-sm truncate" style="color: #eaebee;"><%= @credentials[:email] %></span>
+                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:email] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8a909a;">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                   </svg>
@@ -40,10 +40,10 @@
             </div>
 
             <div>
-              <label class="block text-xs font-medium mb-1" style="color: #8b95a3;">Temporary Password</label>
-              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #1d232a; border: 1px solid #2a323c;">
-                <code class="flex-1 text-sm font-mono" style="color: #e0e6ed; background: transparent;"><%= @credentials[:password] %></code>
-                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:password] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8b95a3;">
+              <label class="block text-xs font-medium mb-1" style="color: #8a909a;">Temporary Password</label>
+              <div class="flex items-center gap-2 rounded-md px-3 py-2" style="background-color: #14181c; border: 1px solid #282d34;">
+                <code class="flex-1 text-sm font-mono" style="color: #eaebee; background: transparent;"><%= @credentials[:password] %></code>
+                <button type="button" onclick="navigator.clipboard.writeText('<%= @credentials[:password] %>'); this.innerHTML = '<svg class=\'w-4 h-4\' style=\'color: #4ade80;\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M5 13l4 4L19 7\'></path></svg>'; setTimeout(() => this.innerHTML = '<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z\'></path></svg>', 1500)" style="color: #8a909a;">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                   </svg>
@@ -57,7 +57,7 @@
                   id="copy-all-btn"
                   onclick="navigator.clipboard.writeText(`Login URL: <%= @credentials[:login_url] %>\nEmail: <%= @credentials[:email] %>\nTemporary Password: <%= @credentials[:password] %>`); this.querySelector('span').innerText = 'Copied!'; setTimeout(() => this.querySelector('span').innerText = 'Copy All', 1500)"
                   class="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md"
-                  style="color: #a6adbb; background-color: #2a323c;">
+                  style="color: #b0b5be; background-color: #282d34;">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
             </svg>

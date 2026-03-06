@@ -1,132 +1,145 @@
 <%= content_tag(:style, nonce: content_security_policy_nonce) do %>
-  /* Dark mode overrides for Avo admin panel */
+  /*
+   * Dark mode overrides for Avo admin panel
+   * Colors matched to core app dark theme:
+   *   --main-content-background: #14181c
+   *   --leftmenu-background:     #1e2328
+   *   --topbar-background:       #191e23
+   *   b1 (base):    #14181c
+   *   b2 (surface):  #1e2328
+   *   b3 (elevated): #282d34
+   *   bc (text):     #eaebee
+   *   nc (muted):    #b0b5be
+   *   primary:       #6366f1
+   */
+
   :root {
-    --color-application-background: 29 35 42;
+    --color-application-background: 20 24 28;
   }
 
   body.bg-application {
-    background-color: #1d232a;
-    color: #a6adbb;
+    background-color: #14181c;
+    color: #b0b5be;
   }
 
   /* ===== Backgrounds ===== */
   .bg-white {
-    background-color: #242b33 !important;
-    color: #a6adbb !important;
+    background-color: #1e2328 !important;
+    color: #b0b5be !important;
   }
 
   .bg-gray-50 {
-    background-color: #1d232a !important;
+    background-color: #14181c !important;
   }
 
   .bg-gray-100 {
-    background-color: #1f2630 !important;
+    background-color: #191e23 !important;
   }
 
   .bg-gray-200 {
-    background-color: #2a323c !important;
+    background-color: #1e2328 !important;
   }
 
   .bg-gray-300 {
-    background-color: #333c47 !important;
+    background-color: #282d34 !important;
   }
 
   .hover\:bg-gray-100:hover {
-    background-color: #2a323c !important;
+    background-color: #1e2328 !important;
   }
 
   .hover\:bg-gray-50:hover {
-    background-color: #1f2630 !important;
+    background-color: #191e23 !important;
   }
 
   .hover\:bg-primary-100:hover {
-    background-color: rgba(99, 102, 241, 0.15) !important;
+    background-color: rgba(99, 102, 241, 0.1) !important;
   }
 
   /* ===== Text colors ===== */
   .text-black {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   .text-gray-400 {
-    color: #8b95a3 !important;
+    color: #787f8a !important;
   }
 
   .text-gray-500 {
-    color: #8b95a3 !important;
+    color: #8a909a !important;
   }
 
   .text-gray-600 {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   .text-gray-700 {
-    color: #b0bac7 !important;
+    color: #c0c5cc !important;
   }
 
   .text-gray-800 {
-    color: #c8d0da !important;
+    color: #d5d8dd !important;
   }
 
   .text-gray-900 {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   /* Headings */
   h1, h2, h3, h4, h5, h6 {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   /* Links */
   a.text-gray-600,
   a.text-gray-700,
   a.text-gray-800 {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   a.text-gray-600:hover,
   a.text-gray-700:hover,
   a.text-gray-800:hover {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   a.text-black {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   /* ===== Sidebar ===== */
   .avo-sidebar {
-    background-color: #191e24 !important;
-    border-color: #2a323c !important;
+    background-color: #1e2328 !important;
+    border-color: #282d34 !important;
   }
 
   .application-sidebar a,
   .application-sidebar span,
   .application-sidebar div {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   .application-sidebar .active,
   .application-sidebar .active:hover {
-    background-color: #2a323c !important;
+    background-color: rgba(234, 235, 238, 0.1) !important;
   }
 
   .application-sidebar a:hover {
-    background-color: #242b33 !important;
+    background-color: rgba(234, 235, 238, 0.05) !important;
   }
 
   /* Sidebar profile section */
   [class*="sidebar_profile"],
   .border-gray-150 {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   /* ===== Navbar ===== */
   nav, .navbar,
   [data-controller="sidebar"] > div > nav,
   header {
-    background-color: #191e24 !important;
-    border-color: #2a323c !important;
+    background-color: #191e23 !important;
+    border-color: #282d34 !important;
   }
 
   /* ===== Borders ===== */
@@ -134,17 +147,17 @@
   .border-gray-200,
   .border-gray-300,
   .border-b {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   .divide-gray-100 > :not(:last-child),
   .divide-gray-200 > :not(:last-child),
   .divide-gray-300 > :not(:last-child) {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   .border-t {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   /* ===== Form elements ===== */
@@ -153,9 +166,9 @@
   [type="text"], [type="email"], [type="url"],
   [type="password"], [type="number"], [type="date"],
   [type="search"], [type="tel"] {
-    background-color: #1d232a !important;
-    color: #a6adbb !important;
-    border-color: #2a323c !important;
+    background-color: #14181c !important;
+    color: #b0b5be !important;
+    border-color: #282d34 !important;
   }
 
   input:focus, select:focus, textarea:focus {
@@ -165,8 +178,8 @@
   /* Checkboxes and radios */
   input[type="checkbox"],
   input[type="radio"] {
-    background-color: #1d232a !important;
-    border-color: #2a323c !important;
+    background-color: #14181c !important;
+    border-color: #282d34 !important;
   }
 
   input[type="checkbox"]:checked,
@@ -177,30 +190,30 @@
 
   /* ===== Tables ===== */
   table {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   thead {
-    background-color: #1f2630 !important;
+    background-color: #191e23 !important;
   }
 
   thead th {
-    color: #8b95a3 !important;
-    border-color: #2a323c !important;
+    color: #8a909a !important;
+    border-color: #282d34 !important;
   }
 
   tbody tr {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   tbody tr:hover,
   tr.cursor-pointer:hover {
-    background-color: #1f2630 !important;
+    background-color: rgba(234, 235, 238, 0.05) !important;
   }
 
   td {
-    border-color: #2a323c !important;
-    color: #a6adbb !important;
+    border-color: #282d34 !important;
+    color: #b0b5be !important;
   }
 
   /* ===== Panels and cards ===== */
@@ -208,13 +221,13 @@
   .shadow-md,
   .shadow-lg,
   .shadow {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3) !important;
   }
 
   /* Panel header */
   [data-target="panel-header"],
   [data-target="title"] {
-    color: #e0e6ed !important;
+    color: #eaebee !important;
   }
 
   /* ===== Dropdowns, menus, popovers ===== */
@@ -224,21 +237,21 @@
   [role="menu"],
   [role="listbox"],
   [data-tippy-root] {
-    background-color: #242b33 !important;
-    color: #a6adbb !important;
-    border-color: #2a323c !important;
+    background-color: #1e2328 !important;
+    color: #b0b5be !important;
+    border-color: #282d34 !important;
   }
 
   .tippy-box[data-theme~='light'] .tippy-arrow::before {
-    border-bottom-color: #242b33 !important;
+    border-bottom-color: #1e2328 !important;
   }
 
   /* ===== Modals ===== */
   .modal-content,
   [role="dialog"],
   [data-controller="modal"] .bg-white {
-    background-color: #242b33 !important;
-    color: #a6adbb !important;
+    background-color: #1e2328 !important;
+    color: #b0b5be !important;
   }
 
   /* Modal overlay */
@@ -250,17 +263,17 @@
   /* ===== Actions dropdown ===== */
   [data-controller="actions-picker"] .bg-white,
   [data-actions-picker-target] {
-    background-color: #242b33 !important;
+    background-color: #1e2328 !important;
   }
 
   [data-actions-picker-target] a,
   [data-actions-picker-target] button {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   [data-actions-picker-target] a:hover,
   [data-actions-picker-target] button:hover {
-    background-color: #2a323c !important;
+    background-color: rgba(234, 235, 238, 0.05) !important;
   }
 
   /* ===== Badges ===== */
@@ -270,7 +283,7 @@
   }
 
   .bg-primary-100 {
-    background-color: rgba(99, 102, 241, 0.15) !important;
+    background-color: rgba(99, 102, 241, 0.1) !important;
   }
 
   /* ===== Alert/flash backgrounds ===== */
@@ -278,31 +291,31 @@
   .bg-blue-50,
   .bg-yellow-50,
   .bg-red-50 {
-    background-color: #242b33 !important;
+    background-color: #1e2328 !important;
   }
 
   /* ===== Search ===== */
   [data-search-target],
   .search-input {
-    background-color: #1d232a !important;
-    color: #a6adbb !important;
+    background-color: #14181c !important;
+    color: #b0b5be !important;
   }
 
   /* ===== Resource index filters ===== */
   .filters-container {
-    background-color: #242b33 !important;
+    background-color: #1e2328 !important;
   }
 
   /* ===== Pagination ===== */
   .pagy-nav a,
   .pagy a,
   .pagy .current {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   .pagy-nav a:hover,
   .pagy a:hover {
-    background-color: #2a323c !important;
+    background-color: rgba(234, 235, 238, 0.05) !important;
   }
 
   .pagy .current {
@@ -314,86 +327,86 @@
   svg.text-gray-400,
   svg.text-gray-500,
   svg.text-gray-600 {
-    color: #8b95a3 !important;
+    color: #8a909a !important;
   }
 
   svg.text-gray-700 {
-    color: #b0bac7 !important;
+    color: #c0c5cc !important;
   }
 
   /* ===== Code blocks ===== */
   pre, code {
-    background-color: #15191e !important;
-    color: #a6adbb !important;
+    background-color: #14181c !important;
+    color: #b0b5be !important;
   }
 
   /* ===== Tags ===== */
   .bg-gray-100.text-gray-800 {
-    background-color: #2a323c !important;
-    color: #c8d0da !important;
+    background-color: #282d34 !important;
+    color: #d5d8dd !important;
   }
 
   /* Tagify */
   .tagify {
-    background-color: #1d232a !important;
-    border-color: #2a323c !important;
-    color: #a6adbb !important;
+    background-color: #14181c !important;
+    border-color: #282d34 !important;
+    color: #b0b5be !important;
   }
 
   .tagify__tag {
-    background-color: #2a323c !important;
-    color: #c8d0da !important;
+    background-color: #282d34 !important;
+    color: #d5d8dd !important;
   }
 
   /* ===== Placeholder text ===== */
   ::placeholder {
-    color: #6b7785 !important;
+    color: #787f8a !important;
   }
 
   /* ===== Breadcrumbs ===== */
   [data-target="breadcrumbs"] a,
   [data-target="breadcrumbs"] span {
-    color: #8b95a3 !important;
+    color: #8a909a !important;
   }
 
   /* ===== Empty state ===== */
   .grid-cover-empty-state,
   [class*="empty-state"] {
-    background-color: #1f2630 !important;
+    background-color: #191e23 !important;
   }
 
   /* ===== Turbo Frame loading ===== */
   turbo-frame {
-    color: #a6adbb;
+    color: #b0b5be;
   }
 
   /* ===== Resource show field rows ===== */
   [data-field-id] {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   /* Field labels */
   [data-slot="label"] {
-    color: #8b95a3 !important;
+    color: #8a909a !important;
   }
 
   /* Field values */
   [data-slot="value"] {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   /* ===== Button styles ===== */
   .button-component,
   [data-component="button-component"] {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   /* Outline buttons */
   .bg-white.border.border-gray-300,
   .bg-white.border {
-    background-color: #242b33 !important;
-    border-color: #2a323c !important;
-    color: #a6adbb !important;
+    background-color: #1e2328 !important;
+    border-color: #282d34 !important;
+    color: #b0b5be !important;
   }
 
   /* ===== Scrollbars ===== */
@@ -402,35 +415,35 @@
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #1d232a;
+    background: #14181c;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a323c;
+    background: #282d34;
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #333c47;
+    background: #353a42;
   }
 
   /* ===== Discreet information ===== */
   .bg-gray-100.rounded {
-    background-color: #2a323c !important;
-    color: #8b95a3 !important;
+    background-color: #282d34 !important;
+    color: #8a909a !important;
   }
 
   /* ===== Trix editor ===== */
   trix-editor {
-    background-color: #1d232a !important;
-    color: #a6adbb !important;
-    border-color: #2a323c !important;
+    background-color: #14181c !important;
+    color: #b0b5be !important;
+    border-color: #282d34 !important;
   }
 
   trix-toolbar {
-    background-color: #242b33 !important;
-    border-color: #2a323c !important;
+    background-color: #1e2328 !important;
+    border-color: #282d34 !important;
   }
 
-  /* ===== Catch-all for remaining dark text on light bg ===== */
+  /* ===== Catch-all for remaining dark text ===== */
   .bg-application p,
   .bg-application span,
   .bg-application label,
@@ -440,7 +453,7 @@
 
   /* Ensure panel body text is light */
   [data-target="panel-body"] {
-    color: #a6adbb !important;
+    color: #b0b5be !important;
   }
 
   [data-target="panel-body"] p,
@@ -452,18 +465,18 @@
 
   /* Resource field wrappers */
   .field-wrapper {
-    border-color: #2a323c !important;
+    border-color: #282d34 !important;
   }
 
   /* ===== Navbar specific elements ===== */
   [data-controller="search"] input {
-    background-color: #1d232a !important;
-    border-color: #2a323c !important;
-    color: #a6adbb !important;
+    background-color: #14181c !important;
+    border-color: #282d34 !important;
+    color: #b0b5be !important;
   }
 
   /* Profile/user menu in navbar */
   [data-controller="toggle-panel"] .bg-white {
-    background-color: #242b33 !important;
+    background-color: #1e2328 !important;
   }
 <% end %>

@@ -126,9 +126,9 @@ Avo.configure do |config|
   ## == Branding ==
   config.branding = {
     colors: {
-      background: "29 35 42",
-      100 => "#2a323c",
-      400 => "#7582ff",
+      background: "20 24 28",
+      100 => "#282d34",
+      400 => "#818cf8",
       500 => "#6366f1",
       600 => "#4f46e5",
     },
