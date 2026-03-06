@@ -1,0 +1,244 @@
+<%= content_tag(:style, nonce: content_security_policy_nonce) do %>
+  /* Dark mode overrides for Avo admin panel */
+  :root {
+    --color-application-background: 29 35 42;
+  }
+
+  body.bg-application {
+    background-color: #1d232a;
+    color: #a6adbb;
+  }
+
+  /* Cards, panels, and white backgrounds */
+  .bg-white {
+    background-color: #242b33 !important;
+    color: #a6adbb !important;
+  }
+
+  .bg-gray-50 {
+    background-color: #1d232a !important;
+  }
+
+  .bg-gray-100 {
+    background-color: #1f2630 !important;
+  }
+
+  .bg-gray-200 {
+    background-color: #2a323c !important;
+  }
+
+  .bg-gray-300 {
+    background-color: #333c47 !important;
+  }
+
+  /* Sidebar */
+  .avo-sidebar {
+    background-color: #191e24 !important;
+    border-color: #2a323c !important;
+  }
+
+  .application-sidebar a,
+  .application-sidebar span {
+    color: #a6adbb !important;
+  }
+
+  .application-sidebar .active,
+  .application-sidebar .active:hover {
+    background-color: #2a323c !important;
+  }
+
+  .application-sidebar a:hover {
+    background-color: #242b33 !important;
+  }
+
+  /* Navbar */
+  nav, .navbar,
+  [data-controller="sidebar"] > div > nav,
+  header {
+    background-color: #191e24 !important;
+    border-color: #2a323c !important;
+  }
+
+  /* Text colors */
+  .text-gray-400 {
+    color: #8b95a3 !important;
+  }
+
+  .text-gray-500 {
+    color: #8b95a3 !important;
+  }
+
+  .text-gray-600 {
+    color: #a6adbb !important;
+  }
+
+  .text-gray-700 {
+    color: #b0bac7 !important;
+  }
+
+  .text-gray-800 {
+    color: #c8d0da !important;
+  }
+
+  .text-gray-900 {
+    color: #e0e6ed !important;
+  }
+
+  /* Borders */
+  .border-gray-100,
+  .border-gray-200,
+  .border-gray-300,
+  .border-b,
+  .divide-gray-100 > :not(:last-child),
+  .divide-gray-200 > :not(:last-child),
+  .divide-gray-300 > :not(:last-child) {
+    border-color: #2a323c !important;
+  }
+
+  /* Inputs and form fields */
+  input, select, textarea,
+  .appearance-none,
+  [type="text"], [type="email"], [type="url"],
+  [type="password"], [type="number"], [type="date"],
+  [type="search"], [type="tel"] {
+    background-color: #1d232a !important;
+    color: #a6adbb !important;
+    border-color: #2a323c !important;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #7582ff !important;
+  }
+
+  /* Tables */
+  table {
+    color: #a6adbb !important;
+  }
+
+  thead {
+    background-color: #1f2630 !important;
+  }
+
+  thead th {
+    color: #8b95a3 !important;
+  }
+
+  tbody tr {
+    border-color: #2a323c !important;
+  }
+
+  tbody tr:hover {
+    background-color: #1f2630 !important;
+  }
+
+  /* Dropdowns and menus */
+  [data-tippy-root] .tippy-content,
+  .tippy-box,
+  [role="menu"],
+  [role="listbox"] {
+    background-color: #242b33 !important;
+    color: #a6adbb !important;
+    border-color: #2a323c !important;
+  }
+
+  /* Modal / dialog */
+  .modal-content,
+  [role="dialog"] {
+    background-color: #242b33 !important;
+    color: #a6adbb !important;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4, h5, h6 {
+    color: #e0e6ed !important;
+  }
+
+  /* Links */
+  a.text-gray-600,
+  a.text-gray-700 {
+    color: #a6adbb !important;
+  }
+
+  a.text-gray-600:hover,
+  a.text-gray-700:hover {
+    color: #e0e6ed !important;
+  }
+
+  /* Badges and tags */
+  .rounded-full.bg-blue-100 {
+    background-color: rgba(117, 130, 255, 0.15) !important;
+  }
+
+  /* Alert/flash backgrounds */
+  .bg-green-50,
+  .bg-blue-50,
+  .bg-yellow-50,
+  .bg-red-50 {
+    background-color: #242b33 !important;
+  }
+
+  /* Shadow adjustments for dark mode */
+  .shadow-panel,
+  .shadow-md,
+  .shadow-lg,
+  .shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Search input */
+  [data-search-target],
+  .search-input {
+    background-color: #1d232a !important;
+    color: #a6adbb !important;
+  }
+
+  /* Resource index filters */
+  .filters-container {
+    background-color: #242b33 !important;
+  }
+
+  /* Pagination */
+  .pagy-nav a,
+  .pagy a {
+    color: #a6adbb !important;
+  }
+
+  .pagy-nav a:hover,
+  .pagy a:hover {
+    background-color: #2a323c !important;
+  }
+
+  /* Fix SVG/icon colors */
+  svg.text-gray-400,
+  svg.text-gray-500,
+  svg.text-gray-600 {
+    color: #8b95a3 !important;
+  }
+
+  /* Code blocks */
+  pre, code {
+    background-color: #15191e !important;
+    color: #a6adbb !important;
+  }
+
+  /* Placeholder text */
+  ::placeholder {
+    color: #6b7785 !important;
+  }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1d232a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2a323c;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #333c47;
+  }
+<% end %>
