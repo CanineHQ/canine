@@ -132,6 +132,8 @@ Avo.configure do |config|
       500 => "#6366f1",
       600 => "#4f46e5",
     },
+    logo: "/images/logo-full.webp",
+    logomark: "/images/logo-compact.webp",
   }
 
   ## == Breadcrumbs ==
