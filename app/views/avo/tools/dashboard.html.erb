@@ -113,7 +113,7 @@
         <!-- Status Breakdown -->
         <div class="mb-8" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
           <!-- Cluster Status -->
-          <div style="background: #1e2328; border: 1px solid #282d34; border-radius: 0.25rem; padding: 1.25rem;">
+          <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1.25rem;">
             <h4 class="text-sm font-semibold mb-4" style="color: #d5d8dd;">Cluster Status</h4>
             <div class="space-y-3">
               <% Cluster.statuses.keys.each do |status| %>
@@ -131,7 +131,7 @@
           </div>
 
           <!-- Add-on Status -->
-          <div style="background: #1e2328; border: 1px solid #282d34; border-radius: 0.25rem; padding: 1.25rem;">
+          <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1.25rem;">
             <h4 class="text-sm font-semibold mb-4" style="color: #d5d8dd;">Add-on Status</h4>
             <div class="space-y-3">
               <% AddOn.statuses.keys.each do |status| %>
@@ -154,7 +154,7 @@
           <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Recent Activity</h3>
           <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
             <!-- Recent Builds -->
-            <div style="background: #1e2328; border: 1px solid #282d34; border-radius: 0.25rem; overflow: hidden;">
+            <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
               <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                 <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Builds</h4>
                 <%= link_to "View all", avo.resources_builds_path, class: "text-sm", style: "color: #60a5fa;" %>
@@ -183,7 +183,7 @@
             </div>
 
             <!-- Recent Deployments -->
-            <div style="background: #1e2328; border: 1px solid #282d34; border-radius: 0.25rem; overflow: hidden;">
+            <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
               <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
                 <h4 class="text-sm font-semibold" style="color: #d5d8dd;">Recent Deployments</h4>
                 <%= link_to "View all", avo.resources_deployments_path, class: "text-sm", style: "color: #60a5fa;" %>
