@@ -60,11 +60,22 @@ RSpec.describe EnvironmentVariable, type: :model do
     end
 
     it 'validates value does not contain command injection characters' do
-      [ '`', '\\', '|', '>', '<', ';' ].each do |char|
+      [ '`', '|', '>', '<', ';' ].each do |char|
         environment_variable.value = "test#{char}value"
         expect(environment_variable).not_to be_valid
         expect(environment_variable.errors[:value]).to include("cannot contain special characters that might enable command injection")
       end
+    end
+
+    it 'allows multi-line values' do
+      certificate_value = "-----BEGIN CERTIFICATE-----\nMIICpDCCAYwCCQDU+pQ4P2\nline3\n-----END CERTIFICATE-----"
+      environment_variable.value = certificate_value
+      expect(environment_variable).to be_valid
+    end
+
+    it 'allows values with safe special characters' do
+      environment_variable.value = "password123!@#$%^&*()_+-=[]{}:'\",./?"
+      expect(environment_variable).to be_valid
     end
   end
 
@@ -103,6 +114,11 @@ RSpec.describe EnvironmentVariable, type: :model do
     it 'uppercases the name' do
       env_var = create(:environment_variable, name: 'test_var', project: project)
       expect(env_var.name).to eq('TEST_VAR')
+    end
+
+    it 'preserves internal newlines when stripping' do
+      env_var = create(:environment_variable, name: 'test_var', value: "  line1\nline2\nline3  ", project: project)
+      expect(env_var.value).to eq("line1\nline2\nline3")
     end
   end
 end

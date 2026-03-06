@@ -24,30 +24,33 @@ export default class extends Controller {
     const container = this.containerTarget;
     const div = document.createElement("div");
     const isHidden = !isNew && id !== null
-    const displayValue = isHidden ? '' : value
+    const displayValue = isHidden ? '' : (value || '')
     const placeholder = isHidden ? '••••••••••••••••••••••••' : 'VALUE'
     const isSecret = storageType === 'secret'
     const lockIcon = isSecret ? 'lucide:lock' : 'lucide:lock-open'
     const lockColor = isSecret ? 'text-warning' : 'text-base-content'
+    // Escape HTML entities to prevent XSS and preserve multi-line content
+    const escapedValue = this._escapeHtml(displayValue)
 
     div.innerHTML = `
-      <div class="flex items-center my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
+      <div class="flex items-start my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" value="${name}">
         ${isHidden ? `<input type="hidden" name="environment_variables[][keep_existing_value]" value="true">` : ''}
         <input type="hidden" name="environment_variables[][storage_type]" value="${storageType}">
-        <input
+        <textarea
           aria-label="Env value"
           placeholder="${placeholder}"
-          class="input input-bordered focus:outline-offset-0 w-full"
-          type="text"
+          class="textarea textarea-bordered focus:outline-offset-0 w-full font-mono text-base !min-h-[3rem] !py-3 !leading-6 resize-none overflow-y-hidden"
           name="environment_variables[][value]"
-          value="${displayValue}"
+          rows="1"
           ${isHidden ? 'readonly' : ''}
-        >
+          data-action="input->environment-variables#autoResize"
+          title="Tip: Use \\n for newlines, \\t for tabs"
+        >${escapedValue}</textarea>
         ${isHidden ? `
           <button
             type="button"
-            class="btn btn-square btn-ghost"
+            class="btn btn-square btn-ghost self-start"
             data-action="environment-variables#reveal"
             title="Reveal value"
           >
@@ -56,16 +59,40 @@ export default class extends Controller {
         ` : ''}
         <button
           type="button"
-          class="btn btn-square btn-ghost ${lockColor}"
+          class="btn btn-square btn-ghost self-start ${lockColor}"
           data-action="environment-variables#toggleStorageType"
           title="${isSecret ? 'Secret (stored in Kubernetes Secrets)' : 'Config (stored in ConfigMap)'}"
         >
           <iconify-icon icon="${lockIcon}" height="20"></iconify-icon>
         </button>
-        <button type="button" class="btn btn-danger" data-action="environment-variables#remove">Delete</button>
+        <button type="button" class="btn btn-danger self-start" data-action="environment-variables#remove">Delete</button>
       </div>
     `;
     container.appendChild(div);
+
+    // Auto-resize the textarea if it has content
+    const textarea = div.querySelector('textarea');
+    if (textarea && displayValue) {
+      this._resizeTextarea(textarea);
+    }
+  }
+
+  _escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  _resizeTextarea(textarea) {
+    // Temporarily remove height constraint to measure content
+    textarea.style.height = '0px';
+    // Set height to content, minimum 3rem (48px)
+    const newHeight = Math.max(48, textarea.scrollHeight);
+    textarea.style.height = newHeight + 'px';
+  }
+
+  autoResize(event) {
+    this._resizeTextarea(event.target);
   }
 
   async reveal(event) {
@@ -73,21 +100,23 @@ export default class extends Controller {
     const button = event.currentTarget;
     const wrapper = button.closest('[data-env-id]');
     const envId = wrapper.dataset.envId;
-    const input = wrapper.querySelector('input[name="environment_variables[][value]"]');
+    const textarea = wrapper.querySelector('textarea[name="environment_variables[][value]"]');
     const keepExistingInput = wrapper.querySelector('input[name="environment_variables[][keep_existing_value]"]');
-    
+
     if (!envId) return;
-    
+
     button.textContent = 'Loading...';
     button.disabled = true;
-    
+
     try {
       const response = await get(`/projects/${this.projectIdValue}/environment_variables/${envId}`)
       if (response.ok) {
         const data = await response.json
-        input.value = data.value
-        input.readOnly = false
-        input.placeholder = 'VALUE'
+        textarea.value = data.value
+        textarea.readOnly = false
+        textarea.placeholder = 'VALUE (use \\n for newlines, \\t for tabs)'
+        // Auto-resize to fit the revealed content
+        this._resizeTextarea(textarea);
         // Remove the keep_existing_value hidden input since we now have the real value
         if (keepExistingInput) {
           keepExistingInput.remove()

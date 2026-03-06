@@ -199,5 +199,44 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
         expect(subject).to be_failure
       end
     end
+
+    context 'when processing escape sequences in values' do
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'MULTILINE', value: 'line1\nline2\nline3', storage_type: 'config' },
+            { name: 'TABBED', value: 'col1\tcol2\tcol3', storage_type: 'config' }
+          ]
+        }
+      end
+
+      it 'converts escape sequences to actual characters' do
+        subject
+        multiline_var = project.environment_variables.find_by(name: 'MULTILINE')
+        tabbed_var = project.environment_variables.find_by(name: 'TABBED')
+
+        expect(multiline_var.value).to eq("line1\nline2\nline3")
+        expect(tabbed_var.value).to eq("col1\tcol2\tcol3")
+      end
+    end
+
+    context 'when updating with escape sequences' do
+      before do
+        project.environment_variables.create!(name: 'EXISTING_VAR', value: 'old_value')
+      end
+
+      let(:params) do
+        {
+          environment_variables: [
+            { name: 'EXISTING_VAR', value: 'new\nvalue\nwith\nnewlines' }
+          ]
+        }
+      end
+
+      it 'processes escape sequences when updating' do
+        subject
+        expect(project.environment_variables.find_by(name: 'EXISTING_VAR').value).to eq("new\nvalue\nwith\nnewlines")
+      end
+    end
   end
 end

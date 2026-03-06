@@ -7,5 +7,10 @@ metadata:
     caninemanaged: 'true'
 data:
   <% @project.environment_variables.config.each do |environment_variable| %>
+  <% if environment_variable.value.include?("\n") %>
+  <%= environment_variable.name %>: |-
+<%= environment_variable.value.lines.map { |line| "    #{line.chomp}" }.join("\n") %>
+  <% else %>
   <%= environment_variable.name %>: "<%= environment_variable.value.gsub('"', '\\"') %>"
+  <% end %>
   <% end %>

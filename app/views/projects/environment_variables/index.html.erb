@@ -27,7 +27,7 @@
             <%= form.text_area(
               :text_content,
               class: "textarea textarea-bordered w-full font-mono text-sm",
-              placeholder: "KEY1=value1\nKEY2=value2",
+              placeholder: "KEY1=value1\nKEY2=\"value2\"\nMULTILINE=\"line1\\nline2\\nline3\"",
               rows: 6,
               data: {
                 controller: "textarea-autogrow",

@@ -19,7 +19,7 @@ class EnvironmentVariables::BulkUpdate
           next if ev[:name].blank?
           project.environment_variables.create!(
             name: ev[:name].strip.upcase,
-            value: ev[:value].strip,
+            value: process_value(ev[:value]),
             storage_type: ev[:storage_type] || :config,
             current_user: context.current_user
           )
@@ -38,7 +38,8 @@ class EnvironmentVariables::BulkUpdate
           update_attrs = {}
         else
           update_attrs = {}
-          update_attrs[:value] = env_variable[:value].strip if env_variable[:value] != ev.value
+          processed_value = process_value(env_variable[:value])
+          update_attrs[:value] = processed_value if processed_value != ev.value
         end
         update_attrs[:storage_type] = env_variable[:storage_type] if env_variable[:storage_type] && env_variable[:storage_type] != ev.storage_type
 
@@ -58,5 +59,33 @@ class EnvironmentVariables::BulkUpdate
     end
   rescue => e
     context.fail!(e.message)
+  end
+
+  private
+
+  # Process value: unescape escape sequences and strip whitespace
+  def self.process_value(value)
+    return "" if value.nil?
+
+    # First unescape any escape sequences
+    unescaped = unescape_value(value.to_s)
+
+    # Then strip leading/trailing whitespace while preserving internal newlines
+    unescaped.strip
+  end
+
+  # Unescapes common escape sequences
+  # Supports: \n (newline), \t (tab), \r (carriage return), \\ (backslash), \" (quote)
+  def self.unescape_value(value)
+    value.gsub(/\\(.)/) do |match|
+      case $1
+      when 'n' then "\n"
+      when 't' then "\t"
+      when 'r' then "\r"
+      when '\\' then '\\'
+      when '"' then '"'
+      else match # Keep unknown escape sequences as-is
+      end
+    end
   end
 end
