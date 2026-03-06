@@ -1,4 +1,7 @@
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <%= content_tag(:style, nonce: content_security_policy_nonce) do %>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
   /*
    * Dark mode overrides for Avo admin panel
    * Colors matched to core app dark theme:
@@ -15,6 +18,14 @@
 
   :root {
     --color-application-background: 20 24 28;
+  }
+
+  body, body * {
+    font-family: "DM Sans", sans-serif !important;
+  }
+
+  code, pre, .font-mono, [class*="mono"] {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   }
 
   body.bg-application {
