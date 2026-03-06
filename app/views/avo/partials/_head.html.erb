@@ -363,12 +363,6 @@
     color: #787f8a !important;
   }
 
-  /* ===== Breadcrumbs ===== */
-  [data-target="breadcrumbs"] a,
-  [data-target="breadcrumbs"] span {
-    color: #8a909a !important;
-  }
-
   /* ===== Empty state ===== */
   .grid-cover-empty-state,
   [class*="empty-state"] {
@@ -480,12 +474,12 @@
     background-color: #1e2328 !important;
   }
 
-  /* ===== Links - use primary indigo instead of blue ===== */
+  /* ===== Links - use muted tones instead of bright blue ===== */
   .text-blue-600,
   .text-blue-500,
   a.text-blue-600,
   a.text-blue-500 {
-    color: #818cf8 !important;
+    color: #b0b5be !important;
   }
 
   .text-blue-600:hover,
@@ -494,6 +488,21 @@
   a.text-blue-500:hover,
   .hover\:text-blue-800:hover,
   .hover\:text-blue-700:hover {
-    color: #a5b4fc !important;
+    color: #eaebee !important;
+  }
+
+  /* ===== Breadcrumbs ===== */
+  .breadcrumbs,
+  .breadcrumbs a,
+  .breadcrumbs span {
+    color: #8a909a !important;
+  }
+
+  .breadcrumbs a:hover {
+    color: #b0b5be !important;
+  }
+
+  .breadcrumbs svg {
+    color: #787f8a !important;
   }
 <% end %>
