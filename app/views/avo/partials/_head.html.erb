@@ -504,17 +504,48 @@
     background-color: #1e2328 !important;
   }
 
-  /* ===== Search bar overrides ===== */
+  /* ===== Search bar & detached search modal ===== */
   .global-search .aa-DetachedSearchButton,
   .global-search .aa-DetachedSearchButton:focus {
     background-color: #14181c !important;
     color: #8a909a !important;
   }
 
-  .resource-search .aa-Form,
   .aa-Form {
     background-color: #14181c !important;
     border-color: #282d34 !important;
+  }
+
+  .aa-Form:focus-within {
+    border-color: #6366f1 !important;
+    box-shadow: rgba(99, 102, 241, 0.2) 0 0 0 2px, inset rgba(99, 102, 241, 0.2) 0 0 0 2px !important;
+  }
+
+  .aa-Input {
+    background-color: #14181c !important;
+    color: #b0b5be !important;
+  }
+
+  .aa-Input::placeholder {
+    color: #787f8a !important;
+  }
+
+  .aa-Label svg,
+  .aa-LoadingIndicator svg {
+    color: #8a909a !important;
+  }
+
+  .aa-DetachedContainer {
+    background-color: #1e2328 !important;
+  }
+
+  .aa-DetachedFormContainer {
+    background-color: #1e2328 !important;
+    border-color: #282d34 !important;
+  }
+
+  .aa-DetachedOverlay {
+    background-color: rgba(0, 0, 0, 0.6) !important;
   }
 
   .aa-Panel {
@@ -528,6 +559,35 @@
 
   .aa-Item[aria-selected="true"] {
     background-color: #282d34 !important;
+  }
+
+  .aa-Item mark {
+    background-color: rgba(99, 102, 241, 0.3) !important;
+    color: #eaebee !important;
+  }
+
+  .aa-SourceHeader {
+    border-color: #282d34 !important;
+  }
+
+  .aa-SourceHeaderTitle {
+    color: #8a909a !important;
+  }
+
+  .aa-ClearButton {
+    color: #8a909a !important;
+  }
+
+  .aa-ClearButton:hover {
+    color: #b0b5be !important;
+  }
+
+  button.aa-DetachedCancelButton {
+    color: #b0b5be !important;
+  }
+
+  .aa-SourceNoResults {
+    color: #8a909a !important;
   }
 
   /* ===== Links - subtle indigo accent ===== */
