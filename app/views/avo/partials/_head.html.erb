@@ -18,6 +18,25 @@
 
   :root {
     --color-application-background: 20 24 28;
+
+    /* Algolia Autocomplete / search bar dark mode */
+    --aa-text-color-rgb: 176, 181, 190;
+    --aa-primary-color-rgb: 99, 102, 241;
+    --aa-muted-color-rgb: 138, 144, 154;
+    --aa-icon-color-rgb: 138, 144, 154;
+    --aa-background-color-rgb: 30, 35, 40;
+    --aa-input-background-color-rgb: 20, 24, 28;
+    --aa-selected-color-rgb: 40, 45, 52;
+    --aa-selected-color-alpha: 1;
+    --aa-panel-border-color-rgb: 40, 45, 52;
+    --aa-input-border-color-rgb: 40, 45, 52;
+    --aa-panel-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 6px 16px -4px rgba(0, 0, 0, 0.4);
+    --aa-scrollbar-track-background-color-rgb: 20, 24, 28;
+    --aa-scrollbar-thumb-background-color-rgb: 40, 45, 52;
+    --aa-overlay-color-rgb: 0, 0, 0;
+    --aa-overlay-color-alpha: 0.6;
+    --aa-description-highlight-background-color-rgb: 99, 102, 241;
+    --aa-description-highlight-background-color-alpha: 0.3;
   }
 
   body, body * {
@@ -483,6 +502,32 @@
   /* Profile/user menu in navbar */
   [data-controller="toggle-panel"] .bg-white {
     background-color: #1e2328 !important;
+  }
+
+  /* ===== Search bar overrides ===== */
+  .global-search .aa-DetachedSearchButton,
+  .global-search .aa-DetachedSearchButton:focus {
+    background-color: #14181c !important;
+    color: #8a909a !important;
+  }
+
+  .resource-search .aa-Form,
+  .aa-Form {
+    background-color: #14181c !important;
+    border-color: #282d34 !important;
+  }
+
+  .aa-Panel {
+    background-color: #1e2328 !important;
+    border-color: #282d34 !important;
+  }
+
+  .aa-Item {
+    color: #b0b5be !important;
+  }
+
+  .aa-Item[aria-selected="true"] {
+    background-color: #282d34 !important;
   }
 
   /* ===== Links - subtle indigo accent ===== */
