@@ -23,7 +23,7 @@
         <!-- Overview Stats -->
         <div class="mb-8">
           <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Overview</h3>
-          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
             <%= render 'avo/custom/statistics/stat_card',
                 title: 'Total Users',
                 value: User.count,
@@ -71,7 +71,7 @@
         <!-- Performance Metrics -->
         <div class="mb-8">
           <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Performance</h3>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
             <% builds_completed = Build.where(created_at: @time_period.ago.., status: :completed).count %>
             <% builds_total = Build.where(created_at: @time_period.ago..).count %>
             <% build_rate = builds_total > 0 ? (builds_completed.to_f / builds_total * 100).round : 0 %>
@@ -111,7 +111,7 @@
         </div>
 
         <!-- Status Breakdown -->
-        <div class="mb-8" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+        <div class="mb-8" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
           <!-- Cluster Status -->
           <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); padding: 1.25rem;">
             <h4 class="text-sm font-semibold mb-4" style="color: #d5d8dd;">Cluster Status</h4>
@@ -152,7 +152,7 @@
         <!-- Recent Activity -->
         <div class="mb-8">
           <h3 class="text-sm font-semibold uppercase tracking-wider mb-4" style="color: #8a909a;">Recent Activity</h3>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
             <!-- Recent Builds -->
             <div style="background: #191e23; border: 1px solid #282d34; border-radius: 0.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.3); overflow: hidden;">
               <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid #282d34; display: flex; align-items: center; justify-content: space-between;">
