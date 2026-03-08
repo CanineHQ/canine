@@ -1,0 +1,10 @@
+<div class="flex items-center gap-2">
+  <h4 class="font-semibold"><%= definition['display_name'] %></h4>
+  <% if definition['deprecated'] %>
+    <span class="badge badge-warning badge-xs">Outdated</span>
+  <% end %>
+</div>
+<p class="text-sm text-gray-400"><%= definition['description'] %></p>
+<% if definition['deprecated'] && definition['deprecated_message'].present? %>
+  <p class="text-xs text-warning mt-0.5"><%= definition['deprecated_message'] %></p>
+<% end %>
