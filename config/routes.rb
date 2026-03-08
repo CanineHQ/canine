@@ -119,6 +119,8 @@ Rails.application.routes.draw do
   end
   get "/integrations/github/repositories", to: "integrations/github/repositories#index"
   get "/integrations/gitlab/repositories", to: "integrations/gitlab/repositories#index"
+  get "/integrations/git/repo_details/branches", to: "integrations/git/repo_details#branches"
+  get "/integrations/git/repo_details/file_tree", to: "integrations/git/repo_details#file_tree"
   get "/search", to: "search#index"
   resources :build_packs, only: [] do
     collection do
