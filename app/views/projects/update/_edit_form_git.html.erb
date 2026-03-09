@@ -17,6 +17,7 @@
           </label>
           <%= render(RichSelectComponent.new(
             name: fields.field_name(:provider_id),
+            id: "provider_select",
             collection: @selectable_providers,
             selected: project.project_credential_provider.provider_id,
             partial: "providers/selector_item",

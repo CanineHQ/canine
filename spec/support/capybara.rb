@@ -1,14 +1,12 @@
-require "capybara/cuprite"
+require "capybara/playwright"
 
-Capybara.register_driver(:cuprite) do |app|
-  Capybara::Cuprite::Driver.new(
-    app,
-    window_size: [ 1200, 800 ],
-    headless: !ENV["HEADLESS"].in?(%w[n 0 no false]),
-    process_timeout: 10,
-    inspector: true
+Capybara.register_driver(:pw) do |app|
+  Capybara::Playwright::Driver.new(app,
+    browser_type: :chromium,
+    headless: !ENV["HEADLESS"].in?(%w[n 0 no false])
   )
 end
 
-Capybara.default_driver = :cuprite
-Capybara.javascript_driver = :cuprite
+Capybara.default_driver = :pw
+Capybara.javascript_driver = :pw
+Capybara.default_max_wait_time = 15

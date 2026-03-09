@@ -21,6 +21,7 @@
     )) do %>
       <%= render(RichSelectComponent.new(
         name: "project[project_fork_cluster_id]",
+        id: "project_fork_cluster_id",
         collection: current_account.clusters,
         selected: form.object.project_fork_cluster_id,
         partial: "clusters/selector_item",

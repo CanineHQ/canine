@@ -66,6 +66,7 @@
           <%= render(FormFieldComponent.new(label: "Target Cluster")) do %>
             <%= render(RichSelectComponent.new(
               name: "cluster_id",
+              id: "cluster_id",
               collection: @clusters,
               partial: "clusters/selector_item",
               placeholder: "Select a cluster"
