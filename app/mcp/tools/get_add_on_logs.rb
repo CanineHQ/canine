@@ -39,7 +39,7 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Add-on not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         tail_lines = [ tail_lines, 500 ].min
@@ -90,7 +90,7 @@ module Tools
           MCP::Tool::Response.new([ {
             type: "text",
             text: "Error connecting to cluster: #{e.message}"
-          } ], is_error: true)
+          } ], error: true)
         end
       end
     end

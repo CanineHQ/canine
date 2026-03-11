@@ -35,7 +35,7 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         current_deployment = project.current_deployment

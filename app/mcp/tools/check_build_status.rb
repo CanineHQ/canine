@@ -43,7 +43,7 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         builds = project.builds.order(created_at: :desc).limit([ limit, 50 ].min)
