@@ -245,6 +245,8 @@ Rails.application.routes.draw do
 
   get "/install.sh", to: "static#install"
   get "/calculator", to: "static#calculator"
+  get "/mcp-tools", to: "static#mcp_tools"
+  get "/self-hosted", to: "static#self_hosted"
   # Public marketing homepage
   if Rails.application.config.local_mode
     namespace :local do

@@ -1,0 +1,66 @@
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<div data-controller="landing-nav">
+  <nav class="relative z-50 bg-gray-900/80 backdrop-blur-md border-b border-white/10">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center">
+          <a href="/" class="flex items-center">
+            <img class="h-8" src="/images/logo-full.webp" alt="Canine">
+          </a>
+        </div>
+
+        <!-- Desktop Nav -->
+        <div class="hidden lg:flex lg:items-center lg:gap-x-8">
+          <a href="/mcp-tools" class="text-sm font-semibold text-gray-300 hover:text-white transition">MCP</a>
+          <a href="/self-hosted" class="text-sm font-semibold text-gray-300 hover:text-white transition">Self-Hosted</a>
+          <a href="/calculator" class="text-sm font-semibold text-gray-300 hover:text-white transition">Pricing</a>
+          <a href="https://docs.canine.sh" target="_blank" class="text-sm font-semibold text-gray-300 hover:text-white transition">Docs</a>
+        </div>
+
+        <!-- Desktop Right Side -->
+        <div class="hidden lg:flex lg:items-center lg:gap-x-4">
+          <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub">Star</a>
+          <a href="<%= new_user_session_path %>" class="text-sm font-semibold text-gray-300 hover:text-white transition">Sign in</a>
+          <a href="<%= new_user_registration_path %>" class="rounded-md bg-indigo-500 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 transition">Get Started</a>
+        </div>
+
+        <!-- Mobile Right Side -->
+        <div class="flex items-center gap-3 lg:hidden">
+          <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub">Star</a>
+          <button type="button" class="text-gray-400 hover:text-white" data-action="click->landing-nav#toggleMobile">
+            <iconify-icon icon="lucide:menu" class="text-2xl"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Fullscreen Mobile Menu -->
+  <div class="fixed inset-0 z-[100] bg-gray-900 lg:hidden hidden" data-landing-nav-target="mobileMenu">
+    <div class="flex items-center justify-between px-6 h-16 border-b border-white/10">
+      <a href="/" class="flex items-center">
+        <img class="h-8" src="/images/logo-full.webp" alt="Canine">
+      </a>
+      <button type="button" class="text-gray-400 hover:text-white" data-action="click->landing-nav#toggleMobile">
+        <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="px-8 py-10 space-y-6">
+      <a href="/mcp-tools" class="block text-2xl font-semibold text-gray-300 hover:text-white transition">MCP</a>
+      <a href="/self-hosted" class="block text-2xl font-semibold text-gray-300 hover:text-white transition">Self-Hosted</a>
+      <a href="/calculator" class="block text-2xl font-semibold text-gray-300 hover:text-white transition">Pricing</a>
+      <a href="https://docs.canine.sh" class="block text-2xl font-semibold text-gray-300 hover:text-white transition">Docs</a>
+
+      <div class="pt-6 border-t border-white/10 space-y-4">
+        <a href="<%= new_user_session_path %>" class="block text-lg font-semibold text-gray-300 hover:text-white transition">Sign in</a>
+        <a href="<%= new_user_registration_path %>" class="block rounded-md bg-indigo-500 px-4 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-400 text-center transition">Get Started</a>
+      </div>
+
+      <div class="pt-6">
+        <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub">Star</a>
+      </div>
+    </div>
+  </div>
+</div>
