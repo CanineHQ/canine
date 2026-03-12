@@ -18,6 +18,15 @@
     </div>
   <% end %>
 
+  <% if cluster.error_tracking_url.present? %>
+    <%= link_to cluster_error_tracking_index_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(cluster_error_tracking_index_path(cluster))}" do %>
+      <div class="flex items-center gap-2">
+        Errors
+        <iconify-icon icon="lucide:bug"></iconify-icon>
+      </div>
+    <% end %>
+  <% end %>
+
   <%= link_to edit_cluster_path(cluster), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_cluster_path(cluster))}" do %>
     <div class="flex items-center gap-2">
       Settings

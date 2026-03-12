@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: error-tracking
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: ""
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+env:
+  PORT: "3001"
+  DATABASE_PATH: "/data/errors.db"

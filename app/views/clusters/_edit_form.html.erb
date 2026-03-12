@@ -14,6 +14,13 @@
       <%= form.check_box :skip_tls_verify, class: "checkbox checkbox-error" %>
     <% end %>
 
+    <%= render(FormFieldComponent.new(
+      label: "Error Tracking URL",
+      description: "URL of the error tracking service running in this cluster (e.g. http://error-tracking.default.svc.cluster.local:3001)"
+    )) do %>
+      <%= form.text_field :error_tracking_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "http://error-tracking.default.svc.cluster.local:3001" %>
+    <% end %>
+
     <div class="form-footer">
       <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
     </div>

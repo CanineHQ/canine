@@ -91,3 +91,26 @@ packages:
         key: credentials.token
         type: string
         required: true
+
+  - name: error-tracking
+    display_name: Error Tracking
+    description: Lightweight Sentry-compatible error tracking for your cluster apps
+    icon: lucide:bug
+    default: false
+    recommended: false
+    install_type: helm
+    chart_name: error-tracking
+    check_command: get deployment error-tracking
+    values:
+      image:
+        repository: ghcr.io/caninehq/error-tracking
+        tag: latest
+    template:
+      - name: Image Repository
+        key: image_repository
+        type: string
+        required: false
+      - name: Image Tag
+        key: image_tag
+        type: string
+        required: false

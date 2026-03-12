@@ -70,7 +70,7 @@ class Clusters::ParseParams
       params[:cluster][:skip_tls_verify] = true
     end
 
-    params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, kubeconfig: {})
+    params.require(:cluster).permit(:name, :cluster_type, :skip_tls_verify, :error_tracking_url, kubeconfig: {})
   end
 
   def self.kubeconfig_has_localhost?(kubeconfig)

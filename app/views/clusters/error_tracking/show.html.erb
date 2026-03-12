@@ -1,0 +1,78 @@
+<%= content_for :title, "#{@source["name"]} Errors - #{@cluster.name}" %>
+
+<%= cluster_layout(@cluster) do %>
+  <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2">
+      <%= link_to cluster_error_tracking_index_path(@cluster), class: "btn btn-ghost btn-sm" do %>
+        <iconify-icon icon="lucide:arrow-left" height="16"></iconify-icon>
+      <% end %>
+      <h4 class="text-2xl font-bold"><%= @source["name"] %></h4>
+    </div>
+  </div>
+
+  <% if @error %>
+    <div class="alert alert-error mb-4">
+      <iconify-icon icon="lucide:alert-circle" height="20"></iconify-icon>
+      <span><%= @error %></span>
+    </div>
+  <% end %>
+
+  <div class="card card-bordered bg-base-100 mb-4">
+    <div class="card-body py-3">
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-sm">DSN</span>
+      </div>
+      <% dsn = "http://#{@source["public_key"]}@<SERVICE_HOST>:3001/api/#{@source["id"]}" %>
+      <div class="bg-base-200 rounded px-3 py-2 font-mono text-xs break-all cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= dsn %>">
+        <%= dsn %>
+        <iconify-icon icon="lucide:clipboard" height="14" class="ml-2 inline"></iconify-icon>
+      </div>
+      <p class="text-xs text-base-content/50 mt-1">
+        Replace <code>&lt;SERVICE_HOST&gt;</code> with the in-cluster service address, e.g. <code>error-tracking.&lt;namespace&gt;.svc.cluster.local</code>
+      </p>
+    </div>
+  </div>
+
+  <% if @events.any? %>
+    <div class="overflow-x-auto">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Message</th>
+            <th>Environment</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @events.each do |event| %>
+            <tr>
+              <td>
+                <% badge_class = case event["level"]
+                   when "fatal" then "badge-error"
+                   when "error" then "badge-error"
+                   when "warning" then "badge-warning"
+                   else "badge-info"
+                   end %>
+                <span class="badge badge-sm <%= badge_class %>"><%= event["level"] %></span>
+              </td>
+              <td class="max-w-md truncate">
+                <span class="font-medium"><%= event["message"] || "(no message)" %></span>
+                <% if event["server_name"] %>
+                  <span class="text-xs text-base-content/50 ml-2"><%= event["server_name"] %></span>
+                <% end %>
+              </td>
+              <td class="text-sm text-base-content/60"><%= event["environment"] || "-" %></td>
+              <td class="text-sm text-base-content/60 whitespace-nowrap"><%= event["occurred_at"] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% elsif !@error %>
+    <div class="text-center py-8 text-base-content/60">
+      <iconify-icon icon="lucide:inbox" height="32" class="mb-2"></iconify-icon>
+      <p>No errors captured yet</p>
+    </div>
+  <% end %>
+<% end %>
