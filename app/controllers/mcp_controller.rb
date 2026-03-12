@@ -35,28 +35,23 @@ class MCPController < ActionController::API
       Tools::ListProviders,
 
       # Clusters
+      Tools::ListClusters,
       Tools::CreateCluster,
 
       # Projects
       Tools::ListProjects,
       Tools::CreateProject,
       Tools::GetProjectDetails,
+      Tools::CreateService,
       Tools::DeployProject,
-      Tools::DeployProjectFork,
       Tools::RestartProject,
 
       # Project Logs & Monitoring
       Tools::GetProjectLogs,
       Tools::CheckBuildStatus,
-      Tools::GetDeploymentHistory,
-      Tools::RollbackDeployment,
-
       # Environment Variables
       Tools::GetEnvironmentVariables,
       Tools::UpdateEnvironmentVariable,
-
-      # Services
-      Tools::ScaleService,
 
       # Add-ons
       Tools::SearchAddOns,
@@ -99,18 +94,7 @@ class MCPController < ActionController::API
       [ {
         uri: uri,
         mimeType: "application/json",
-        text: projects.map { |p|
-          {
-            id: p.id,
-            name: p.name,
-            namespace: p.namespace,
-            branch: p.branch,
-            status: p.status,
-            cluster: p.cluster.name,
-            repository_url: p.repository_url,
-            last_deployment_at: p.last_deployment_at&.iso8601
-          }
-        }.to_json
+        text: projects.map { |p| Api::Projects::ShowViewModel.new(p).as_json }.to_json
       } ]
     when /\Acanine:\/\/projects\/(\d+)\/builds\z/
       project_id = $1.to_i
@@ -123,15 +107,7 @@ class MCPController < ActionController::API
       [ {
         uri: uri,
         mimeType: "application/json",
-        text: builds.map { |b|
-          {
-            id: b.id,
-            commit_sha: b.commit_sha,
-            commit_message: b.commit_message,
-            status: b.status,
-            created_at: b.created_at.iso8601
-          }
-        }.to_json
+        text: builds.map { |b| Api::Builds::ShowViewModel.new(b).as_json }.to_json
       } ]
     else
       [ { uri: uri, mimeType: "text/plain", text: "Unknown resource" } ]
