@@ -72,7 +72,6 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
         if @project.cluster.gateway_based?
           @chart_builder << build_resource("Gateway", service)
           @chart_builder << build_resource("Httproute", service)
-          @chart_builder << build_resource("Certificate", service)
         else
           @chart_builder << build_resource("Ingress", service)
         end

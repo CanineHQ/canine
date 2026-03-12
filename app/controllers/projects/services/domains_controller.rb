@@ -12,10 +12,12 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
   end
 
   def check_dns
-    Networks::CheckDns.execute(
-      ingress: K8::Stateless::Ingress.new(@service),
-      connection: active_connection,
-    )
+    resource = if @service.project.cluster.gateway_based?
+      K8::Stateless::Gateway.new(@service)
+    else
+      K8::Stateless::Ingress.new(@service)
+    end
+    Networks::CheckDns.execute(ingress: resource, connection: active_connection)
     render partial: "projects/services/domains/index", locals: { service: @service, refreshed: true }
   end
 

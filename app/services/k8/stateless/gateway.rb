@@ -20,6 +20,8 @@ class K8::Stateless::Gateway < K8::Base
     return nil unless @service.allow_public_networking?
 
     kubectl.call("get certificate #{certificate_name} -n #{@project.namespace} -o jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'") == "True"
+  rescue StandardError
+    :pending
   end
 
   def self.hostname(client)

@@ -5,7 +5,6 @@
 #  id              :bigint           not null, primary key
 #  cluster_type    :integer          default("k8s")
 #  kubeconfig      :jsonb
-#  metadata        :jsonb            not null
 #  name            :string           not null
 #  options         :jsonb            not null
 #  skip_tls_verify :boolean          default(FALSE), not null
@@ -42,15 +41,11 @@ class Cluster < ApplicationRecord
   has_many :users, through: :account
   has_one :build_cloud, dependent: :destroy
 
-  NETWORKING_MODES = %w[ingress gateway].freeze
-
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :account_id }
   validates_presence_of :kubeconfig, unless: :external?
-  validate :validate_networking_mode
 
-  before_validation :set_default_networking_mode
   enum :status, {
     initializing: 0,
     installing: 1,
@@ -77,33 +72,15 @@ class Cluster < ApplicationRecord
     external_id.present?
   end
 
-  def networking_mode
-    metadata&.dig("networking_mode").presence || "ingress"
-  end
-
-  def networking_mode=(value)
-    self.metadata = (metadata || {}).merge("networking_mode" => value)
-  end
-
   def gateway_based?
-    networking_mode == "gateway"
+    cluster_packages.installed.exists?(name: "traefik-gateway")
   end
 
   def ingress_based?
-    networking_mode == "ingress"
+    !gateway_based?
   end
 
   private
-
-  def set_default_networking_mode
-    self.networking_mode = "ingress" if metadata&.dig("networking_mode").blank?
-  end
-
-  def validate_networking_mode
-    return if NETWORKING_MODES.include?(networking_mode)
-
-    errors.add(:metadata, "networking_mode must be one of: #{NETWORKING_MODES.join(', ')}")
-  end
 
   def create_build_cloud_record!(attributes)
     build_cloud = BuildCloud.new(attributes.merge(cluster: self))

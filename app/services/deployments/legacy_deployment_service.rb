@@ -69,7 +69,6 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
         if @project.cluster.gateway_based?
           apply_resource("Gateway", service)
           apply_resource("Httproute", service)
-          apply_resource("Certificate", service)
         else
           apply_resource("Ingress", service)
         end
@@ -86,7 +85,8 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
   end
 
   def sweep_unused_resources
-    resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ "Pv" ].include?(r) }
+    networking_resources = @project.cluster.gateway_based? ? GATEWAY_RESOURCES : INGRESS_RESOURCES
+    resources_to_sweep = (DEPLOYABLE_RESOURCES + networking_resources).reject { |r| [ "Pv" ].include?(r) }
     kubectl = K8::Kubectl.new(@connection)
 
     resources_to_sweep.each do |resource_type|

@@ -5,7 +5,6 @@
 #  id              :bigint           not null, primary key
 #  cluster_type    :integer          default("k8s")
 #  kubeconfig      :jsonb
-#  metadata        :jsonb            not null
 #  name            :string           not null
 #  options         :jsonb            not null
 #  skip_tls_verify :boolean          default(FALSE), not null

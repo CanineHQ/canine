@@ -5,6 +5,8 @@ metadata:
   namespace: <%= project.namespace %>
   labels:
     caninemanaged: 'true'
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
   gatewayClassName: traefik
   listeners:

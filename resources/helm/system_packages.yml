@@ -50,6 +50,8 @@ packages:
     values:
       crds:
         enabled: true
+      config:
+        enableGatewayAPI: true
 
   - name: metrics-server
     display_name: Metrics Server
@@ -93,7 +95,11 @@ packages:
         kubernetesGateway:
           enabled: true
       gateway:
-        enabled: true
+        enabled: false
+      ports:
+        web:
+          redirectTo:
+            port: websecure
 
   - name: cloudflared
     display_name: Cloudflare Tunnel
