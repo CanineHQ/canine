@@ -43,9 +43,14 @@
           </td>
           <td>
             <% if current_account_user.admin_or_owner? && !account_user.owner? %>
-              <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Remove #{account_user.user.name.presence || account_user.user.email} from #{current_account.name}? They will lose access to all projects and resources in this account." }, class: "btn btn-ghost btn-sm btn-square" do %>
-                <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
-              <% end %>
+              <div class="flex items-center gap-1">
+                <%= button_to reset_password_account_user_path(account_user), method: :post, data: { confirm: "Reset password for #{account_user.user.name.presence || account_user.user.email}? They will be required to change their password on next login." }, class: "btn btn-ghost btn-sm btn-square" do %>
+                  <iconify-icon icon="lucide:key-round" height="18" class="text-warning"></iconify-icon>
+                <% end %>
+                <%= button_to account_user_path(account_user), method: :delete, data: { confirm: "Remove #{account_user.user.name.presence || account_user.user.email} from #{current_account.name}? They will lose access to all projects and resources in this account." }, class: "btn btn-ghost btn-sm btn-square" do %>
+                  <iconify-icon icon="lucide:trash" height="18" class="text-error"></iconify-icon>
+                <% end %>
+              </div>
             <% end %>
           </td>
         </tr>

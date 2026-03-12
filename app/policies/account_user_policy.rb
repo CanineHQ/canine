@@ -12,4 +12,10 @@ class AccountUserPolicy < ApplicationPolicy
 
     user.admin_or_owner?
   end
+
+  def reset_password?
+    return false if record.owner?
+
+    user.admin_or_owner?
+  end
 end

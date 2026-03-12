@@ -48,6 +48,29 @@ class Accounts::AccountUsersController < ApplicationController
     redirect_to account_users_path, notice: "User role was successfully updated."
   end
 
+  def reset_password
+    account_user = current_account.account_users.find(params[:id])
+    authorize account_user
+
+    temp_password = generate_temp_password
+    account_user.user.update!(
+      password: temp_password,
+      password_confirmation: temp_password,
+      password_change_required: true
+    )
+
+    @invite_credentials = {
+      email: account_user.user.email,
+      password: temp_password,
+      login_url: new_user_session_url
+    }
+
+    respond_to do |format|
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("team_member_modal", partial: "accounts/account_users/credentials_modal", locals: { credentials: @invite_credentials, title: "Password Reset" }) }
+      format.html { redirect_to account_users_path, notice: "Password has been reset." }
+    end
+  end
+
   def destroy
     account_user = current_account.account_users.find(params[:id])
     authorize account_user
