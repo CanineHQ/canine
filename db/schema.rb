@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_12_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "slug", null: false
+    t.boolean "allow_mcp", default: true, null: false
     t.index ["owner_id"], name: "index_accounts_on_owner_id"
     t.index ["slug"], name: "index_accounts_on_slug", unique: true
   end
@@ -191,6 +192,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
     t.string "external_id"
     t.jsonb "options", default: {}, null: false
     t.boolean "skip_tls_verify", default: false, null: false
+    t.string "error_tracking_url"
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 
@@ -219,13 +221,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_035312) do
   end
 
   create_table "domains", force: :cascade do |t|
+    t.bigint "service_id", null: false
     t.string "domain_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "status", default: 0
     t.string "status_reason"
     t.boolean "auto_managed", default: false
-    t.bigint "service_id", null: false
     t.index ["service_id"], name: "index_domains_on_service_id"
   end
 

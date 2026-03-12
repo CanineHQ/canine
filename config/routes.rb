@@ -207,6 +207,7 @@ Rails.application.routes.draw do
         post :sync
       end
     end
+    resources :error_tracking, only: %i[index show create], module: :clusters
     member do
       post :test_connection
       post :retry_install

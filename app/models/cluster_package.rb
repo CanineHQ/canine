@@ -45,7 +45,8 @@ class ClusterPackage < ApplicationRecord
     "cert-manager" => "ClusterPackage::Installer::CertManager",
     "metrics-server" => "ClusterPackage::Installer::MetricsServer",
     "telepresence" => "ClusterPackage::Installer::Telepresence",
-    "cloudflared" => "ClusterPackage::Installer::Cloudflared"
+    "cloudflared" => "ClusterPackage::Installer::Cloudflared",
+    "error-tracking" => "ClusterPackage::Installer::ErrorTracking"
   }.freeze
 
   def definition

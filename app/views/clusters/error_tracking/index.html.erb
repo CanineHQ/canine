@@ -1,0 +1,77 @@
+<%= content_for :title, "Error Tracking - #{@cluster.name}" %>
+
+<%= cluster_layout(@cluster) do %>
+  <div class="flex items-center justify-between mb-4">
+    <h4 class="text-2xl font-bold">Error Tracking</h4>
+  </div>
+
+  <% if @error %>
+    <div class="alert alert-error mb-4">
+      <iconify-icon icon="lucide:alert-circle" height="20"></iconify-icon>
+      <span><%= @error %></span>
+    </div>
+  <% end %>
+
+  <div class="card card-bordered bg-base-100 mb-4">
+    <div class="card-body">
+      <h6 class="font-bold mb-2">Create Source</h6>
+      <%= form_tag cluster_error_tracking_index_path(@cluster), method: :post, class: "flex items-end gap-3" do %>
+        <div class="form-group">
+          <label class="label"><span class="label-text">Name</span></label>
+          <%= text_field_tag :name, nil, class: "input input-bordered input-sm", required: true, placeholder: "my-app" %>
+        </div>
+        <div class="form-group">
+          <label class="label"><span class="label-text">Platform</span></label>
+          <%= select_tag :platform, options_for_select(["ruby", "python", "javascript", "go", "rust", "java", "elixir", "other"]), class: "select select-bordered select-sm" %>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">
+          <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+          Create
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @sources.any? %>
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Platform</th>
+            <th>DSN Key</th>
+            <th>Created</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @sources.each do |source| %>
+            <tr>
+              <td class="font-medium">
+                <%= link_to source["name"], cluster_error_tracking_path(@cluster, source["id"]), class: "link link-primary" %>
+              </td>
+              <td><%= source["platform"] || "-" %></td>
+              <td>
+                <div class="flex items-center gap-2 cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= source["public_key"] %>">
+                  <code class="text-xs"><%= source["public_key"][0..7] %>...</code>
+                  <iconify-icon icon="lucide:clipboard" height="14"></iconify-icon>
+                </div>
+              </td>
+              <td class="text-sm text-base-content/60"><%= source["created_at"] %></td>
+              <td>
+                <%= link_to cluster_error_tracking_path(@cluster, source["id"]), class: "btn btn-ghost btn-sm" do %>
+                  <iconify-icon icon="lucide:arrow-right" height="16"></iconify-icon>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% elsif !@error %>
+    <div class="text-center py-8 text-base-content/60">
+      <p class="mb-2">No sources yet</p>
+      <p class="text-sm">Create a source above, then configure your app's <code>SENTRY_DSN</code> to start capturing errors.</p>
+    </div>
+  <% end %>
+<% end %>
