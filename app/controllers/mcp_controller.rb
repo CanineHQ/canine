@@ -30,22 +30,35 @@ class MCPController < ActionController::API
 
   def mcp_tools
     [
+      # Accounts & Auth
       Tools::ListAccounts,
-      Tools::CreateCluster,
       Tools::ListProviders,
+
+      # Clusters
+      Tools::CreateCluster,
+
+      # Projects
       Tools::ListProjects,
       Tools::CreateProject,
       Tools::GetProjectDetails,
-      Tools::GetProjectLogs,
-      Tools::GetEnvironmentVariables,
-      Tools::GetDeploymentHistory,
-      Tools::CheckBuildStatus,
       Tools::DeployProject,
       Tools::DeployProjectFork,
       Tools::RestartProject,
+
+      # Project Logs & Monitoring
+      Tools::GetProjectLogs,
+      Tools::CheckBuildStatus,
+      Tools::GetDeploymentHistory,
       Tools::RollbackDeployment,
-      Tools::ScaleService,
+
+      # Environment Variables
+      Tools::GetEnvironmentVariables,
       Tools::UpdateEnvironmentVariable,
+
+      # Services
+      Tools::ScaleService,
+
+      # Add-ons
       Tools::SearchAddOns,
       Tools::ListAddOns,
       Tools::CreateAddOn,
