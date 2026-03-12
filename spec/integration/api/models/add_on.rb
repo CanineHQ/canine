@@ -20,6 +20,16 @@ SwaggerSchemas::ADD_ON = {
       type: :string,
       example: 'https://charts.bitnami.com/bitnami/redis'
     },
+    chart_type: {
+      type: :string,
+      example: 'helm_chart',
+      nullable: true
+    },
+    repository_url: {
+      type: :string,
+      example: 'https://charts.bitnami.com/bitnami',
+      nullable: true
+    },
     version: {
       type: :string,
       example: '17.0.0'
@@ -27,6 +37,11 @@ SwaggerSchemas::ADD_ON = {
     status: {
       type: :string,
       example: 'installed'
+    },
+    install_stage: {
+      type: :integer,
+      example: 0,
+      nullable: true
     },
     cluster_id: {
       type: :integer,

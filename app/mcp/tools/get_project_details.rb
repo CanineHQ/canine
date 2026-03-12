@@ -4,13 +4,17 @@ module Tools
   class GetProjectDetails < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Get detailed information about a project including services, domains, volumes, and current deployment manifests"
+    description "Get detailed information about a project including services, domains, volumes, current deployment manifests, and recent deployment history"
 
     input_schema(
       properties: {
         project_id: {
           type: "integer",
           description: "The ID of the project"
+        },
+        deployment_limit: {
+          type: "integer",
+          description: "Number of recent deployments to return (default: 10, max: 50)"
         },
         account_id: {
           type: "integer",
@@ -26,7 +30,7 @@ module Tools
       read_only_hint: true
     )
 
-    def self.call(project_id:, account_id: nil, server_context:)
+    def self.call(project_id:, deployment_limit: 10, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |_user, account_user|
         projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects
         project = projects.find_by(id: project_id)
@@ -35,27 +39,17 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         current_deployment = project.current_deployment
 
-        details = {
-          id: project.id,
-          name: project.name,
-          namespace: project.namespace,
-          branch: project.branch,
-          status: project.status,
+        details = Api::Projects::ShowViewModel.new(project).as_json.merge(
           autodeploy: project.autodeploy,
-          repository_url: project.repository_url,
           dockerfile_path: project.dockerfile_path,
           docker_build_context_directory: project.docker_build_context_directory,
           predeploy_command: project.predeploy_command,
           postdeploy_command: project.postdeploy_command,
-          cluster: {
-            id: project.cluster.id,
-            name: project.cluster.name
-          },
           services: project.services.map do |s|
             {
               id: s.id,
@@ -93,8 +87,13 @@ module Tools
             commit_sha: current_deployment.build.commit_sha,
             commit_message: current_deployment.build.commit_message,
             manifests: current_deployment.manifests
-          } : nil
-        }
+          } : nil,
+          deployment_history: project.deployments
+            .includes(:build)
+            .order(created_at: :desc)
+            .limit([ deployment_limit, 50 ].min)
+            .map { |d| Api::Deployments::ShowViewModel.new(d, is_current: current_deployment&.id == d.id).as_json }
+        )
 
         MCP::Tool::Response.new([ {
           type: "text",

@@ -32,6 +32,13 @@ module Tools
           } ], error: true)
         end
 
+        def mcp_disabled_for_account_error
+          MCP::Tool::Response.new([ {
+            type: "text",
+            text: "MCP is disabled for this account."
+          } ], error: true)
+        end
+
         def with_account_user(server_context:, account_id: nil)
           user = current_user(server_context)
 
@@ -40,6 +47,8 @@ module Tools
           account_user = find_account_user(user, account_id)
 
           return account_not_found_error unless account_user
+
+          return mcp_disabled_for_account_error unless account_user.account.allow_mcp?
 
           yield user, account_user
         end

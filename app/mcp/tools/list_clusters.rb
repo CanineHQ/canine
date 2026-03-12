@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module Tools
-  class ListAddOns < MCP::Tool
+  class ListClusters < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "List all add-ons (databases, caches, etc.) accessible to the current user"
+    description "List all clusters accessible to the current user"
 
     input_schema(
       properties: {
         account_id: {
           type: "integer",
-          description: "The ID of the account to list add-ons for (optional, defaults to first account)"
+          description: "The ID of the account to list clusters for (optional, defaults to first account)"
         }
       },
       required: []
@@ -24,18 +24,15 @@ module Tools
 
     def self.call(account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |_user, account_user|
-        add_ons = ::AddOns::VisibleToUser.execute(account_user: account_user)
-          .add_ons
-          .order(:name)
-          .limit(50)
+        clusters = account_user.account.clusters.order(:name)
 
-        add_on_list = add_ons.map do |a|
-          Api::AddOns::ShowViewModel.new(a).as_json
+        cluster_list = clusters.map do |c|
+          Api::Clusters::ShowViewModel.new(c).as_json
         end
 
         MCP::Tool::Response.new([ {
           type: "text",
-          text: add_on_list.to_json
+          text: cluster_list.to_json
         } ])
       end
     end

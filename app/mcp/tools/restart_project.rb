@@ -1,20 +1,16 @@
 # frozen_string_literal: true
 
 module Tools
-  class DeployProject < MCP::Tool
+  class RestartProject < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Deploy a project to its Kubernetes cluster"
+    description "Restart all running services in a project (rolling restart, no new build)"
 
     input_schema(
       properties: {
         project_id: {
           type: "integer",
-          description: "The ID of the project to deploy"
-        },
-        skip_build: {
-          type: "boolean",
-          description: "Skip the build step and deploy with the last successful build"
+          description: "The ID of the project to restart"
         },
         account_id: {
           type: "integer",
@@ -26,11 +22,11 @@ module Tools
 
     annotations(
       destructive_hint: true,
-      idempotent_hint: false,
+      idempotent_hint: true,
       read_only_hint: false
     )
 
-    def self.call(project_id:, skip_build: false, account_id: nil, server_context:)
+    def self.call(project_id:, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
         projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects
         project = projects.find_by(id: project_id)
@@ -42,21 +38,17 @@ module Tools
           } ], error: true)
         end
 
-        result = ::Projects::DeployLatestCommit.execute(
-          project: project,
-          current_user: user,
-          skip_build: skip_build
-        )
+        result = ::Projects::Restart.execute(connection: K8::Connection.new(project, user))
 
         if result.success?
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Deployment started for project '#{project.name}'. Build ID: #{result.build.id}"
+            text: "All running services in project '#{project.name}' have been restarted"
           } ])
         else
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to deploy project: #{result.message}"
+            text: "Failed to restart services: #{result.message}"
           } ], error: true)
         end
       end
