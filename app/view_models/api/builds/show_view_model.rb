@@ -17,6 +17,7 @@ module Api
           repository_url: @build.repository_url,
           project_id: @build.project_id,
           project_name: @build.project.name,
+          url: Rails.application.routes.url_helpers.project_path(@build.project),
           created_at: @build.created_at,
           updated_at: @build.updated_at
         }

@@ -2,7 +2,7 @@
 
 SwaggerSchemas::CLUSTER = {
   type: :object,
-  required: %w[id name cluster_type status created_at updated_at],
+  required: %w[id name cluster_type status url created_at updated_at],
   properties: {
     id: {
       type: :integer,
@@ -19,6 +19,10 @@ SwaggerSchemas::CLUSTER = {
     status: {
       type: :string,
       example: 'ready'
+    },
+    url: {
+      type: :string,
+      example: '/clusters/1'
     },
     created_at: {
       type: :string,

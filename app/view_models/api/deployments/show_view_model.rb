@@ -17,6 +17,7 @@ module Api
           build_id: @deployment.build.id,
           commit_sha: @deployment.build.commit_sha,
           commit_message: @deployment.build.commit_message,
+          url: Rails.application.routes.url_helpers.project_deployment_path(@deployment.project, @deployment.build),
           created_at: @deployment.created_at,
           updated_at: @deployment.updated_at
         }

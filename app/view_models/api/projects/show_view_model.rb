@@ -18,6 +18,7 @@ module Api
           cluster_id: @project.cluster_id,
           cluster_name: @project.cluster.name,
           container_registry_url: @project.container_image_reference,
+          url: Rails.application.routes.url_helpers.project_path(@project),
           created_at: @project.created_at,
           updated_at: @project.updated_at
         }
