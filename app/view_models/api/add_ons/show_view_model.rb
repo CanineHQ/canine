@@ -20,6 +20,7 @@ module Api
           install_stage: @add_on.install_stage,
           cluster_id: @add_on.cluster_id,
           cluster_name: @add_on.cluster.name,
+          url: Rails.application.routes.url_helpers.add_on_path(@add_on),
           created_at: @add_on.created_at,
           updated_at: @add_on.updated_at
         }

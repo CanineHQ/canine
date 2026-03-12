@@ -2,7 +2,7 @@
 
 SwaggerSchemas::ADD_ON = {
   type: :object,
-  required: %w[id name namespace chart_url version status cluster_id cluster_name created_at updated_at],
+  required: %w[id name namespace chart_url version status cluster_id cluster_name url created_at updated_at],
   properties: {
     id: {
       type: :integer,
@@ -50,6 +50,10 @@ SwaggerSchemas::ADD_ON = {
     cluster_name: {
       type: :string,
       example: 'production'
+    },
+    url: {
+      type: :string,
+      example: '/add_ons/1'
     },
     created_at: {
       type: :string,
