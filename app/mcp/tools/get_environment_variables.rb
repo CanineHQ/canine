@@ -43,12 +43,7 @@ module Tools
         end
 
         env_vars = project.environment_variables.order(:name).map do |ev|
-          {
-            id: ev.id,
-            name: ev.name,
-            value: reveal || ev.config? ? ev.value : "********",
-            storage_type: ev.storage_type
-          }
+          Api::EnvironmentVariables::ShowViewModel.new(ev, reveal: reveal).as_json
         end
 
         MCP::Tool::Response.new([ {

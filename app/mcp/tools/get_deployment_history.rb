@@ -50,17 +50,7 @@ module Tools
         current_deployment = project.current_deployment
 
         deployment_list = deployments.map do |d|
-          {
-            id: d.id,
-            version: d.version,
-            status: d.status,
-            is_current: current_deployment&.id == d.id,
-            build_id: d.build.id,
-            commit_sha: d.build.commit_sha,
-            commit_message: d.build.commit_message,
-            created_at: d.created_at.iso8601,
-            updated_at: d.updated_at.iso8601
-          }
+          Api::Deployments::ShowViewModel.new(d, is_current: current_deployment&.id == d.id).as_json
         end
 
         MCP::Tool::Response.new([ {

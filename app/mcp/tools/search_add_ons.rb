@@ -34,27 +34,12 @@ module Tools
       curated = K8::Helm::Client::CHARTS["helm"]["charts"].select do |c|
         c["name"].include?(query.downcase) || c["display_name"]&.downcase&.include?(query.downcase)
       end.map do |c|
-        {
-          name: c["display_name"] || c["name"],
-          chart_url: c["chart_url"],
-          repository_url: c["repository_url"],
-          curated: true,
-          template: c["template"]&.map { |t| { name: t["name"], key: t["key"], type: t["type"], default: t["default"] } }
-        }
+        Api::HelmCharts::CuratedViewModel.new(c).as_json
       end
 
       # Parse Artifact Hub results
       hub_results = (result.response || []).first(15).map do |pkg|
-        repo = pkg["repository"] || {}
-        {
-          name: pkg["name"],
-          description: pkg["description"],
-          chart_url: "#{repo["name"]}/#{pkg["name"]}",
-          repository_url: repo["url"],
-          version: pkg["version"],
-          artifact_hub_package_id: "helm/#{repo["name"]}/#{pkg["name"]}",
-          curated: false
-        }
+        Api::HelmCharts::HubResultViewModel.new(pkg).as_json
       end
 
       MCP::Tool::Response.new([ {

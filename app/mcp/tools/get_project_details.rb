@@ -40,22 +40,12 @@ module Tools
 
         current_deployment = project.current_deployment
 
-        details = {
-          id: project.id,
-          name: project.name,
-          namespace: project.namespace,
-          branch: project.branch,
-          status: project.status,
+        details = Api::Projects::ShowViewModel.new(project).as_json.merge(
           autodeploy: project.autodeploy,
-          repository_url: project.repository_url,
           dockerfile_path: project.dockerfile_path,
           docker_build_context_directory: project.docker_build_context_directory,
           predeploy_command: project.predeploy_command,
           postdeploy_command: project.postdeploy_command,
-          cluster: {
-            id: project.cluster.id,
-            name: project.cluster.name
-          },
           services: project.services.map do |s|
             {
               id: s.id,
@@ -94,7 +84,7 @@ module Tools
             commit_message: current_deployment.build.commit_message,
             manifests: current_deployment.manifests
           } : nil
-        }
+        )
 
         MCP::Tool::Response.new([ {
           type: "text",

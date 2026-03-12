@@ -61,27 +61,13 @@ module Tools
 
             pod_events = begin
               client.get_pod_events(pod_name, project.namespace).map do |event|
-                {
-                  type: event.type,
-                  reason: event.reason,
-                  message: event.message,
-                  first_seen: event.firstTimestamp&.iso8601,
-                  last_seen: event.lastTimestamp&.iso8601,
-                  count: event.count
-                }
+                Api::Pods::EventViewModel.new(event).as_json
               end
             rescue Kubeclient::HttpError => e
               [ { error: "Error fetching events: #{e.message}" } ]
             end
 
-            {
-              pod_name: pod_name,
-              service_name: service_name,
-              status: pod.status.phase,
-              container_status: pod.status.containerStatuses&.first&.state&.to_h,
-              logs: pod_logs,
-              events: pod_events
-            }
+            Api::Pods::LogViewModel.new(pod, logs: pod_logs, events: pod_events, service_name: service_name).as_json
           end
 
           MCP::Tool::Response.new([ {

@@ -42,23 +42,7 @@ module Tools
           } ], error: true)
         end
 
-        details = {
-          id: add_on.id,
-          name: add_on.name,
-          namespace: add_on.namespace,
-          chart_url: add_on.chart_url,
-          chart_type: add_on.chart_type,
-          repository_url: add_on.repository_url,
-          version: add_on.version,
-          status: add_on.status,
-          install_stage: add_on.install_stage,
-          cluster: {
-            id: add_on.cluster.id,
-            name: add_on.cluster.name
-          },
-          created_at: add_on.created_at.iso8601,
-          updated_at: add_on.updated_at.iso8601
-        }
+        details = Api::AddOns::ShowViewModel.new(add_on).as_json
 
         if include_values
           begin

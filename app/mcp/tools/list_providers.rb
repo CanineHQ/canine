@@ -21,14 +21,7 @@ module Tools
       user = User.find(server_context[:user_id])
 
       providers = user.providers.map do |p|
-        {
-          id: p.id,
-          type: p.provider,
-          username: p.username,
-          git: p.git?,
-          has_native_registry: p.has_native_container_registry?,
-          enterprise: p.enterprise?
-        }
+        Api::Providers::ShowViewModel.new(p).as_json
       end
 
       MCP::Tool::Response.new([ {

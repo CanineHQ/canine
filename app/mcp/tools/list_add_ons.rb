@@ -30,15 +30,7 @@ module Tools
           .limit(50)
 
         add_on_list = add_ons.map do |a|
-          {
-            id: a.id,
-            name: a.name,
-            namespace: a.namespace,
-            chart_url: a.chart_url,
-            version: a.version,
-            status: a.status,
-            cluster: a.cluster.name
-          }
+          Api::AddOns::ShowViewModel.new(a).as_json
         end
 
         MCP::Tool::Response.new([ {
