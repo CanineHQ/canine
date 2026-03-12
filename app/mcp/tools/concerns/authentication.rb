@@ -25,13 +25,6 @@ module Tools
           } ], error: true)
         end
 
-        def mcp_disabled_error
-          MCP::Tool::Response.new([ {
-            type: "text",
-            text: "MCP server is not enabled for this user."
-          } ], error: true)
-        end
-
         def mcp_disabled_for_account_error
           MCP::Tool::Response.new([ {
             type: "text",
@@ -41,8 +34,6 @@ module Tools
 
         def with_account_user(server_context:, account_id: nil)
           user = current_user(server_context)
-
-          return mcp_disabled_error unless Flipper.enabled?(:mcp_server, user)
 
           account_user = find_account_user(user, account_id)
 
