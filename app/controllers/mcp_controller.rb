@@ -37,7 +37,8 @@ class MCPController < ActionController::API
       Tools::CheckBuildStatus,
       Tools::DeployProject,
       Tools::ListAddOns,
-      Tools::GetAddOnLogs
+      Tools::GetAddOnLogs,
+      Tools::GetErrors
     ]
   end
 
