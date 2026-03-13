@@ -1,11 +1,11 @@
 class AddOns::InstallHelmChart
   extend LightService::Action
   expects :connection
-  expects :skip_schema_validation, default: false
+  expects :force, default: false
 
   executed do |context|
     add_on = context.connection.add_on
-    skip_schema_validation = context.skip_schema_validation
+    skip_schema_validation = context.force
 
     add_on.update_install_stage!(0)
     create_namespace(context.connection)
