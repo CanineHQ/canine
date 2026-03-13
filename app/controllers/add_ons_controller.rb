@@ -74,7 +74,8 @@ class AddOnsController < ApplicationController
   end
 
   def restart
-    @service.restart
+    force = params[:force_restart].present?
+    @service.restart(force: force)
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 
