@@ -38,25 +38,8 @@
           <span class="ml-6"><iconify-icon icon="devicon:kubernetes"></iconify-icon> <%= link_to add_on.cluster.name, add_on.cluster, target: "_blank", class: "underline" %></span>
         </div>
       </div>
-      <div class="flex">
-        <div class="join">
-          <%= button_to restart_add_on_path(add_on), method: :post, class: "btn join-item btn-primary" do %>
-            Restart
-          <% end %>
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn join-item btn-primary"><iconify-icon icon="lucide:chevron-down"></iconify-icon></div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
-              <li>
-                <%= button_to(
-                  "Force Restart",
-                  restart_add_on_path(add_on, force_restart: true),
-                  method: :post,
-                  form: { data: { turbo_confirm: "This will skip common validation checks including schema validation. Are you sure you want to proceed?" } }
-                ) %>
-              </li>
-            </ul>
-          </div>
-        </div>
+      <div>
+        <%= button_to "Restart", restart_add_on_path(add_on), method: :post, class: "btn btn-primary" %>
       </div>
     </div>
 

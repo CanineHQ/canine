@@ -63,7 +63,8 @@ class AddOnsController < ApplicationController
 
     respond_to do |format|
       if result.success?
-        AddOns::InstallJob.perform_later(@add_on, current_user)
+        skip_schema_validation = params[:skip_schema_validation].present?
+        AddOns::InstallJob.perform_later(@add_on, current_user, skip_schema_validation:)
         format.html { redirect_to @add_on, notice: "Add on #{@add_on.name} is updating..." }
         format.json { render :show, status: :ok, location: @add_on }
       else
@@ -74,8 +75,7 @@ class AddOnsController < ApplicationController
   end
 
   def restart
-    force = params[:force_restart].present?
-    @service.restart(force: force)
+    @service.restart
     redirect_to add_on_url(@add_on), notice: "Add on #{@add_on.name} restarted"
   end
 

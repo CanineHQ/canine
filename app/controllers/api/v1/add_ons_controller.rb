@@ -13,8 +13,7 @@ module Api
       end
 
       def restart
-        force = params[:force_restart].present?
-        @service.restart(force: force)
+        @service.restart
         render json: { message: "Add on #{@add_on.name} has been restarted" }, status: :ok
       end
 

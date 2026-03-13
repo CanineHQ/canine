@@ -25,7 +25,7 @@ class K8::Helm::Service
     add_on.metadata['display_name'] || add_on.chart_url
   end
 
-  def restart(force: false)
+  def restart
     kubectl.call("rollout restart deployment -n #{add_on.name}")
   end
 
