@@ -46,7 +46,18 @@
           </div>
         </div>
         <div class="form-footer">
-          <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+          <div class="join">
+            <%= form.submit "Save", class: "btn join-item btn-primary", data: { turbo_submits_with: "Saving..." } %>
+            <div class="dropdown dropdown-end dropdown-top">
+              <div tabindex="0" role="button" class="btn join-item btn-primary"><iconify-icon icon="lucide:chevron-down"></iconify-icon></div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
+                <li>
+                  <%= form.submit "Force Save", name: "force", value: "true", class: "btn btn-ghost btn-sm w-full text-left",
+                    data: { turbo_submits_with: "Saving...", turbo_confirm: "This will skip schema validation checks. Are you sure you want to proceed?" } %>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       <% end %>
       <div class="text-sm text-gray-500">

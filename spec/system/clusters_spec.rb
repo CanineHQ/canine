@@ -57,8 +57,9 @@ RSpec.describe "Clusters", type: :system do
 
       visit edit_cluster_path(cluster)
 
-      accept_confirm do
-        click_button "Delete Cluster"
+      click_button "Delete Cluster"
+      within "#turbo-confirm-modal" do
+        click_button "Confirm"
       end
 
       expect(page).to have_content("Cluster is being deleted")

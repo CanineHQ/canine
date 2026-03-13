@@ -73,7 +73,6 @@ RSpec.describe Api::V1::AddOnsController, :swagger, type: :request do
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
       parameter name: :id, in: :path, type: :string, description: 'Add On name'
-
       response(200, 'successful') do
         schema type: :object,
                properties: {

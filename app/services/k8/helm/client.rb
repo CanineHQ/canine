@@ -76,7 +76,7 @@ class K8::Helm::Client
     self.class.add_repo(repository_name, repository_url, runner)
   end
 
-  def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:, create_namespace:, skip_tls_verify:)
+  def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:, create_namespace:, skip_tls_verify:, skip_schema_validation: false)
     command_parts = [
       "helm upgrade --install #{name} #{chart_url}",
       "-f #{values_file_path}",
@@ -90,6 +90,7 @@ class K8::Helm::Client
     command_parts << "--history-max=#{history_max}" if history_max
     command_parts << "--create-namespace" if create_namespace
     command_parts << "--kube-insecure-skip-tls-verify" if skip_tls_verify
+    command_parts << "--skip-schema-validation" if skip_schema_validation
 
     command_parts.join(" ")
   end
@@ -106,6 +107,7 @@ class K8::Helm::Client
     history_max: nil,
     create_namespace: false,
     skip_tls_verify: nil,
+    skip_schema_validation: false,
     timeout: DEFAULT_TIMEOUT
   )
     return StandardError.new("Can't install helm chart if not connected") unless connected?
@@ -129,7 +131,8 @@ class K8::Helm::Client
           wait: wait,
           history_max: history_max,
           create_namespace: create_namespace,
-          skip_tls_verify: skip_tls
+          skip_tls_verify: skip_tls,
+          skip_schema_validation: skip_schema_validation
         )
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
         raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
