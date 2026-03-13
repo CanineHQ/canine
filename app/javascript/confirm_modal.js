@@ -1,13 +1,20 @@
 export function setConfirmModal(Turbo) {
-  Turbo.setConfirmMethod((message, element) => {
+  Turbo.config.forms.confirm = (message, element, submitter) => {
     const dialog = document.getElementById("turbo-confirm-modal")
 
     if (!dialog) return Promise.resolve(false)
 
+    const source = submitter || element
+    const title = source?.dataset?.confirmTitle
+    const type = source?.dataset?.confirmType || "primary"
+
+    const titleEl = dialog.querySelector("[data-confirm-title]")
     const messageEl = dialog.querySelector("[data-confirm-message]")
     const confirmBtn = dialog.querySelector("[data-confirm-accept]")
 
+    if (titleEl) titleEl.textContent = title || "Confirm"
     messageEl.textContent = message
+    confirmBtn.className = `btn btn-${type}`
 
     dialog.showModal()
 
@@ -31,5 +38,5 @@ export function setConfirmModal(Turbo) {
       confirmBtn.addEventListener("click", handleConfirm, { once: true })
       dialog.addEventListener("close", handleCancel, { once: true })
     })
-  })
+  }
 }
