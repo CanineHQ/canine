@@ -4,8 +4,7 @@
       <div class="flex items-center gap-3">
         <iconify-icon icon="<%= definition['icon'] %>" height="28"></iconify-icon>
         <div>
-          <h4 class="font-semibold"><%= definition['display_name'] %></h4>
-          <p class="text-sm text-gray-400"><%= definition['description'] %></p>
+          <%= render "clusters/cluster_packages/description", definition: definition %>
         </div>
       </div>
 
