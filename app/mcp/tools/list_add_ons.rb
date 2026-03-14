@@ -29,21 +29,9 @@ module Tools
           .order(:name)
           .limit(50)
 
-        add_on_list = add_ons.map do |a|
-          {
-            id: a.id,
-            name: a.name,
-            namespace: a.namespace,
-            chart_url: a.chart_url,
-            version: a.version,
-            status: a.status,
-            cluster: a.cluster.name
-          }
-        end
-
         MCP::Tool::Response.new([ {
           type: "text",
-          text: add_on_list.to_json
+          text: Api::AddOns::ListViewModel.new(add_ons).as_json.to_json
         } ])
       end
     end

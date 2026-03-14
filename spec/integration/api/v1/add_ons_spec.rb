@@ -17,6 +17,9 @@ RSpec.describe Api::V1::AddOnsController, :swagger, type: :request do
   before do
     allow(K8::Helm::Service).to receive(:create_from_add_on).and_return(helm_service)
     allow(helm_service).to receive(:restart)
+    allow(helm_service).to receive(:get_endpoints).and_return([])
+    allow(helm_service).to receive(:get_ingresses).and_return([])
+    allow(helm_service).to receive(:respond_to?).with(:internal_url).and_return(false)
   end
 
   path '/api/v1/add_ons' do
@@ -73,7 +76,6 @@ RSpec.describe Api::V1::AddOnsController, :swagger, type: :request do
       produces 'application/json'
       parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
       parameter name: :id, in: :path, type: :string, description: 'Add On name'
-
       response(200, 'successful') do
         schema type: :object,
                properties: {

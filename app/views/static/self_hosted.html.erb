@@ -1,7 +1,11 @@
 <% content_for :meta_description, "Self-host Canine on your own infrastructure. Full control, no vendor lock-in, open source PaaS for Kubernetes." %>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });</script>
+<script>
+  ["DOMContentLoaded", "turbo:load"].forEach(function(e) {
+    document.addEventListener(e, function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });
+  });
+</script>
 
 <div class="bg-gray-900 min-h-screen">
   <%= render "static/landing_page/navbar" %>

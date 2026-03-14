@@ -31,17 +31,10 @@ module Tools
 
         project_list = projects.map do |p|
           current_deployment = p.current_deployment
-          {
-            id: p.id,
-            name: p.name,
-            namespace: p.namespace,
-            branch: p.branch,
-            status: p.status,
-            cluster: p.cluster.name,
-            repository_url: p.repository_url,
-            last_deployment_at: p.last_deployment_at&.iso8601,
+          Api::Projects::ShowViewModel.new(p).as_json.merge(
+            last_deployment_at: p.last_deployment_at,
             current_commit_message: current_deployment&.build&.commit_message
-          }
+          )
         end
 
         MCP::Tool::Response.new([ {

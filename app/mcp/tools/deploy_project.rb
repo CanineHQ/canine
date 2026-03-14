@@ -39,7 +39,7 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         result = ::Projects::DeployLatestCommit.execute(
@@ -57,7 +57,7 @@ module Tools
           MCP::Tool::Response.new([ {
             type: "text",
             text: "Failed to deploy project: #{result.message}"
-          } ], is_error: true)
+          } ], error: true)
         end
       end
     end

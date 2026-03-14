@@ -21,25 +21,7 @@ module Tools
       accounts = user.accounts.includes(:clusters, clusters: [ :projects, :add_ons ])
 
       account_list = accounts.map do |account|
-        {
-          id: account.id,
-          name: account.name,
-          slug: account.slug,
-          clusters: account.clusters.map do |cluster|
-            {
-              id: cluster.id,
-              name: cluster.name,
-              cluster_type: cluster.cluster_type,
-              projects_count: cluster.projects.size,
-              add_ons_count: cluster.add_ons.size
-            }
-          end,
-          totals: {
-            clusters: account.clusters.size,
-            projects: account.clusters.sum { |c| c.projects.size },
-            add_ons: account.clusters.sum { |c| c.add_ons.size }
-          }
-        }
+        Api::Accounts::ShowViewModel.new(account).as_json
       end
 
       MCP::Tool::Response.new([ {

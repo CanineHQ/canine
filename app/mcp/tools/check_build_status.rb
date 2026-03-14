@@ -43,19 +43,13 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         builds = project.builds.order(created_at: :desc).limit([ limit, 50 ].min)
 
         build_list = builds.map do |b|
-          build_data = {
-            id: b.id,
-            commit_sha: b.commit_sha,
-            commit_message: b.commit_message,
-            status: b.status,
-            created_at: b.created_at.iso8601
-          }
+          build_data = Api::Builds::ShowViewModel.new(b).as_json
 
           if include_logs
             build_data[:logs] = b.log_outputs.order(:created_at).map do |log|

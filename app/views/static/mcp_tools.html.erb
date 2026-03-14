@@ -1,7 +1,11 @@
 <% content_for :meta_description, "Canine MCP Server — Control your infrastructure with AI. Deploy, debug, and manage Kubernetes apps through any MCP-compatible client." %>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>document.addEventListener("DOMContentLoaded", function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });</script>
+<script>
+  ["DOMContentLoaded", "turbo:load"].forEach(function(e) {
+    document.addEventListener(e, function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });
+  });
+</script>
 
 <div class="bg-gray-900 min-h-screen">
   <%= render "static/landing_page/navbar" %>
@@ -69,6 +73,7 @@
         <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
           <h2 class="text-base font-semibold leading-7 text-emerald-400">See it in action</h2>
           <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Diagnosing a 500 error in 60 seconds</p>
+          <p class="mt-4 text-gray-400 text-sm">From Claude Code, after connecting via MCP</p>
         </div>
         <div class="mx-auto max-w-3xl" data-aos="fade-up" data-aos-delay="100">
           <div class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
@@ -76,18 +81,72 @@
               <span class="w-3 h-3 rounded-full bg-red-500"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
               <span class="w-3 h-3 rounded-full bg-green-500"></span>
-              <span class="ml-4 text-xs text-gray-500 font-mono">claude</span>
+              <span class="ml-4 text-xs text-gray-500 font-mono">claude — claude-code</span>
+              <span class="ml-auto text-xs text-emerald-500 font-mono flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                canine MCP connected
+              </span>
             </div>
-            <div class="bg-gray-950 p-6 font-mono text-sm leading-relaxed">
-              <p class="text-gray-400">$ <span class="text-gray-200">My API is returning 500s. Can you check what's going on?</span></p>
-              <p class="mt-4 text-emerald-400">I'll check the logs for your API project.</p>
-              <p class="mt-2 text-gray-500">→ Calling get_project_logs(project_id: 42, lines: 100)</p>
-              <p class="mt-4 text-emerald-400">I found the issue. There's a database connection timeout starting at 14:32 UTC. The connection pool is exhausted. Let me check the current replica count.</p>
-              <p class="mt-2 text-gray-500">→ Calling get_project_details(project_id: 42)</p>
-              <p class="mt-4 text-emerald-400">You're running 2 replicas. I'd recommend scaling to 4 to handle the current load. Want me to do that?</p>
-              <p class="mt-4 text-gray-400">$ <span class="text-gray-200">Yes, scale it up.</span></p>
-              <p class="mt-2 text-gray-500">→ Calling scale_service(project_id: 42, service_name: "web", replicas: 4)</p>
-              <p class="mt-4 text-emerald-400">Done. Scaled web service to 4 replicas. The new pods are starting now.</p>
+            <div class="bg-gray-950 p-6 font-mono text-sm leading-relaxed space-y-4">
+              <!-- User prompt -->
+              <div>
+                <span class="text-indigo-400 font-semibold">></span>
+                <span class="text-white ml-2">My API is returning 500s. What's going on?</span>
+              </div>
+
+              <!-- Tool call 1 -->
+              <div class="pl-4 border-l-2 border-gray-800">
+                <p class="text-gray-400 text-xs mb-1">Let me pull the recent logs.</p>
+                <div class="bg-gray-900 rounded-lg px-4 py-3 mt-2">
+                  <p class="text-amber-400 text-xs font-semibold mb-2">⚙ canine:get_project_logs</p>
+                  <p class="text-gray-500 text-xs">project: "api-prod" &nbsp;·&nbsp; lines: 100</p>
+                  <div class="mt-2 pt-2 border-t border-white/5 text-xs text-gray-500 space-y-0.5">
+                    <p><span class="text-red-400">[ERROR]</span> 14:32:11 PG::ConnectionBad: could not connect to server</p>
+                    <p><span class="text-red-400">[ERROR]</span> 14:32:11 connection pool exhausted (pool_size: 5, checked_out: 5)</p>
+                    <p class="text-gray-600">... 47 more similar errors</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Claude response -->
+              <div class="pl-4 border-l-2 border-gray-800">
+                <p class="text-gray-300 text-xs leading-relaxed">Your database connection pool is exhausted — all 5 connections are checked out. Let me see how many replicas you're running.</p>
+              </div>
+
+              <!-- Tool call 2 -->
+              <div class="pl-4 border-l-2 border-gray-800">
+                <div class="bg-gray-900 rounded-lg px-4 py-3">
+                  <p class="text-amber-400 text-xs font-semibold mb-2">⚙ canine:get_project_details</p>
+                  <p class="text-gray-500 text-xs">project: "api-prod"</p>
+                  <div class="mt-2 pt-2 border-t border-white/5 text-xs text-gray-500 space-y-0.5">
+                    <p>web: <span class="text-white">2 replicas</span> &nbsp;·&nbsp; 0.5 CPU / 512MB</p>
+                    <p>db pool_size: <span class="text-white">5</span> &nbsp;·&nbsp; DB max_connections: <span class="text-white">5</span></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Claude analysis -->
+              <div class="pl-4 border-l-2 border-gray-800">
+                <p class="text-gray-300 text-xs leading-relaxed">Found it. You have 2 replicas each opening up to 5 connections, but your database only allows 5 total. Scale down to 1 replica and the errors will stop. Want me to do that?</p>
+              </div>
+
+              <!-- User reply -->
+              <div>
+                <span class="text-indigo-400 font-semibold">></span>
+                <span class="text-white ml-2">Yes</span>
+              </div>
+
+              <!-- Tool call 3 -->
+              <div class="pl-4 border-l-2 border-gray-800">
+                <div class="bg-gray-900 rounded-lg px-4 py-3">
+                  <p class="text-amber-400 text-xs font-semibold mb-2">⚙ canine:scale_service</p>
+                  <p class="text-gray-500 text-xs">project: "api-prod" &nbsp;·&nbsp; service: "web" &nbsp;·&nbsp; replicas: 1</p>
+                  <div class="mt-2 pt-2 border-t border-white/5 text-xs text-gray-500">
+                    <p><span class="text-emerald-400">✓</span> Rolling update started. Old pod draining...</p>
+                  </div>
+                </div>
+                <p class="text-gray-300 text-xs mt-2">Done. 500s should clear within 30 seconds as traffic shifts to the remaining pod.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -97,126 +156,90 @@
     <!-- All Tools -->
     <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
       <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-emerald-400">21 tools, one interface</h2>
+        <h2 class="text-base font-semibold leading-7 text-emerald-400">What you can do</h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Everything you need to operate</p>
       </div>
 
-      <!-- Debugging -->
-      <div class="mb-16">
-        <div class="flex items-center gap-3 mb-8" data-aos="fade-up">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-            <iconify-icon icon="lucide:bug" class="text-amber-400"></iconify-icon>
-          </div>
-          <h3 class="text-xl font-semibold text-white">Debugging</h3>
-        </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">get_project_logs</p>
-            <p class="text-xs text-gray-400">Stream application logs from running services</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">check_build_status</p>
-            <p class="text-xs text-gray-400">Check status of recent builds and image digests</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="100">
-            <p class="text-sm font-semibold text-white mb-1">get_project_details</p>
-            <p class="text-xs text-gray-400">Inspect services, replicas, domains, and config</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="150">
-            <p class="text-sm font-semibold text-white mb-1">get_add_on_logs</p>
-            <p class="text-xs text-gray-400">Pull logs from databases and other add-ons</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">get_add_on_details</p>
-            <p class="text-xs text-gray-400">Inspect add-on config, Helm values, and processes</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Deployments -->
+      <!-- Launching a new project -->
       <div class="mb-16">
         <div class="flex items-center gap-3 mb-8" data-aos="fade-up">
           <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
             <iconify-icon icon="lucide:rocket" class="text-emerald-400"></iconify-icon>
           </div>
-          <h3 class="text-xl font-semibold text-white">Deployments</h3>
+          <h3 class="text-xl font-semibold text-white">Launching a new project</h3>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">deploy_project</p>
-            <p class="text-xs text-gray-400">Deploy the latest commit from the configured branch</p>
+            <p class="text-sm font-semibold text-white mb-1">Connect your cluster</p>
+            <p class="text-xs text-gray-400">Point to any Kubernetes cluster and start deploying in minutes — no kubectl required</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">rollback_deployment</p>
-            <p class="text-xs text-gray-400">Roll back to a specific previous deployment</p>
+            <p class="text-sm font-semibold text-white mb-1">Deploy from Git</p>
+            <p class="text-xs text-gray-400">Tell Claude to create a project from your repo and push the first build</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="100">
-            <p class="text-sm font-semibold text-white mb-1">scale_service</p>
-            <p class="text-xs text-gray-400">Scale replicas up or down (0-20)</p>
+            <p class="text-sm font-semibold text-white mb-1">Set secrets and config</p>
+            <p class="text-xs text-gray-400">Add environment variables and secrets without copy-pasting into a dashboard</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="150">
-            <p class="text-sm font-semibold text-white mb-1">restart_project</p>
-            <p class="text-xs text-gray-400">Rolling restart with zero downtime</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">deploy_project_fork</p>
-            <p class="text-xs text-gray-400">Deploy a feature branch as an isolated environment</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">get_deployment_history</p>
-            <p class="text-xs text-gray-400">View recent deployments and current active version</p>
+            <p class="text-sm font-semibold text-white mb-1">Add a database in one step</p>
+            <p class="text-xs text-gray-400">Search for a Postgres or Redis Helm chart and install it as a managed add-on</p>
           </div>
         </div>
       </div>
 
-      <!-- Infrastructure -->
+      <!-- Debugging production -->
       <div class="mb-16">
         <div class="flex items-center gap-3 mb-8" data-aos="fade-up">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10">
-            <iconify-icon icon="lucide:server" class="text-violet-400"></iconify-icon>
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
+            <iconify-icon icon="lucide:bug" class="text-amber-400"></iconify-icon>
           </div>
-          <h3 class="text-xl font-semibold text-white">Infrastructure</h3>
+          <h3 class="text-xl font-semibold text-white">Debugging a production issue</h3>
         </div>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">create_cluster</p>
-            <p class="text-xs text-gray-400">Connect a Kubernetes cluster via kubeconfig</p>
+            <p class="text-sm font-semibold text-white mb-1">See what's failing right now</p>
+            <p class="text-xs text-gray-400">Pull live logs from any service and let Claude identify the error pattern</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">create_project</p>
-            <p class="text-xs text-gray-400">Create a project from a Git repository</p>
+            <p class="text-sm font-semibold text-white mb-1">Find out if the build broke</p>
+            <p class="text-xs text-gray-400">Check whether the latest build succeeded or where it failed before it ever reached your cluster</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="100">
-            <p class="text-sm font-semibold text-white mb-1">get_environment_variables</p>
-            <p class="text-xs text-gray-400">List env vars with masked secrets</p>
+            <p class="text-sm font-semibold text-white mb-1">Check your database too</p>
+            <p class="text-xs text-gray-400">Pull logs from Postgres, Redis, or any add-on when your app can't connect</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="150">
-            <p class="text-sm font-semibold text-white mb-1">update_environment_variable</p>
-            <p class="text-xs text-gray-400">Create or update env vars with audit trail</p>
+            <p class="text-sm font-semibold text-white mb-1">Understand the full picture</p>
+            <p class="text-xs text-gray-400">Inspect replica count, resource limits, domains, and config all in one question</p>
           </div>
+        </div>
+      </div>
+
+      <!-- Shipping and managing -->
+      <div class="mb-16">
+        <div class="flex items-center gap-3 mb-8" data-aos="fade-up">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10">
+            <iconify-icon icon="lucide:layers" class="text-violet-400"></iconify-icon>
+          </div>
+          <h3 class="text-xl font-semibold text-white">Shipping and managing</h3>
+        </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">search_add_ons</p>
-            <p class="text-xs text-gray-400">Search Artifact Hub for Helm charts</p>
+            <p class="text-sm font-semibold text-white mb-1">Deploy without leaving your editor</p>
+            <p class="text-xs text-gray-400">Trigger a deploy of the latest commit from any branch straight from Claude Code</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">create_add_on</p>
-            <p class="text-xs text-gray-400">Install a Helm chart as a managed add-on</p>
+            <p class="text-sm font-semibold text-white mb-1">Roll back in seconds</p>
+            <p class="text-xs text-gray-400">Ask Claude to revert to any previous deployment the moment something goes wrong</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="100">
-            <p class="text-sm font-semibold text-white mb-1">list_accounts</p>
-            <p class="text-xs text-gray-400">List your accounts and their clusters</p>
+            <p class="text-sm font-semibold text-white mb-1">Scale to handle the load</p>
+            <p class="text-xs text-gray-400">Go from 1 to 20 replicas with zero downtime — or scale back down when traffic drops</p>
           </div>
           <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="150">
-            <p class="text-sm font-semibold text-white mb-1">list_projects</p>
-            <p class="text-xs text-gray-400">List all projects in an account</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up">
-            <p class="text-sm font-semibold text-white mb-1">list_providers</p>
-            <p class="text-xs text-gray-400">List connected Git and registry providers</p>
-          </div>
-          <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="50">
-            <p class="text-sm font-semibold text-white mb-1">list_add_ons</p>
-            <p class="text-xs text-gray-400">List all add-ons across your clusters</p>
+            <p class="text-sm font-semibold text-white mb-1">Preview any branch</p>
+            <p class="text-xs text-gray-400">Spin up an isolated environment for a feature branch and share the URL for review</p>
           </div>
         </div>
       </div>

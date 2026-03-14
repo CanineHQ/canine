@@ -1,0 +1,20 @@
+<dialog aria-label="Confirmation" class="modal" id="turbo-confirm-modal">
+  <div class="modal-box bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-4 w-full text-xl font-bold" data-confirm-title>Confirm</div>
+    <p class="mb-6" data-confirm-message></p>
+    <div class="flex justify-end gap-2">
+      <form method="dialog">
+        <button class="btn btn-outline">Cancel</button>
+      </form>
+      <button class="btn btn-primary" data-confirm-accept>Confirm</button>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
