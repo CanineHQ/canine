@@ -42,11 +42,12 @@ module Tools
           } ], error: true)
         end
 
-        details = Api::AddOns::ShowViewModel.new(add_on).as_json
+        connection = K8::Connection.new(add_on, user)
+        service = K8::Helm::Service.create_from_add_on(connection)
+        details = Api::AddOns::ShowViewModel.new(add_on, service).as_json
 
         if include_values
           begin
-            connection = K8::Connection.new(add_on.cluster, user)
             helm = K8::Helm::Client.connect(connection, Cli::RunAndLog.new(add_on))
             details[:values] = helm.get_values_yaml(add_on.name, namespace: add_on.namespace)
           rescue StandardError => e
@@ -55,7 +56,6 @@ module Tools
         end
 
         begin
-          connection = K8::Connection.new(add_on.cluster, user)
           client = K8::Client.new(connection)
           pods = client.get_pods(namespace: add_on.name)
 

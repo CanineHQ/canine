@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-SwaggerSchemas::ADD_ON = {
+SwaggerSchemas::ADD_ON_LIST_ITEM = {
   type: :object,
-  required: %w[id name namespace chart_url version status cluster_id cluster_name url created_at updated_at endpoints],
+  required: %w[id name namespace chart_url version status cluster_id cluster_name url created_at updated_at],
   properties: {
     id: {
       type: :integer,
@@ -23,11 +23,6 @@ SwaggerSchemas::ADD_ON = {
     chart_type: {
       type: :string,
       example: 'helm_chart',
-      nullable: true
-    },
-    repository_url: {
-      type: :string,
-      example: 'https://charts.bitnami.com/bitnami',
       nullable: true
     },
     version: {
@@ -62,12 +57,6 @@ SwaggerSchemas::ADD_ON = {
     updated_at: {
       type: :string,
       example: '2021-01-01T00:00:00Z'
-    },
-    endpoints: {
-      type: :array,
-      items: {
-        '$ref' => '#/components/schemas/add_on_endpoint'
-      }
     }
   }
 }.freeze

@@ -29,13 +29,9 @@ module Tools
           .order(:name)
           .limit(50)
 
-        add_on_list = add_ons.map do |a|
-          Api::AddOns::ShowViewModel.new(a).as_json
-        end
-
         MCP::Tool::Response.new([ {
           type: "text",
-          text: add_on_list.to_json
+          text: Api::AddOns::ListViewModel.new(add_ons).as_json.to_json
         } ])
       end
     end

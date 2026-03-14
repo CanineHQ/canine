@@ -7,7 +7,7 @@ SwaggerSchemas::ADD_ONS = {
     add_ons: {
       type: :array,
       items: {
-        '$ref' => '#/components/schemas/add_on'
+        '$ref' => '#/components/schemas/add_on_list_item'
       }
     }
   }
