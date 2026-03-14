@@ -50,7 +50,8 @@ class MCPController < ActionController::API
       Tools::GetProjectLogs,
       Tools::CheckBuildStatus,
       # Environment Variables
-      Tools::GetEnvironmentVariables,
+      Tools::GetEnvironmentVariableKeys,
+      Tools::GetEnvironmentVariableValue,
       Tools::UpdateEnvironmentVariable,
 
       # Add-ons
