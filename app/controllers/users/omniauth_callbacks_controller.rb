@@ -28,6 +28,7 @@ module Users
       else
         sign_in_and_redirect user, event: :authentication
         session[:account_id] = user.accounts.first.id
+        session[:otp_verified_at] = Time.current.to_s
         set_flash_message :notice, :success, kind: kind
       end
     end

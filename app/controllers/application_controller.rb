@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
   before_action :check_password_change_required
+  before_action :check_two_factor_required
 
   layout :determine_layout
 
@@ -71,6 +72,20 @@ class ApplicationController < ActionController::Base
     def user_not_authorized
       flash[:alert] = "You are not authorized to perform this action."
       redirect_back(fallback_location: root_path)
+    end
+
+    def check_two_factor_required
+      return unless Rails.application.config.enable_2fa
+      return if devise_controller?
+      return unless user_signed_in?
+      return if true_user != current_user
+
+      if current_user.two_factor_enabled?
+        return if session[:otp_verified_at].present?
+        redirect_to two_factor_verification_path
+      elsif Rails.application.config.require_2fa
+        redirect_to new_two_factor_setup_path, alert: "You must enable two-factor authentication to continue."
+      end
     end
 
     def check_password_change_required

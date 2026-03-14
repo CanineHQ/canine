@@ -1,0 +1,16 @@
+<%= settings_layout do %>
+  <div class="max-w-lg">
+    <h2 class="text-xl font-bold mb-4">Two-Factor Authentication</h2>
+
+    <div class="alert mb-4">
+      <iconify-icon icon="lucide:shield-off" class="text-lg"></iconify-icon>
+      <span>Two-factor authentication is <strong>not enabled</strong>.</span>
+    </div>
+
+    <p class="text-sm text-base-content/70 mb-4">
+      Add an extra layer of security to your account by requiring a verification code from an authenticator app when you sign in.
+    </p>
+
+    <%= link_to "Enable Two-Factor Authentication", new_two_factor_setup_path, class: "btn btn-primary" %>
+  </div>
+<% end %>

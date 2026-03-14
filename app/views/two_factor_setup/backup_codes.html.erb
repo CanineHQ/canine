@@ -1,0 +1,33 @@
+<%= settings_layout do %>
+  <div class="max-w-lg">
+    <h2 class="text-xl font-bold mb-2">Two-Factor Authentication Enabled</h2>
+
+    <div class="alert alert-success mb-4">
+      <iconify-icon icon="lucide:shield-check" class="text-lg"></iconify-icon>
+      <span>Two-factor authentication has been successfully enabled.</span>
+    </div>
+
+    <div class="alert alert-warning mb-4">
+      <iconify-icon icon="lucide:alert-triangle" class="text-lg"></iconify-icon>
+      <span>Save these backup codes in a safe place. Each code can only be used once. You won't be able to see them again.</span>
+    </div>
+
+    <div class="bg-base-200 rounded-lg p-4 mb-4">
+      <div class="grid grid-cols-2 gap-2" id="backup-codes">
+        <% @backup_codes.each do |code| %>
+          <code class="bg-base-100 px-3 py-2 rounded text-center font-mono text-sm"><%= code %></code>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <button class="btn btn-sm btn-outline"
+              data-controller="clipboard"
+              data-clipboard-text="<%= @backup_codes.join("\n") %>">
+        <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+        Copy codes
+      </button>
+      <%= link_to "Done", two_factor_setup_path, class: "btn btn-sm btn-primary" %>
+    </div>
+  </div>
+<% end %>

@@ -25,6 +25,12 @@
                 </div>
               </div>
               <div class="font-medium"><%= account_user.user.name %></div>
+              <% if account_user.user.two_factor_enabled? %>
+                <span class="badge badge-success badge-sm gap-1">
+                  <iconify-icon icon="lucide:shield-check" height="10"></iconify-icon>
+                  2FA
+                </span>
+              <% end %>
             </div>
           </td>
           <td>

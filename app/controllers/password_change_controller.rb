@@ -1,6 +1,7 @@
 class PasswordChangeController < ApplicationController
   layout "homepage"
   skip_before_action :check_password_change_required
+  skip_before_action :check_two_factor_required
 
   def show
     unless current_user.password_change_required?

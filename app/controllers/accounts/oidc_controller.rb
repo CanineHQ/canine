@@ -72,6 +72,7 @@ module Accounts
       # Sign in user
       sign_in(ar_result.user)
       session[:account_id] = @account.id
+      session[:otp_verified_at] = Time.current.to_s
       redirect_to after_sign_in_path_for(ar_result.user), notice: "Signed in successfully"
     end
 
