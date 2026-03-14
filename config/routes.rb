@@ -228,6 +228,10 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks", registrations: "users/registrations", sessions: "users/sessions" }
 
   resource :password_change, only: [ :show, :update ], controller: "password_change"
+  resource :two_factor_verification, only: [ :show, :create ], controller: "two_factor_verification"
+  resource :two_factor_setup, only: [ :show, :new, :create, :destroy ], controller: "two_factor_setup" do
+    get :backup_codes, on: :member
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

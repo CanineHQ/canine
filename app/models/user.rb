@@ -16,6 +16,9 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
+#  otp_backup_codes           :text
+#  otp_required_for_login     :boolean          default(FALSE)
+#  otp_secret                 :text
 #  password_change_required   :boolean          default(FALSE)
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime
@@ -32,10 +35,14 @@
 #  index_users_on_invited_by_id         (invited_by_id)
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
+require "bcrypt"
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :recoverable
   devise :invitable, :database_authenticatable, :registerable, :rememberable, :validatable, :omniauthable
+
+  encrypts :otp_secret, :otp_backup_codes
 
   has_one_attached :avatar
   has_person_name
@@ -92,7 +99,55 @@ class User < ApplicationRecord
       portainer_access_token.blank?
   end
 
+  # Two-factor authentication
+  def two_factor_enabled?
+    otp_required_for_login? && otp_secret.present?
+  end
+
+  def otp_provisioning_uri
+    totp = ROTP::TOTP.new(otp_secret, issuer: "Canine")
+    totp.provisioning_uri(email)
+  end
+
+  def verify_otp(code)
+    return false if code.blank?
+    return verify_backup_code(code) if code.length > 6
+
+    totp = ROTP::TOTP.new(otp_secret)
+    totp.verify(code.to_s, drift_behind: 15, drift_ahead: 15).present?
+  end
+
+  def generate_otp_secret!
+    update!(otp_secret: ROTP::Base32.random)
+  end
+
+  def generate_backup_codes!
+    codes = 10.times.map { SecureRandom.hex(4) }
+    hashed = codes.map { |code| BCrypt::Password.create(code) }
+    update!(otp_backup_codes: hashed.to_json)
+    codes
+  end
+
+  def disable_two_factor!
+    update!(otp_secret: nil, otp_required_for_login: false, otp_backup_codes: nil)
+  end
+
   private
+
+  def verify_backup_code(code)
+    return false if otp_backup_codes.blank?
+
+    hashed_codes = JSON.parse(otp_backup_codes)
+    hashed_codes.each_with_index do |hashed, i|
+      if BCrypt::Password.new(hashed) == code
+        hashed_codes.delete_at(i)
+        update!(otp_backup_codes: hashed_codes.to_json)
+        return true
+      end
+    end
+
+    false
+  end
 
   def downcase_email
     self.email = email.downcase

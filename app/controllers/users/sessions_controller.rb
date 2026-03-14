@@ -57,6 +57,7 @@ class Users::SessionsController < Devise::SessionsController
       if resource
         sign_in(resource)
         session[:account_id] = @account.id
+        session[:otp_verified_at] = Time.current.to_s
         redirect_to after_sign_in_path_for(resource), notice: "Logged in successfully"
       else
         flash[:alert] = "Invalid email or password"

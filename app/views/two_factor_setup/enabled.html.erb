@@ -1,0 +1,44 @@
+<%= settings_layout do %>
+  <div class="max-w-lg">
+    <h2 class="text-xl font-bold mb-4">Two-Factor Authentication</h2>
+
+    <div class="alert alert-success mb-4">
+      <iconify-icon icon="lucide:shield-check" class="text-lg"></iconify-icon>
+      <span>Two-factor authentication is <strong>enabled</strong>.</span>
+    </div>
+
+    <p class="text-sm text-base-content/70 mb-6">
+      Your account is protected with two-factor authentication. You will be asked for a verification code each time you sign in.
+    </p>
+
+    <button class="btn btn-error btn-outline" onclick="disable_2fa_modal.showModal()">
+      Disable Two-Factor Authentication
+    </button>
+
+    <dialog id="disable_2fa_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">Disable Two-Factor Authentication</h3>
+        <p class="py-4 text-sm text-base-content/70">
+          Enter the code from your authenticator app to confirm.
+        </p>
+
+        <%= form_with url: two_factor_setup_path, method: :delete, html: { class: "space-y-4" } do |f| %>
+          <div class="form-control">
+            <%= f.label :otp_code, class: "label" do %>
+              <span class="label-text">Authenticator Code</span>
+            <% end %>
+            <%= render "shared/otp_input", name: "otp_code" %>
+          </div>
+
+          <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="disable_2fa_modal.close()">Cancel</button>
+            <%= f.submit "Disable", class: "btn btn-error" %>
+          </div>
+        <% end %>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  </div>
+<% end %>

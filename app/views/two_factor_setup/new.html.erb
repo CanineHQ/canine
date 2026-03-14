@@ -1,0 +1,48 @@
+<%= settings_layout do %>
+  <div class="max-w-lg">
+    <h2 class="text-xl font-bold mb-4">Set Up Two-Factor Authentication</h2>
+
+    <div class="space-y-6">
+      <div>
+        <h3 class="font-semibold mb-2">1. Scan this QR code with your authenticator app</h3>
+        <div class="bg-white p-4 rounded-lg inline-block">
+          <%= @qr_code.as_svg(module_size: 4, standalone: true, use_path: true).html_safe %>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-semibold mb-2">Or enter this key manually</h3>
+        <div class="flex items-center gap-2">
+          <code class="bg-base-200 px-3 py-2 rounded text-sm font-mono select-all"><%= current_user.otp_secret %></code>
+          <button class="btn btn-sm btn-square btn-ghost"
+                  data-controller="clipboard"
+                  data-clipboard-text="<%= current_user.otp_secret %>">
+            <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-semibold mb-2">2. Enter the verification code to confirm</h3>
+
+        <% if flash[:alert] %>
+          <div class="alert alert-error mb-4">
+            <iconify-icon icon="lucide:alert-triangle" class="mr-2"></iconify-icon>
+            <span><%= flash[:alert] %></span>
+          </div>
+        <% end %>
+
+        <%= form_with url: two_factor_setup_path, method: :post, html: { class: "space-y-4" } do |f| %>
+          <div class="form-control">
+            <%= render "shared/otp_input", name: "otp_code" %>
+          </div>
+
+          <div class="flex gap-2">
+            <%= f.submit "Verify & Enable", class: "btn btn-primary" %>
+            <%= link_to "Cancel", two_factor_setup_path, class: "btn btn-ghost" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

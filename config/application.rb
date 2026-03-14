@@ -22,6 +22,8 @@ module Canine
     config.account_sign_in_only = ENV.fetch("ACCOUNT_SIGN_IN_ONLY", "") == "true"
     config.build_configuration_enabled = ENV.fetch("BUILD_CONFIGURATION_ENABLED", "true") != "false"
     config.remap_localhost = ENV.fetch("REMAP_LOCALHOST", "")
+    config.enable_2fa = ENV.fetch("ENABLE_2FA", "false") == "true"
+    config.require_2fa = ENV.fetch("REQUIRE_2FA", "false") == "true"
 
     config.assets.css_compressor = nil
 

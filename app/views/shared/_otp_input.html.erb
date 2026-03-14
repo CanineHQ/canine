@@ -1,0 +1,14 @@
+<div data-controller="otp-input" class="flex gap-2 justify-center">
+  <% 6.times do %>
+    <input type="text"
+           inputmode="numeric"
+           maxlength="1"
+           pattern="[0-9]"
+           class="input w-full h-12 text-center text-lg font-mono p-0 border border-base-300"
+           data-otp-input-target="digit"
+           data-action="input->otp-input#input keydown->otp-input#keydown paste->otp-input#paste"
+           autocomplete="off"
+           required />
+  <% end %>
+  <input type="hidden" name="<%= name %>" data-otp-input-target="hidden" />
+</div>

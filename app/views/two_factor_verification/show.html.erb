@@ -1,0 +1,30 @@
+<div class="flex justify-center items-center min-h-screen bg-base-200">
+  <div class="card w-96 bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h1 class="text-2xl font-bold text-center">Two-Factor Authentication</h1>
+      <p class="text-center text-sm text-base-content/70">
+        Enter the 6-digit code from your authenticator app, or use a backup code.
+      </p>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-error mt-2">
+          <iconify-icon icon="lucide:alert-triangle" class="mr-2"></iconify-icon>
+          <span><%= flash[:alert] %></span>
+        </div>
+      <% end %>
+
+      <%= form_with url: two_factor_verification_path, method: :post, html: { class: "space-y-4 mt-4" } do |f| %>
+        <div class="form-control">
+          <%= f.label :otp_code, class: "label" do %>
+            <span class="label-text">Verification Code</span>
+          <% end %>
+          <%= render "shared/otp_input", name: "otp_code" %>
+        </div>
+
+        <div class="form-control mt-6">
+          <%= f.submit "Verify", class: "btn btn-primary w-full" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
