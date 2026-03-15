@@ -8,207 +8,226 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
-<div class="bg-slate-900 min-h-screen text-white" data-controller="pricing" data-pricing-prices-value="<%= @prices.to_json %>">
-  <!-- Header -->
-  <header class="container mx-auto py-8 px-4">
-    <h1 class="text-4xl font-bold text-center mb-4">Cloud Provider Pricing Calculator</h1>
-    <p class="text-center text-lg mb-12">Compare cloud providers. Find out how much it will cost to run your web app.</p>
-  </header>
+<%= render 'static/landing_page/navbar' %>
 
-  <div class="container mx-auto px-4 pb-16">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Left Column - Configuration -->
-      <div>
-        <!-- Team Section -->
-        <div class="bg-slate-800 rounded-lg p-6 mb-6">
-          <h2 class="text-xl font-semibold mb-4">Team</h2>
-          
-          <div class="mb-4">
-            <div class="flex justify-between mb-2">
-              <label for="team-size" class="text-sm">Team size: <span class="text-emerald-400 font-bold"><span id="team-size-value">1</span> members</span></label>
+<div class="bg-gray-900 min-h-screen text-white">
+  <div class="relative isolate overflow-hidden min-h-screen" data-controller="pricing" data-pricing-prices-value="<%= @prices.to_json %>">
+    <svg class="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]" aria-hidden="true">
+      <defs>
+        <pattern id="calculator-grid" width="200" height="200" x="50%" y="-1" patternUnits="userSpaceOnUse">
+          <path d="M.5 200V.5H200" fill="none"></path>
+        </pattern>
+      </defs>
+      <svg x="50%" y="-1" class="overflow-visible fill-gray-800/20">
+        <path d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z" stroke-width="0"></path>
+      </svg>
+      <rect width="100%" height="100%" stroke-width="0" fill="url(#calculator-grid)"></rect>
+    </svg>
+    <div class="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]" aria-hidden="true">
+      <div class="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-[#80caff] to-[#4f46e5] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto py-8 px-4">
+      <h1 class="text-4xl font-bold text-center mb-4">Cloud Provider Pricing Calculator</h1>
+      <p class="text-center text-lg mb-12">Compare cloud providers. Find out how much it will cost to run your web app.</p>
+    </header>
+
+    <div class="container mx-auto px-4 pb-16">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column - Configuration -->
+        <div>
+          <!-- Team Section -->
+          <div class="bg-slate-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Team</h2>
+
+            <div class="mb-4">
+              <div class="flex justify-between mb-2">
+                <label for="team-size" class="text-sm">Team size: <span class="text-emerald-400 font-bold"><span id="team-size-value">1</span> members</span></label>
+              </div>
+              <input
+                type="range"
+                data-action="pricing#sliderChanged"
+                data-type="team-size"
+                data-service="team"
+                min="1"
+                max="50"
+                value="1"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>1</span>
+                <span>50</span>
+              </div>
             </div>
-            <input
-              type="range"
-              data-action="pricing#sliderChanged"
-              data-type="team-size"
-              data-service="team"
-              min="1"
-              max="50"
-              value="1"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>1</span>
-              <span>50</span>
+          </div>
+
+          <!-- Web Service Section -->
+          <div class="bg-slate-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Web Service</h2>
+
+            <!-- CPU -->
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="web-cpu" class="text-sm">CPU: <span class="text-emerald-400 font-bold"><span id="web-cpu-value">0.5</span> cores</span></label>
+              </div>
+              <input
+                type="range"
+                id="web-cpu"
+                min="1"
+                max="16"
+                value="0.5"
+                step="0.5"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="web-cpu"
+                data-service="web"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>0.5</span>
+                <span>16</span>
+              </div>
+            </div>
+
+            <!-- Memory -->
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="web-memory" class="text-sm">Memory: <span class="text-emerald-400 font-bold"><span id="web-memory-value">0.5</span> GB</span></label>
+              </div>
+              <input
+                type="range"
+                id="web-memory"
+                min="1"
+                max="32"
+                value="0.5"
+                step="0.5"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="web-memory"
+                data-service="web"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>0.5</span>
+                <span>32</span>
+              </div>
+            </div>
+
+            <!-- Instances/Replicas -->
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="web-instances" class="text-sm">Instances/Replicas: <span id="web-instances-value" class="text-emerald-400 font-bold">1</span></label>
+              </div>
+              <input
+                type="range"
+                id="web-instances"
+                min="1"
+                max="10"
+                value="1"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="web-instances"
+                data-service="web"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>1</span>
+                <span>10</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Worker Service Section -->
+          <div class="bg-slate-800 rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Worker Service</h2>
+
+            <!-- CPU -->
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="worker-cpu" class="text-sm">CPU: <span class="text-emerald-400 font-bold"><span id="worker-cpu-value">1</span> cores</span></label>
+              </div>
+              <input
+                type="range"
+                id="worker-cpu"
+                min="0.5"
+                max="16"
+                step="1"
+                value="0.5"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="worker-cpu"
+                data-service="worker"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>0.5</span>
+                <span>16</span>
+              </div>
+            </div>
+
+            <!-- Memory -->
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="worker-memory" class="text-sm">Memory: <span class="text-emerald-400 font-bold"><span id="worker-memory-value">1</span> GB</span></label>
+              </div>
+              <input
+                type="range"
+                id="worker-memory"
+                min="0.5"
+                max="32"
+                step="0.5"
+                value="0.5"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="worker-memory"
+                data-service="worker"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>0.5</span>
+                <span>32</span>
+              </div>
+            </div>
+
+            <!-- Instances/Replicas -->
+            <div class="mb-2">
+              <div class="flex justify-between mb-2">
+                <label for="worker-instances" class="text-sm">Instances/Replicas: <span class="text-emerald-400 font-bold" id="worker-instances-value">0</span></label>
+              </div>
+              <input
+                type="range"
+                id="worker-instances"
+                min="1"
+                max="10"
+                value="0"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                data-action="pricing#sliderChanged"
+                data-type="worker-instances"
+                data-service="worker"
+              >
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
+                <span>0</span>
+                <span>10</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Web Service Section -->
-        <div class="bg-slate-800 rounded-lg p-6 mb-6">
-          <h2 class="text-xl font-semibold mb-4">Web Service</h2>
-          
-          <!-- CPU -->
-          <div class="mb-6">
-            <div class="flex justify-between mb-2">
-              <label for="web-cpu" class="text-sm">CPU: <span class="text-emerald-400 font-bold"><span id="web-cpu-value">0.5</span> cores</span></label>
-            </div>
-            <input
-              type="range"
-              id="web-cpu"
-              min="1"
-              max="16"
-              value="0.5"
-              step="0.5"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="web-cpu"
-              data-service="web"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>0.5</span>
-              <span>16</span>
-            </div>
-          </div>
-          
-          <!-- Memory -->
-          <div class="mb-6">
-            <div class="flex justify-between mb-2">
-              <label for="web-memory" class="text-sm">Memory: <span class="text-emerald-400 font-bold"><span id="web-memory-value">0.5</span> GB</span></label>
-            </div>
-            <input
-              type="range"
-              id="web-memory"
-              min="1"
-              max="32"
-              value="0.5"
-              step="0.5"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="web-memory"
-              data-service="web"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>0.5</span>
-              <span>32</span>
-            </div>
-          </div>
-          
-          <!-- Instances/Replicas -->
-          <div class="mb-6">
-            <div class="flex justify-between mb-2">
-              <label for="web-instances" class="text-sm">Instances/Replicas: <span id="web-instances-value" class="text-emerald-400 font-bold">1</span></label>
-            </div>
-            <input
-              type="range"
-              id="web-instances"
-              min="1"
-              max="10"
-              value="1"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="web-instances"
-              data-service="web"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>1</span>
-              <span>10</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Worker Service Section -->
+        <!-- Right Column - Results -->
         <div class="bg-slate-800 rounded-lg p-6">
-          <h2 class="text-xl font-semibold mb-4">Worker Service</h2>
-          
-          <!-- CPU -->
-          <div class="mb-6">
-            <div class="flex justify-between mb-2">
-              <label for="worker-cpu" class="text-sm">CPU: <span class="text-emerald-400 font-bold"><span id="worker-cpu-value">1</span> cores</span></label>
-            </div>
-            <input
-              type="range"
-              id="worker-cpu"
-              min="0.5"
-              max="16"
-              step="1"
-              value="0.5"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="worker-cpu"
-              data-service="worker"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>0.5</span>
-              <span>16</span>
-            </div>
-          </div>
-          
-          <!-- Memory -->
-          <div class="mb-6">
-            <div class="flex justify-between mb-2">
-              <label for="worker-memory" class="text-sm">Memory: <span class="text-emerald-400 font-bold"><span id="worker-memory-value">1</span> GB</span></label>
-            </div>
-            <input
-              type="range"
-              id="worker-memory"
-              min="0.5"
-              max="32"
-              step="0.5"
-              value="0.5"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="worker-memory"
-              data-service="worker"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>0.5</span>
-              <span>32</span>
-            </div>
-          </div>
-          
-          <!-- Instances/Replicas -->
-          <div class="mb-2">
-            <div class="flex justify-between mb-2">
-              <label for="worker-instances" class="text-sm">Instances/Replicas: <span class="text-emerald-400 font-bold" id="worker-instances-value">0</span></label>
-            </div>
-            <input
-              type="range"
-              id="worker-instances"
-              min="1"
-              max="10"
-              value="0"
-              class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-              data-action="pricing#sliderChanged"
-              data-type="worker-instances"
-              data-service="worker"
-            >
-            <div class="flex justify-between text-xs text-slate-400 mt-1">
-              <span>0</span>
-              <span>10</span>
-            </div>
-          </div>
-        </div>
-      </div>
+          <h2 class="text-lg font-semibold mb-4 uppercase text-slate-400">Plan Comparison</h2>
 
-      <!-- Right Column - Results -->
-      <div class="bg-slate-800 rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4 uppercase text-slate-400">Plan Comparison</h2>
-        
-        <div class="grid grid-cols-2 gap-4 mb-4">
-          <div class="font-semibold">PaaS Provider</div>
-          <div class="font-semibold text-right">Monthly Cost (USD)</div>
-        </div>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="font-semibold">PaaS Provider</div>
+            <div class="font-semibold text-right">Monthly Cost (USD)</div>
+          </div>
 
-        <div id="heroku-breakdown"></div>
-        <div id="render-breakdown"></div>
-        <div id="fly-breakdown"></div>
+          <div id="heroku-breakdown"></div>
+          <div id="render-breakdown"></div>
+          <div id="fly-breakdown"></div>
 
-        <div id="digitalocean-breakdown"></div>
-        <div id="hetzner-breakdown"></div>
-        <div class="mt-4 text-center">
-          <h4 class="mb-2 font-semibold text-lg">Pricing Chart (monthly)</h4>
-          <canvas id="price-chart" data-pricing-target="chart"></canvas>
+          <div id="digitalocean-breakdown"></div>
+          <div id="hetzner-breakdown"></div>
+          <div class="mt-4 text-center">
+            <h4 class="mb-2 font-semibold text-lg">Pricing Chart (monthly)</h4>
+            <canvas id="price-chart" data-pricing-target="chart"></canvas>
+          </div>
         </div>
       </div>
     </div>
