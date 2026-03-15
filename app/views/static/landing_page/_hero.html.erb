@@ -17,7 +17,7 @@
     <div class="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-4xl lg:pt-2 <%= 'pt-4 lg:pt-20' unless ENV['DISCORD_INVITE_URL'].present? %>">
       <div data-aos="fade-up" data-aos-offset="0" data-aos-delay="0">
         <% if ENV['DISCORD_INVITE_URL'].present? %>
-          <div class="mb-4 lg:mb-20">
+          <div class="mb-4 lg:mb-10">
             <%= link_to ENV['DISCORD_INVITE_URL'], class: "btn btn-ghost btn-sm lg:btn-md" do %>
               <span class="lg:inline">Join us on Discord</span> <iconify-icon icon="skill-icons:discord" height="20"></iconify-icon>
             <% end %>

@@ -1,8 +1,37 @@
-<% content_for :meta_description, "Self-host Canine on your own infrastructure. Full control, no vendor lock-in, open source PaaS for Kubernetes." %>
+<% content_for :title, "Self-Hosted Kubernetes PaaS — Open Source, No Paywalled Features | Canine" %>
+<% content_for :meta_description, "Run Canine on your own infrastructure. Open source Kubernetes PaaS with no paywalled tiers, no vendor lock-in, and every feature included. Deploy from your laptop, server, or cluster." %>
+<% content_for :og_title, "Self-Host Canine — Open Source PaaS with No Missing Features" %>
+<% content_for :og_description, "Run Canine on your own infrastructure. Open source Kubernetes PaaS with no paywalled tiers, no vendor lock-in, and every feature included." %>
+<% content_for :og_image, "https://canine.sh/images/deployment_styled.webp" %>
+<% content_for :schema_json do %>
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://canine.sh/self-hosted#webpage",
+      "url": "https://canine.sh/self-hosted",
+      "name": "Self-Hosted Canine",
+      "description": "Run Canine on your own infrastructure. Open source Kubernetes PaaS with no paywalled tiers or missing features.",
+      "isPartOf": { "@id": "https://canine.sh/#website" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://canine.sh/self-hosted#software",
+      "name": "Canine (Self-Hosted)",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Linux, macOS",
+      "description": "Open source Kubernetes PaaS. Deploy on your own laptop, server, or cluster with full feature parity.",
+      "url": "https://canine.sh/self-hosted",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  ]
+}
+<% end %>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-  ["DOMContentLoaded", "turbo:load"].forEach(function(e) {
+  ["DOMContentLoaded"].forEach(function(e) {
     document.addEventListener(e, function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });
   });
 </script>
@@ -114,7 +143,10 @@
     <!-- What you get -->
     <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
       <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-indigo-400">Everything included</h2>
+        <h2 class="text-base font-semibold leading-7 text-indigo-400">
+          <span class="line-through text-red-400 mr-2">Enterprise plan</span>
+          Everything included
+        </h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Same features as Canine Cloud</p>
       </div>
 
@@ -152,7 +184,7 @@
             <iconify-icon icon="lucide:cpu" class="text-indigo-400"></iconify-icon>
             <p class="text-sm font-semibold text-white">MCP server</p>
           </div>
-          <p class="text-xs text-gray-400">AI-native infrastructure control with 21 tools</p>
+          <p class="text-xs text-gray-400">Deploy, debug, and scale your apps through any MCP-compatible AI client</p>
         </div>
         <div class="rounded-xl bg-gray-800/50 ring-1 ring-white/10 p-6" data-aos="fade-up" data-aos-delay="100">
           <div class="flex items-center gap-3 mb-2">
@@ -200,7 +232,7 @@
             <ul class="space-y-3 text-sm text-gray-300">
               <li class="flex items-center gap-2"><iconify-icon icon="lucide:check" class="text-emerald-400"></iconify-icon> No infrastructure to manage</li>
               <li class="flex items-center gap-2"><iconify-icon icon="lucide:check" class="text-emerald-400"></iconify-icon> Automatic updates</li>
-              <li class="flex items-center gap-2"><iconify-icon icon="lucide:check" class="text-emerald-400"></iconify-icon> Free tier available</li>
+              <li class="flex items-center gap-2"><iconify-icon icon="lucide:check" class="text-emerald-400"></iconify-icon> Totally free to use</li>
               <li class="flex items-center gap-2"><iconify-icon icon="lucide:check" class="text-emerald-400"></iconify-icon> Managed backups</li>
             </ul>
             <a href="<%= new_user_registration_path %>" class="mt-8 block text-center rounded-md bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-400 transition">
