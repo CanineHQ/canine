@@ -77,10 +77,10 @@
     <div class="mt-16 sm:mt-24 mx-auto max-w-7xl px-6 lg:px-8 pb-24">
       <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
         <h2 class="text-base font-semibold leading-7 text-emerald-400">How it works</h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl"
+        <p class="mt-2 text-2xl font-bold tracking-tight text-white sm:text-4xl"
            data-controller="typing"
-           data-typing-words='["Claude Code","Cursor","Windsurf","ChatGPT"]'
-           data-typing-colors='["#34d399","#818cf8","#22d3ee","#f59e0b"]'>
+           data-typing-words='["Claude Code","Cursor","Antigravity","ChatGPT"]'
+           data-typing-colors='["#D97757","#6B7EFF","#17BEBB","#10A37F"]'>
           Control your infrastructure from <span data-typing-target="typing"></span>
         </p>
       </div>
@@ -161,6 +161,7 @@
               </span>
             </div>
             <div data-controller="terminal-animate"
+                 data-terminal-animate-loop-value="true"
                  data-terminal-animate-lines-value='[
                    {"text":"On it. Creating the project, then I\u0027ll set the env var and spin up the database.","color":"#34d399"},
                    {"text":"→ create_project(name: \"api-service\", repo: \"my-org/api-service\", ...)","color":"#6b7280"},
@@ -191,6 +192,7 @@
               </span>
             </div>
             <div data-controller="terminal-animate"
+                 data-terminal-animate-loop-value="true"
                  data-terminal-animate-lines-value='[
                    {"text":"Let me pull the logs.","color":"#34d399"},
                    {"text":"→ get_project_logs(project: \"checkout-service\", lines: 50)","color":"#6b7280"},
@@ -221,6 +223,7 @@
               </span>
             </div>
             <div data-controller="terminal-animate"
+                 data-terminal-animate-loop-value="true"
                  data-terminal-animate-lines-value='[
                    {"text":"Deploying main and spinning up the payments preview.","color":"#34d399"},
                    {"text":"→ deploy_project(project: \"api-service\", branch: \"main\")","color":"#6b7280"},

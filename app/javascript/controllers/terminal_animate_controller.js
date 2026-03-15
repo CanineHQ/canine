@@ -6,6 +6,8 @@ export default class extends Controller {
     lines: { type: Array, default: [] },
     interval: { type: Number, default: 700 },
     autoplay: { type: Boolean, default: false },
+    loop: { type: Boolean, default: false },
+    loopDelay: { type: Number, default: 3000 },
   }
 
   connect() {
@@ -43,10 +45,17 @@ export default class extends Controller {
         if (body) body.scrollTop = body.scrollHeight
       }, i * this.intervalValue)
     )
+
+    if (this.loopValue) {
+      const totalDuration = (this.linesValue.length - 1) * this.intervalValue + this.loopDelayValue
+      this._loopTimer = setTimeout(() => this.play(), totalDuration)
+    }
   }
 
   _clearTimers() {
     if (this._timers) this._timers.forEach(clearTimeout)
+    if (this._loopTimer) clearTimeout(this._loopTimer)
     this._timers = []
+    this._loopTimer = null
   }
 }
