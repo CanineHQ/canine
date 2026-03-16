@@ -113,9 +113,9 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 items-start" data-aos="fade-up">
         <!-- Tab list -->
-        <div class="flex flex-col gap-2" id="mcp-scenario-tabs">
-          <button onclick="mcpScenario('launch')" id="mcp-tab-launch"
-            class="mcp-tab active flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800 ring-1 ring-emerald-500/50 text-white">
+        <div class="flex flex-col gap-2" id="terminal-tabs">
+          <button onclick="switchTerminal('launch')" id="terminal-tab-launch"
+            class="terminal-tab active flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800 ring-1 ring-emerald-500/50 text-white">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
               <iconify-icon icon="lucide:rocket" class="text-emerald-400"></iconify-icon>
             </div>
@@ -124,8 +124,8 @@
               <p class="text-xs text-gray-400 mt-0.5 hidden lg:block">From repo to running app</p>
             </div>
           </button>
-          <button onclick="mcpScenario('debug')" id="mcp-tab-debug"
-            class="mcp-tab flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800/50 ring-1 ring-white/10 text-gray-400 hover:text-white hover:bg-gray-800">
+          <button onclick="switchTerminal('debug')" id="terminal-tab-debug"
+            class="terminal-tab flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800/50 ring-1 ring-white/10 text-gray-400 hover:text-white hover:bg-gray-800">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/10">
               <iconify-icon icon="lucide:bug" class="text-amber-400"></iconify-icon>
             </div>
@@ -134,8 +134,8 @@
               <p class="text-xs text-gray-400 mt-0.5 hidden lg:block">Find and fix issues fast</p>
             </div>
           </button>
-          <button onclick="mcpScenario('ship')" id="mcp-tab-ship"
-            class="mcp-tab flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800/50 ring-1 ring-white/10 text-gray-400 hover:text-white hover:bg-gray-800">
+          <button onclick="switchTerminal('ship')" id="terminal-tab-ship"
+            class="terminal-tab flex items-center gap-3 w-full rounded-xl px-5 py-4 text-left transition-all bg-gray-800/50 ring-1 ring-white/10 text-gray-400 hover:text-white hover:bg-gray-800">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
               <iconify-icon icon="lucide:layers" class="text-violet-400"></iconify-icon>
             </div>
@@ -149,7 +149,7 @@
         <!-- Terminal panels -->
         <div>
           <!-- Launch -->
-          <div id="mcp-panel-launch" class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+          <div id="terminal-panel-launch" class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
             <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
               <span class="w-3 h-3 rounded-full bg-red-500"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
@@ -172,7 +172,7 @@
                    {"text":"✓ Postgres installing. DATABASE_URL added to your environment.","color":"#34d399"},
                    {"text":"Done. Your app is building and Postgres is coming up. Want me to set up a custom domain too?","color":"#34d399"}
                  ]'>
-              <div id="mcp-body-launch" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
+              <div id="terminal-body-launch" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
                 <p class="text-indigo-400 font-semibold">&gt; <span class="text-white font-normal">Deploy my api-service repo, set NODE_ENV to production, and add a Postgres database</span></p>
                 <div data-terminal-animate-target="steps" class="mt-2"></div>
               </div>
@@ -180,7 +180,7 @@
           </div>
 
           <!-- Debug -->
-          <div id="mcp-panel-debug" class="hidden rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+          <div id="terminal-panel-debug" class="hidden rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
             <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
               <span class="w-3 h-3 rounded-full bg-red-500"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
@@ -203,7 +203,7 @@
                    {"text":"[ERROR] OOM: container exceeded 128Mi memory limit, killed","color":"#f87171"},
                    {"text":"Redis is crashing — its memory limit is too low. Want me to bump it to 256Mi and restart it?","color":"#34d399"}
                  ]'>
-              <div id="mcp-body-debug" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
+              <div id="terminal-body-debug" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
                 <p class="text-indigo-400 font-semibold">&gt; <span class="text-white font-normal">Users are getting 500s on checkout. What's going on?</span></p>
                 <div data-terminal-animate-target="steps" class="mt-2"></div>
               </div>
@@ -211,7 +211,7 @@
           </div>
 
           <!-- Ship -->
-          <div id="mcp-panel-ship" class="hidden rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+          <div id="terminal-panel-ship" class="hidden rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
             <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
               <span class="w-3 h-3 rounded-full bg-red-500"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
@@ -232,7 +232,7 @@
                    {"text":"✓ Preview live at payments-preview.canine.sh","color":"#34d399"},
                    {"text":"Production is deploying and your payments preview is up. Share that URL with your reviewer whenever you\u0027re ready.","color":"#34d399"}
                  ]'>
-              <div id="mcp-body-ship" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
+              <div id="terminal-body-ship" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-72 overflow-y-auto" data-terminal-animate-target="body">
                 <p class="text-indigo-400 font-semibold">&gt; <span class="text-white font-normal">Deploy main to production and spin up a preview for the feature/payments branch</span></p>
                 <div data-terminal-animate-target="steps" class="mt-2"></div>
               </div>
@@ -243,16 +243,17 @@
     </div>
 
     <script>
-      function mcpScenario(name) {
+      var terminalInitialized = false;
+      function switchTerminal(name) {
         ['launch', 'debug', 'ship'].forEach(function(s) {
-          document.getElementById('mcp-panel-' + s).classList.add('hidden');
-          var tab = document.getElementById('mcp-tab-' + s);
+          document.getElementById('terminal-panel-' + s).classList.add('hidden');
+          var tab = document.getElementById('terminal-tab-' + s);
           tab.classList.remove('bg-gray-800', 'ring-emerald-500/50', 'text-white');
           tab.classList.add('bg-gray-800/50', 'ring-white/10', 'text-gray-400');
         });
-        var panel = document.getElementById('mcp-panel-' + name);
+        var panel = document.getElementById('terminal-panel-' + name);
         panel.classList.remove('hidden');
-        var active = document.getElementById('mcp-tab-' + name);
+        var active = document.getElementById('terminal-tab-' + name);
         active.classList.remove('bg-gray-800/50', 'ring-white/10', 'text-gray-400');
         active.classList.add('bg-gray-800', 'ring-emerald-500/50', 'text-white');
 
@@ -262,13 +263,14 @@
           if (ctrl) ctrl.play();
         }
 
-        if (window.innerWidth < 1024) {
+        if (terminalInitialized && window.innerWidth < 1024) {
           panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+        terminalInitialized = true;
       }
 
-      if (document.readyState !== 'loading') mcpScenario('launch');
-      else document.addEventListener('DOMContentLoaded', function() { mcpScenario('launch'); });
+      if (document.readyState !== 'loading') switchTerminal('launch');
+      else document.addEventListener('DOMContentLoaded', function() { switchTerminal('launch'); });
     </script>
 
     <!-- CTA -->
