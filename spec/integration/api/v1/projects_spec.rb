@@ -45,7 +45,7 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
       parameter name: :id, in: :path, type: :string, description: 'Project name'
 
       response(200, 'successful') do
-        schema '$ref' => '#/components/schemas/project'
+        schema '$ref' => '#/components/schemas/project_detail'
         run_test!
       end
     end
