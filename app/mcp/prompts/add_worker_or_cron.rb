@@ -13,7 +13,7 @@ module Prompts
               Guide me through adding a background worker or cron job to an existing Canine project.
 
               ## Step 1 — Find your project
-              Call `list_projects` to find your project and note its ID.
+              Call `list_projects` to find your project and note its ID. Show the user the `link_to_view_url` for the project so they can open it in the Canine app.
               Or call `get_project_details` if you already have the project ID, to see existing services.
 
               ## Step 2 — Create the service
@@ -42,6 +42,7 @@ module Prompts
 
               ## Step 4 — Verify
               Call `get_project_details` to confirm the new service appears with the correct status.
+              Show the user the project's `link_to_view_url` so they can view the service in the Canine app.
               Call `get_project_logs` if anything looks wrong.
             TEXT
           )

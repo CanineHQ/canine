@@ -14,10 +14,11 @@ module Prompts
 
               ## Step 1 — Check project and service status
               Call `get_project_details` with the project_id.
+              Show the user the project's `link_to_view_url` so they can open it directly in the Canine app.
               Look at:
               - Top-level `status` — is the project healthy, pending, or unhealthy?
               - Each service's `status` — which specific service is failing?
-              - The `builds` array — find the most recent build and check its `status` and `deployment` fields.
+              - The `builds` array — find the most recent build and check its `status` and `deployment` fields. Show the build's `link_to_view_url` so the user can view the full build log in the app.
 
               ## Step 2 — Read the logs
               Call `get_project_logs` with the project_id.
@@ -34,10 +35,10 @@ module Prompts
               ### App crashing at startup (runtime failure)
               - Missing environment variable — call `get_environment_variable_keys` to list what's set, then `update_environment_variable` to add the missing one
               - Wrong `container_port` — ensure the service's container_port matches what your app actually listens on
-              - Database not reachable — check that the add-on is running via `get_add_on_details` and that DATABASE_URL is set correctly
+              - Database not reachable — check that the add-on is running via `get_add_on_details` (show the user its `link_to_view_url`) and that DATABASE_URL is set correctly
 
               ### Predeploy command failing (e.g. db:migrate)
-              - Database add-on may not be installed yet — use `install_add_on` prompt
+              - Database add-on may not be installed yet — use the `install_add_on` prompt
               - DATABASE_URL not set — call `update_environment_variable` with `storage_type: "secret"`
 
               ### Service stuck in "pending"
@@ -46,6 +47,7 @@ module Prompts
 
               ## Step 3 — Fix and redeploy
               After making changes (env vars, service config), call `deploy_project` to trigger a new build and deployment.
+              Once resolved, show the user the project's `link_to_view_url` and any live service domain URLs.
             TEXT
           )
         ]

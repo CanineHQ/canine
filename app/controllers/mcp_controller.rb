@@ -68,7 +68,8 @@ class MCPController < ActionController::API
       Prompts::DeployNewProject,
       Prompts::AddWorkerOrCron,
       Prompts::TroubleshootDeployment,
-      Prompts::InstallAddOn
+      Prompts::InstallAddOn,
+      Prompts::DestroyResource
     ]
   end
 

@@ -23,7 +23,7 @@ module Prompts
               If the project needs a database or any backing service (Postgres, Redis, MySQL, etc.):
               - Call `search_add_ons` with a query like "postgresql" or "redis" to find the chart.
               - Call `create_add_on` with the chart_url, version, repository_url, and cluster_id.
-              - Call `get_add_on_details` to check its status until it shows as running.
+              - Call `get_add_on_details` to check its status until it shows as running. Show the user the `link_to_view_url` so they can open it in the Canine app.
               - Note the connection string format from the add-on's Helm values — you'll set this as an environment variable after creating the project.
 
               ## Step 3 — Create the project
@@ -35,6 +35,8 @@ module Prompts
               - `branch` — defaults to "main"
               - `predeploy_command` — (optional) e.g. "rails db:migrate" or "npm run migrate"
               - `dockerfile_path` — (optional) defaults to "./Dockerfile"
+
+              Once created, show the user the project's `link_to_view_url` so they can open it in the Canine app.
 
               ## Step 4 — Create a service
               Every project needs at least one service to be deployable. Call `create_service` with:
@@ -56,6 +58,11 @@ module Prompts
 
               ## Step 7 — Verify
               Call `get_project_details` to check the deployment status and find the auto-assigned public domain under each service's `domains` array.
+
+              If the deployment succeeds and a service has a domain, display it to the user like this:
+              🎉 Your app is live at https://<domain_name>
+
+              Also show the project's `link_to_view_url` so the user can open it in the Canine app.
 
               If the deployment fails, call `get_project_logs` to see build and runtime logs.
             TEXT

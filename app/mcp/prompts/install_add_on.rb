@@ -45,6 +45,7 @@ module Prompts
               Call `get_add_on_details` with the add_on_id.
               Check the `processes` array — wait until pod status shows "Running".
               Use `include_values: true` to see the full Helm values (useful for finding connection strings, passwords, etc.).
+              Show the user the add-on's `link_to_view_url` so they can monitor it in the Canine app.
 
               ## Step 5 — Wire it to your project
               Most add-ons expose a Kubernetes service inside the cluster. The internal hostname follows the pattern:
