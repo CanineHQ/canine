@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-json.partial! 'api/v1/projects/project', project: @project
+json.merge! Api::Projects::ShowViewModel.new(@project).as_json

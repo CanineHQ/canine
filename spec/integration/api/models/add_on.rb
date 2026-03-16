@@ -2,7 +2,7 @@
 
 SwaggerSchemas::ADD_ON = {
   type: :object,
-  required: %w[id name namespace chart_url version status cluster_id cluster_name url created_at updated_at endpoints],
+  required: %w[id name namespace chart_url version status cluster_id cluster_name link_to_view_url created_at updated_at endpoints],
   properties: {
     id: {
       type: :integer,
@@ -51,7 +51,7 @@ SwaggerSchemas::ADD_ON = {
       type: :string,
       example: 'production'
     },
-    url: {
+    link_to_view_url: {
       type: :string,
       example: '/add_ons/1'
     },

@@ -48,7 +48,6 @@ class MCPController < ActionController::API
 
       # Project Logs & Monitoring
       Tools::GetProjectLogs,
-      Tools::CheckBuildStatus,
       # Environment Variables
       Tools::GetEnvironmentVariableKeys,
       Tools::GetEnvironmentVariableValue,
@@ -95,7 +94,7 @@ class MCPController < ActionController::API
       [ {
         uri: uri,
         mimeType: "application/json",
-        text: projects.map { |p| Api::Projects::ShowViewModel.new(p).as_json }.to_json
+        text: projects.map { |p| Api::Projects::ListViewModel.new(p).as_json }.to_json
       } ]
     when /\Acanine:\/\/projects\/(\d+)\/builds\z/
       project_id = $1.to_i
@@ -104,7 +103,7 @@ class MCPController < ActionController::API
 
       return [ { uri: uri, mimeType: "text/plain", text: "Project not found" } ] unless project
 
-      builds = project.builds.order(created_at: :desc).limit(20)
+      builds = project.builds.includes(:deployment).order(created_at: :desc).limit(20)
       [ {
         uri: uri,
         mimeType: "application/json",

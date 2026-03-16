@@ -25,8 +25,8 @@ RSpec.describe Api::AddOns::ListViewModel do
       )
     end
 
-    it "includes a url" do
-      expect(result.first[:url]).to include(add_on.id.to_s)
+    it "includes a link_to_view_url" do
+      expect(result.first[:link_to_view_url]).to include(add_on.id.to_s)
     end
   end
 end

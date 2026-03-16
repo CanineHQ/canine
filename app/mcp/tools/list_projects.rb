@@ -29,17 +29,9 @@ module Tools
           .order(:name)
           .limit(50)
 
-        project_list = projects.map do |p|
-          current_deployment = p.current_deployment
-          Api::Projects::ShowViewModel.new(p).as_json.merge(
-            last_deployment_at: p.last_deployment_at,
-            current_commit_message: current_deployment&.build&.commit_message
-          )
-        end
-
         MCP::Tool::Response.new([ {
           type: "text",
-          text: project_list.to_json
+          text: projects.map { |p| Api::Projects::ListViewModel.new(p).as_json }.to_json
         } ])
       end
     end
