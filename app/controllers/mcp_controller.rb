@@ -16,6 +16,7 @@ class MCPController < ActionController::API
       name: "canine_mcp_server",
       version: "1.0.0",
       tools: mcp_tools,
+      prompts: mcp_prompts,
       resources: mcp_resources,
       resource_templates: mcp_resource_templates,
       server_context: { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
@@ -59,6 +60,15 @@ class MCPController < ActionController::API
       Tools::CreateAddOn,
       Tools::GetAddOnDetails,
       Tools::GetAddOnLogs
+    ]
+  end
+
+  def mcp_prompts
+    [
+      Prompts::DeployNewProject,
+      Prompts::AddWorkerOrCron,
+      Prompts::TroubleshootDeployment,
+      Prompts::InstallAddOn
     ]
   end
 
