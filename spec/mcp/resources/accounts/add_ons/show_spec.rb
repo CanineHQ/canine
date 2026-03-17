@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Resources::AddOns::Show do
+RSpec.describe Resources::Accounts::AddOns::Show do
   let(:add_on) { create(:add_on) }
   let(:user) { create(:user) }
   let(:account_user) { create(:account_user, account: add_on.account, user: user) }
@@ -19,7 +19,8 @@ RSpec.describe Resources::AddOns::Show do
   end
 
   it "returns full add-on details" do
-    result = described_class.call(uri: "canine://add_ons/#{add_on.id}", user: user, account_user: account_user)
+    uri = "canine://accounts/#{add_on.account.id}/add_ons/#{add_on.id}"
+    result = described_class.call(uri: uri, user: user, account_users: [ account_user ])
     data = JSON.parse(result.first[:text])
 
     expect(data["id"]).to eq(add_on.id)
@@ -29,7 +30,8 @@ RSpec.describe Resources::AddOns::Show do
 
   it "returns not_found for inaccessible add-on" do
     other_add_on = create(:add_on)
-    result = described_class.call(uri: "canine://add_ons/#{other_add_on.id}", user: user, account_user: account_user)
+    uri = "canine://accounts/#{add_on.account.id}/add_ons/#{other_add_on.id}"
+    result = described_class.call(uri: uri, user: user, account_users: [ account_user ])
 
     expect(result.first[:mimeType]).to eq("text/plain")
     expect(result.first[:text]).to eq("Add-on not found")

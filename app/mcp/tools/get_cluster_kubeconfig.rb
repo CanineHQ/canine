@@ -11,10 +11,6 @@ module Tools
         cluster_id: {
           type: "integer",
           description: "The ID of the cluster (from canine://clusters)"
-        },
-        account_id: {
-          type: "integer",
-          description: "The ID of the account (optional, defaults to first account)"
         }
       },
       required: [ "cluster_id" ]
@@ -26,9 +22,11 @@ module Tools
       read_only_hint: true
     )
 
-    def self.call(cluster_id:, account_id: nil, server_context:)
-      with_account_user(server_context: server_context, account_id: account_id) do |_user, account_user|
-        cluster = account_user.account.clusters.find_by(id: cluster_id)
+    def self.call(cluster_id:, server_context:)
+      with_account_users(server_context: server_context) do |_user, account_users|
+        cluster = account_users.lazy.filter_map { |au|
+          au.account.clusters.find_by(id: cluster_id)
+        }.first
 
         unless cluster
           return MCP::Tool::Response.new([ {

@@ -43,6 +43,28 @@ module Tools
 
           yield user, account_user
         end
+
+        def with_account_users(server_context:)
+          user = current_user(server_context)
+
+          account_users = user.account_users.select { |au| au.account.allow_mcp? }
+
+          return account_not_found_error if account_users.empty?
+
+          yield user, account_users
+        end
+
+        def find_project(project_id, account_users)
+          account_users.lazy.filter_map { |au|
+            ::Projects::VisibleToUser.execute(account_user: au).projects.find_by(id: project_id)
+          }.first
+        end
+
+        def find_add_on(add_on_id, account_users)
+          account_users.lazy.filter_map { |au|
+            ::AddOns::VisibleToUser.execute(account_user: au).add_ons.find_by(id: add_on_id)
+          }.first
+        end
       end
     end
   end
