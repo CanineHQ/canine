@@ -15,7 +15,10 @@ module Api
           status: @cluster.status,
           link_to_view_url: Rails.application.routes.url_helpers.cluster_path(@cluster),
           created_at: @cluster.created_at,
-          updated_at: @cluster.updated_at
+          updated_at: @cluster.updated_at,
+          packages: @cluster.cluster_packages.map do |p|
+            { id: p.id, name: p.name, status: p.status, installed_at: p.installed_at }
+          end
         }
       end
     end

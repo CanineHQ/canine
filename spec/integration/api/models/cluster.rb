@@ -31,6 +31,10 @@ SwaggerSchemas::CLUSTER = {
     updated_at: {
       type: :string,
       example: '2021-01-01T00:00:00Z'
+    },
+    packages: {
+      type: :array,
+      items: { type: :object }
     }
   }
 }.freeze
