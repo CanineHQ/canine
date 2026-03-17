@@ -66,6 +66,8 @@ module Prompts
               - **Queues**: bitnami/rabbitmq, bitnami/kafka
               - **Storage**: bitnami/minio
               - **Search**: bitnami/elasticsearch, bitnami/opensearch
+              - **Analytics & BI**: metabase/metabase
+              - **Data pipelines**: airbyte/airbyte, dagster/dagster
               - **Monitoring**: prometheus-community/kube-prometheus-stack, grafana/grafana
               - **Anything else**: search artifacthub.io for the chart name and repo
             TEXT
