@@ -9,7 +9,7 @@ module Resources
       Resources::Accounts::Clusters,
       Resources::Accounts::Projects::Index,
       Resources::Accounts::Projects::Show,
-      Resources::Accounts::Projects::Builds,
+      Resources::Accounts::Projects::Build,
       Resources::Accounts::Projects::EnvironmentVariables,
       Resources::Accounts::AddOns::Index,
       Resources::Accounts::AddOns::Show

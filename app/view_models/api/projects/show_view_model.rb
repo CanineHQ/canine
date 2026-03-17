@@ -3,17 +3,12 @@
 module Api
   module Projects
     class ShowViewModel
-      def initialize(project, build_limit: 10)
+      def initialize(project)
         @project = project
-        @build_limit = [ build_limit, 50 ].min
       end
 
       def as_json
-        current_deployment = @project.current_deployment
-        builds = @project.builds
-          .includes(:deployment)
-          .order(created_at: :desc)
-          .limit(@build_limit)
+        builds = @project.builds.order(created_at: :desc).limit(10)
 
         Api::Projects::ListViewModel.new(@project).as_json.merge(
           autodeploy: @project.autodeploy,
@@ -47,9 +42,7 @@ module Api
               status: v.status
             }
           end,
-          builds: builds.map do |b|
-            Api::Builds::ShowViewModel.new(b, current_deployment_id: current_deployment&.id).as_json
-          end
+          builds: builds.map { |b| Api::Builds::IndexViewModel.new(b).as_json }
         )
       end
     end
