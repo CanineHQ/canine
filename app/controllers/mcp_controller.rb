@@ -67,33 +67,21 @@ class MCPController < ActionController::API
   def mcp_resources
     [
       MCP::Resource.new(
+        uri: "canine://schema",
+        name: "schema",
+        description: "All available Canine resources and resource templates with their URIs and descriptions. Read this first to discover what data is available.",
+        mime_type: "application/json"
+      ),
+      MCP::Resource.new(
         uri: "canine://accounts",
         name: "accounts",
-        description: "List all accounts accessible to the current user, including their clusters with project and add-on counts",
+        description: "List all accounts accessible to the current user. Account IDs are required for all other resource URIs.",
         mime_type: "application/json"
       ),
       MCP::Resource.new(
         uri: "canine://providers",
         name: "providers",
         description: "List all Git and container registry providers configured for the current user. Provider IDs are required when creating projects.",
-        mime_type: "application/json"
-      ),
-      MCP::Resource.new(
-        uri: "canine://clusters",
-        name: "clusters",
-        description: "List all clusters accessible to the current user",
-        mime_type: "application/json"
-      ),
-      MCP::Resource.new(
-        uri: "canine://projects",
-        name: "projects",
-        description: "List all projects accessible to the current user",
-        mime_type: "application/json"
-      ),
-      MCP::Resource.new(
-        uri: "canine://add_ons",
-        name: "add_ons",
-        description: "List all add-ons accessible to the current user. Add-ons are databases, caches, and third-party Helm charts installed on a cluster — e.g. PostgreSQL, Redis, Metabase, Airbyte, Dagster.",
         mime_type: "application/json"
       )
     ]
@@ -102,25 +90,43 @@ class MCPController < ActionController::API
   def mcp_resource_templates
     [
       MCP::ResourceTemplate.new(
-        uri_template: "canine://projects/{project_id}/environment_variables",
-        name: "project-environment-variables",
-        description: "List all environment variable names and storage types for a project (values are not included)",
+        uri_template: "canine://accounts/{account_id}/clusters",
+        name: "account-clusters",
+        description: "List all clusters for an account",
         mime_type: "application/json"
       ),
       MCP::ResourceTemplate.new(
-        uri_template: "canine://projects/{project_id}",
+        uri_template: "canine://accounts/{account_id}/projects",
+        name: "account-projects",
+        description: "List all projects for an account (lightweight — no services or builds)",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://accounts/{account_id}/projects/{project_id}",
         name: "project",
         description: "Full details for a project including services, domains, volumes, and recent builds",
         mime_type: "application/json"
       ),
       MCP::ResourceTemplate.new(
-        uri_template: "canine://projects/{project_id}/builds",
+        uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds",
         name: "project-builds",
         description: "List builds for a specific project",
         mime_type: "application/json"
       ),
       MCP::ResourceTemplate.new(
-        uri_template: "canine://add_ons/{add_on_id}",
+        uri_template: "canine://accounts/{account_id}/projects/{project_id}/environment_variables",
+        name: "project-environment-variables",
+        description: "List all environment variable names and storage types for a project (values are not included)",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://accounts/{account_id}/add_ons",
+        name: "account-add-ons",
+        description: "List all add-ons for an account (databases, caches, and third-party Helm charts)",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://accounts/{account_id}/add_ons/{add_on_id}",
         name: "add_on",
         description: "Full details for an add-on (database, cache, or third-party Helm chart such as Metabase, Airbyte, or Dagster) including endpoints, connection URLs, and status",
         mime_type: "application/json"

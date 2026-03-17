@@ -15,10 +15,6 @@ module Tools
         tail_lines: {
           type: "integer",
           description: "Number of log lines to return per pod (default: 100, max: 500)"
-        },
-        account_id: {
-          type: "integer",
-          description: "The ID of the account (optional, defaults to first account)"
         }
       },
       required: [ "project_id" ]
@@ -30,10 +26,9 @@ module Tools
       read_only_hint: true
     )
 
-    def self.call(project_id:, tail_lines: 100, account_id: nil, server_context:)
-      with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects
-        project = projects.find_by(id: project_id)
+    def self.call(project_id:, tail_lines: 100, server_context:)
+      with_account_users(server_context: server_context) do |user, account_users|
+        project = find_project(project_id, account_users)
 
         unless project
           return MCP::Tool::Response.new([ {

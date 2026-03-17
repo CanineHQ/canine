@@ -11,7 +11,7 @@ module Resources
         uri_pattern === uri
       end
 
-      def call(uri:, user:, account_user:)
+      def call(uri:, user:, account_users:)
         raise NotImplementedError, "#{name} must implement call"
       end
 

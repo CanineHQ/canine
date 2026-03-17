@@ -15,10 +15,6 @@ module Tools
         tail_lines: {
           type: "integer",
           description: "Number of log lines to return per pod (default: 100, max: 500)"
-        },
-        account_id: {
-          type: "integer",
-          description: "The ID of the account (optional, defaults to first account)"
         }
       },
       required: [ "add_on_id" ]
@@ -30,10 +26,9 @@ module Tools
       read_only_hint: true
     )
 
-    def self.call(add_on_id:, tail_lines: 100, account_id: nil, server_context:)
-      with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        add_ons = ::AddOns::VisibleToUser.execute(account_user: account_user).add_ons
-        add_on = add_ons.find_by(id: add_on_id)
+    def self.call(add_on_id:, tail_lines: 100, server_context:)
+      with_account_users(server_context: server_context) do |user, account_users|
+        add_on = find_add_on(add_on_id, account_users)
 
         unless add_on
           return MCP::Tool::Response.new([ {
