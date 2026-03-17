@@ -23,7 +23,7 @@ class MCPController < ActionController::API
     )
 
     server.resources_read_handler do |params, server_context:|
-      handle_resource_read(params[:uri], server_context)
+      Resources::Router.call(params[:uri], server_context)
     end
 
     server
@@ -31,18 +31,12 @@ class MCPController < ActionController::API
 
   def mcp_tools
     [
-      # Accounts & Auth
-      Tools::ListAccounts,
-      Tools::ListProviders,
-
       # Clusters
-      Tools::ListClusters,
       Tools::CreateCluster,
+      Tools::GetClusterKubeconfig,
 
       # Projects
-      Tools::ListProjects,
       Tools::CreateProject,
-      Tools::GetProjectDetails,
       Tools::CreateService,
       Tools::DeployProject,
       Tools::RestartProject,
@@ -50,15 +44,12 @@ class MCPController < ActionController::API
       # Project Logs & Monitoring
       Tools::GetProjectLogs,
       # Environment Variables
-      Tools::GetEnvironmentVariableKeys,
       Tools::GetEnvironmentVariableValue,
       Tools::UpdateEnvironmentVariable,
 
       # Add-ons
       Tools::SearchAddOns,
-      Tools::ListAddOns,
       Tools::CreateAddOn,
-      Tools::GetAddOnDetails,
       Tools::GetAddOnLogs
     ]
   end
@@ -76,9 +67,33 @@ class MCPController < ActionController::API
   def mcp_resources
     [
       MCP::Resource.new(
+        uri: "canine://accounts",
+        name: "accounts",
+        description: "List all accounts accessible to the current user, including their clusters with project and add-on counts",
+        mime_type: "application/json"
+      ),
+      MCP::Resource.new(
+        uri: "canine://providers",
+        name: "providers",
+        description: "List all Git and container registry providers configured for the current user. Provider IDs are required when creating projects.",
+        mime_type: "application/json"
+      ),
+      MCP::Resource.new(
+        uri: "canine://clusters",
+        name: "clusters",
+        description: "List all clusters accessible to the current user",
+        mime_type: "application/json"
+      ),
+      MCP::Resource.new(
         uri: "canine://projects",
         name: "projects",
         description: "List all projects accessible to the current user",
+        mime_type: "application/json"
+      ),
+      MCP::Resource.new(
+        uri: "canine://add_ons",
+        name: "add_ons",
+        description: "List all add-ons accessible to the current user. Add-ons are databases, caches, and third-party Helm charts installed on a cluster — e.g. PostgreSQL, Redis, Metabase, Airbyte, Dagster.",
         mime_type: "application/json"
       )
     ]
@@ -87,41 +102,29 @@ class MCPController < ActionController::API
   def mcp_resource_templates
     [
       MCP::ResourceTemplate.new(
+        uri_template: "canine://projects/{project_id}/environment_variables",
+        name: "project-environment-variables",
+        description: "List all environment variable names and storage types for a project (values are not included)",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://projects/{project_id}",
+        name: "project",
+        description: "Full details for a project including services, domains, volumes, and recent builds",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
         uri_template: "canine://projects/{project_id}/builds",
         name: "project-builds",
         description: "List builds for a specific project",
         mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://add_ons/{add_on_id}",
+        name: "add_on",
+        description: "Full details for an add-on (database, cache, or third-party Helm chart such as Metabase, Airbyte, or Dagster) including endpoints, connection URLs, and status",
+        mime_type: "application/json"
       )
     ]
-  end
-
-  def handle_resource_read(uri, server_context)
-    user = User.find(server_context[:user_id])
-    account_user = user.account_users.first
-
-    case uri
-    when "canine://projects"
-      projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects.order(:name).limit(50)
-      [ {
-        uri: uri,
-        mimeType: "application/json",
-        text: projects.map { |p| Api::Projects::ListViewModel.new(p).as_json }.to_json
-      } ]
-    when /\Acanine:\/\/projects\/(\d+)\/builds\z/
-      project_id = $1.to_i
-      projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects
-      project = projects.find_by(id: project_id)
-
-      return [ { uri: uri, mimeType: "text/plain", text: "Project not found" } ] unless project
-
-      builds = project.builds.includes(:deployment).order(created_at: :desc).limit(20)
-      [ {
-        uri: uri,
-        mimeType: "application/json",
-        text: builds.map { |b| Api::Builds::ShowViewModel.new(b).as_json }.to_json
-      } ]
-    else
-      [ { uri: uri, mimeType: "text/plain", text: "Unknown resource" } ]
-    end
   end
 end
