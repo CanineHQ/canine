@@ -12,6 +12,8 @@ class MCPController < ActionController::API
   private
 
   def mcp_server
+    ctx = { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
+
     server = MCP::Server.new(
       name: "canine_mcp_server",
       version: "1.0.0",
@@ -19,11 +21,11 @@ class MCPController < ActionController::API
       prompts: mcp_prompts,
       resources: mcp_resources,
       resource_templates: mcp_resource_templates,
-      server_context: { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
+      server_context: ctx
     )
 
-    server.resources_read_handler do |params, server_context:|
-      Resources::Router.call(params[:uri], server_context)
+    server.resources_read_handler do |params|
+      Resources::Router.call(params[:uri], ctx)
     end
 
     server
