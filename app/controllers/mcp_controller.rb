@@ -21,7 +21,8 @@ class MCPController < ActionController::API
       prompts: mcp_prompts,
       resources: mcp_resources,
       resource_templates: mcp_resource_templates,
-      server_context: ctx
+      server_context: ctx,
+      configuration: MCP::Configuration.new(validate_tool_call_arguments: false)
     )
 
     server.resources_read_handler do |params|

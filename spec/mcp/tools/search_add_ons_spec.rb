@@ -4,14 +4,16 @@ require 'rails_helper'
 
 RSpec.describe Tools::SearchAddOns do
   it 'returns curated and Artifact Hub results' do
-    hub_response = [
-      {
-        "name" => "redis",
-        "description" => "Open source in-memory data store",
-        "version" => "18.6.1",
-        "repository" => { "name" => "bitnami", "url" => "https://charts.bitnami.com/bitnami" }
-      }
-    ]
+    hub_response = {
+      "packages" => [
+        {
+          "name" => "redis",
+          "description" => "Open source in-memory data store",
+          "version" => "18.6.1",
+          "repository" => { "name" => "bitnami", "url" => "https://charts.bitnami.com/bitnami" }
+        }
+      ]
+    }
     allow(AddOns::HelmChartSearch).to receive(:execute).and_return(
       double(success?: true, response: hub_response)
     )

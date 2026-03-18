@@ -12,8 +12,8 @@ module Api
           type: @event.type,
           reason: @event.reason,
           message: @event.message,
-          first_seen: @event.firstTimestamp&.iso8601,
-          last_seen: @event.lastTimestamp&.iso8601,
+          first_seen: @event.firstTimestamp,
+          last_seen: @event.lastTimestamp,
           count: @event.count
         }
       end

@@ -38,7 +38,7 @@ module Tools
       end
 
       # Parse Artifact Hub results
-      hub_results = (result.response || []).first(15).map do |pkg|
+      hub_results = (result.response&.fetch("packages", nil) || []).first(15).map do |pkg|
         Api::HelmCharts::HubResultViewModel.new(pkg).as_json
       end
 
