@@ -4,7 +4,7 @@ module Tools
   class GetAddOnLogs < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Get logs from all running processes for an add-on, including pod events"
+    description "Get logs from all running processes for an add-on, including pod events. Required param: 'add_on_id' (integer)."
 
     input_schema(
       properties: {

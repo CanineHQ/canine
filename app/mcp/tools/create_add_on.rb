@@ -4,7 +4,7 @@ module Tools
   class CreateAddOn < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Install a Helm chart as an add-on (database, cache, etc.) on a cluster. Use search_add_ons to find available charts and list_accounts to find cluster IDs."
+    description "Install a Helm chart as an add-on (database, cache, etc.) on a cluster. Use search_add_ons to find available charts and list_accounts to find cluster IDs. Required params: 'name' (instance name), 'chart_url' (repo/chart format), 'version', 'repository_url' (Helm repo URL), 'cluster_id'."
 
     input_schema(
       properties: {

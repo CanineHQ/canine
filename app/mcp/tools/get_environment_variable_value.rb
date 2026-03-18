@@ -4,7 +4,7 @@ module Tools
   class GetEnvironmentVariableValue < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Get the value of a specific environment variable for a project."
+    description "Get the value of a specific environment variable for a project. Pass the variable name as 'name'."
 
     input_schema(
       properties: {

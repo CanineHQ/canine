@@ -4,7 +4,7 @@ module Tools
   class CreateCluster < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Connect a Kubernetes cluster by providing its kubeconfig. The cluster will be validated and set up with required system components."
+    description "Connect a Kubernetes cluster by providing its kubeconfig. Pass the kubeconfig YAML content as 'kubeconfig_yaml'. The cluster will be validated and set up with required system components."
 
     input_schema(
       properties: {
