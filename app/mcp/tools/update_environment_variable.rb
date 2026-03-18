@@ -4,7 +4,7 @@ module Tools
   class UpdateEnvironmentVariable < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Create or update an environment variable for a project. Redeploy the project afterwards for changes to take effect."
+    description "Create or update an environment variable for a project. Pass the variable name as 'name' and the value as 'value'. Redeploy the project afterwards for changes to take effect."
 
     input_schema(
       properties: {
