@@ -74,9 +74,11 @@ class StaticController < ApplicationController
   end
 
   def mcp_tools
+    redirect_to root_path if user_signed_in?
   end
 
   def self_hosted
+    redirect_to root_path if user_signed_in?
   end
 
   def install
