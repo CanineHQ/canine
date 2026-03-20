@@ -1,6 +1,6 @@
 class RichSelectComponent < ViewComponent::Base
-  def initialize(name:, collection:, value_method: :id, selected: nil, partial:,
-                 placeholder: "Select an option", disabled: [], data: {}, id: nil)
+  def initialize(name:, id:, collection:, value_method: :id, selected: nil, partial:,
+                 placeholder: "Select an option", disabled: [], data: {})
     @name = name
     @id = id
     @collection = collection

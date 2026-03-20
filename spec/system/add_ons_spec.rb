@@ -66,7 +66,10 @@ RSpec.describe "Add Ons", type: :system do
       visit new_add_on_path
 
       fill_in "add_on_name", with: "my-nginx"
-      select "test-cluster", from: "add_on_cluster_id"
+
+      # Select cluster via rich select component
+      find("[data-test-id='add_on_cluster_id'] [data-rich-select-target='trigger']").click
+      find("[data-test-id='add_on_cluster_id'] [data-rich-select-target='option']", text: "test-cluster").click
 
       # Click on the Helm Chart card
       find("[data-card-name='helm_chart']").click

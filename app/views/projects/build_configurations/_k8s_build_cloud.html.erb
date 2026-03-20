@@ -6,6 +6,7 @@
   <% if build_clouds.any? %>
     <%= render(RichSelectComponent.new(
       name: bc_form.field_name(:build_cloud_id),
+      id: "build_cloud_select",
       collection: build_clouds,
       selected: build_configuration.build_cloud_id,
       partial: "build_clouds/selector_item",

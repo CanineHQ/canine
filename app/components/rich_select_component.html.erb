@@ -1,5 +1,5 @@
-<div data-controller="rich-select" class="relative w-full">
-  <select name="<%= @name %>" <% if @id %>id="<%= @id %>"<% end %> data-rich-select-target="input" class="hidden" <%= select_data_attributes %>>
+<div data-controller="rich-select" data-test-id="<%= @id %>" class="relative w-full">
+  <select name="<%= @name %>" id="<%= @id %>" data-rich-select-target="input" class="hidden" <%= select_data_attributes %>>
     <% if @placeholder.present? %>
       <option value=""><%= @placeholder %></option>
     <% end %>

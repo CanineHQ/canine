@@ -47,7 +47,7 @@ RSpec.configure do |config|
 
   config.before(:each, type: :system) do
     DatabaseCleaner.strategy = :truncation
-    driven_by :cuprite
+    driven_by :pw
   end
 
   config.around(:each) do |example|
