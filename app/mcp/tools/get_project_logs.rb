@@ -15,10 +15,6 @@ module Tools
         tail_lines: {
           type: "integer",
           description: "Number of log lines to return per pod (default: 100, max: 500)"
-        },
-        account_id: {
-          type: "integer",
-          description: "The ID of the account (optional, defaults to first account)"
         }
       },
       required: [ "project_id" ]
@@ -30,16 +26,15 @@ module Tools
       read_only_hint: true
     )
 
-    def self.call(project_id:, tail_lines: 100, account_id: nil, server_context:)
-      with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        projects = ::Projects::VisibleToUser.execute(account_user: account_user).projects
-        project = projects.find_by(id: project_id)
+    def self.call(project_id:, tail_lines: 100, server_context:)
+      with_account_users(server_context: server_context) do |user, account_users|
+        project = find_project(project_id, account_users)
 
         unless project
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
-          } ], is_error: true)
+          } ], error: true)
         end
 
         tail_lines = [ tail_lines, 500 ].min
@@ -61,27 +56,13 @@ module Tools
 
             pod_events = begin
               client.get_pod_events(pod_name, project.namespace).map do |event|
-                {
-                  type: event.type,
-                  reason: event.reason,
-                  message: event.message,
-                  first_seen: event.firstTimestamp&.iso8601,
-                  last_seen: event.lastTimestamp&.iso8601,
-                  count: event.count
-                }
+                Api::Pods::EventViewModel.new(event).as_json
               end
             rescue Kubeclient::HttpError => e
               [ { error: "Error fetching events: #{e.message}" } ]
             end
 
-            {
-              pod_name: pod_name,
-              service_name: service_name,
-              status: pod.status.phase,
-              container_status: pod.status.containerStatuses&.first&.state&.to_h,
-              logs: pod_logs,
-              events: pod_events
-            }
+            Api::Pods::LogViewModel.new(pod, logs: pod_logs, events: pod_events, service_name: service_name).as_json
           end
 
           MCP::Tool::Response.new([ {
@@ -92,7 +73,7 @@ module Tools
           MCP::Tool::Response.new([ {
             type: "text",
             text: "Error connecting to cluster: #{e.message}"
-          } ], is_error: true)
+          } ], error: true)
         end
       end
     end

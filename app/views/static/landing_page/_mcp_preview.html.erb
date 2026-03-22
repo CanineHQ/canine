@@ -1,0 +1,48 @@
+<div class="mx-auto mt-16 max-w-7xl px-6 sm:mt-32 lg:px-8">
+  <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+    <h2 class="text-base font-semibold leading-7 text-emerald-400">AI-native operations</h2>
+    <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Built-in MCP server</p>
+    <p class="mt-6 text-lg leading-8 text-gray-300">
+      Connect Claude Code, Cursor, or any MCP-compatible AI client to deploy, debug, and manage your apps in natural language.
+    </p>
+  </div>
+
+  <div class="mx-auto mt-16 max-w-3xl" data-aos="fade-up" data-aos-delay="150">
+    <div class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+      <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
+        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+        <span class="ml-4 text-xs text-gray-500 font-mono">claude</span>
+      </div>
+      <div data-controller="terminal-animate"
+           data-terminal-animate-autoplay-value="true"
+           data-terminal-animate-loop-value="true"
+           data-terminal-animate-interval-value="700"
+           data-terminal-animate-lines-value='[
+             {"text":"Let me take a look at your project first...","color":"#34d399"},
+             {"text":"→ read_file(path: \"Dockerfile\")","color":"#6b7280"},
+             {"text":"→ read_file(path: \"package.json\")","color":"#6b7280"},
+             {"text":"Got it — Node.js app on port 3000. I can see it needs Postgres, Redis, and Ollama. Setting everything up now.","color":"#34d399"},
+             {"text":"→ create_project(name: \"my-app\", cluster_id: 1, provider_id: 2, ...)","color":"#6b7280"},
+             {"text":"→ create_service(type: \"web_service\", port: 3000, ...)","color":"#6b7280"},
+             {"text":"→ create_add_on(name: \"my-app-postgres\", chart: \"bitnami/postgresql\", ...)","color":"#6b7280"},
+             {"text":"→ create_add_on(name: \"my-app-redis\", chart: \"bitnami/redis\", ...)","color":"#6b7280"},
+             {"text":"→ create_add_on(name: \"my-app-ollama\", chart: \"ollama/ollama\", ...)","color":"#6b7280"},
+             {"text":"→ update_environment_variable(key: \"DATABASE_URL\", value: \"...\", type: \"secret\")","color":"#6b7280"},
+             {"text":"→ update_environment_variable(key: \"REDIS_URL\", value: \"...\", type: \"secret\")","color":"#6b7280"},
+             {"text":"→ update_environment_variable(key: \"OLLAMA_HOST\", value: \"...\", type: \"config\")","color":"#6b7280"},
+             {"text":"→ deploy_project(project_id: 91)","color":"#6b7280"},
+             {"text":"Your application is deployed at <span style=\"text-decoration:underline\">web-myapp.oncanine.run</span> 🎉","color":"#34d399"}
+           ]'>
+        <div id="mcp-terminal-body" class="bg-gray-950 p-6 font-mono text-sm leading-relaxed h-96 overflow-y-auto" data-terminal-animate-target="body">
+          <p class="text-gray-400">$ <span class="text-gray-200">claude mcp add --transport http canine https://canine.sh/mcp</span></p>
+          <p class="mt-2 text-emerald-400">✓ MCP server "canine" added</p>
+          <p class="mt-4 text-indigo-400 font-semibold">&gt; <span class="text-white font-normal">Analyze this project and deploy it to Canine</span></p>
+          <div data-terminal-animate-target="steps" class="mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

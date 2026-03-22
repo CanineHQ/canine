@@ -1,9 +1,11 @@
 class AddOns::InstallHelmChart
   extend LightService::Action
   expects :connection
+  expects :force, default: false
 
   executed do |context|
     add_on = context.connection.add_on
+    skip_schema_validation = context.force
 
     add_on.update_install_stage!(0)
     create_namespace(context.connection)
@@ -25,7 +27,8 @@ class AddOns::InstallHelmChart
         add_on.repository_url,
         add_on.version,
         values: add_on.values,
-        namespace: add_on.namespace
+        namespace: add_on.namespace,
+        skip_schema_validation: skip_schema_validation
       )
     else
       # HTTP repository - add repo, update, then install
@@ -43,7 +46,8 @@ class AddOns::InstallHelmChart
         add_on.chart_url,
         add_on.version,
         values: add_on.values,
-        namespace: add_on.namespace
+        namespace: add_on.namespace,
+        skip_schema_validation: skip_schema_validation
       )
     end
     add_on.installed!

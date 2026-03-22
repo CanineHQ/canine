@@ -37,9 +37,10 @@ export default class extends Controller {
         <textarea
           aria-label="Env value"
           placeholder="${placeholder}"
-          class="textarea textarea-bordered focus:outline-offset-0 w-full font-mono resize-none text-base"
+          class="textarea textarea-bordered focus:outline-offset-0 w-full font-mono resize-none text-base overflow-x-auto"
           name="environment_variables[][value]"
           rows="1"
+          wrap="off"
           data-controller="textarea-autogrow"
           data-textarea-autogrow-resize-debounce-delay-value="100"
           ${isHidden ? 'readonly' : ''}

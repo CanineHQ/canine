@@ -22,6 +22,9 @@ Doorkeeper.configure do
   #
   force_pkce
 
+  # Allow HTTP redirect URIs (e.g., localhost callbacks from MCP clients like Claude Code)
+  force_ssl_in_redirect_uri false
+
   # Hash token and application secrets in the database
   # hash_token_secrets fallback: plain
   # hash_application_secrets fallback: plain
