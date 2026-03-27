@@ -6,11 +6,11 @@ module ClustersHelper
   def cluster_icon(cluster, classes: "")
     icon = if cluster.local_k3s?
              "simple-icons:k3s"
-           elsif cluster.k3s?
+    elsif cluster.k3s?
              "devicon:k3s"
-           else
+    else
              "devicon:kubernetes"
-           end
+    end
     tag.iconify_icon(icon:, class: classes)
   end
 end
