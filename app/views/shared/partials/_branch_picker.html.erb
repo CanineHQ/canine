@@ -1,0 +1,46 @@
+<%# Searchable branch picker
+  Locals:
+    - form: the form builder
+    - current_branch: currently selected branch (nil for new projects)
+%>
+<% current_branch ||= nil %>
+
+<div data-repo-details-target="branchWrapper">
+  <div class="flex items-center gap-2 hidden" data-repo-details-target="branchLoading">
+    <span class="loading loading-spinner loading-sm"></span>
+    <span class="text-sm text-base-content/60">Loading branches...</span>
+  </div>
+
+  <%= form.hidden_field :branch, value: current_branch, data: { "repo-details-target": "branchHidden" } %>
+
+  <div class="relative" data-repo-details-target="branchDropdown">
+    <div class="input input-bordered w-full flex items-center justify-between cursor-pointer hover:bg-base-200 transition-colors"
+         data-action="click->repo-details#toggleDropdown">
+      <span data-repo-details-target="branchDisplay" class="truncate text-sm">
+        <%= current_branch.present? ? current_branch : "Select a branch..." %>
+      </span>
+      <svg class="w-4 h-4 text-base-content/40 flex-shrink-0 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+    </div>
+
+    <input type="text"
+           placeholder="Search branches..."
+           class="input input-bordered input-sm w-full mt-1 hidden"
+           data-repo-details-target="branchSearch"
+           data-action="input->repo-details#searchBranches" />
+
+    <div class="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden"
+         data-repo-details-target="branchList">
+    </div>
+  </div>
+
+  <div class="hidden mt-2" data-repo-details-target="branchError">
+    <div class="flex items-start gap-2 text-sm text-error bg-error/10 rounded-lg px-3 py-2">
+      <svg class="w-4 h-4 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span></span>
+    </div>
+  </div>
+
+  <label class="label">
+    <span class="label-text-alt">* Required</span>
+  </label>
+</div>

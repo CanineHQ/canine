@@ -24,6 +24,47 @@ class Git::Bitbucket::Client < Git::Client
     "#{@api_base_url}/2.0"
   end
 
+  def branches(per_page: 100)
+    response = HTTParty.get(
+      "#{bitbucket_api_base}/repositories/#{repository_url}/refs/branches",
+      headers: auth_headers,
+      query: { pagelen: per_page }
+    )
+    return [] unless response.success?
+
+    (response["values"] || []).map { |b| b["name"] }
+  end
+
+  def search_branches(query)
+    response = HTTParty.get(
+      "#{bitbucket_api_base}/repositories/#{repository_url}/refs/branches",
+      headers: auth_headers,
+      query: { pagelen: 100, q: "name ~ \"#{query}\"" }
+    )
+    return [] unless response.success?
+
+    (response["values"] || []).map { |b| b["name"] }
+  end
+
+  def default_branch
+    repo = repository
+    repo.dig("mainbranch", "name")
+  end
+
+  def dockerfiles(branch)
+    entries = fetch_all_entries(branch)
+    entries.select { |e| e[:type] == "file" && e[:path].match?(/Dockerfile/i) }.map { |e| e[:path] }
+  end
+
+  def directories(branch)
+    entries = fetch_all_entries(branch)
+    entries.select { |e| e[:type] == "directory" }.map { |e| "./#{e[:path]}" }
+  end
+
+  def file_tree(branch)
+    fetch_all_entries(branch)
+  end
+
   def repository_exists?
     repository.present? && repository["uuid"].present?
   end
@@ -160,6 +201,27 @@ class Git::Bitbucket::Client < Git::Client
   def auth_headers
     encoded = Base64.strict_encode64("#{email}:#{access_token}")
     { "Authorization" => "Basic #{encoded}" }
+  end
+
+  def fetch_all_entries(branch)
+    entries = []
+    collect_entries_recursive(branch, "", entries)
+    entries
+  end
+
+  def collect_entries_recursive(branch, path, entries)
+    url = "#{bitbucket_api_base}/repositories/#{repository_url}/src/#{branch}/#{path}"
+    response = HTTParty.get(url, headers: auth_headers, query: { pagelen: 100 })
+    return unless response.success?
+
+    (response["values"] || []).each do |item|
+      if item["type"] == "commit_file"
+        entries << { type: "file", path: item["path"] }
+      elsif item["type"] == "commit_directory"
+        entries << { type: "directory", path: item["path"] }
+        collect_entries_recursive(branch, item["path"], entries)
+      end
+    end
   end
 
   def extract_email(raw_author)

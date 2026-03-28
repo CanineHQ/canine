@@ -1,8 +1,12 @@
+<div data-controller="repo-details"
+     data-repo-details-provider-select-id-value="edit_provider_select"
+     data-repo-details-repository-input-id-value="project_repository_url">
 <%= form_with(model: project) do |form| %>
   <%= render "shared/error_messages", resource: form.object %>
   <div class="space-y-4">
     <%= render(FormFieldComponent.new(label: "Git Repository")) do %>
-      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
+      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo",
+          data: { action: "change->repo-details#loadBranches" } %>
       <div class="form-control mt-1 w-full">
         <div class="card bg-base-300 shadow-xl">
           <div class="card-body">
@@ -17,12 +21,13 @@
           </label>
           <%= render(RichSelectComponent.new(
             name: fields.field_name(:provider_id),
-            id: "provider_select",
+            id: "edit_provider_select",
             collection: @selectable_providers,
             selected: project.project_credential_provider.provider_id,
             partial: "providers/selector_item",
             placeholder: "Select credentials",
-            disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id)
+            disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id),
+            data: { action: "change->repo-details#loadBranches" }
           )) %>
         <% end %>
         <div class="label">
@@ -33,10 +38,7 @@
     <% end %>
 
     <%= render(FormFieldComponent.new(label: "Branch")) do %>
-      <%= form.text_field :branch, class: "input input-bordered w-full focus:outline-offset-0" %>
-      <label class="label">
-        <span class="label-text-alt">* Required</span>
-      </label>
+      <%= render "shared/partials/branch_picker", form: form, current_branch: project.branch %>
     <% end %>
 
     <%= render(FormFieldComponent.new(label: "Autodeploy")) do %>
@@ -64,3 +66,4 @@
     <% end %>
   </div>
 <% end %>
+</div>

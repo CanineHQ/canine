@@ -1,0 +1,68 @@
+<%# Reusable file browser component
+  Locals:
+    - form: the form builder
+    - field_name: the field name (e.g. :dockerfile_path, :context_directory)
+    - label: display label
+    - mode: "file" or "directory"
+    - filter_pattern: regex to highlight matching files (optional)
+    - default_value: default value for the input
+    - current_value: current stored value
+    - provider_select_id: DOM id of provider select (default: "provider_select")
+    - repository_input_id: DOM id of repository input (default: "project_repository_url")
+%>
+<% mode ||= "file" %>
+<% filter_pattern ||= "" %>
+<% default_value ||= (mode == "directory" ? "./" : "./Dockerfile") %>
+<% current_value ||= default_value %>
+<% provider_select_id ||= "provider_select" %>
+<% repository_input_id ||= "project_repository_url" %>
+
+<div data-controller="file-browser"
+     data-file-browser-mode-value="<%= mode %>"
+     data-file-browser-filter-pattern-value="<%= filter_pattern %>"
+     data-file-browser-default-value-value="<%= default_value %>"
+     data-file-browser-provider-select-id-value="<%= provider_select_id %>"
+     data-file-browser-repository-input-id-value="<%= repository_input_id %>">
+
+  <div class="flex items-center gap-2">
+    <input type="hidden"
+           name="<%= form.field_name(field_name) %>"
+           value="<%= current_value %>"
+           data-file-browser-target="hiddenInput" />
+    <div class="input input-bordered w-full flex items-center justify-between font-mono text-sm cursor-pointer hover:bg-base-200 transition-colors"
+         data-action="click->file-browser#openModal">
+      <span data-file-browser-target="displayValue" class="truncate"><%= current_value %></span>
+      <span class="text-base-content/40 flex-shrink-0 ml-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      </span>
+    </div>
+  </div>
+
+  <dialog class="modal" data-file-browser-target="modal">
+    <div class="modal-box w-11/12 max-w-2xl bg-base-200 px-6 py-0">
+      <div class="modal-action mt-0 pt-4">
+        <h3 class="text-lg font-bold flex-1"><%= label %></h3>
+        <button type="button" data-action="file-browser#closeModal" class="btn btn-sm btn-circle btn-ghost">&#x2715;</button>
+      </div>
+      <p class="text-sm text-base-content/60 mb-4">
+        <% if mode == "directory" %>
+          Select a directory. Files are shown for context.
+        <% else %>
+          Select a file. Directories can be expanded to navigate.
+        <% end %>
+      </p>
+
+      <div class="flex items-center gap-2 justify-center py-8 hidden" data-file-browser-target="loading">
+        <span class="loading loading-spinner loading-md"></span>
+        <span class="text-sm text-base-content/60">Loading file tree...</span>
+      </div>
+
+      <div class="rounded-lg bg-base-100 max-h-80 overflow-y-auto mb-6 py-2"
+           data-file-browser-target="tree">
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button type="button" data-action="file-browser#closeModal">close</button>
+    </form>
+  </dialog>
+</div>
