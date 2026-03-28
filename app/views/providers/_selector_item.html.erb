@@ -1,0 +1,19 @@
+<div class="flex items-center gap-3">
+  <div class="text-2xl">
+    <% if item.github? %>
+      <iconify-icon icon="mdi:github" height="28"></iconify-icon>
+    <% elsif item.gitlab? %>
+      <iconify-icon icon="mdi:gitlab" height="28"></iconify-icon>
+    <% elsif item.bitbucket? %>
+      <iconify-icon icon="mdi:bitbucket" height="28"></iconify-icon>
+    <% else %>
+      <iconify-icon icon="mdi:docker" height="28"></iconify-icon>
+    <% end %>
+  </div>
+  <div class="flex-1 min-w-0">
+    <div class="font-semibold"><%= item.provider.titleize %></div>
+    <div class="text-sm text-base-content/60">
+      <%= item.username %> · <%= item.abbreviated_access_token %>
+    </div>
+  </div>
+</div>
