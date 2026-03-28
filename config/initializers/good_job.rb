@@ -50,6 +50,11 @@ Rails.application.configure do
         cron: Rails.application.config.cloud_mode ? "*/5 * * * *" : "* * * * *",
         class: "Scheduled::CheckForNewCommitsJob",
         description: "Check for new commits every minute"
+      },
+      sync_cluster_packages: {
+        cron: "0 0 * * *",
+        class: "Scheduled::SyncClusterPackagesJob",
+        description: "Sync cluster packages daily at midnight"
       }
     }
   }

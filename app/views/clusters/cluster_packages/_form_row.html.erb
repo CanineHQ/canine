@@ -10,8 +10,7 @@
            <% end %> />
     <iconify-icon icon="<%= definition['icon'] %>" height="24"></iconify-icon>
     <div>
-      <span class="font-semibold"><%= definition['display_name'] %></span>
-      <p class="text-sm text-gray-400"><%= definition['description'] %></p>
+      <%= render "clusters/cluster_packages/description", definition: definition %>
     </div>
   </label>
 

@@ -11,8 +11,12 @@ class Async::K8::ClusterIpViewModel < Async::BaseViewModel
 
   def async_render
     connection = K8::Connection.new(service.project, current_user)
-    ingress = K8::Stateless::Ingress.new(service)
-    record = Dns::Utils.infer_expected_hostname(ingress, connection)
+    resource = if service.project.cluster.gateway_based?
+      K8::Stateless::Gateway.new(service)
+    else
+      K8::Stateless::Ingress.new(service)
+    end
+    record = Dns::Utils.infer_expected_hostname(resource, connection)
     if record[:type] == :ip_address
       ip = record[:value]
       <<~HTML

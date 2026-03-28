@@ -14,11 +14,20 @@ class Async::K8::CertificateStatusViewModel < Async::BaseViewModel
     @_connection ||= K8::Connection.new(service.project.cluster, current_user)
   end
   def async_render
+    resource = if service.project.cluster.gateway_based?
+      K8::Stateless::Gateway.new(service)
+    else
+      K8::Stateless::Ingress.new(service)
+    end
+
     template = <<-HTML
       <div class="flex items-center gap-2">
         Certificate Status:
-        <% if K8::Stateless::Ingress.new(service).connect(connection).certificate_status %>
+        <% status = resource.connect(connection).certificate_status %>
+        <% if status == true %>
           <span class="text-success font-semibold">Issued</span>
+        <% elsif status == :pending %>
+          <span class="text-base-content/50 font-semibold">Pending</span>
         <% else %>
           <span class="text-warning font-semibold">Issuing</span>
         <% end %>
