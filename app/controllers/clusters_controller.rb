@@ -64,34 +64,35 @@ class ClustersController < ApplicationController
     end
   end
 
-  def export(cluster, namespace, yaml_content, zip)
-    parsed = YAML.safe_load(yaml_content)
-
-    parsed['items'].each do |item|
-      name = item['metadata']['name']
-      zip.put_next_entry("#{cluster}/#{namespace}/#{name}.yaml")
-      zip.write(item.to_yaml)
-    end
-  end
-
   def download_yaml
     require 'zip'
 
+    kubectl = K8::Kubectl.new(K8::Connection.new(@cluster, current_user))
+
     stringio = Zip::OutputStream.write_buffer do |zio|
       @cluster.projects.each do |project|
-        # Create a directory for each project
-        # Export services, deployments, ingress and cron jobs from a kubernetes namespace
-        %w[services deployments ingress cronjobs].each do |resource|
-          yaml_content = K8::Kubectl.new(
-            K8::Connection.new(@cluster, current_user)
-          ).call("get #{resource} -n #{project.namespace} -o yaml")
-          export(@cluster.name, project.namespace, yaml_content, zio)
+        %w[services deployments ingress cronjobs configmaps secrets persistentvolumeclaims].each do |resource|
+          yaml_content = kubectl.call("get #{resource} -n #{project.namespace} -l caninemanaged=true -o yaml")
+          export_resources(yaml_content, @cluster.name, project.namespace, zio)
+        rescue => e
+          Rails.logger.warn("Failed to export #{resource} from #{project.namespace}: #{e.message}")
         end
+      end
+
+      @cluster.add_ons.installed.each do |add_on|
+        %w[services deployments statefulsets configmaps secrets persistentvolumeclaims].each do |resource|
+          yaml_content = kubectl.call("get #{resource} -n #{add_on.namespace} -o yaml")
+          export_resources(yaml_content, @cluster.name, "add-ons/#{add_on.name}", zio)
+        rescue => e
+          Rails.logger.warn("Failed to export #{resource} from add-on #{add_on.name}: #{e.message}")
+        end
+
+        zio.put_next_entry("#{@cluster.name}/add-ons/#{add_on.name}/helm-values.yaml")
+        zio.write(add_on.values.to_yaml)
       end
     end
     stringio.rewind
 
-    # Send the zip file to the user
     send_data(stringio.read,
       filename: "#{@cluster.name}.zip",
       type: "application/zip"
@@ -158,6 +159,19 @@ class ClustersController < ApplicationController
   end
 
   private
+
+  def export_resources(yaml_content, cluster_name, namespace, zip)
+    parsed = YAML.safe_load(yaml_content)
+    items = parsed&.dig('items') || []
+
+    items.each do |item|
+      name = item.dig('metadata', 'name')
+      next unless name
+
+      zip.put_next_entry("#{cluster_name}/#{namespace}/#{name}.yaml")
+      zip.write(item.to_yaml)
+    end
+  end
 
   def set_cluster
     clusters = Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
