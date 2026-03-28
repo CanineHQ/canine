@@ -45,8 +45,10 @@
             <div data-yaml-autocomplete-target="status" class="absolute bottom-2 right-2 text-xs"></div>
           </div>
         </div>
-        <div class="form-footer">
+        <div class="form-footer flex items-center gap-2">
           <%= form.submit "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+          <%= form.button "Force Save", name: "force", value: "true", type: "submit", class: "btn btn-ghost",
+            data: { turbo_submits_with: "Saving...", turbo_confirm: "This will skip schema validation checks. Are you sure you want to proceed?" } %>
         </div>
       <% end %>
       <div class="text-sm text-gray-500">

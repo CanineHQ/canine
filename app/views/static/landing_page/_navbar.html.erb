@@ -1,0 +1,131 @@
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<div data-controller="landing-nav">
+  <nav class="relative z-50 bg-gray-900/80 backdrop-blur-md border-b border-white/10">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <!-- Logo -->
+        <div class="flex flex-1 items-center">
+          <a href="/" data-turbo="false" class="flex items-center">
+            <img class="h-8" src="/images/logo-full.webp" alt="Canine">
+          </a>
+        </div>
+
+        <!-- Desktop Nav -->
+        <div class="hidden lg:flex lg:items-center lg:gap-x-8">
+          <!-- Product dropdown -->
+          <div class="group relative">
+            <button class="flex items-center gap-1 text-sm font-semibold text-gray-300 hover:text-white transition">
+              Product
+              <span class="inline-block transition-transform duration-200 group-hover:rotate-180">
+                <iconify-icon icon="lucide:chevron-down" class="text-xs"></iconify-icon>
+              </span>
+            </button>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 hidden group-hover:block z-50">
+              <div class="bg-gray-800 border border-white/10 rounded-xl shadow-xl p-2 min-w-[500px]">
+                <a href="/model-context-protocol" data-turbo="false" class="flex items-center gap-4 px-4 py-3.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition">
+                  <iconify-icon icon="lucide:cpu" class="text-xl text-indigo-400 shrink-0"></iconify-icon>
+                  <div>
+                    <div class="text-sm font-semibold text-white">Model Context Protocol</div>
+                    <div class="text-sm text-gray-300 mt-0.5">Connect Claude Code or Cursor to deploy, debug, and manage your apps without leaving your editor</div>
+                  </div>
+                </a>
+                <a href="/self-hosted" data-turbo="false" class="flex items-center gap-4 px-4 py-3.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition">
+                  <iconify-icon icon="lucide:server" class="text-xl text-indigo-400 shrink-0"></iconify-icon>
+                  <div>
+                    <div class="text-sm font-semibold text-white">Self-Hosted</div>
+                    <div class="text-sm text-gray-300 mt-0.5">Run Canine on your own infrastructure — fully open source, no paywalled tiers or missing features</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resources dropdown -->
+          <div class="group relative">
+            <button class="flex items-center gap-1 text-sm font-semibold text-gray-300 hover:text-white transition">
+              Resources
+              <span class="inline-block transition-transform duration-200 group-hover:rotate-180">
+                <iconify-icon icon="lucide:chevron-down" class="text-xs"></iconify-icon>
+              </span>
+            </button>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 pt-3 hidden group-hover:block z-50">
+              <div class="bg-gray-800 border border-white/10 rounded-xl shadow-xl p-2 min-w-[500px]">
+                <a href="https://docs.canine.sh" target="_blank" class="flex items-center gap-4 px-4 py-3.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition">
+                  <iconify-icon icon="lucide:book-open" class="text-xl text-indigo-400 shrink-0"></iconify-icon>
+                  <div>
+                    <div class="text-sm font-semibold text-white">Docs</div>
+                    <div class="text-sm text-gray-300 mt-0.5">Step-by-step guides, configuration reference, and API docs for deploying with Canine</div>
+                  </div>
+                </a>
+                <a href="https://github.com/CanineHQ/canine" target="_blank" class="flex items-center gap-4 px-4 py-3.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition">
+                  <iconify-icon icon="lucide:github" class="text-xl text-indigo-400 shrink-0"></iconify-icon>
+                  <div>
+                    <div class="text-sm font-semibold text-white">GitHub</div>
+                    <div class="text-sm text-gray-300 mt-0.5">Canine is fully open source — browse the code, open issues, or contribute</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost Calculator direct link -->
+          <a href="/calculator" data-turbo="false" class="text-sm font-semibold text-gray-300 hover:text-white transition">Cost Calculator</a>
+        </div>
+
+        <!-- Desktop Right Side -->
+        <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:gap-x-4">
+          <div class="relative">
+            <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub" style="visibility: hidden;">Star</a>
+          </div>
+          <a href="<%= new_user_session_path %>" data-turbo="false" class="text-sm font-semibold text-gray-300 hover:text-white transition">Sign in</a>
+          <a href="<%= new_user_registration_path %>" data-turbo="false" class="rounded-md bg-indigo-500 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 transition">Get Started</a>
+        </div>
+
+        <!-- Mobile Right Side -->
+        <div class="flex items-center gap-3 lg:hidden">
+          <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub" style="visibility: hidden;">Star</a>
+          <button type="button" class="text-gray-400 hover:text-white" data-action="click->landing-nav#toggleMobile">
+            <iconify-icon icon="lucide:menu" class="text-2xl"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Fullscreen Mobile Menu -->
+  <div class="fixed inset-0 z-[100] bg-gray-900 lg:hidden hidden" data-landing-nav-target="mobileMenu">
+    <div class="flex items-center justify-between px-6 h-16 border-b border-white/10">
+      <a href="/" data-turbo="false" class="flex items-center">
+        <img class="h-8" src="/images/logo-full.webp" alt="Canine">
+      </a>
+      <button type="button" class="text-gray-400 hover:text-white" data-action="click->landing-nav#toggleMobile">
+        <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="px-8 py-10 space-y-8">
+      <div class="space-y-3">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Product</p>
+        <a href="/model-context-protocol" data-turbo="false" class="block text-xl font-semibold text-gray-300 hover:text-white transition">Model Context Protocol</a>
+        <a href="/self-hosted" data-turbo="false" class="block text-xl font-semibold text-gray-300 hover:text-white transition">Self-Hosted</a>
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500">Resources</p>
+        <a href="https://docs.canine.sh" target="_blank" class="block text-xl font-semibold text-gray-300 hover:text-white transition">Docs</a>
+        <a href="https://github.com/CanineHQ/canine" target="_blank" class="block text-xl font-semibold text-gray-300 hover:text-white transition">GitHub</a>
+      </div>
+
+      <a href="/calculator" data-turbo="false" class="block text-xl font-semibold text-gray-300 hover:text-white transition">Cost Calculator</a>
+
+      <div class="pt-6 border-t border-white/10 space-y-4">
+        <a href="<%= new_user_session_path %>" data-turbo="false" class="block text-lg font-semibold text-gray-300 hover:text-white transition">Sign in</a>
+        <a href="<%= new_user_registration_path %>" data-turbo="false" class="block rounded-md bg-indigo-500 px-4 py-3 text-lg font-semibold text-white shadow-sm hover:bg-indigo-400 text-center transition">Get Started</a>
+      </div>
+
+      <div class="pt-2">
+        <a class="github-button" href="https://github.com/CanineHQ/canine" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star CanineHQ/canine on GitHub" style="visibility: hidden;">Star</a>
+      </div>
+    </div>
+  </div>
+</div>

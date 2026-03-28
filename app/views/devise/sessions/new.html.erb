@@ -12,7 +12,7 @@
         </div>
       <% end %>
 
-      <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }) do |f| %>
+      <%= form_with(model: resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-4" }, data: { turbo: false }) do |f| %>
         <% if flash[:alert] %>
           <div class="alert alert-error mb-4">
             <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>

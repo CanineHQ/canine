@@ -4,6 +4,10 @@
 // that code so it'll be compiled.
 
 import "@hotwired/turbo-rails"
+import { Turbo } from "@hotwired/turbo-rails"
+import { setConfirmModal } from "./confirm_modal"
+
+setConfirmModal(Turbo)
 require("@rails/activestorage").start()
 //require("trix")
 //require("@rails/actiontext")

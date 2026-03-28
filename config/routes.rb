@@ -72,7 +72,7 @@ Rails.application.routes.draw do
       resource :promote_to_admin, only: [ :create, :destroy ]
     end
   end
-  resources :accounts, only: [ :create ] do
+  resources :accounts, only: [ :create, :update ] do
     collection do
       resources :account_users, only: %i[create index update destroy], module: :accounts
       resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
@@ -247,6 +247,8 @@ Rails.application.routes.draw do
 
   get "/install.sh", to: "static#install"
   get "/calculator", to: "static#calculator"
+  get "/model-context-protocol", to: "static#mcp_tools"
+  get "/self-hosted", to: "static#self_hosted"
   # Public marketing homepage
   if Rails.application.config.local_mode
     namespace :local do

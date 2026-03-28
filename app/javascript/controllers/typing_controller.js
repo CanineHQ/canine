@@ -1,22 +1,20 @@
-// Customizable command palette for advanced users
-// Opens with cmd+k or ctrl+k by default
-// https://github.com/excid3/ninja-keys
-
 import Typed from 'typed.js';
-
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["typing"]
+
   connect() {
-    const typed = new Typed(this.typingTarget, {
-      strings: [
-        '<b style="color: #7F4B8B">Sentry</b>',
-        '<b style="color: #4F42DB">Dagster</b>',
-        '<b style="color: #509EE2">Metabase</b>',
-        '<b style="color: #EF5A27">Grafana</b>',
-        '<b style="color: #E43820">Airflow</b>',
-      ],
+    const words = JSON.parse(this.element.dataset.typingWords || '[]');
+    const colors = JSON.parse(this.element.dataset.typingColors || '[]');
+
+    const strings = words.map(function(word, i) {
+      var color = colors[i] || colors[0] || '#ffffff';
+      return '<b style="color: ' + color + '">' + word + '</b>';
+    });
+
+    new Typed(this.typingTarget, {
+      strings,
       typeSpeed: 50,
       loop: true,
     });

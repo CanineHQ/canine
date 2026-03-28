@@ -5,10 +5,12 @@ Capybara.register_driver(:cuprite) do |app|
     app,
     window_size: [ 1200, 800 ],
     headless: !ENV["HEADLESS"].in?(%w[n 0 no false]),
-    process_timeout: 10,
+    process_timeout: 30,
+    timeout: 10,
     inspector: true
   )
 end
 
 Capybara.default_driver = :cuprite
 Capybara.javascript_driver = :cuprite
+Capybara.default_max_wait_time = 5

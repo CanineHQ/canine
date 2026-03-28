@@ -24,26 +24,27 @@ export default class extends Controller {
     const container = this.containerTarget;
     const div = document.createElement("div");
     const isHidden = !isNew && id !== null
-    const displayValue = isHidden ? '' : value
     const placeholder = isHidden ? '••••••••••••••••••••••••' : 'VALUE'
     const isSecret = storageType === 'secret'
     const lockIcon = isSecret ? 'lucide:lock' : 'lucide:lock-open'
     const lockColor = isSecret ? 'text-warning' : 'text-base-content'
 
     div.innerHTML = `
-      <div class="flex items-center my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
+      <div class="flex items-start my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" value="${name}">
         ${isHidden ? `<input type="hidden" name="environment_variables[][keep_existing_value]" value="true">` : ''}
         <input type="hidden" name="environment_variables[][storage_type]" value="${storageType}">
-        <input
+        <textarea
           aria-label="Env value"
           placeholder="${placeholder}"
-          class="input input-bordered focus:outline-offset-0 w-full"
-          type="text"
+          class="textarea textarea-bordered focus:outline-offset-0 w-full font-mono resize-none text-base overflow-x-auto"
           name="environment_variables[][value]"
-          value="${displayValue}"
+          rows="1"
+          wrap="off"
+          data-controller="textarea-autogrow"
+          data-textarea-autogrow-resize-debounce-delay-value="100"
           ${isHidden ? 'readonly' : ''}
-        >
+        ></textarea>
         ${isHidden ? `
           <button
             type="button"
@@ -65,6 +66,13 @@ export default class extends Controller {
         <button type="button" class="btn btn-danger" data-action="environment-variables#remove">Delete</button>
       </div>
     `;
+
+    // Set textarea value programmatically to avoid HTML injection issues
+    if (!isHidden) {
+      const textarea = div.querySelector('textarea[name="environment_variables[][value]"]');
+      textarea.value = value;
+    }
+
     container.appendChild(div);
   }
 
@@ -73,7 +81,7 @@ export default class extends Controller {
     const button = event.currentTarget;
     const wrapper = button.closest('[data-env-id]');
     const envId = wrapper.dataset.envId;
-    const input = wrapper.querySelector('input[name="environment_variables[][value]"]');
+    const input = wrapper.querySelector('textarea[name="environment_variables[][value]"]');
     const keepExistingInput = wrapper.querySelector('input[name="environment_variables[][keep_existing_value]"]');
     
     if (!envId) return;
@@ -88,6 +96,7 @@ export default class extends Controller {
         input.value = data.value
         input.readOnly = false
         input.placeholder = 'VALUE'
+        input.dispatchEvent(new Event('input'))
         // Remove the keep_existing_value hidden input since we now have the real value
         if (keepExistingInput) {
           keepExistingInput.remove()

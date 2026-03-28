@@ -73,6 +73,14 @@ class StaticController < ApplicationController
     render plain: File.read(Rails.root.join('swagger', 'v1', 'swagger.yaml')), layout: false
   end
 
+  def mcp_tools
+    redirect_to root_path if user_signed_in?
+  end
+
+  def self_hosted
+    redirect_to root_path if user_signed_in?
+  end
+
   def install
     GoogleAnalytics.track("install_script_download", client_id: request.remote_ip, params: { user_agent: request.user_agent.to_s })
     send_file Rails.root.join("install", "install.sh"), type: "text/plain", disposition: "inline"
