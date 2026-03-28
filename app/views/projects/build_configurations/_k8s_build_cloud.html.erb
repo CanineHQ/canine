@@ -4,16 +4,15 @@
   </label>
   <% build_clouds = current_account.build_clouds.active %>
   <% if build_clouds.any? %>
-    <%= bc_form.collection_select :build_cloud_id, 
-      build_clouds,
-      :id, 
-      :friendly_name,
-      { include_blank: "Select a build cloud...", selected: build_configuration.build_cloud_id },
-      { 
-        class: "select select-bordered w-full",
-        data: { "build-configuration-target": "clusterInput" }
-      }
-    %>
+    <%= render(RichSelectComponent.new(
+      name: bc_form.field_name(:build_cloud_id),
+      id: "build_cloud_select",
+      collection: build_clouds,
+      selected: build_configuration.build_cloud_id,
+      partial: "build_clouds/selector_item",
+      placeholder: "Select a build cloud...",
+      data: { "build-configuration-target": "clusterInput" }
+    )) %>
     <label class="label">
       <span class="label-text-alt">Select a Kubernetes cluster configured for container builds</span>
     </label>

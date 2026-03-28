@@ -1,0 +1,44 @@
+<div data-controller="rich-select" data-test-id="<%= @id %>" class="relative w-full">
+  <select name="<%= @name %>" id="<%= @id %>" data-rich-select-target="input" class="hidden" <%= select_data_attributes %>>
+    <% if @placeholder.present? %>
+      <option value=""><%= @placeholder %></option>
+    <% end %>
+    <% @collection.each do |item| %>
+      <option value="<%= item.send(@value_method) %>" <%= "selected" if item.send(@value_method).to_s == @selected.to_s %> <%= "disabled" if disabled?(item) %>><%= item.try(:name) || item.send(@value_method) %></option>
+    <% end %>
+  </select>
+
+  <button
+    type="button"
+    class="w-full rounded-lg border border-base-content/20 bg-base-100 px-4 py-3 text-left transition-colors hover:bg-base-200 outline-none focus:outline-none focus:ring-2 focus:ring-base-content/20 focus:ring-offset-0"
+    data-rich-select-target="trigger"
+    data-action="click->rich-select#toggle keydown->rich-select#onTriggerKeydown"
+  >
+    <% if selected_item %>
+      <%= render partial: @partial, locals: { item: selected_item } %>
+    <% else %>
+      <span class="text-base-content/50"><%= @placeholder %></span>
+    <% end %>
+  </button>
+
+  <div
+    data-rich-select-target="dropdown"
+    class="absolute z-50 mt-1 hidden w-full overflow-hidden rounded-lg border border-base-300 bg-base-100 shadow-lg"
+  >
+    <ul class="max-h-64 overflow-y-auto py-1" role="listbox" data-rich-select-target="list">
+      <% @collection.each do |item| %>
+        <li
+          role="option"
+          tabindex="-1"
+          data-value="<%= item.send(@value_method) %>"
+          data-rich-select-target="option"
+          data-action="click->rich-select#select keydown->rich-select#onOptionKeydown"
+          class="<%= disabled?(item) ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-base-200 focus:bg-base-200' %> px-4 py-3 transition-colors focus:outline-none <%= 'bg-base-200' if item.send(@value_method).to_s == @selected.to_s %>"
+          <%= "data-disabled" if disabled?(item) %>
+        >
+          <%= render partial: @partial, locals: { item: item } %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

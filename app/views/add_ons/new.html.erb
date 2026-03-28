@@ -27,10 +27,15 @@
             label: "Cluster",
             description: "The cluster to deploy your add on to."
           )) do %>
-            <%= form.collection_select :cluster_id, current_account.clusters.running, :id, :name, {}, { class: "select select-bordered w-full" } %>
-            <label class="label">
-              <span class="label-text-alt">* Required</span>
-            </label>
+            <%= render(RichSelectComponent.new(
+              name: "add_on[cluster_id]",
+              id: "add_on_cluster_id",
+              collection: current_account.clusters.where.not(status: [:deleted, :destroying]).sort_by { |c| c.running? ? 0 : 1 },
+              selected: form.object.cluster_id,
+              partial: "clusters/selector_item",
+              placeholder: "Select a cluster",
+              disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id)
+            )) %>
           <% end %>
 
           <%= render "shared/partials/namespace_input_group", form: %>

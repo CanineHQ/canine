@@ -15,16 +15,15 @@
           <label class="label">
             <span class="label-text">Credentials</span>
           </label>
-          <%= fields.select(
-            :provider_id,
-            options_for_select(
-              @selectable_providers.map { |provider| [provider.friendly_name, provider.id] },
-              selected: project.project_credential_provider.provider_id,
-              disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id)
-            ),
-            {},
-            { class: "select select-bordered w-full" }
-          ) %>
+          <%= render(RichSelectComponent.new(
+            name: fields.field_name(:provider_id),
+            id: "provider_select",
+            collection: @selectable_providers,
+            selected: project.project_credential_provider.provider_id,
+            partial: "providers/selector_item",
+            placeholder: "Select credentials",
+            disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id)
+          )) %>
         <% end %>
         <div class="label">
           <span class="label-text-alt"></span>
