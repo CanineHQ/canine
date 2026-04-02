@@ -1,0 +1,399 @@
+openapi: 3.0.3
+info:
+  title: Error Tracking API
+  description: |
+    Lightweight, self-hosted Sentry-compatible error tracking service.
+    Designed to run inside Kubernetes clusters with SQLite storage.
+    No authentication required (intended for cluster-internal use).
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:{port}
+    description: Local development
+    variables:
+      port:
+        default: "3001"
+        description: Port the service is listening on
+  - url: http://error-tracking.{namespace}.svc.cluster.local:{port}
+    description: Kubernetes cluster
+    variables:
+      namespace:
+        default: default
+        description: Kubernetes namespace
+      port:
+        default: "3001"
+        description: Port the service is listening on
+
+paths:
+  /api/sources:
+    get:
+      summary: List all sources
+      operationId: listSources
+      tags: [Sources]
+      responses:
+        "200":
+          description: List of sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Source"
+
+    post:
+      summary: Create a source
+      operationId: createSource
+      tags: [Sources]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSourceRequest"
+      responses:
+        "201":
+          description: Source created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Source"
+        "422":
+          description: Source name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/sources/{source_id}/events:
+    get:
+      summary: List events for a source
+      operationId: listEvents
+      tags: [Events]
+      parameters:
+        - name: source_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        "500":
+          description: Database error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/{source_id}/store/:
+    post:
+      summary: Sentry store endpoint
+      description: |
+        Receives Sentry-format error events. Compatible with standard Sentry SDKs.
+        Authentication via sentry_key in query params or headers.
+      operationId: sentryStore
+      tags: [Sentry Ingest]
+      parameters:
+        - name: source_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: sentry_key
+          in: query
+          required: false
+          description: Source public_key (alternative to header auth)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SentryEvent"
+      responses:
+        "200":
+          description: Event stored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreResponse"
+        "400":
+          description: Invalid JSON
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Missing sentry key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Source not found or database error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/{source_id}/envelope/:
+    post:
+      summary: Sentry envelope endpoint
+      description: |
+        Receives Sentry envelope format (newline-delimited JSON).
+        Line 1: envelope header, Line 2: item header, Line 3: event payload.
+        Authentication via sentry_key in query params or headers.
+      operationId: sentryEnvelope
+      tags: [Sentry Ingest]
+      parameters:
+        - name: source_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: sentry_key
+          in: query
+          required: false
+          description: Source public_key (alternative to header auth)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Newline-delimited JSON (envelope header, item header, event payload)
+      responses:
+        "200":
+          description: Envelope processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreResponse"
+        "401":
+          description: Missing sentry key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  parameters:
+    SentryAuth:
+      name: x-sentry-auth
+      in: header
+      required: false
+      description: "Sentry auth header, e.g. `Sentry sentry_version=7, sentry_key={public_key}`"
+      schema:
+        type: string
+
+  schemas:
+    Source:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        platform:
+          type: string
+          nullable: true
+        public_key:
+          type: string
+          description: UUID used as sentry_key for SDK authentication
+        created_at:
+          type: string
+      required: [id, name, public_key, created_at]
+
+    CreateSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        platform:
+          type: string
+          nullable: true
+      required: [name]
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        source_id:
+          type: integer
+          format: int64
+        event_id:
+          type: string
+        level:
+          type: string
+          enum: [error, warning, fatal, info]
+        platform:
+          type: string
+          nullable: true
+        server_name:
+          type: string
+          nullable: true
+        environment:
+          type: string
+          nullable: true
+        release:
+          type: string
+          nullable: true
+        transaction_name:
+          type: string
+          nullable: true
+        message:
+          type: string
+          nullable: true
+        exception_data:
+          type: string
+          description: JSON string of exception details
+        tags:
+          type: string
+          description: JSON string of tags
+        extra:
+          type: string
+          description: JSON string of extra context
+        contexts:
+          type: string
+          description: JSON string of contexts
+        request_data:
+          type: string
+          description: JSON string of request info
+        user_data:
+          type: string
+          description: JSON string of user info
+        payload:
+          type: string
+          description: Full original Sentry event JSON
+        occurred_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+      required:
+        - id
+        - source_id
+        - event_id
+        - level
+        - exception_data
+        - tags
+        - extra
+        - contexts
+        - request_data
+        - user_data
+        - payload
+        - occurred_at
+        - created_at
+
+    SentryEvent:
+      type: object
+      description: Standard Sentry event payload
+      properties:
+        event_id:
+          type: string
+          description: UUID, generated server-side if omitted
+        level:
+          type: string
+          enum: [error, warning, fatal, info]
+          default: error
+        message:
+          oneOf:
+            - type: string
+            - type: object
+              properties:
+                formatted:
+                  type: string
+                message:
+                  type: string
+        platform:
+          type: string
+        server_name:
+          type: string
+        environment:
+          type: string
+        release:
+          type: string
+        transaction:
+          type: string
+        timestamp:
+          type: number
+          format: double
+          description: Unix timestamp (seconds with fractional)
+        exception:
+          type: object
+          properties:
+            values:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  value:
+                    type: string
+                  stacktrace:
+                    type: object
+        tags:
+          type: object
+          additionalProperties: true
+        extra:
+          type: object
+          additionalProperties: true
+        contexts:
+          type: object
+          additionalProperties: true
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+            headers:
+              type: object
+              additionalProperties: true
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            username:
+              type: string
+
+    StoreResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Event ID
+      required: [id]
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]

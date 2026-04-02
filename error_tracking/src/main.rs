@@ -5,10 +5,27 @@ use axum::{
     extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},
     response::Html,
-    routing::{get, post},
+    routing::{delete, get, post},
 };
+use clap::Parser;
 use serde::Deserialize;
 use std::sync::Arc;
+
+#[derive(Parser)]
+#[command(name = "error-tracking", about = "Lightweight Sentry-compatible error tracking")]
+struct Args {
+    /// Host to bind to
+    #[arg(long, default_value = "127.0.0.1")]
+    host: String,
+
+    /// Port to listen on
+    #[arg(short, long, default_value = "3001")]
+    port: u16,
+
+    /// Auto-delete events older than this many days (0 = disabled)
+    #[arg(long, default_value = "30")]
+    retention_days: i64,
+}
 
 type Db = Arc<db::Database>;
 
@@ -20,20 +37,43 @@ fn build_app(db: Db) -> Router {
         // JSON API
         .route("/api/sources", get(api_list_sources).post(api_create_source))
         .route("/api/sources/{source_id}/events", get(api_list_events))
+        .route("/api/sources/{source_id}/flush", delete(api_flush_source))
+        // Docs
+        .route("/docs", get(ui_docs))
+        .route("/docs/swagger.yaml", get(ui_swagger_yaml))
         // HTML UI
         .route("/", get(ui_index))
         .route("/sources/{source_id}", get(ui_source))
+        .route("/issues/{issue_id}", get(ui_issue))
         .route("/events/{event_id}", get(ui_event))
         .with_state(db)
 }
 
 #[tokio::main]
 async fn main() {
+    let args = Args::parse();
     let db = Arc::new(db::Database::new().expect("Failed to initialize database"));
-    let app = build_app(db);
+    let app = build_app(db.clone());
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3001".into());
-    let addr = format!("0.0.0.0:{port}");
+    if args.retention_days > 0 {
+        let cleanup_db = db.clone();
+        let days = args.retention_days;
+        eprintln!("auto-cleanup enabled: retention={days} days");
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(3600));
+            loop {
+                interval.tick().await;
+                match cleanup_db.cleanup_older_than(days) {
+                    Ok((events, issues)) if events > 0 || issues > 0 => {
+                        eprintln!("cleanup: deleted {events} events, {issues} issues older than {days} days");
+                    }
+                    _ => {}
+                }
+            }
+        });
+    }
+
+    let addr = format!("{}:{}", args.host, args.port);
     eprintln!("error-tracking listening on {addr}");
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
@@ -174,6 +214,18 @@ fn store_event(db: &db::Database, source_id: i64, data: &serde_json::Value) -> R
         })
         .unwrap_or_else(|| chrono::Utc::now().to_rfc3339());
 
+    let exception_type = data["exception"]["values"]
+        .as_array()
+        .and_then(|vals| vals.first())
+        .and_then(|ex| ex["type"].as_str())
+        .map(|s| s.to_string());
+
+    let exception_value = data["exception"]["values"]
+        .as_array()
+        .and_then(|vals| vals.first())
+        .and_then(|ex| ex["value"].as_str())
+        .map(|s| s.to_string());
+
     let j = |v: &serde_json::Value| {
         if v.is_null() { "{}".to_string() } else { v.to_string() }
     };
@@ -188,6 +240,8 @@ fn store_event(db: &db::Database, source_id: i64, data: &serde_json::Value) -> R
         release,
         transaction,
         message.as_deref(),
+        exception_type.as_deref(),
+        exception_value.as_deref(),
         &j(&data["exception"]),
         &j(&data["tags"]),
         &j(&data["extra"]),
@@ -230,17 +284,34 @@ async fn api_list_sources(State(db): State<Db>) -> (StatusCode, String) {
 }
 
 #[derive(Deserialize, Default)]
-struct EventQuery {
+struct PaginationQuery {
     limit: Option<i64>,
+    page: Option<i64>,
+}
+
+impl PaginationQuery {
+    fn limit(&self) -> i64 { self.limit.unwrap_or(50) }
+    fn page(&self) -> i64 { self.page.unwrap_or(1).max(1) }
+    fn offset(&self) -> i64 { (self.page() - 1) * self.limit() }
 }
 
 async fn api_list_events(
     State(db): State<Db>,
     Path(source_id): Path<i64>,
-    Query(q): Query<EventQuery>,
+    Query(q): Query<PaginationQuery>,
 ) -> (StatusCode, String) {
-    match db.list_events(source_id, q.limit.unwrap_or(100)) {
+    match db.list_events(source_id, q.limit(), q.offset()) {
         Ok(events) => (StatusCode::OK, serde_json::to_string(&events).unwrap()),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!(r#"{{"error":"{e}"}}"#)),
+    }
+}
+
+async fn api_flush_source(
+    State(db): State<Db>,
+    Path(source_id): Path<i64>,
+) -> (StatusCode, String) {
+    match db.flush_source(source_id) {
+        Ok(deleted) => (StatusCode::OK, format!(r#"{{"deleted":{deleted}}}"#)),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!(r#"{{"error":"{e}"}}"#)),
     }
 }
@@ -274,20 +345,59 @@ const STYLE: &str = r#"
   pre { background: #0d1117; border: 1px solid #30363d; border-radius: 4px; padding: 12px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
   .header { border-bottom: 1px solid #21262d; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
   .empty { text-align: center; padding: 40px; color: #8b949e; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pagination { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 16px; font-size: 14px; }
+  .pagination a, .pagination span { padding: 4px 10px; border-radius: 4px; }
+  .pagination a { background: #21262d; color: #e1e4e8; }
+  .pagination a:hover { background: #30363d; text-decoration: none; }
+  .pagination .current { background: #58a6ff; color: #0f1117; font-weight: 600; }
 </style>
 "#;
+
+async fn ui_swagger_yaml() -> (StatusCode, HeaderMap, &'static str) {
+    let yaml = include_str!("../swagger.yaml");
+    let mut headers = HeaderMap::new();
+    headers.insert("content-type", "text/yaml".parse().unwrap());
+    (StatusCode::OK, headers, yaml)
+}
+
+async fn ui_docs() -> Html<&'static str> {
+    Html(r#"<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Tracking API Docs</title>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+        SwaggerUIBundle({
+            url: '/docs/swagger.yaml',
+            dom_id: '#swagger-ui',
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+            layout: 'BaseLayout',
+        });
+    </script>
+</body>
+</html>"#)
+}
 
 async fn ui_index(State(db): State<Db>) -> Html<String> {
     let sources = db.list_sources().unwrap_or_default();
 
     let mut rows = String::new();
     for s in &sources {
-        let count = db.event_count(s.id).unwrap_or(0);
+        let issues = db.issue_count(s.id).unwrap_or(0);
+        let events = db.event_count(s.id).unwrap_or(0);
         rows.push_str(&format!(
             r#"<tr>
                 <td><a href="/sources/{id}">{name}</a></td>
                 <td class="muted">{platform}</td>
-                <td>{count}</td>
+                <td>{issues}</td>
+                <td>{events}</td>
                 <td class="muted mono">{created}</td>
             </tr>"#,
             id = s.id,
@@ -304,67 +414,84 @@ async fn ui_index(State(db): State<Db>) -> Html<String> {
     };
 
     Html(format!(
-        r#"<!DOCTYPE html><html><head><title>Error Tracking</title>{STYLE}</head><body>
+        r#"<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Error Tracking</title>{STYLE}</head><body>
         <div class="container">
             <div class="header">
                 <h1>Error Tracking</h1>
+                <a href="/docs">API Docs</a>
             </div>
             {empty}
-            <table>
-                <thead><tr><th>Source</th><th>Platform</th><th>Events</th><th>Created</th></tr></thead>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Source</th><th>Platform</th><th>Issues</th><th>Events</th><th>Created</th></tr></thead>
                 <tbody>{rows}</tbody>
-            </table>
+            </table></div>
         </div>
         </body></html>"#,
     ))
 }
 
-async fn ui_source(State(db): State<Db>, Path(source_id): Path<i64>) -> Result<Html<String>, StatusCode> {
+async fn ui_source(
+    State(db): State<Db>,
+    Path(source_id): Path<i64>,
+    Query(q): Query<PaginationQuery>,
+) -> Result<Html<String>, StatusCode> {
     let source = db
         .get_source_by_id(source_id)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
         .ok_or(StatusCode::NOT_FOUND)?;
 
-    let events = db.list_events(source_id, 100).unwrap_or_default();
+    let per_page = q.limit();
+    let page = q.page();
+    let total_issues = db.issue_count(source_id).unwrap_or(0);
+    let total_pages = (total_issues + per_page - 1) / per_page;
+    let issues = db.list_issues(source_id, per_page, q.offset()).unwrap_or_default();
 
     let dsn = format!("http://{key}@<HOST>:3001/api/{id}", key = source.public_key, id = source.id);
 
     let mut rows = String::new();
-    for e in &events {
-        let badge_class = match e.level.as_str() {
+    for i in &issues {
+        let badge_class = match i.level.as_str() {
             "fatal" => "badge-fatal",
             "error" => "badge-error",
             "warning" => "badge-warning",
             _ => "badge-info",
         };
-        let msg = e.message.as_deref().unwrap_or("-");
-        let msg_short = if msg.len() > 120 { &msg[..120] } else { msg };
+        let title = match (&i.exception_type, &i.exception_value) {
+            (Some(t), Some(v)) => {
+                let v_short = if v.len() > 80 { &v[..80] } else { v.as_str() };
+                format!("{t}: {v_short}")
+            }
+            (Some(t), None) => t.clone(),
+            (None, Some(v)) => v.clone(),
+            (None, None) => "(no exception)".to_string(),
+        };
+        let txn = i.transaction_name.as_deref().unwrap_or("-");
         rows.push_str(&format!(
             r#"<tr>
-                <td><a href="/events/{event_id}">{short_id}</a></td>
+                <td><a href="/issues/{id}">{title}</a></td>
                 <td><span class="badge {badge_class}">{level}</span></td>
-                <td>{msg}</td>
-                <td class="muted">{env}</td>
-                <td class="muted mono">{occurred}</td>
+                <td>{txn}</td>
+                <td>{count}</td>
+                <td class="muted mono">{last_seen}</td>
             </tr>"#,
-            event_id = e.event_id,
-            short_id = &e.event_id[..8.min(e.event_id.len())],
+            id = i.id,
+            title = title,
             badge_class = badge_class,
-            level = e.level,
-            msg = msg_short,
-            env = e.environment.as_deref().unwrap_or("-"),
-            occurred = e.occurred_at,
+            level = i.level,
+            txn = txn,
+            count = i.event_count,
+            last_seen = i.last_seen,
         ));
     }
 
-    let empty = if events.is_empty() {
-        r#"<div class="empty">No events yet. Configure your app with the DSN above.</div>"#
+    let empty = if issues.is_empty() {
+        r#"<div class="empty">No issues yet. Configure your app with the DSN above.</div>"#
     } else {
         ""
     };
 
     Ok(Html(format!(
-        r#"<!DOCTYPE html><html><head><title>{name} - Error Tracking</title>{STYLE}</head><body>
+        r#"<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>{name} - Error Tracking</title>{STYLE}</head><body>
         <div class="container">
             <div class="header">
                 <h1><a href="/">Error Tracking</a> / {name}</h1>
@@ -375,13 +502,104 @@ async fn ui_source(State(db): State<Db>, Path(source_id): Path<i64>) -> Result<H
                 <p class="muted" style="margin-top:8px;font-size:13px">Replace &lt;HOST&gt; with the service address in your cluster (e.g. <code>error-tracking.default.svc.cluster.local</code>)</p>
             </div>
             {empty}
-            <table>
-                <thead><tr><th>ID</th><th>Level</th><th>Message</th><th>Env</th><th>Time</th></tr></thead>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Issue</th><th>Level</th><th>Transaction</th><th>Events</th><th>Last Seen</th></tr></thead>
                 <tbody>{rows}</tbody>
-            </table>
+            </table></div>
+            {pagination}
         </div>
         </body></html>"#,
         name = source.name,
+        pagination = pagination_html(&format!("/sources/{source_id}"), page, total_pages),
+    )))
+}
+
+async fn ui_issue(
+    State(db): State<Db>,
+    Path(issue_id): Path<i64>,
+    Query(q): Query<PaginationQuery>,
+) -> Result<Html<String>, StatusCode> {
+    let issue = db
+        .get_issue(issue_id)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    let source = db
+        .get_source_by_id(issue.source_id)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    let per_page = q.limit();
+    let page = q.page();
+    let total_pages = (issue.event_count + per_page - 1) / per_page;
+    let events = db.list_events_for_issue(issue_id, per_page, q.offset()).unwrap_or_default();
+
+    let badge_class = match issue.level.as_str() {
+        "fatal" => "badge-fatal",
+        "error" => "badge-error",
+        "warning" => "badge-warning",
+        _ => "badge-info",
+    };
+
+    let title = match (&issue.exception_type, &issue.exception_value) {
+        (Some(t), Some(v)) => format!("{t}: {v}"),
+        (Some(t), None) => t.clone(),
+        (None, Some(v)) => v.clone(),
+        (None, None) => "(no exception)".to_string(),
+    };
+
+    let mut rows = String::new();
+    for e in &events {
+        let msg = e.message.as_deref().unwrap_or("-");
+        let msg_short = if msg.len() > 120 { &msg[..120] } else { msg };
+        rows.push_str(&format!(
+            r#"<tr>
+                <td><a href="/events/{event_id}">{short_id}</a></td>
+                <td class="muted">{env}</td>
+                <td class="muted">{server}</td>
+                <td>{msg}</td>
+                <td class="muted mono">{occurred}</td>
+            </tr>"#,
+            event_id = e.event_id,
+            short_id = &e.event_id[..8.min(e.event_id.len())],
+            env = e.environment.as_deref().unwrap_or("-"),
+            server = e.server_name.as_deref().unwrap_or("-"),
+            msg = msg_short,
+            occurred = e.occurred_at,
+        ));
+    }
+
+    Ok(Html(format!(
+        r#"<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Issue - Error Tracking</title>{STYLE}</head><body>
+        <div class="container">
+            <div class="header">
+                <h1><a href="/">Error Tracking</a> / <a href="/sources/{sid}">{sname}</a> / Issue #{iid}</h1>
+            </div>
+            <div class="card">
+                <span class="badge {badge_class}">{level}</span>
+                <h2 style="margin-top:8px">{title}</h2>
+                <p class="muted" style="margin-top:4px">
+                    {txn} &middot; {count} events &middot; first seen {first_seen} &middot; last seen {last_seen}
+                </p>
+            </div>
+            <div class="table-wrap"><table>
+                <thead><tr><th>Event</th><th>Env</th><th>Server</th><th>Message</th><th>Time</th></tr></thead>
+                <tbody>{rows}</tbody>
+            </table></div>
+            {pagination}
+        </div>
+        </body></html>"#,
+        sid = source.id,
+        sname = source.name,
+        iid = issue.id,
+        badge_class = badge_class,
+        level = issue.level,
+        title = title,
+        txn = issue.transaction_name.as_deref().unwrap_or("-"),
+        count = issue.event_count,
+        first_seen = issue.first_seen,
+        last_seen = issue.last_seen,
+        pagination = pagination_html(&format!("/issues/{issue_id}"), page, total_pages),
     )))
 }
 
@@ -410,7 +628,7 @@ async fn ui_event(State(db): State<Db>, Path(event_id): Path<String>) -> Result<
     let user_pretty = pretty_json(&event.user_data);
 
     Ok(Html(format!(
-        r#"<!DOCTYPE html><html><head><title>Event {eid} - Error Tracking</title>{STYLE}</head><body>
+        r#"<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Event {eid} - Error Tracking</title>{STYLE}</head><body>
         <div class="container">
             <div class="header">
                 <h1><a href="/">Error Tracking</a> / <a href="/sources/{sid}">{sname}</a> / {short_id}</h1>
@@ -451,6 +669,38 @@ async fn ui_event(State(db): State<Db>, Path(event_id): Path<String>) -> Result<
         server = event.server_name.as_deref().unwrap_or("-"),
         occurred = event.occurred_at,
     )))
+}
+
+fn pagination_html(base_url: &str, page: i64, total_pages: i64) -> String {
+    if total_pages <= 1 {
+        return String::new();
+    }
+    let mut html = String::from(r#"<div class="pagination">"#);
+    if page > 1 {
+        html.push_str(&format!(r#"<a href="{base_url}?page={}">&laquo; Prev</a>"#, page - 1));
+    }
+    let start = (page - 3).max(1);
+    let end = (page + 3).min(total_pages);
+    if start > 1 {
+        html.push_str(&format!(r#"<a href="{base_url}?page=1">1</a>"#));
+        if start > 2 { html.push_str(r#"<span class="muted">...</span>"#); }
+    }
+    for p in start..=end {
+        if p == page {
+            html.push_str(&format!(r#"<span class="current">{p}</span>"#));
+        } else {
+            html.push_str(&format!(r#"<a href="{base_url}?page={p}">{p}</a>"#));
+        }
+    }
+    if end < total_pages {
+        if end < total_pages - 1 { html.push_str(r#"<span class="muted">...</span>"#); }
+        html.push_str(&format!(r#"<a href="{base_url}?page={total_pages}">{total_pages}</a>"#));
+    }
+    if page < total_pages {
+        html.push_str(&format!(r#"<a href="{base_url}?page={}">Next &raquo;</a>"#, page + 1));
+    }
+    html.push_str("</div>");
+    html
 }
 
 fn pretty_json(s: &str) -> String {
@@ -713,7 +963,7 @@ mod tests {
 
         assert_eq!(res.status(), StatusCode::OK);
 
-        let events = db.list_events(source.id, 10).unwrap();
+        let events = db.list_events(source.id, 10, 0).unwrap();
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].message.as_deref(), Some("ValueError: invalid literal"));
     }
@@ -826,7 +1076,7 @@ mod tests {
         assert_eq!(res.status(), StatusCode::OK);
         let body = body_string(res.into_body()).await;
         assert!(body.contains("full-flow"));
-        assert!(body.contains("Error number"));
+        assert!(body.contains("(no exception)"));
 
         // UI event detail page
         let res = app
