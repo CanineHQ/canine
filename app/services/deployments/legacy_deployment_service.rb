@@ -35,6 +35,9 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
     @connection = K8::Connection.new(@project, @user, allow_anonymous: true)
     runner = Cli::RunAndLog.new(@deployment, killable: @deployment)
     @kubectl = K8::Kubectl.new(@connection, runner)
+    @kubectl.register_before_apply do |yaml_content|
+      @deployment.add_manifest(yaml_content)
+    end
   end
 
   def apply_resource(resource_type, target)

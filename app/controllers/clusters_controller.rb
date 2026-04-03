@@ -64,36 +64,11 @@ class ClustersController < ApplicationController
     end
   end
 
-  def export(cluster, namespace, yaml_content, zip)
-    parsed = YAML.safe_load(yaml_content)
-
-    parsed['items'].each do |item|
-      name = item['metadata']['name']
-      zip.put_next_entry("#{cluster}/#{namespace}/#{name}.yaml")
-      zip.write(item.to_yaml)
-    end
-  end
-
   def download_yaml
-    require 'zip'
+    result = Clusters::ExportYaml.execute(cluster: @cluster)
 
-    stringio = Zip::OutputStream.write_buffer do |zio|
-      @cluster.projects.each do |project|
-        # Create a directory for each project
-        # Export services, deployments, ingress and cron jobs from a kubernetes namespace
-        %w[services deployments ingress cronjobs].each do |resource|
-          yaml_content = K8::Kubectl.new(
-            K8::Connection.new(@cluster, current_user)
-          ).call("get #{resource} -n #{project.namespace} -o yaml")
-          export(@cluster.name, project.namespace, yaml_content, zio)
-        end
-      end
-    end
-    stringio.rewind
-
-    # Send the zip file to the user
-    send_data(stringio.read,
-      filename: "#{@cluster.name}.zip",
+    send_data(result.zip_data,
+      filename: result.filename,
       type: "application/zip"
     )
   end
