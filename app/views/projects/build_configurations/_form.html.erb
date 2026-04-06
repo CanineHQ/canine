@@ -6,11 +6,13 @@
         <label class="label">
           <span class="label-text">Build context directory</span>
         </label>
-        <%= bc_form.text_field(
-          :context_directory,
-          class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm",
-          value: build_configuration.context_directory
-        ) %>
+        <%= render "shared/partials/file_browser",
+          form: bc_form,
+          field_name: :context_directory,
+          label: "Select Build Context Directory",
+          mode: "directory",
+          default_value: "./",
+          current_value: build_configuration.context_directory.presence || "./" %>
         <label class="label">
           <span class="label-text-alt">Where should we run the build? Defaults to the root of the repository.</span>
         </label>

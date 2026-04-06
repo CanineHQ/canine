@@ -29,5 +29,6 @@ export default class extends Controller {
     event.preventDefault()
     this.repositoryUrlTarget.value = "";
     this.setLabels();
+    this.dispatch("provider-changed")
   }
 }

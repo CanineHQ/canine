@@ -52,6 +52,7 @@ export default class extends Controller {
 
   selectRepository(e) {
     this.repositoryInput.value = e.target.dataset.repositoryName;
+    this.repositoryInput.dispatchEvent(new Event("change", { bubbles: true }))
     this.closeModal()
   }
 
