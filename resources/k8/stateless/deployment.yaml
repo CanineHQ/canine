@@ -38,8 +38,10 @@ spec:
             name: <%= project.name %>
         - secretRef:
             name: <%= project.name %>
+        <% if service.web_service? %>
         ports:
         - containerPort: <%= service.container_port %>
+        <% end %>
         <% if service.healthcheck_url.present? %>
         livenessProbe:
           httpGet:

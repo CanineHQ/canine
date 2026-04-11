@@ -65,7 +65,11 @@ class ClustersController < ApplicationController
   end
 
   def download_yaml
-    result = Clusters::ExportYaml.execute(cluster: @cluster)
+    result = Clusters::ExportYaml.execute(
+      cluster: @cluster,
+      include_configmaps: params[:include_configmaps] == "1",
+      include_secrets: params[:include_secrets] == "1"
+    )
 
     send_data(result.zip_data,
       filename: result.filename,

@@ -9,11 +9,11 @@
           Download Kubeconfig File
         </div>
       <% end %>
-      <%= link_to download_yaml_cluster_path(@cluster), class: "btn btn-sm btn-outline", target: "_blank" do %>
+      <button class="btn btn-sm btn-outline" onclick="export_yaml_modal.showModal()">
         <div class="flex items-center gap-2">
           Download All YAML Files
         </div>
-      <% end %>
+      </button>
     </div>
 
     <div class="mt-4">
@@ -56,4 +56,5 @@
       </div>
     </div>
   </div>
+  <%= render "clusters/export_yaml_modal", cluster: @cluster %>
 <% end %>

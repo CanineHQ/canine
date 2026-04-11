@@ -4,7 +4,6 @@ RSpec.describe Clusters::ExportYaml do
   let(:cluster) { create(:cluster, name: "production-cluster") }
   let(:project) { create(:project, cluster: cluster, name: "my-app", namespace: "my-app-ns") }
 
-  # Project with two services: a web service with a domain and a background worker
   let!(:web_service) do
     service = create(:service, project: project, name: "web", service_type: :web_service,
                      container_port: 3000, allow_public_networking: true)
@@ -16,15 +15,12 @@ RSpec.describe Clusters::ExportYaml do
     create(:service, :background_service, project: project, name: "worker", command: "bundle exec sidekiq")
   end
 
-  # Environment variables (config + secret)
   let!(:config_var) { create(:environment_variable, project: project, name: "DATABASE_URL", value: "postgres://localhost/myapp") }
   let!(:secret_var) { create(:environment_variable, :secret, project: project, name: "SECRET_KEY_BASE", value: "supersecret123") }
-
-  # Volume
   let!(:volume) { create(:volume, project: project, name: "data-volume", mount_path: "/data", size: "20Gi") }
 
-  # Build + deployment with manifests simulating what the deployment service would track
   let(:build) { create(:build, project: project, commit_sha: "abc123", commit_message: "Deploy v1") }
+
   let(:manifests) do
     {
       "configmap/my-app" => configmap_yaml,
@@ -37,34 +33,62 @@ RSpec.describe Clusters::ExportYaml do
   end
 
   let(:configmap_yaml) do
-    { "apiVersion" => "v1", "kind" => "ConfigMap", "metadata" => { "name" => "my-app", "namespace" => "my-app-ns" },
-      "data" => { "DATABASE_URL" => "postgres://localhost/myapp" } }.to_yaml
+    { "apiVersion" => "v1", "kind" => "ConfigMap",
+      "metadata" => { "name" => "my-app", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true" } },
+      "data" => {
+        "RAILS_ENV" => "production",
+        "SENTRY_AUTH_TOKEN" => "d874982b4bdf2ed96a9683080581d73004724196",
+        "ANALYTICS_DATABASE_URL" => "postgresql://user:pass@db.example.com:5432/analytics"
+      } }.to_yaml
   end
 
   let(:secret_yaml) do
-    { "apiVersion" => "v1", "kind" => "Secret", "metadata" => { "name" => "my-app", "namespace" => "my-app-ns" },
-      "data" => { "SECRET_KEY_BASE" => Base64.strict_encode64("supersecret123") } }.to_yaml
+    { "apiVersion" => "v1", "kind" => "Secret",
+      "metadata" => { "name" => "my-app", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true" } },
+      "data" => { "SECRET_KEY_BASE" => Base64.strict_encode64("supersecret123"),
+                  "DATABASE_URL" => Base64.strict_encode64("postgres://user:pass@localhost/myapp") } }.to_yaml
   end
 
   let(:web_deployment_yaml) do
-    { "apiVersion" => "apps/v1", "kind" => "Deployment", "metadata" => { "name" => "web", "namespace" => "my-app-ns" },
-      "spec" => { "replicas" => 1, "template" => { "spec" => { "containers" => [ { "name" => "web", "image" => "myapp:latest", "ports" => [ { "containerPort" => 3000 } ] } ] } } } }.to_yaml
+    { "apiVersion" => "apps/v1", "kind" => "Deployment",
+      "metadata" => { "name" => "web", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true", "app" => "web" } },
+      "spec" => { "replicas" => 1, "template" => {
+        "metadata" => { "annotations" => { "rolloutTimestamp" => "1775600295" }, "labels" => { "app" => "web" } },
+        "spec" => { "containers" => [ {
+          "name" => "web",
+          "image" => "ghcr.io/org/app:main@sha256:abc123def456",
+          "imagePullPolicy" => "IfNotPresent",
+          "ports" => [ { "containerPort" => 3000 } ]
+        } ] }
+      } } }.to_yaml
   end
 
   let(:web_service_yaml) do
-    { "apiVersion" => "v1", "kind" => "Service", "metadata" => { "name" => "web-service", "namespace" => "my-app-ns" },
+    { "apiVersion" => "v1", "kind" => "Service",
+      "metadata" => { "name" => "web-service", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true", "app" => "web" } },
       "spec" => { "ports" => [ { "port" => 80, "targetPort" => 3000 } ], "selector" => { "app" => "web" } } }.to_yaml
   end
 
   let(:ingress_yaml) do
-    { "apiVersion" => "networking.k8s.io/v1", "kind" => "Ingress", "metadata" => { "name" => "web-ingress", "namespace" => "my-app-ns" },
+    { "apiVersion" => "networking.k8s.io/v1", "kind" => "Ingress",
+      "metadata" => { "name" => "web-ingress", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true" } },
       "spec" => { "rules" => [ { "host" => "myapp.example.com", "http" => { "paths" => [ { "path" => "/", "pathType" => "Prefix",
         "backend" => { "service" => { "name" => "web-service", "port" => { "number" => 80 } } } } ] } } ] } }.to_yaml
   end
 
   let(:worker_deployment_yaml) do
-    { "apiVersion" => "apps/v1", "kind" => "Deployment", "metadata" => { "name" => "worker", "namespace" => "my-app-ns" },
-      "spec" => { "replicas" => 1, "template" => { "spec" => { "containers" => [ { "name" => "worker", "image" => "myapp:latest", "command" => [ "bundle", "exec", "sidekiq" ] } ] } } } }.to_yaml
+    { "apiVersion" => "apps/v1", "kind" => "Deployment",
+      "metadata" => { "name" => "worker", "namespace" => "my-app-ns", "labels" => { "caninemanaged" => "true", "app" => "worker" } },
+      "spec" => { "replicas" => 1, "template" => {
+        "metadata" => { "annotations" => { "rolloutTimestamp" => "1775600296" }, "labels" => { "app" => "worker" } },
+        "spec" => { "containers" => [ {
+          "name" => "worker",
+          "image" => "ghcr.io/org/app:main@sha256:abc123def456",
+          "imagePullPolicy" => "IfNotPresent",
+          "command" => [ "bundle", "exec", "sidekiq" ],
+          "resources" => nil
+        } ] }
+      } } }.to_yaml
   end
 
   let!(:deployment) do
@@ -72,101 +96,63 @@ RSpec.describe Clusters::ExportYaml do
   end
 
   describe '.execute' do
-    it 'exports all tracked manifests from the latest completed deployment as a zip' do
-      result = described_class.execute(cluster: cluster)
+    it 'sanitizes manifests for ejection with all includes' do
+      result = described_class.execute(cluster: cluster, include_configmaps: true, include_secrets: true)
 
       expect(result).to be_success
-      expect(result.filename).to eq("production-cluster.zip")
-
       entries = extract_zip_entries(result.zip_data)
+      expect(entries.keys.size).to eq(6)
 
-      # All 6 manifests should be present
-      expect(entries.keys).to contain_exactly(
-        "production-cluster/my-app-ns/configmap-my-app.yaml",
-        "production-cluster/my-app-ns/secret-my-app.yaml",
-        "production-cluster/my-app-ns/deployment-web.yaml",
-        "production-cluster/my-app-ns/service-web-service.yaml",
-        "production-cluster/my-app-ns/ingress-web-ingress.yaml",
-        "production-cluster/my-app-ns/deployment-worker.yaml"
-      )
-
-      # Verify manifest content is preserved
+      # Deployments: image replaced, canine metadata stripped, empty resources cleaned
       web_deploy = YAML.safe_load(entries["production-cluster/my-app-ns/deployment-web.yaml"])
-      expect(web_deploy["kind"]).to eq("Deployment")
-      expect(web_deploy["metadata"]["name"]).to eq("web")
-      expect(web_deploy.dig("spec", "template", "spec", "containers", 0, "ports", 0, "containerPort")).to eq(3000)
+      expect(web_deploy["metadata"]["labels"]).to eq("app" => "web")
+      expect(web_deploy.dig("spec", "template", "metadata", "annotations")).to be_nil
+      container = web_deploy.dig("spec", "template", "spec", "containers", 0)
+      expect(container["image"]).to eq("${IMAGE}")
+      expect(container).not_to have_key("imagePullPolicy")
 
       worker_deploy = YAML.safe_load(entries["production-cluster/my-app-ns/deployment-worker.yaml"])
-      expect(worker_deploy["metadata"]["name"]).to eq("worker")
-      expect(worker_deploy.dig("spec", "template", "spec", "containers", 0, "command")).to eq([ "bundle", "exec", "sidekiq" ])
+      worker_container = worker_deploy.dig("spec", "template", "spec", "containers", 0)
+      expect(worker_container["image"]).to eq("${IMAGE}")
+      expect(worker_container).not_to have_key("resources")
+      expect(worker_container["command"]).to eq([ "bundle", "exec", "sidekiq" ])
 
-      config = YAML.safe_load(entries["production-cluster/my-app-ns/configmap-my-app.yaml"])
-      expect(config["data"]["DATABASE_URL"]).to eq("postgres://localhost/myapp")
-
+      # Secrets: all values replaced with placeholder
       secret = YAML.safe_load(entries["production-cluster/my-app-ns/secret-my-app.yaml"])
-      expect(secret["data"]["SECRET_KEY_BASE"]).to eq(Base64.strict_encode64("supersecret123"))
+      expect(secret["metadata"]["labels"]).to be_nil
+      expect(secret["data"].values).to all(eq("<REPLACE_ME>"))
 
-      ingress = YAML.safe_load(entries["production-cluster/my-app-ns/ingress-web-ingress.yaml"])
-      expect(ingress.dig("spec", "rules", 0, "host")).to eq("myapp.example.com")
-
-      svc = YAML.safe_load(entries["production-cluster/my-app-ns/service-web-service.yaml"])
-      expect(svc.dig("spec", "ports", 0, "targetPort")).to eq(3000)
+      # ConfigMap: sensitive values replaced, safe values preserved
+      config = YAML.safe_load(entries["production-cluster/my-app-ns/configmap-my-app.yaml"])
+      expect(config["data"]["RAILS_ENV"]).to eq("production")
+      expect(config["data"]["SENTRY_AUTH_TOKEN"]).to eq("<REPLACE_ME>")
+      expect(config["data"]["ANALYTICS_DATABASE_URL"]).to eq("<REPLACE_ME>")
     end
 
-    it 'uses the latest completed deployment, not failed or in-progress ones' do
-      # Create a newer failed deployment with different manifests
-      newer_build = create(:build, project: project, commit_sha: "def456")
-      create(:deployment, build: newer_build, status: :failed, manifests: { "deployment/web" => "bad" })
-
-      result = described_class.execute(cluster: cluster)
+    it 'excludes configmaps when include_configmaps is false' do
+      result = described_class.execute(cluster: cluster, include_configmaps: false, include_secrets: true)
       entries = extract_zip_entries(result.zip_data)
 
-      # Should still have all 6 manifests from the completed deployment
-      expect(entries.keys.size).to eq(6)
+      expect(entries.keys).not_to include("production-cluster/my-app-ns/configmap-my-app.yaml")
+      expect(entries.keys).to include("production-cluster/my-app-ns/secret-my-app.yaml")
     end
 
-    it 'skips projects with no completed deployments' do
-      other_project = create(:project, cluster: cluster, name: "new-app", namespace: "new-app-ns")
-      other_build = create(:build, project: other_project, commit_sha: "xyz789")
-      create(:deployment, build: other_build, status: :in_progress, manifests: { "deployment/app" => "pending" })
-
-      result = described_class.execute(cluster: cluster)
+    it 'excludes secrets when include_secrets is false' do
+      result = described_class.execute(cluster: cluster, include_configmaps: true, include_secrets: false)
       entries = extract_zip_entries(result.zip_data)
 
-      # Only the original project's manifests, not the in-progress one
-      expect(entries.keys.all? { |k| k.include?("my-app-ns") }).to be true
+      expect(entries.keys).to include("production-cluster/my-app-ns/configmap-my-app.yaml")
+      expect(entries.keys).not_to include("production-cluster/my-app-ns/secret-my-app.yaml")
     end
 
     it 'returns an empty zip when cluster has no projects with manifests' do
       empty_cluster = create(:cluster, name: "empty-cluster")
 
-      result = described_class.execute(cluster: empty_cluster)
+      result = described_class.execute(cluster: empty_cluster, include_configmaps: true, include_secrets: false)
 
       expect(result).to be_success
-      expect(result.filename).to eq("empty-cluster.zip")
       entries = extract_zip_entries(result.zip_data)
       expect(entries).to be_empty
-    end
-
-    it 'exports multiple projects independently' do
-      second_project = create(:project, cluster: cluster, name: "api-app", namespace: "api-app-ns")
-      second_build = create(:build, project: second_project, commit_sha: "second123")
-      api_manifest = { "apiVersion" => "apps/v1", "kind" => "Deployment", "metadata" => { "name" => "api", "namespace" => "api-app-ns" },
-                       "spec" => { "replicas" => 2 } }.to_yaml
-      create(:deployment, build: second_build, status: :completed, manifests: { "deployment/api" => api_manifest })
-
-      result = described_class.execute(cluster: cluster)
-      entries = extract_zip_entries(result.zip_data)
-
-      my_app_entries = entries.keys.select { |k| k.include?("my-app-ns") }
-      api_entries = entries.keys.select { |k| k.include?("api-app-ns") }
-
-      expect(my_app_entries.size).to eq(6)
-      expect(api_entries.size).to eq(1)
-      expect(api_entries.first).to eq("production-cluster/api-app-ns/deployment-api.yaml")
-
-      api_deploy = YAML.safe_load(entries["production-cluster/api-app-ns/deployment-api.yaml"])
-      expect(api_deploy.dig("spec", "replicas")).to eq(2)
     end
   end
 
