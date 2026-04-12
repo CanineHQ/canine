@@ -1,9 +1,15 @@
 <%= turbo_stream_from project, :shallow_badge %>
 <div id="<%= dom_id(project, :shallow_badge) %>" class="flex items-center leading-none">
-  <% if project.last_build&.in_progress? || project.last_deployment&.in_progress? %>
+  <% if project.last_build&.in_progress? %>
     <iconify-icon
-      icon="lucide:loader-circle"
-      class="block animate-spin text-warning"
+      icon="lucide:hammer"
+      class="block text-warning"
+      width="14"
+      height="14"></iconify-icon>
+  <% elsif project.last_deployment&.in_progress? %>
+    <iconify-icon
+      icon="lucide:rocket"
+      class="block text-info"
       width="14"
       height="14"></iconify-icon>
   <% end %>
