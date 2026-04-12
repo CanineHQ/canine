@@ -15,26 +15,14 @@
         <% if favorites_result.favorited_projects.any? %>
           <li class="menu-title text-xs uppercase tracking-wider text-base-content/50 pt-2">Favorites</li>
           <% favorites_result.favorited_projects.each do |project| %>
-            <li>
-              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
-                <div class="flex items-center gap-2">
-                  <%= project.name %>
-                </div>
-              <% end %>
-            </li>
+            <%= render "layouts/sidebars/project", project: project %>
           <% end %>
           <li class="menu-title text-xs uppercase tracking-wider text-base-content/50 pt-2">All</li>
         <% end %>
         <% Projects::VisibleToUser.execute(
             account_user: current_account_user
           ).projects.order(created_at: :desc).each do |project| %>
-          <li>
-            <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
-              <div class="flex items-center gap-2">
-                <%= project.name %>
-              </div>
-            <% end %>
-          </li>
+          <%= render "layouts/sidebars/project", project: project %>
         <% end %>
         <li>
           <%= link_to new_project_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_project_path)}" do %>

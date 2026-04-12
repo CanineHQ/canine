@@ -34,7 +34,7 @@ class Git::Bitbucket::Client < Git::Client
       headers: auth_headers
     )
     unless response.success?
-      raise "Failed to fetch commits: #{response.body}"
+      raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
     end
 
     (response["values"] || []).map do |commit|
@@ -74,7 +74,7 @@ class Git::Bitbucket::Client < Git::Client
       }.to_json
     )
     unless response.success?
-      raise "Failed to register webhook: #{response.body}"
+      raise Git::Client::Error, "Failed to register webhook: #{response.body}"
     end
     response.parsed_response
   end

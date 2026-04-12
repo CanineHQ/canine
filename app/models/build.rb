@@ -44,6 +44,8 @@ class Build < ApplicationRecord
   end
 
   def broadcast_build
+    project.broadcast_status_badges
+
     if events.last
       broadcast_replace_later_to [ project, :events ], target: dom_id(self, :index), partial: "projects/deployments/event_build_row", locals: { project:, event: events.last }
     end

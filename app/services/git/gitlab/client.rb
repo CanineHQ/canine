@@ -29,7 +29,7 @@ class Git::Gitlab::Client < Git::Client
       query: { membership: true, page:, per_page:, order_by: "last_activity_at" }
     )
     unless response.success?
-      raise "Failed to fetch repositories: #{response.body}"
+      raise Git::Client::Error, "Failed to fetch repositories: #{response.body}"
     end
 
     response.map { |repo| GitlabRepository.new(repo) }
@@ -42,7 +42,7 @@ class Git::Gitlab::Client < Git::Client
       query: { membership: true, search: query, order_by: "last_activity_at" }
     )
     unless response.success?
-      raise "Failed to search repositories: #{response.body}"
+      raise Git::Client::Error, "Failed to search repositories: #{response.body}"
     end
 
     response.map { |repo| GitlabRepository.new(repo) }
@@ -74,7 +74,7 @@ class Git::Gitlab::Client < Git::Client
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     unless response.success?
-      raise "Failed to fetch commits: #{response.body}"
+      raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
     end
 
     response.map do |commit|
@@ -112,7 +112,7 @@ class Git::Gitlab::Client < Git::Client
       }.to_json
     )
     unless response.success?
-      raise "Failed to register webhook: #{response.body}"
+      raise Git::Client::Error, "Failed to register webhook: #{response.body}"
     end
     response.parsed_response
   end

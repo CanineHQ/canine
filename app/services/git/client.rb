@@ -1,4 +1,6 @@
 class Git::Client
+  class Error < StandardError; end
+
   def self.from_provider(provider:, repository_url:)
     if provider.github?
       Git::Github::Client.new(access_token: provider.access_token, repository_url:, api_base_url: provider.api_base_url)
@@ -7,7 +9,7 @@ class Git::Client
     elsif provider.bitbucket?
       Git::Bitbucket::Client.new(email: provider.email, access_token: provider.access_token, repository_url:, api_base_url: provider.api_base_url)
     else
-      raise "Unsupported Git provider: #{provider}"
+      raise Error, "Unsupported Git provider: #{provider}"
     end
   end
 
@@ -19,7 +21,7 @@ class Git::Client
     elsif project.project_credential_provider.provider.bitbucket?
       Git::Bitbucket::Client.from_project(project)
     else
-      raise "Unsupported Git provider: #{project.project_credential_provider.provider}"
+      raise Error, "Unsupported Git provider: #{project.project_credential_provider.provider}"
     end
   end
 end
