@@ -1,0 +1,43 @@
+<dialog aria-label="Modal" class="modal" id="export_yaml_modal">
+  <div class="modal-box bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-8 w-full text-xl font-bold">Export YAML</div>
+    <p class="mb-6 text-sm text-base-content/70">
+      Download CI-ready Kubernetes manifests for this cluster. Images are replaced with
+      <code class="text-xs bg-base-100 px-1 py-0.5 rounded">${IMAGE}</code>
+      for easy substitution in your pipeline, and Canine-specific metadata is stripped.
+    </p>
+
+    <form action="<%= download_yaml_cluster_path(cluster) %>" method="get" target="_blank">
+      <div class="flex flex-col gap-3 mb-6">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="include_configmaps" value="1" checked class="checkbox checkbox-sm mt-0.5" />
+          <div>
+            <div class="font-medium text-sm">Include ConfigMaps</div>
+            <div class="text-xs text-base-content/60">Environment variables and non-secret configuration. Sensitive-looking values are replaced with placeholders.</div>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" name="include_secrets" value="1" class="checkbox checkbox-sm mt-0.5" />
+          <div>
+            <div class="font-medium text-sm">Include Secrets</div>
+            <div class="text-xs text-base-content/60">Secret keys are included but all values are replaced with <code class="text-xs bg-base-100 px-1 py-0.5 rounded">&lt;REPLACE_ME&gt;</code> placeholders. No real credentials are exported.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-outline" onclick="export_yaml_modal.close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Download</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
