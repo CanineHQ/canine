@@ -14,14 +14,7 @@
       <ul>
         <% if favorites_result.favorited_projects.any? %>
           <% favorites_result.favorited_projects.each do |project| %>
-            <li>
-              <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
-                <div class="flex items-center gap-2">
-                  <iconify-icon icon="mdi:star" height="14" class="text-warning"></iconify-icon>
-                  <%= project.name %>
-                </div>
-              <% end %>
-            </li>
+            <%= render "layouts/sidebars/project", project: project, show_favorite_icon: true %>
           <% end %>
         <% else %>
           <li class="text-base-content/50 text-sm px-4 py-2">

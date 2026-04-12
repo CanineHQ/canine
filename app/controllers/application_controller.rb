@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from Git::Client::Error, with: :handle_git_error
 
   protected
     def current_account
@@ -71,6 +72,15 @@ class ApplicationController < ActionController::Base
     def user_not_authorized
       flash[:alert] = "You are not authorized to perform this action."
       redirect_back(fallback_location: root_path)
+    end
+
+    def handle_git_error(error)
+      message = "Git provider error. Please check that your credential is valid and connected to this project."
+
+      respond_to do |format|
+        format.html { redirect_back fallback_location: root_path, alert: message }
+        format.json { render json: { message: message }, status: :unprocessable_entity }
+      end
     end
 
     def check_password_change_required

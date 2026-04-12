@@ -1,0 +1,15 @@
+<li>
+  <%= link_to root_projects_path(project), class: "hover:bg-base-content/15 #{'active' if active_path?(project_path(project))}" do %>
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex min-w-0 items-center gap-2">
+        <% if local_assigns[:show_favorite_icon] %>
+          <iconify-icon icon="mdi:star" height="14" class="shrink-0 text-warning"></iconify-icon>
+        <% end %>
+        <span class="truncate"><%= project.name %></span>
+      </div>
+      <div class="flex shrink-0 items-center">
+        <%= render "projects/shallow_badge", project: project %>
+      </div>
+    </div>
+  <% end %>
+</li>

@@ -90,12 +90,15 @@ class Project < ApplicationRecord
   validates_presence_of :deployment_configuration
   before_create :generate_slug
 
-  after_save_commit do
-    broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
-  end
+  after_save_commit :broadcast_status_badges
 
   after_destroy_commit do
     broadcast_remove_to [ :projects, self.account ], target: dom_id(self, :index)
+  end
+
+  def broadcast_status_badges
+    broadcast_replace_to [ self, :status ], target: dom_id(self, :status), partial: "projects/status", locals: { project: self }
+    broadcast_replace_to [ self, :shallow_badge ], target: dom_id(self, :shallow_badge), partial: "projects/shallow_badge", locals: { project: self }
   end
 
   enum :status, {

@@ -34,6 +34,8 @@ class Git::Github::Client < Git::Client
         url: commit.html_url
       )
     end
+  rescue Octokit::Error => e
+    raise Git::Client::Error, "Failed to fetch commits: #{e.message}"
   end
 
   def initialize(access_token:, repository_url:, api_base_url: nil)
@@ -70,6 +72,8 @@ class Git::Github::Client < Git::Client
         active: true
       }
     )
+  rescue Octokit::Error => e
+    raise Git::Client::Error, "Failed to register webhook: #{e.message}"
   end
 
   def webhook_exists?
