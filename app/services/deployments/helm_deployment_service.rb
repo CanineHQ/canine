@@ -69,7 +69,12 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
       @chart_builder << build_resource("Deployment", service)
       @chart_builder << build_resource("Service", service)
       if service.domains.any? && service.allow_public_networking?
-        @chart_builder << build_resource("Ingress", service)
+        if @project.cluster.gateway_based?
+          @chart_builder << build_resource("Gateway", service)
+          @chart_builder << build_resource("Httproute", service)
+        else
+          @chart_builder << build_resource("Ingress", service)
+        end
       end
     end
   end

@@ -45,6 +45,7 @@ class Cluster < ApplicationRecord
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :account_id }
   validates_presence_of :kubeconfig, unless: :external?
+
   enum :status, {
     initializing: 0,
     installing: 1,
@@ -69,6 +70,14 @@ class Cluster < ApplicationRecord
 
   def external?
     external_id.present?
+  end
+
+  def gateway_based?
+    cluster_packages.installed.exists?(name: "traefik-gateway")
+  end
+
+  def ingress_based?
+    !gateway_based?
   end
 
   private

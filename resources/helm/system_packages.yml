@@ -3,8 +3,10 @@ packages:
     display_name: Nginx Ingress
     description: Ingress controller for routing external traffic to cluster services
     icon: simple-icons:nginx
-    default: true
-    recommended: true
+    default: false
+    recommended: false
+    deprecated: true
+    deprecated_message: "Nginx Ingress is outdated. Use Traefik + Gateway API instead."
     install_type: helm
     repo_name: ingress-nginx
     repo_url: https://kubernetes.github.io/ingress-nginx
@@ -48,6 +50,8 @@ packages:
     values:
       crds:
         enabled: true
+      config:
+        enableGatewayAPI: true
 
   - name: metrics-server
     display_name: Metrics Server
@@ -72,6 +76,30 @@ packages:
     chart_name: traffic-manager
     chart_url: datawire/telepresence
     check_command: get deployment traffic-manager
+
+  - name: traefik-gateway
+    display_name: Traefik + Gateway API
+    description: Modern ingress controller with Kubernetes Gateway API support
+    icon: simple-icons:traefikproxy
+    default: true
+    recommended: true
+    install_type: helm
+    repo_name: traefik
+    repo_url: https://traefik.github.io/charts
+    chart_name: traefik
+    chart_url: traefik/traefik
+    check_command: get deployment traefik
+    gateway_api_crds_url: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+    values:
+      providers:
+        kubernetesGateway:
+          enabled: true
+      gateway:
+        enabled: false
+      ports:
+        web:
+          redirectTo:
+            port: websecure
 
   - name: cloudflared
     display_name: Cloudflare Tunnel

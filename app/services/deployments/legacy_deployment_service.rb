@@ -69,7 +69,12 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       apply_resource("Deployment", service)
       apply_resource("Service", service)
       if service.domains.any? && service.allow_public_networking?
-        apply_resource("Ingress", service)
+        if @project.cluster.gateway_based?
+          apply_resource("Gateway", service)
+          apply_resource("Httproute", service)
+        else
+          apply_resource("Ingress", service)
+        end
       end
       restart_deployment(service)
       setup_automatic_dns(service)
@@ -83,7 +88,8 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
   end
 
   def sweep_unused_resources
-    resources_to_sweep = DEPLOYABLE_RESOURCES.reject { |r| [ "Pv" ].include?(r) }
+    networking_resources = @project.cluster.gateway_based? ? GATEWAY_RESOURCES : INGRESS_RESOURCES
+    resources_to_sweep = (DEPLOYABLE_RESOURCES + networking_resources).reject { |r| [ "Pv" ].include?(r) }
     kubectl = K8::Kubectl.new(@connection)
 
     resources_to_sweep.each do |resource_type|
