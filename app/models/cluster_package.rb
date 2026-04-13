@@ -41,6 +41,7 @@ class ClusterPackage < ApplicationRecord
   DEFINITIONS = YAML.load_file(Rails.root.join("resources", "helm", "system_packages.yml"))["packages"]
 
   INSTALLER_REGISTRY = {
+    "traefik-ingress" => "ClusterPackage::Installer::TraefikIngress",
     "nginx-ingress" => "ClusterPackage::Installer::NginxIngress",
     "cert-manager" => "ClusterPackage::Installer::CertManager",
     "metrics-server" => "ClusterPackage::Installer::MetricsServer",

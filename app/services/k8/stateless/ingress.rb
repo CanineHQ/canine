@@ -11,6 +11,14 @@ class K8::Stateless::Ingress < K8::Base
     "#{@service.name}-ingress"
   end
 
+  def ingress_class_name
+    if @cluster.cluster_packages.exists?(name: "traefik-ingress")
+      "traefik"
+    else
+      "nginx"
+    end
+  end
+
   def certificate_status
     return nil unless @service.domains.any?
     return nil unless @service.allow_public_networking?
@@ -28,10 +36,14 @@ class K8::Stateless::Ingress < K8::Base
     results['items'].find { |r| r['metadata']['name'] == "#{@service.project.namespace}-ingress" }
   end
 
+  INGRESS_SERVICE_NAMES = %w[traefik ingress-nginx-controller].freeze
+
   def self.hostname(client)
-    service = client.get_services.find { |s| s['metadata']['name'] == 'ingress-nginx-controller' }
+    services = client.get_services
+    service = INGRESS_SERVICE_NAMES.lazy.filter_map { |name| services.find { |s| s['metadata']['name'] == name } }.first
+
     if service.nil?
-      raise "Ingress-nginx-controller service not installed"
+      raise "No ingress controller service found"
     end
     if service.status.loadBalancer.ingress[0].ip
       {
