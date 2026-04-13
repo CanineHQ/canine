@@ -20,6 +20,37 @@ class Git::Github::Client < Git::Client
     Octokit::Client.new(client_options)
   end
 
+  def branches(per_page: 100)
+    client.branches(repository_url, per_page: per_page).map(&:name)
+  end
+
+  def search_branches(query)
+    refs = client.refs(repository_url, "heads/#{query}")
+    refs = [ refs ] unless refs.is_a?(Array)
+    refs.map { |r| r.ref.sub("refs/heads/", "") }
+  rescue Octokit::NotFound
+    []
+  end
+
+  def default_branch
+    client.repository(repository_url).default_branch
+  end
+
+  def dockerfiles(branch)
+    tree = client.tree(repository_url, branch, recursive: true)
+    tree.tree.select { |item| item.type == "blob" && item.path.match?(/Dockerfile/i) }.map(&:path)
+  end
+
+  def directories(branch)
+    tree = client.tree(repository_url, branch, recursive: true)
+    tree.tree.select { |item| item.type == "tree" }.map { |item| "./#{item.path}" }
+  end
+
+  def file_tree(branch)
+    tree = client.tree(repository_url, branch, recursive: true)
+    tree.tree.map { |item| { path: item.path, type: item.type == "tree" ? "directory" : "file" } }
+  end
+
   def commits(branch)
     client.commits(repository_url, branch).map do |commit|
       Git::Common::Commit.new(

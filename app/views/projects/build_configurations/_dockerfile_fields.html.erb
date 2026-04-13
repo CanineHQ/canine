@@ -6,11 +6,14 @@
       <label class="label">
         <span class="label-text">Dockerfile path</span>
       </label>
-      <%= bc_form.text_field(
-        :dockerfile_path,
-        class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm",
-        value: build_configuration.dockerfile_path
-      ) %>
+      <%= render "shared/partials/file_browser",
+        form: bc_form,
+        field_name: :dockerfile_path,
+        label: "Select Dockerfile",
+        mode: "file",
+        filter_pattern: "Dockerfile",
+        default_value: "./Dockerfile",
+        current_value: build_configuration.dockerfile_path.presence || "./Dockerfile" %>
       <label class="label">
         <span class="label-text-alt">* Required</span>
       </label>

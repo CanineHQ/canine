@@ -64,6 +64,48 @@ class Git::Gitlab::Client < Git::Client
     "#{@api_base_url}/api/v4"
   end
 
+  def branches(per_page: 100)
+    response = HTTParty.get(
+      "#{gitlab_api_base}/projects/#{encoded_url}/repository/branches",
+      headers: { "Authorization" => "Bearer #{access_token}" },
+      query: { per_page: per_page }
+    )
+    return [] unless response.success?
+
+    response.parsed_response.map { |b| b["name"] }
+  end
+
+  def search_branches(query)
+    response = HTTParty.get(
+      "#{gitlab_api_base}/projects/#{encoded_url}/repository/branches",
+      headers: { "Authorization" => "Bearer #{access_token}" },
+      query: { search: query, per_page: 100 }
+    )
+    return [] unless response.success?
+
+    response.parsed_response.map { |b| b["name"] }
+  end
+
+  def default_branch
+    repo = repository
+    repo&.dig("default_branch")
+  end
+
+  def dockerfiles(branch)
+    tree = fetch_tree(branch)
+    tree.select { |item| item["type"] == "blob" && item["path"].match?(/Dockerfile/i) }.map { |item| item["path"] }
+  end
+
+  def directories(branch)
+    tree = fetch_tree(branch)
+    tree.select { |item| item["type"] == "tree" }.map { |item| "./#{item["path"]}" }
+  end
+
+  def file_tree(branch)
+    tree = fetch_tree(branch)
+    tree.map { |item| { path: item["path"], type: item["type"] == "tree" ? "directory" : "file" } }
+  end
+
   def repository_exists?
     repository.present?
   end
@@ -193,5 +235,16 @@ class Git::Gitlab::Client < Git::Client
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     response.success? ? Git::Common::File.new(file_path, response.body, branch) : nil
+  end
+
+  private
+
+  def fetch_tree(branch)
+    response = HTTParty.get(
+      "#{gitlab_api_base}/projects/#{encoded_url}/repository/tree",
+      headers: { "Authorization" => "Bearer #{access_token}" },
+      query: { ref: branch, recursive: true, per_page: 100 }
+    )
+    response.success? ? response.parsed_response : []
   end
 end
