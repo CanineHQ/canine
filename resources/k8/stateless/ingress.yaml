@@ -7,9 +7,11 @@ metadata:
     caninemanaged: 'true'
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
+    <% if ingress_class_name == "nginx" %>
     nginx.ingress.kubernetes.io/proxy-pass-headers: "*"
+    <% end %>
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: "<%= ingress_class_name %>"
   tls:
   - hosts:
     <% service.domains.each do |domain| %>

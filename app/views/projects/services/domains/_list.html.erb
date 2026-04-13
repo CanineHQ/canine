@@ -1,8 +1,10 @@
+<% ingress_controller = K8::Stateless::Ingress.new(service).ingress_class_name.capitalize %>
 <table class="table table-fixed">
   <thead>
     <tr>
-      <th class="w-1/4">Domain</th>
-      <th class="w-5/12">DNS Type / Value</th>
+      <th class="w-1/5">Domain</th>
+      <th class="w-1/6">Controller</th>
+      <th class="w-1/3">DNS Type / Value</th>
       <th class="w-1/6">DNS Status</th>
       <th class="w-1/12"></th>
     </tr>
@@ -17,6 +19,12 @@
               <span class="badge badge-sm badge-info">Auto</span>
             </div>
           <% end %>
+        </td>
+        <td>
+          <div class="flex items-center gap-1.5">
+            <iconify-icon icon="<%= ingress_controller == "Traefik" ? "simple-icons:traefikproxy" : "simple-icons:nginx" %>" width="16" height="16"></iconify-icon>
+            <span><%= ingress_controller %></span>
+          </div>
         </td>
         <td class="overflow-hidden">
           <%= render(

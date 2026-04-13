@@ -8,7 +8,7 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
-  ingressClassName: "nginx"
+  ingressClassName: "<%= ingress_class_name %>"
   tls:
   - hosts:
     <% domains.each do |domain| %>

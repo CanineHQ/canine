@@ -1,10 +1,39 @@
 packages:
-  - name: nginx-ingress
-    display_name: Nginx Ingress
-    description: Ingress controller for routing external traffic to cluster services
-    icon: simple-icons:nginx
+  - name: traefik-ingress
+    display_name: Traefik Ingress
+    description: Modern ingress controller for routing external traffic to cluster services
+    icon: simple-icons:traefikproxy
     default: true
     recommended: true
+    install_type: helm
+    repo_name: traefik
+    repo_url: https://traefik.github.io/charts
+    chart_name: traefik
+    chart_url: traefik/traefik
+    check_command: get deployment traefik
+    values:
+      providers:
+        kubernetesIngress:
+          publishedService:
+            enabled: true
+      additionalArguments:
+        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+        - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+        - "--entrypoints.websecure.http.tls=true"
+      ports:
+        web:
+          port: 8000
+          exposedPort: 80
+        websecure:
+          port: 8443
+          exposedPort: 443
+
+  - name: nginx-ingress
+    display_name: Nginx Ingress (Legacy)
+    description: Legacy ingress controller for routing external traffic to cluster services
+    icon: simple-icons:nginx
+    default: false
+    recommended: false
     install_type: helm
     repo_name: ingress-nginx
     repo_url: https://kubernetes.github.io/ingress-nginx
