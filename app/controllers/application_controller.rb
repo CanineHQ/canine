@@ -41,6 +41,11 @@ class ApplicationController < ActionController::Base
     end
     helper_method :time_ago
 
+    def cloud_dev_environment_enabled?
+      Flipper.enabled?(:cloud_dev_environment, current_account)
+    end
+    helper_method :cloud_dev_environment_enabled?
+
     def configure_permitted_parameters
       devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])
       devise_parameter_sanitizer.permit(:account_update, keys: [ :name, :avatar ])

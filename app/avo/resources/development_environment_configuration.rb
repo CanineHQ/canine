@@ -1,5 +1,6 @@
 class Avo::Resources::DevelopmentEnvironmentConfiguration < Avo::BaseResource
   self.title = :id
+  self.visible_on_sidebar = -> { Flipper.enabled?(:cloud_dev_environment) }
 
   def fields
     field :id, as: :id

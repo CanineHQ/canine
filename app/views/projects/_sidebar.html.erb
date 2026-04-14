@@ -37,7 +37,7 @@
       </div>
     <% end %>
   <% end %>
-  <% if project.development_environment_configuration.present? %>
+  <% if cloud_dev_environment_enabled? && project.development_environment_configuration.present? %>
     <%= link_to project_development_environment_configuration_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if controller_name == 'development_environment_configurations'}" do %>
       <div class="flex items-center gap-2">
         Dev Environment

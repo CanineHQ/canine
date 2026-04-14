@@ -1,4 +1,5 @@
 class Projects::DevelopmentEnvironmentConfigurationsController < ApplicationController
+  before_action :check_feature_enabled
   before_action :set_project
   before_action :set_development_environment_configuration, only: %i[show edit update destroy]
 
@@ -44,6 +45,13 @@ class Projects::DevelopmentEnvironmentConfigurationsController < ApplicationCont
   end
 
   private
+
+  def check_feature_enabled
+    unless cloud_dev_environment_enabled?
+      flash[:alert] = "Cloud Development Environment feature is not available."
+      redirect_to root_path
+    end
+  end
 
   def set_project
     @project = current_account.projects.find_by!(slug: params[:project_slug])
