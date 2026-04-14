@@ -1,0 +1,104 @@
+<%= form_with(model: [@project, @development_environment_configuration], url: url, method: method) do |form| %>
+  <% if @development_environment_configuration.errors.any? %>
+    <div class="alert alert-error mb-4">
+      <div>
+        <h3 class="font-bold"><%= pluralize(@development_environment_configuration.errors.count, "error") %> prohibited this configuration from being saved:</h3>
+        <ul class="list-disc list-inside">
+          <% @development_environment_configuration.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title">Repository Settings</h2>
+
+      <div class="form-control">
+        <%= form.label :branch_name, class: "label" do %>
+          <span class="label-text">Git Branch <span class="text-error">*</span></span>
+        <% end %>
+        <%= form.text_field :branch_name, class: "input input-bordered w-full", placeholder: "main", required: true %>
+        <label class="label">
+          <span class="label-text-alt">Branch to use for the dev environment</span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :dockerfile_path, class: "label" do %>
+          <span class="label-text">Dockerfile Path <span class="text-error">*</span></span>
+        <% end %>
+        <%= form.text_field :dockerfile_path, class: "input input-bordered w-full", placeholder: "./Dockerfile.dev", required: true %>
+        <label class="label">
+          <span class="label-text-alt">Path to the Dockerfile for the dev environment</span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :application_path, class: "label" do %>
+          <span class="label-text">Application Path <span class="text-error">*</span></span>
+        <% end %>
+        <%= form.text_field :application_path, class: "input input-bordered w-full", placeholder: "/app", required: true %>
+        <label class="label">
+          <span class="label-text-alt">Mount path inside container where code will be accessible</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow-xl mt-4">
+    <div class="card-body">
+      <h2 class="card-title">Authentication</h2>
+
+      <div class="form-control">
+        <%= form.label :anthropic_api_key, class: "label" do %>
+          <span class="label-text">Anthropic API Key</span>
+        <% end %>
+        <%= form.password_field :anthropic_api_key, class: "input input-bordered w-full", placeholder: "sk-ant-..." %>
+        <label class="label">
+          <span class="label-text-alt">Project-level key (optional - falls back to account-level key)</span>
+        </label>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="form-control">
+          <%= form.label :ssh_username, class: "label" do %>
+            <span class="label-text">SSH Username</span>
+          <% end %>
+          <%= form.text_field :ssh_username, class: "input input-bordered w-full", placeholder: "developer" %>
+        </div>
+
+        <div class="form-control">
+          <%= form.label :ssh_port, class: "label" do %>
+            <span class="label-text">SSH Port</span>
+          <% end %>
+          <%= form.number_field :ssh_port, class: "input input-bordered w-full", placeholder: "2222" %>
+        </div>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :ssh_password, class: "label" do %>
+          <span class="label-text">SSH Password</span>
+        <% end %>
+        <%= form.password_field :ssh_password, class: "input input-bordered w-full" %>
+        <label class="label">
+          <span class="label-text-alt">Leave empty to auto-generate</span>
+        </label>
+      </div>
+
+      <div class="form-control">
+        <label class="label cursor-pointer justify-start gap-2">
+          <%= form.check_box :enabled, class: "checkbox" %>
+          <span class="label-text">Enable development environment</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-2 mt-4">
+    <%= form.submit class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    <%= link_to "Cancel", project_path(@project), class: "btn btn-outline" %>
+  </div>
+<% end %>

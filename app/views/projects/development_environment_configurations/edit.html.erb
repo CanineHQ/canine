@@ -1,0 +1,22 @@
+<%= project_layout(@project) do %>
+  <div class="max-w-4xl">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold">Edit Development Environment</h1>
+      <p class="text-base-content/70 mt-2">
+        Update your cloud development environment configuration.
+      </p>
+    </div>
+
+    <%= render "form",
+        url: project_development_environment_configuration_path(@project),
+        method: :patch %>
+
+    <div class="mt-6">
+      <%= button_to "Delete Configuration",
+          project_development_environment_configuration_path(@project),
+          method: :delete,
+          class: "btn btn-error btn-outline",
+          data: { turbo_confirm: "Are you sure? This will remove the dev environment from future deployments." } %>
+    </div>
+  </div>
+<% end %>

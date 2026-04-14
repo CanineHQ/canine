@@ -71,6 +71,8 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       if service.domains.any? && service.allow_public_networking?
         apply_resource("Ingress", service)
       end
+      # Deploy SSH service for dev environment if configured
+      deploy_dev_ssh_service(service)
       restart_deployment(service)
       setup_automatic_dns(service)
     end
@@ -80,6 +82,14 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
   def restart_deployment(service)
     @logger.info("Restarting deployment: #{service.name}", color: :yellow)
     @kubectl.call("-n #{service.project.namespace} rollout restart deployment/#{service.name}")
+  end
+
+  def deploy_dev_ssh_service(service)
+    dev_ssh_service = K8::Stateless::DevSshService.new(service)
+    return unless dev_ssh_service.enabled?
+
+    @logger.info("Deploying dev environment SSH service: #{dev_ssh_service.name}", color: :yellow)
+    apply_resource("DevSshService", service)
   end
 
   def sweep_unused_resources

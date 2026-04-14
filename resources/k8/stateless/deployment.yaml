@@ -26,6 +26,21 @@ spec:
       <% if service.pod_yaml.present? %>
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
       <% end %>
+      <% dev_env = project.development_environment_configuration %>
+      <% if dev_env&.enabled? && dev_env.branch_name == project.branch %>
+      initContainers:
+      - name: code-cloner
+        image: alpine/git:latest
+        command: ['sh', '-c']
+        args:
+        - |
+          git clone --branch <%= dev_env.branch_name %> --single-branch \
+            https://github.com/<%= project.repository_url %>.git <%= dev_env.application_path %> || \
+          (echo "Clone failed, creating empty directory" && mkdir -p <%= dev_env.application_path %>)
+        volumeMounts:
+        - name: shared-code
+          mountPath: /workspace
+      <% end %>
       containers:
       - name: <%= project.name %>
         image: <%= project.container_image_reference_with_digest %>
@@ -56,11 +71,17 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 10
         <% end %>
-        <% if @project.volumes.present? %>
+        <% if @project.volumes.present? || (dev_env&.enabled? && dev_env.branch_name == project.branch) %>
         volumeMounts:
+        <% if dev_env&.enabled? && dev_env.branch_name == project.branch %>
+        - name: shared-code
+          mountPath: <%= dev_env.application_path %>
+        <% end %>
+        <% if @project.volumes.present? %>
         <% @project.volumes.each do |volume| %>
         - name: <%= volume.name %>
           mountPath: <%= volume.mount_path %>
+        <% end %>
         <% end %>
         <% end %>
         <% resource_constraint = service.resource_constraint %>
@@ -91,13 +112,48 @@ spec:
             <% end %>
           <% end %>
         <% end %>
+      <% if dev_env&.enabled? && dev_env.branch_name == project.branch %>
+      # Development environment sidecar with SSH and Claude Code
+      - name: dev-environment
+        image: <%= project.container_registry_url %>/<%= project.repository_url %>-dev:latest
+        imagePullPolicy: Always
+        env:
+        - name: SSH_USERNAME
+          value: "<%= dev_env.ssh_username %>"
+        - name: SSH_PASSWORD
+          value: "<%= dev_env.ssh_password %>"
+        - name: ANTHROPIC_API_KEY
+          value: "<%= dev_env.effective_anthropic_api_key %>"
+        - name: WORKSPACE_PATH
+          value: "<%= dev_env.application_path %>"
+        ports:
+        - containerPort: <%= dev_env.ssh_port %>
+          name: ssh
+          protocol: TCP
+        volumeMounts:
+        - name: shared-code
+          mountPath: <%= dev_env.application_path %>
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+      <% end %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com
-      <% if @project.volumes.present? %>
+      <% if @project.volumes.present? || (dev_env&.enabled? && dev_env.branch_name == project.branch) %>
       volumes:
+      <% if dev_env&.enabled? && dev_env.branch_name == project.branch %>
+      - name: shared-code
+        emptyDir: {}
+      <% end %>
+      <% if @project.volumes.present? %>
       <% project.volumes.each do |volume| %>
       - name: <%= volume.name %>
         persistentVolumeClaim:
           claimName: <%= volume.name %>
+      <% end %>
       <% end %>
       <% end %>

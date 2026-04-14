@@ -71,7 +71,16 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
       if service.domains.any? && service.allow_public_networking?
         @chart_builder << build_resource("Ingress", service)
       end
+      # Add dev environment SSH service if configured
+      deploy_dev_ssh_service(service)
     end
+  end
+
+  def deploy_dev_ssh_service(service)
+    dev_ssh_service = K8::Stateless::DevSshService.new(service)
+    return unless dev_ssh_service.enabled?
+
+    @chart_builder << build_resource("DevSshService", service)
   end
 
   def mark_services_healthy

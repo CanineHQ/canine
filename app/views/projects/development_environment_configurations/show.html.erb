@@ -1,0 +1,141 @@
+<%= project_layout(@project) do %>
+  <div class="max-w-4xl">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold">Development Environment</h1>
+      <p class="text-base-content/70 mt-2">
+        SSH into your running development environment with Claude Code access.
+      </p>
+    </div>
+
+    <% if @development_environment_configuration.enabled? %>
+      <div class="alert alert-info mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span>Development environment is <strong>enabled</strong> for branch: <%= @development_environment_configuration.branch_name %></span>
+      </div>
+
+      <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title">SSH Connection Details</h2>
+
+          <div class="space-y-4">
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">Host</span>
+              </label>
+              <div class="flex gap-2">
+                <input type="text" value="<%= @project.name %>-dev-ssh.<%= @project.namespace %>.svc.cluster.local" class="input input-bordered w-full font-mono" readonly>
+                <button class="btn btn-square btn-outline" onclick="navigator.clipboard.writeText(this.previousElementSibling.value)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="label">
+                  <span class="label-text font-semibold">Username</span>
+                </label>
+                <input type="text" value="<%= @development_environment_configuration.ssh_username %>" class="input input-bordered w-full font-mono" readonly>
+              </div>
+
+              <div>
+                <label class="label">
+                  <span class="label-text font-semibold">Port</span>
+                </label>
+                <input type="text" value="<%= @development_environment_configuration.ssh_port %>" class="input input-bordered w-full font-mono" readonly>
+              </div>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">Password</span>
+              </label>
+              <div class="flex gap-2">
+                <input type="password" value="<%= @development_environment_configuration.ssh_password %>" class="input input-bordered w-full font-mono" id="ssh-password" readonly>
+                <button class="btn btn-square btn-outline" onclick="document.getElementById('ssh-password').type = document.getElementById('ssh-password').type === 'password' ? 'text' : 'password'">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                </button>
+                <button class="btn btn-square btn-outline" onclick="navigator.clipboard.writeText(document.getElementById('ssh-password').value)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="mockup-code">
+            <pre data-prefix="$"><code>ssh <%= @development_environment_configuration.ssh_username %>@<%= @project.name %>-dev-ssh.<%= @project.namespace %>.svc.cluster.local -p <%= @development_environment_configuration.ssh_port %></code></pre>
+          </div>
+
+          <div class="alert alert-warning mt-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            <span><strong>Note:</strong> Claude Code is pre-installed. After SSH, run <code class="font-mono">claude-code</code> to start AI-assisted development.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-xl mt-6">
+        <div class="card-body">
+          <h2 class="card-title">Configuration</h2>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">Branch</span>
+              </label>
+              <p class="font-mono"><%= @development_environment_configuration.branch_name %></p>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">Dockerfile</span>
+              </label>
+              <p class="font-mono"><%= @development_environment_configuration.dockerfile_path %></p>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">Application Path</span>
+              </label>
+              <p class="font-mono"><%= @development_environment_configuration.application_path %></p>
+            </div>
+
+            <div>
+              <label class="label">
+                <span class="label-text font-semibold">API Key</span>
+              </label>
+              <% if @development_environment_configuration.api_key_configured? %>
+                <span class="badge badge-success">Configured</span>
+                <% if @development_environment_configuration.anthropic_api_key.present? %>
+                  <span class="text-sm text-base-content/70">(project-level)</span>
+                <% else %>
+                  <span class="text-sm text-base-content/70">(account-level)</span>
+                <% end %>
+              <% else %>
+                <span class="badge badge-error">Not configured</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= link_to "Edit Configuration", edit_project_development_environment_configuration_path(@project), class: "btn btn-primary" %>
+      </div>
+
+    <% else %>
+      <div class="alert alert-warning">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div>
+          <h3 class="font-bold">Development environment is disabled</h3>
+          <div class="text-sm">Enable it in the configuration settings to deploy the dev environment sidecar.</div>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <%= link_to "Enable Development Environment", edit_project_development_environment_configuration_path(@project), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
