@@ -38,17 +38,23 @@ class Provider < ApplicationRecord
   GITLAB_API_BASE = "https://gitlab.com"
   BITBUCKET_PROVIDER = "bitbucket"
   BITBUCKET_API_BASE = "https://api.bitbucket.org"
+  OPENAI_PROVIDER = "openai"
+  ANTHROPIC_PROVIDER = "anthropic"
+
   GIT_TYPE = "git"
   REGISTRY_TYPE = "registry"
+  INTELLIGENCE_TYPE = "intelligence"
   PROVIDER_TYPES = {
     GIT_TYPE => [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER ],
-    REGISTRY_TYPE => [ CUSTOM_REGISTRY_PROVIDER ]
+    REGISTRY_TYPE => [ CUSTOM_REGISTRY_PROVIDER ],
+    INTELLIGENCE_TYPE => [ OPENAI_PROVIDER, ANTHROPIC_PROVIDER ]
   }
 
   PORTAINER_PROVIDER = "portainer"
 
+  INTELLIGENCE_PROVIDERS = [ OPENAI_PROVIDER, ANTHROPIC_PROVIDER ].freeze
   PROVIDERS_WITH_CONTAINER_REGISTRY = [ GITHUB_PROVIDER, GITLAB_PROVIDER ].freeze
-  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER, CUSTOM_REGISTRY_PROVIDER ].freeze
+  AVAILABLE_PROVIDERS = [ GITHUB_PROVIDER, GITLAB_PROVIDER, BITBUCKET_PROVIDER, CUSTOM_REGISTRY_PROVIDER, OPENAI_PROVIDER, ANTHROPIC_PROVIDER ].freeze
   validates :registry_url, presence: true, if: :container_registry?
   scope :has_container_registry, -> { where(provider: PROVIDERS_WITH_CONTAINER_REGISTRY + [ CUSTOM_REGISTRY_PROVIDER ]) }
   scope :non_sso, -> { where(sso_provider_id: nil) }
@@ -101,6 +107,18 @@ class Provider < ApplicationRecord
 
   def bitbucket?
     provider == BITBUCKET_PROVIDER
+  end
+
+  def intelligence?
+    openai? || anthropic?
+  end
+
+  def openai?
+    provider == OPENAI_PROVIDER
+  end
+
+  def anthropic?
+    provider == ANTHROPIC_PROVIDER
   end
 
   def has_native_container_registry?
