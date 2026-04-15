@@ -2,7 +2,7 @@ class CleanupClosedPrProjectsJob < ApplicationJob
   queue_as :default
 
   def perform
-    ProjectFork.review_apps.includes(:child_project, :parent_project).find_each do |project_fork|
+    ProjectFork.includes(:child_project, :parent_project).find_each do |project_fork|
       begin
         parent_project = project_fork.parent_project
         client = Git::Client.from_project(parent_project)

@@ -8,7 +8,6 @@ class ProjectForks::CreateForkRecord
     context.project_fork = ProjectFork.create!(
       child_project: context.project,
       parent_project: context.parent_project,
-      fork_type: :review_app,
       external_id: context.pull_request.id,
       number: context.pull_request.number,
       title: context.pull_request.title,

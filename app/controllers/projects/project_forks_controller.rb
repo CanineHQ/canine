@@ -4,7 +4,7 @@ class Projects::ProjectForksController < Projects::BaseController
 
   def index
     client = Git::Client.from_project(@project)
-    @project_forks = @project.review_app_forks.includes(:child_project, :parent_project)
+    @project_forks = @project.forks.includes(:child_project, :parent_project)
     pull_requests = client.pull_requests.select do |pr|
       @project_forks.none? { |fork| fork.external_id == pr.id.to_s }
     end
