@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_15_170001) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_15_183122) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -553,13 +553,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_170001) do
   create_table "project_forks", force: :cascade do |t|
     t.bigint "child_project_id", null: false
     t.bigint "parent_project_id", null: false
-    t.string "external_id", null: false
-    t.string "number", null: false
-    t.string "title", null: false
-    t.string "url", null: false
-    t.string "user", null: false
+    t.string "external_id"
+    t.string "number"
+    t.string "title"
+    t.string "url"
+    t.string "user"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "fork_type", default: 0, null: false
     t.index ["child_project_id"], name: "index_project_forks_on_child_project_id", unique: true
     t.index ["parent_project_id"], name: "index_project_forks_on_parent_project_id"
   end
