@@ -2,14 +2,19 @@
 
 <%= project_layout(@project) do %>
   <div class="mb-6">
-    <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
-    <p class="text-base-content/60">
-      Managed cloud development environments will be created from this project's template configuration.
-    </p>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
+        <p class="text-base-content/60">
+          Managed cloud development environments created from this project's template configuration.
+        </p>
+      </div>
+      <%= button_to "New Dev Environment", project_development_environments_path(@project), method: :post, class: "btn btn-primary btn-sm" %>
+    </div>
     <div class="divider"></div>
   </div>
 
-  <div class="card border border-base-300 bg-base-100">
+  <div class="card border border-base-300 bg-base-100 mb-6">
     <div class="card-body space-y-4">
       <div>
         <h3 class="text-lg font-semibold">Template Configuration</h3>
@@ -32,11 +37,39 @@
           <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.workspace_mount_path %></div>
         </div>
       </div>
-
-      <div class="alert">
-        <iconify-icon icon="lucide:construction"></iconify-icon>
-        <span>The runtime creation flow for per-branch development environments is the next step.</span>
-      </div>
     </div>
   </div>
+
+  <% if @dev_environment_forks.any? %>
+    <div class="space-y-3">
+      <h3 class="text-lg font-semibold">Active Environments</h3>
+      <% @dev_environment_forks.each do |fork| %>
+        <div class="card border border-base-300 bg-base-100">
+          <div class="card-body flex-row items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+              <div>
+                <h4 class="font-medium">
+                  <%= link_to fork.child_project.name, project_path(fork.child_project), class: "link link-hover" %>
+                </h4>
+                <p class="text-sm text-base-content/60">
+                  Branch: <span class="font-mono"><%= fork.child_project.branch %></span>
+                  &middot; Created <%= time_ago_in_words(fork.created_at) %> ago
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <%= render partial: "projects/status", locals: { project: fork.child_project } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card border border-base-300 bg-base-100">
+      <div class="card-body items-center text-center py-12">
+        <iconify-icon icon="lucide:code-2" class="text-4xl text-base-content/30 mb-2"></iconify-icon>
+        <p class="text-base-content/60">No development environments yet. Create one to get started.</p>
+      </div>
+    </div>
+  <% end %>
 <% end %>
