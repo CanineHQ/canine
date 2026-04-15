@@ -1,5 +1,5 @@
-<%= turbo_stream_from dom_id(build, :status) %>
 <div id="<%= dom_id(build, :status) %>">
+  <%= turbo_stream_from dom_id(build, :status) %>
   <%
     status = (build.deployment&.status || build.status)
     status = status == "in_progress" ? "pending" : status.humanize

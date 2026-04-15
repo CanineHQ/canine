@@ -32,7 +32,8 @@
           selected: form.object.cluster_id,
           partial: "clusters/selector_item",
           placeholder: "Select a cluster",
-          disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id)
+          disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id),
+          required: true
         )) %>
       <% end %>
 

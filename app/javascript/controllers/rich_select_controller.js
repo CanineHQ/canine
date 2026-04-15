@@ -5,6 +5,7 @@ export default class extends Controller {
 
   connect() {
     this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this)
+    this.inputTarget.addEventListener("invalid", this.onInvalid.bind(this))
   }
 
   disconnect() {
@@ -58,8 +59,29 @@ export default class extends Controller {
       opt.classList.toggle("bg-base-200", opt.dataset.value === value)
     })
 
+    this.clearValidationError()
     this.close()
     this.triggerTarget.focus()
+  }
+
+  onInvalid(event) {
+    event.preventDefault()
+    this.triggerTarget.classList.add("border-error")
+    if (!this.errorElement) {
+      this.errorElement = document.createElement("label")
+      this.errorElement.className = "label"
+      this.errorElement.innerHTML = '<span class="label-text-alt text-error">Please select an option</span>'
+      this.triggerTarget.insertAdjacentElement("afterend", this.errorElement)
+    }
+    this.triggerTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+  }
+
+  clearValidationError() {
+    this.triggerTarget.classList.remove("border-error")
+    if (this.errorElement) {
+      this.errorElement.remove()
+      this.errorElement = null
+    }
   }
 
   onTriggerKeydown(event) {

@@ -22,7 +22,8 @@
             selected: project.project_credential_provider.provider_id,
             partial: "providers/selector_item",
             placeholder: "Select credentials",
-            disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id)
+            disabled: @selectable_providers.reject { |p| current_user.providers.include?(p) }.map(&:id),
+            required: true
           )) %>
         <% end %>
         <div class="label">

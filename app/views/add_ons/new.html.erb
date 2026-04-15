@@ -12,6 +12,7 @@
   <div class="card card-bordered bg-base-100">
     <div class="card-body">
       <%= form_with(model: @add_on, data: { controller: "add-ons--version-selector" }) do |form| %>
+        <%= render "shared/error_messages", resource: form.object %>
         <div class="space-y-8">
           <%= render(FormFieldComponent.new(
             label: "Name",
@@ -34,8 +35,12 @@
               selected: form.object.cluster_id,
               partial: "clusters/selector_item",
               placeholder: "Select a cluster",
-              disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id)
+              disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id),
+              required: true
             )) %>
+            <label class="label">
+              <span class="label-text-alt">* Required</span>
+            </label>
           <% end %>
 
           <%= render "shared/partials/namespace_input_group", form: %>
