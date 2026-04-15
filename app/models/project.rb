@@ -68,6 +68,7 @@ class Project < ApplicationRecord
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy
   has_one :deployment_configuration, dependent: :destroy
+  has_one :development_environment_configuration, dependent: :destroy
 
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
@@ -198,6 +199,10 @@ class Project < ApplicationRecord
     ref = container_image_reference
     digest = (intended_deployment || current_deployment)&.build&.digest
     digest.present? ? "#{ref}@#{digest}" : ref
+  end
+
+  def development_environment_enabled?
+    development_environment_configuration&.enabled? || false
   end
 
   # Forks

@@ -11,25 +11,28 @@
     </div>
 
     <% if @project.show_fork_options? %>
-      <h2 class="text-2xl font-bold">Pull Request Apps</h2>
-      <hr class="mt-3 mb-4 border-t border-base-300" />
       <div>
+        <h2 class="text-2xl font-bold">Pull Request Apps</h2>
+        <hr class="mt-3 mb-4 border-t border-base-300" />
         <%= render "projects/project_forks/form", project: @project %>
       </div>
     <% end %>
+
+    <div>
+      <h2 class="text-2xl font-bold">Development Environment</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <%= render "projects/development_environment_configurations/section",
+        project: @project,
+        configuration: (@development_environment_configuration || @project.development_environment_configuration),
+        notice_message: nil %>
+    </div>
 
     <div>
       <h2 class="text-2xl font-bold">Volumes</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <%= render "projects/volumes/index", project: @project %>
-    </div>
-
-    <div>
-      <h2 class="text-2xl font-bold">Buildpacks</h2>
-      <hr class="mt-3 mb-4 border-t border-base-300" />
-
-      <%= render "build_packs/search" %>
     </div>
 
     <div>

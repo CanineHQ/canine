@@ -2,18 +2,19 @@
 #
 # Table name: build_configurations
 #
-#  id                     :bigint           not null, primary key
-#  build_type             :integer          not null
-#  buildpack_base_builder :string
-#  context_directory      :string           default("./"), not null
-#  dockerfile_path        :string           default("./Dockerfile"), not null
-#  driver                 :integer          not null
-#  image_repository       :string           not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  build_cloud_id         :bigint
-#  project_id             :bigint           not null
-#  provider_id            :bigint           not null
+#  id                          :bigint           not null, primary key
+#  build_type                  :integer          not null
+#  buildpack_base_builder      :string
+#  context_directory           :string           default("./"), not null
+#  development_dockerfile_path :string
+#  dockerfile_path             :string           default("./Dockerfile"), not null
+#  driver                      :integer          not null
+#  image_repository            :string           not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  build_cloud_id              :bigint
+#  project_id                  :bigint           not null
+#  provider_id                 :bigint           not null
 #
 # Indexes
 #
