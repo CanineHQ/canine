@@ -26,6 +26,28 @@ spec:
       <% if service.pod_yaml.present? %>
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
       <% end %>
+      <% if project.dev_environment? %>
+      initContainers:
+      # Default interactive sidecar for development debugging
+      - name: debug-shell
+        image: alpine:latest
+        restartPolicy: Always
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          # Install common debugging tools
+          apk add --no-cache curl wget vim nano bash
+          echo "Debug shell ready! Access with: kubectl exec -it <pod-name> -c debug-shell -- /bin/bash"
+          # Sleep forever to keep container running
+          sleep infinity
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      <% end %>
       containers:
       - name: <%= project.name %>
         image: <%= project.container_image_reference_with_digest %>
