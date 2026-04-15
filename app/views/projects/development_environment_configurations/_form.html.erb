@@ -1,4 +1,5 @@
-<% configuration = local_assigns[:configuration] || project.development_environment_configuration || DevelopmentEnvironmentConfiguration.new(project: project, enabled: false) %>
+<% configuration = local_assigns[:configuration] || project.development_environment_configuration || DevelopmentEnvironmentConfiguration.new(project: project, cluster: project.cluster, enabled: false) %>
+<% clusters = local_assigns[:clusters] || [project.cluster].compact %>
 
 <%= form_with(
   model: [project, configuration],
@@ -15,6 +16,21 @@
 
   <%= render(FormFieldComponent.new(label: "Enabled")) do %>
     <%= form.check_box :enabled, class: "checkbox" %>
+  <% end %>
+
+  <%= render(FormFieldComponent.new(label: "Target cluster")) do %>
+    <%= render(RichSelectComponent.new(
+      name: form.field_name(:cluster_id),
+      id: "development_environment_cluster_id",
+      collection: clusters,
+      selected: configuration.cluster_id || project.cluster_id,
+      partial: "clusters/selector_item",
+      placeholder: "Select a cluster",
+      required: configuration.enabled?
+    )) %>
+    <label class="label">
+      <span class="label-text-alt">Cluster where managed development environments should be created.</span>
+    </label>
   <% end %>
 
   <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>

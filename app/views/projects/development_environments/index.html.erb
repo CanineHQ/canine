@@ -1,0 +1,42 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Project") %>
+
+<%= project_layout(@project) do %>
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
+    <p class="text-base-content/60">
+      Managed cloud development environments will be created from this project's template configuration.
+    </p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="card border border-base-300 bg-base-100">
+    <div class="card-body space-y-4">
+      <div>
+        <h3 class="text-lg font-semibold">Template Configuration</h3>
+        <p class="text-sm text-base-content/60">
+          This project is configured to create development environments on demand.
+        </p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Target Cluster</div>
+          <div class="mt-1 font-medium"><%= @development_environment_configuration.cluster&.name %></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Dockerfile</div>
+          <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.dockerfile_path %></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Workspace Mount</div>
+          <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.workspace_mount_path %></div>
+        </div>
+      </div>
+
+      <div class="alert">
+        <iconify-icon icon="lucide:construction"></iconify-icon>
+        <span>The runtime creation flow for per-branch development environments is the next step.</span>
+      </div>
+    </div>
+  </div>
+<% end %>

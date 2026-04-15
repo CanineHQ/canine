@@ -37,6 +37,14 @@
       </div>
     <% end %>
   <% end %>
+  <% if project.development_environment_enabled? %>
+    <%= link_to project_development_environments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_development_environments_path(project))}" do %>
+      <div class="flex items-center gap-2">
+        Dev Environments
+        <iconify-icon icon="lucide:laptop-minimal-check"></iconify-icon>
+      </div>
+    <% end %>
+  <% end %>
   <%= link_to edit_project_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_project_path(project))}" do %>
     <div class="flex items-center gap-2">
       Settings
