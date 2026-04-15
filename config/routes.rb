@@ -158,6 +158,7 @@ Rails.application.routes.draw do
     end
     resources :project_forks, only: %i[index edit create], module: :projects
     resource :cluster_migration, only: %i[create], module: :projects
+    resource :development_environment_configuration, only: %i[create update destroy], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects
     resources :notifiers, only: %i[index new create edit update destroy], module: :projects
     resources :processes, only: %i[index show create destroy], module: :projects do

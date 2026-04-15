@@ -1,0 +1,12 @@
+<%= turbo_frame_tag dom_id(project, :development_environment_configuration) do %>
+  <% if notice_message.present? %>
+    <div class="alert alert-success mb-4">
+      <iconify-icon icon="lucide:check-circle"></iconify-icon>
+      <span><%= notice_message %></span>
+    </div>
+  <% end %>
+
+  <%= render "projects/development_environment_configurations/form",
+    project: project,
+    configuration: configuration %>
+<% end %>

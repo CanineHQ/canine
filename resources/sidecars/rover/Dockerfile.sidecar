@@ -1,0 +1,63 @@
+# syntax=docker/dockerfile:1
+
+# Rover is Canine's managed coding-agent sidecar. It is intentionally generic:
+# Canine can exec commands inside it, mount the shared workspace, and layer in
+# agent-specific behavior later without rebuilding the project app image.
+
+FROM docker.io/library/debian:bookworm-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_VERSION=22.14.0
+ARG YARN_VERSION=1.22.22
+ARG PNPM_VERSION=9.15.4
+ARG TARGETARCH
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TERM=xterm-256color \
+    WORKSPACE_DIR=/workspace
+
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      bash \
+      build-essential \
+      ca-certificates \
+      curl \
+      fd-find \
+      git \
+      git-lfs \
+      jq \
+      less \
+      openssh-client \
+      patch \
+      procps \
+      python3 \
+      python3-pip \
+      ripgrep \
+      ruby-full \
+      shellcheck \
+      software-properties-common \
+      sqlite3 \
+      sudo \
+      tini \
+      unzip \
+      vim-tiny \
+      wget \
+      xz-utils && \
+    ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+RUN arch="$(case "${TARGETARCH:-amd64}" in amd64) echo x64 ;; arm64) echo arm64 ;; *) echo "${TARGETARCH}" ;; esac)" && \
+    curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${arch}.tar.xz" \
+    | tar -xJ --strip-components=1 -C /usr/local/ && \
+    npm install -g "yarn@${YARN_VERSION}" "pnpm@${PNPM_VERSION}" && \
+    npm cache clean --force
+
+COPY entrypoint.sh /usr/local/bin/rover-entrypoint
+RUN chmod +x /usr/local/bin/rover-entrypoint && \
+    git lfs install --system
+
+WORKDIR /workspace
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/rover-entrypoint"]
+CMD ["sleep", "infinity"]
