@@ -24,6 +24,7 @@
 
       <%= render "projects/development_environment_configurations/section",
         project: @project,
+        clusters: @development_environment_clusters,
         configuration: (@development_environment_configuration || @project.development_environment_configuration),
         notice_message: nil %>
     </div>

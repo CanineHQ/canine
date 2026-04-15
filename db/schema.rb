@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_15_170000) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_15_170001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -218,6 +218,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_170000) do
     t.jsonb "manifests", default: {}
     t.string "version"
     t.index ["build_id"], name: "index_deployments_on_build_id", unique: true
+  end
+
+  create_table "development_environment_configurations", force: :cascade do |t|
+    t.bigint "cluster_id"
+    t.bigint "project_id", null: false
+    t.string "dockerfile_path"
+    t.string "workspace_mount_path"
+    t.boolean "enabled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
+    t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 
   create_table "domains", force: :cascade do |t|
@@ -783,6 +795,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_170000) do
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
+  add_foreign_key "development_environment_configurations", "clusters"
+  add_foreign_key "development_environment_configurations", "projects"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"

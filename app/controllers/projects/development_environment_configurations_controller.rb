@@ -46,9 +46,11 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
     respond_to do |format|
       format.html do
         if turbo_frame_request?
+          prepare_edit_page
           render partial: "projects/development_environment_configurations/section",
                  locals: {
                    project: @project,
+                   clusters: @development_environment_clusters,
                    configuration: @development_environment_configuration,
                    notice_message: notice_message
                  },
@@ -66,5 +68,6 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   def prepare_edit_page
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
+    @development_environment_clusters = current_account.clusters.running.order(:name)
   end
 end
