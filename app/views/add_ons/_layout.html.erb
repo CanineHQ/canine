@@ -3,7 +3,7 @@
   <div class="card-body">
     <div class="container">
       <div>
-        <%= render "add_ons/install_animation", add_on: %>
+        <%= render "shared/partials/wizard_animation" %>
 
         <%= turbo_stream_from [add_on, :install_stage] %>
         <%= render "add_ons/install_stage", add_on: %>

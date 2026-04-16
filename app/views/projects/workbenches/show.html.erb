@@ -1,0 +1,13 @@
+<%= content_for :title, "Workbench - #{@project.name}" %>
+
+<div class="mb-2 flex items-center gap-2">
+  <%= link_to "← Back to original project", project_path(@project.child_dev_environment_fork.parent_project), class: "btn btn-ghost" %>
+  <%= link_to "View Project", project_deployments_path(@project), class: "btn btn-ghost" %>
+</div>
+
+<h2 class="text-2xl font-bold">Workbench</h2>
+
+<% unless @project.deployments.any? %>
+  <%= render "shared/partials/wizard_animation" %>
+<% end %>
+<%= render "projects/workbenches/setup_progress", project: @project %>

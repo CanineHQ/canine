@@ -28,8 +28,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @pagy, @events = pagy(@project.events.order(created_at: :desc))
-    render "projects/deployments/index"
+    redirect_to project_root_path(@project)
   end
 
   def new
