@@ -27,19 +27,21 @@ spec:
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
       <% end %>
       <% if project.dev_environment? %>
+      <% dev_config = project.child_dev_environment_fork.parent_project.development_environment_configuration %>
       initContainers:
-      # Default interactive sidecar for development debugging
-      - name: debug-shell
-        image: alpine:latest
+      - name: rover
+        image: ghcr.io/caninehq/rover:latest
         restartPolicy: Always
-        command: ["/bin/sh", "-c"]
-        args:
-        - |
-          # Install common debugging tools
-          apk add --no-cache curl wget vim nano bash
-          echo "Debug shell ready! Access with: kubectl exec -it <pod-name> -c debug-shell -- /bin/bash"
-          # Sleep forever to keep container running
-          sleep infinity
+        env:
+        - name: WORKSPACE_DIR
+          value: "<%= dev_config&.workspace_mount_path || '/workspace' %>"
+        <% if dev_config&.llm_provider&.anthropic? %>
+        - name: ANTHROPIC_API_KEY
+          value: "<%= dev_config.llm_provider.read_attribute(:access_token) %>"
+        <% elsif dev_config&.llm_provider&.openai? %>
+        - name: OPENAI_API_KEY
+          value: "<%= dev_config.llm_provider.read_attribute(:access_token) %>"
+        <% end %>
         <% if @project.volumes.present? %>
         volumeMounts:
         <% @project.volumes.each do |volume| %>
