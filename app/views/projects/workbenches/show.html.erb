@@ -5,9 +5,19 @@
   <%= link_to "View Project", project_deployments_path(@project), class: "btn btn-ghost" %>
 </div>
 
-<h2 class="text-2xl font-bold">Workbench</h2>
+<h2 class="text-2xl font-bold mb-4">Workbench</h2>
 
-<% unless @project.deployments.any? %>
-  <%= render "shared/partials/wizard_animation" %>
+<% if @pod %>
+  <%= render "processes/terminal",
+    shell_token: @shell_token,
+    pod_name: @pod_name,
+    namespace: @namespace,
+    back_path: project_path(@project.child_dev_environment_fork.parent_project),
+    project_name: @project.name,
+    cluster: @project.cluster %>
+<% else %>
+  <% unless @project.deployments.any? %>
+    <%= render "shared/partials/wizard_animation" %>
+  <% end %>
+  <%= render "projects/workbenches/setup_progress", project: @project %>
 <% end %>
-<%= render "projects/workbenches/setup_progress", project: @project %>

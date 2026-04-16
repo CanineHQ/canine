@@ -1,30 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe K8::Stateless::Deployment do
-  around do |example|
-    original_image = ENV["CODING_AGENT_SIDECAR_IMAGE"]
-    original_command = ENV["CODING_AGENT_SIDECAR_COMMAND"]
-    ENV["CODING_AGENT_SIDECAR_IMAGE"] = "ghcr.io/example/coding-agent:latest"
-    ENV["CODING_AGENT_SIDECAR_COMMAND"] = "sleep infinity"
-    example.run
-  ensure
-    ENV["CODING_AGENT_SIDECAR_IMAGE"] = original_image
-    ENV["CODING_AGENT_SIDECAR_COMMAND"] = original_command
-  end
-
   let(:project) { create(:project) }
   let(:service) { create(:service, project: project, command: "bin/dev") }
   let(:deployment) { described_class.new(service) }
-
-  before do
-    project.build_configuration.update!(development_dockerfile_path: "./Dockerfile.dev")
-  end
-
-  it 'renders the development workspace init container and coding sidecar' do
-    # This test expects initContainers from a different source (workspace/coding-agent)
-    # Skip for now as it's testing a different feature
-    skip "This test is for workspace/coding-agent feature, not debug-shell"
-  end
 
   it 'merges custom pod spec extras without replacing the primary container' do
     service.update!(pod_yaml: {
@@ -51,71 +30,76 @@ RSpec.describe K8::Stateless::Deployment do
     expect(yaml).to include("name: cache")
   end
 
-  describe 'debug shell sidecar' do
+  describe 'rover sidecar' do
+    let(:parent_project) { create(:project) }
+    let(:llm_provider) { create(:provider, :anthropic, user: parent_project.account.owner) }
+    let(:dev_config) do
+      create(:development_environment_configuration,
+        project: parent_project,
+        enabled: true,
+        workspace_mount_path: "/workspace",
+        llm_provider: llm_provider)
+    end
+
     context 'when in development environment' do
       before do
-        allow(project).to receive(:dev_environment?).and_return(true)
+        dev_config
+        create(:dev_environment_fork, child_project: project, parent_project: parent_project)
+        project.reload
       end
 
-      it 'includes the debug-shell sidecar' do
+      it 'includes the rover sidecar' do
         yaml = deployment.to_yaml
 
         expect(yaml).to include("initContainers:")
-        expect(yaml).to include("name: debug-shell")
-        expect(yaml).to include("image: alpine:latest")
+        expect(yaml).to include("name: rover")
+        expect(yaml).to include("image: ghcr.io/caninehq/rover:latest")
         expect(yaml).to include("restartPolicy: Always")
       end
 
-      it 'installs debugging tools in the debug shell' do
+      it 'sets WORKSPACE_DIR from dev config' do
         yaml = deployment.to_yaml
 
-        expect(yaml).to include("apk add --no-cache curl wget vim nano bash")
-        expect(yaml).to include("sleep infinity")
+        expect(yaml).to include("WORKSPACE_DIR")
+        expect(yaml).to include("/workspace")
       end
 
-      it 'mounts project volumes to the debug shell' do
-        volume = create(:volume, project: project, name: "app-storage", mount_path: "/data")
-
+      it 'sets ANTHROPIC_API_KEY when llm provider is anthropic' do
         yaml = deployment.to_yaml
 
-        # Check debug-shell has volumeMounts
-        debug_shell_section = yaml.split("name: debug-shell").last.split("containers:").first
-        expect(debug_shell_section).to include("volumeMounts:")
-        expect(debug_shell_section).to include("name: app-storage")
-        expect(debug_shell_section).to include("mountPath: /data")
+        expect(yaml).to include("ANTHROPIC_API_KEY")
+        expect(yaml).not_to include("OPENAI_API_KEY")
       end
 
-      it 'does not include debug shell when no volumes present' do
+      it 'sets OPENAI_API_KEY when llm provider is openai' do
+        openai_provider = create(:provider, :openai, user: parent_project.account.owner)
+        dev_config.update!(llm_provider: openai_provider)
+
         yaml = deployment.to_yaml
 
-        # Debug shell should still be present, just without volumeMounts
-        expect(yaml).to include("name: debug-shell")
+        expect(yaml).to include("OPENAI_API_KEY")
+        expect(yaml).not_to include("ANTHROPIC_API_KEY")
+      end
 
-        # Extract debug-shell section
-        debug_shell_section = yaml.split("name: debug-shell").last.split(/- name: (?!debug-shell)/).first
+      it 'mounts project volumes to the rover sidecar' do
+        create(:volume, project: project, name: "app-storage", mount_path: "/data")
 
-        # Should not have volumeMounts section if no volumes
-        expect(debug_shell_section).not_to include("volumeMounts:") if project.volumes.empty?
+        yaml = deployment.to_yaml
+        rover_section = yaml.split("name: rover").last.split("containers:").first
+
+        expect(rover_section).to include("volumeMounts:")
+        expect(rover_section).to include("name: app-storage")
+        expect(rover_section).to include("mountPath: /data")
       end
     end
 
     context 'when not in development environment' do
-      before do
-        allow(project).to receive(:dev_environment?).and_return(false)
-      end
-
-      it 'does not include the debug-shell sidecar' do
+      it 'does not include the rover sidecar' do
         yaml = deployment.to_yaml
 
-        expect(yaml).not_to include("name: debug-shell")
-      end
-
-      it 'does not include initContainers section at all' do
-        yaml = deployment.to_yaml
-
+        expect(yaml).not_to include("name: rover")
         expect(yaml).not_to include("initContainers:")
       end
     end
   end
-
 end
