@@ -233,6 +233,10 @@ class Project < ApplicationRecord
     child_dev_environment_fork.present?
   end
 
+  def show_dev_environment_options?
+    !dev_environment? && git?
+  end
+
   def build_provider
     if build_configuration.present?
       build_configuration.provider

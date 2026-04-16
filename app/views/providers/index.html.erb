@@ -35,6 +35,30 @@
   <% end %>
 
   <div class="mt-16">
+    <h2 class="text-2xl font-bold">AI Providers</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+    <%= turbo_frame_tag "intelligence_provider" do %>
+      <%= render "providers/intelligence_index" %>
+      <div class="flex items-center gap-2">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-primary btn-sm">
+            + New AI Provider
+            <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+          </div>
+          <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-60 p-2 shadow">
+            <li>
+              <%= link_to "OpenAI", new_provider_path(provider_type: Provider::OPENAI_PROVIDER) %>
+            </li>
+            <li>
+              <%= link_to "Anthropic", new_provider_path(provider_type: Provider::ANTHROPIC_PROVIDER) %>
+            </li>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-16">
     <h2 class="text-2xl font-bold">API Tokens</h2>
     <hr class="mt-3 mb-4 border-t border-base-300" />
     <%= turbo_frame_tag "api_token" do %>
