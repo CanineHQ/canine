@@ -12,17 +12,28 @@
       </tr>
     </thead>
     <tbody>
-      <% current_user.providers.non_sso.each do |provider| %>
+      <% current_user.providers.non_sso.where.not(provider: Provider::INTELLIGENCE_PROVIDERS).each do |provider| %>
         <% project_credential_providers = ProjectCredentialProvider.where(provider:).all %>
         <tr>
-          <td>
-            <%= provider.provider.titleize %>
-            <% if provider.registry_url.present? %>
-              <br />
-              <span class="text-gray-500 text-sm">
-                <%= provider.registry_url %>
-              </span>
+          <td class="flex items-center gap-2">
+            <% if provider.github? %>
+              <iconify-icon icon="mdi:github" height="20"></iconify-icon>
+            <% elsif provider.gitlab? %>
+              <iconify-icon icon="mdi:gitlab" height="20"></iconify-icon>
+            <% elsif provider.bitbucket? %>
+              <iconify-icon icon="mdi:bitbucket" height="20"></iconify-icon>
+            <% elsif provider.container_registry? %>
+              <iconify-icon icon="mdi:docker" height="20"></iconify-icon>
             <% end %>
+            <div>
+              <%= provider.provider.titleize %>
+              <% if provider.registry_url.present? %>
+                <br />
+                <span class="text-gray-500 text-sm">
+                  <%= provider.registry_url %>
+                </span>
+              <% end %>
+            </div>
           </td>
           <td>
             <%= render "providers/show", provider: %>

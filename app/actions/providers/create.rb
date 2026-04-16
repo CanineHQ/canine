@@ -21,6 +21,10 @@ module Providers
         with(provider:).reduce(
           Providers::CreateBitbucketProvider,
         )
+      elsif provider.intelligence?
+        with(provider:).reduce(
+          Providers::CreateIntelligenceProvider,
+        )
       end
     end
   end

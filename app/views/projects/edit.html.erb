@@ -18,16 +18,20 @@
       </div>
     <% end %>
 
-    <div>
-      <h2 class="text-2xl font-bold">Development Environment</h2>
-      <hr class="mt-3 mb-4 border-t border-base-300" />
+    <% if @project.show_dev_environment_options? %>
+      <div>
+        <h2 class="text-2xl font-bold">Development Environment</h2>
+        <hr class="mt-3 mb-4 border-t border-base-300" />
 
-      <%= render "projects/development_environment_configurations/section",
-        project: @project,
-        clusters: @development_environment_clusters,
-        configuration: (@development_environment_configuration || @project.development_environment_configuration),
-        notice_message: nil %>
-    </div>
+        <%= render "projects/development_environment_configurations/section",
+          project: @project,
+          clusters: @development_environment_clusters,
+          git_providers: @git_providers,
+          llm_providers: @llm_providers,
+          configuration: (@development_environment_configuration || @project.development_environment_configuration),
+          notice_message: nil %>
+      </div>
+    <% end %>
 
     <div>
       <h2 class="text-2xl font-bold">Volumes</h2>
