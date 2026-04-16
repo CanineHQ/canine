@@ -3,8 +3,9 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def create
     @configuration = @development_environment_configuration = @project.build_development_environment_configuration(configuration_params)
+    result = DevelopmentEnvironmentConfigurations::Save.execute(configuration: @configuration, user: current_user)
 
-    if @configuration.save
+    if result.success?
       respond_with_configuration("Development environment configuration saved.")
     else
       respond_with_configuration(status: :unprocessable_entity)
@@ -13,8 +14,10 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def update
     @development_environment_configuration = @configuration
+    @configuration.assign_attributes(configuration_params)
+    result = DevelopmentEnvironmentConfigurations::Save.execute(configuration: @configuration, user: current_user)
 
-    if @configuration.update(configuration_params)
+    if result.success?
       respond_with_configuration("Development environment configuration updated.")
     else
       respond_with_configuration(status: :unprocessable_entity)
@@ -71,7 +74,7 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
-    @git_providers = current_account.providers.where(provider: Provider::PROVIDER_TYPES[Provider::GIT_TYPE])
-    @llm_providers = current_account.providers.where(provider: Provider::PROVIDER_TYPES[Provider::INTELLIGENCE_TYPE])
+    @git_providers = current_user.providers.where(provider: @project.provider.provider)
+    @llm_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[Provider::INTELLIGENCE_TYPE])
   end
 end
