@@ -34,7 +34,11 @@ class Git::Bitbucket::Client < Git::Client
       headers: auth_headers
     )
     unless response.success?
-      raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
+      if response.code == 404
+        raise Git::Client::BranchNotFound, "Branch '#{branch}' not found in repository '#{repository_url}'"
+      else
+        raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
+      end
     end
 
     (response["values"] || []).map do |commit|

@@ -84,7 +84,15 @@ class Projects::BuildJob < ApplicationJob
     runner = Cli::RunAndLog.new(build, killable: build)
     runner.call(git_clone_command.join(" "))
   rescue Cli::CommandFailedError => e
-    raise BuildFailure, "Failed to clone repository: #{e.message}"
+    if runner.output.match?(/Remote branch .* not found|Could not find remote branch/i)
+      raise Git::Client::BranchNotFound, "Branch '#{project.branch}' not found in repository '#{project.repository_url}'"
+    elsif runner.output.match?(/Repository not found|Could not read from remote repository/i)
+      raise Git::Client::RepositoryNotFound, "Repository '#{project.repository_url}' not found or not accessible"
+    elsif runner.output.match?(/Authentication failed|Invalid credentials/i)
+      raise Git::Client::AuthenticationFailed, "Authentication failed for '#{project.repository_url}'"
+    else
+      raise BuildFailure, "Failed to clone repository: #{e.message}"
+    end
   end
 
 
