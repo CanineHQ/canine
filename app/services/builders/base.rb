@@ -32,4 +32,30 @@ class Builders::Base
 
   def cleanup
   end
+
+  # Build and push dev environment image
+  def build_and_push_dev_image(repository_path, dockerfile_path, image_tag)
+    docker_build_command = [
+      "docker",
+      "--context=default",
+      "buildx",
+      "build",
+      "--progress=plain",
+      "--platform", "linux/amd64",
+      "-t", image_tag,
+      "-f", File.join(repository_path, dockerfile_path),
+      "--push",
+      repository_path
+    ]
+
+    build.info("Building dev environment: #{docker_build_command.join(" ")}", color: :cyan)
+    _stdout, stderr, status = Open3.capture3(*docker_build_command)
+
+    if status.success?
+      build.success("Dev environment image built and pushed successfully.")
+    else
+      build.error("Dev environment build failed:\n#{stderr}")
+      raise "Dev environment build failed: #{stderr}"
+    end
+  end
 end

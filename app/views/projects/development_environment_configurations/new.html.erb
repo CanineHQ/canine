@@ -1,0 +1,14 @@
+<%= project_layout(@project) do %>
+  <div class="max-w-4xl">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold">New Development Environment</h1>
+      <p class="text-base-content/70 mt-2">
+        Configure a cloud development environment with SSH access and Claude Code integration.
+      </p>
+    </div>
+
+    <%= render "form",
+        url: project_development_environment_configuration_path(@project),
+        method: :post %>
+  </div>
+<% end %>

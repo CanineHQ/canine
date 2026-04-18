@@ -181,6 +181,7 @@ Rails.application.routes.draw do
         get :download
       end
     end
+    resource :development_environment_configuration, only: %i[show new create edit update destroy], module: :projects
     resources :deployments, only: %i[index show], module: :projects do
       collection do
         post :deploy

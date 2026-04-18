@@ -2,13 +2,14 @@
 #
 # Table name: accounts
 #
-#  id         :bigint           not null, primary key
-#  allow_mcp  :boolean          default(TRUE), not null
-#  name       :string           not null
-#  slug       :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  owner_id   :bigint
+#  id                :bigint           not null, primary key
+#  allow_mcp         :boolean          default(TRUE), not null
+#  anthropic_api_key :string
+#  name              :string           not null
+#  slug              :string           not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  owner_id          :bigint
 #
 # Indexes
 #

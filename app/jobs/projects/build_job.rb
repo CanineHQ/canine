@@ -41,6 +41,10 @@ class Projects::BuildJob < ApplicationJob
 
       # Clone repository and build
       digest = clone_repository_and_build_image(project, build, image_builder)
+
+      # Build dev environment image if configured
+      build_dev_environment_image(project, build, image_builder) if project.development_environment_configuration&.enabled?
+
       image_builder.cleanup
 
       build.update!(digest: digest) if digest.present?
@@ -103,6 +107,32 @@ class Projects::BuildJob < ApplicationJob
 
       # Use the Docker builder to build the image
       image_builder.build_image(repository_path)
+    end
+  end
+
+  def build_dev_environment_image(project, build, image_builder)
+    dev_env = project.development_environment_configuration
+    return unless dev_env&.enabled? && dev_env.branch_name == project.branch
+
+    build.info("Building dev environment image from #{dev_env.dockerfile_path}", color: :blue)
+
+    Dir.mktmpdir do |repository_path|
+      git_clone(project, build, repository_path)
+
+      # Build dev environment image with custom tag
+      dev_image_tag = "#{project.container_registry_url}/#{project.repository_url}-dev:latest"
+      dockerfile_path = File.join(repository_path, dev_env.dockerfile_path)
+
+      unless File.exist?(dockerfile_path)
+        build.warning("Dev environment Dockerfile not found at #{dev_env.dockerfile_path}, skipping dev image build")
+        return
+      end
+
+      image_builder.build_and_push_dev_image(repository_path, dev_env.dockerfile_path, dev_image_tag)
+      build.info("Dev environment image pushed: #{dev_image_tag}", color: :green)
+    rescue StandardError => e
+      build.warning("Failed to build dev environment image: #{e.message}")
+      # Don't fail the entire build if dev image fails
     end
   end
 
