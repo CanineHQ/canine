@@ -31,17 +31,13 @@ spec:
       initContainers:
       - name: rover
         image: ghcr.io/caninehq/rover:latest
+        imagePullPolicy: Always
         restartPolicy: Always
-        env:
-        - name: WORKSPACE_DIR
-          value: "<%= dev_config&.workspace_mount_path || '/workspace' %>"
-        <% if dev_config&.llm_provider&.anthropic? %>
-        - name: ANTHROPIC_API_KEY
-          value: "<%= dev_config.llm_provider.read_attribute(:access_token) %>"
-        <% elsif dev_config&.llm_provider&.openai? %>
-        - name: OPENAI_API_KEY
-          value: "<%= dev_config.llm_provider.read_attribute(:access_token) %>"
-        <% end %>
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
         <% if @project.volumes.present? %>
         volumeMounts:
         <% @project.volumes.each do |volume| %>

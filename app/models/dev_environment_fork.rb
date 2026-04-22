@@ -24,4 +24,12 @@ class DevEnvironmentFork < ApplicationRecord
 
   validates :child_project_id, uniqueness: true
   validates :parent_project_id, presence: true
+
+  before_destroy :destroy_child_project
+
+  private
+
+  def destroy_child_project
+    child_project.destroy unless child_project.destroyed? || child_project.marked_for_destruction?
+  end
 end
