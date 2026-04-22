@@ -16,5 +16,14 @@ class Avo::Resources::Build < Avo::BaseResource
     field :git_sha, as: :text
     field :commit_sha, as: :text
     field :commit_message, as: :text, format_using: -> { value.truncate 30 }
+
+    field :logs, as: :code, language: "shell", theme: "dracula" do
+      lines = record.log_outputs.order(:created_at).pluck(:output).map { |o| o.gsub(/\e\[\d+m/, "") }
+      if view == :show
+        lines.join("\n")
+      else
+        lines.last(20).join("\n")
+      end
+    end
   end
 end
