@@ -31,6 +31,7 @@ export default class extends Controller {
 
     div.innerHTML = `
       <div class="flex items-start my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
+        ${id ? `<input type="hidden" name="environment_variables[][id]" value="${id}">` : ''}
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" value="${name}">
         ${isHidden ? `<input type="hidden" name="environment_variables[][keep_existing_value]" value="true">` : ''}
         <input type="hidden" name="environment_variables[][storage_type]" value="${storageType}">
