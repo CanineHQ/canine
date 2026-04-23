@@ -31,6 +31,7 @@ export default class extends Controller {
 
     div.innerHTML = `
       <div class="flex items-start my-4 space-x-2" data-env-id="${id || ''}" data-storage-type="${storageType}">
+        ${id ? `<input type="hidden" name="environment_variables[][id]" value="${id}">` : ''}
         <input aria-label="Env key" placeholder="KEY" class="input input-bordered focus:outline-offset-0" type="text" name="environment_variables[][name]" value="${name}">
         ${isHidden ? `<input type="hidden" name="environment_variables[][keep_existing_value]" value="true">` : ''}
         <input type="hidden" name="environment_variables[][storage_type]" value="${storageType}">
@@ -86,7 +87,7 @@ export default class extends Controller {
     
     if (!envId) return;
     
-    button.textContent = 'Loading...';
+    button.querySelector('iconify-icon').setAttribute('icon', 'lucide:loader')
     button.disabled = true;
     
     try {
@@ -101,7 +102,12 @@ export default class extends Controller {
         if (keepExistingInput) {
           keepExistingInput.remove()
         }
-        button.remove()
+        // Swap to hide button
+        const icon = button.querySelector('iconify-icon')
+        icon.setAttribute('icon', 'lucide:eye-off')
+        button.setAttribute('title', 'Hide value')
+        button.dataset.action = 'environment-variables#hide'
+        button.disabled = false
       } else {
         button.textContent = 'Error'
         setTimeout(() => {
@@ -117,6 +123,32 @@ export default class extends Controller {
         button.disabled = false
       }, 2000)
     }
+  }
+
+  hide(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    const wrapper = button.closest('[data-env-id]');
+    const input = wrapper.querySelector('textarea[name="environment_variables[][value]"]');
+
+    // Clear value and restore masked state
+    input.value = ''
+    input.readOnly = true
+    input.placeholder = '••••••••••••••••••••••••'
+    input.dispatchEvent(new Event('input'))
+
+    // Re-add keep_existing_value hidden input
+    const keepInput = document.createElement('input')
+    keepInput.type = 'hidden'
+    keepInput.name = 'environment_variables[][keep_existing_value]'
+    keepInput.value = 'true'
+    wrapper.querySelector('input[name="environment_variables[][name]"]').after(keepInput)
+
+    // Swap back to reveal button
+    const icon = button.querySelector('iconify-icon')
+    icon.setAttribute('icon', 'lucide:eye')
+    button.setAttribute('title', 'Reveal value')
+    button.dataset.action = 'environment-variables#reveal'
   }
 
   toggleStorageType(event) {

@@ -45,14 +45,19 @@ class K8::Stateless::Ingress < K8::Base
     if service.nil?
       raise "No ingress controller service found"
     end
-    if service.status.loadBalancer.ingress[0].ip
+    ingress = service.status&.loadBalancer&.ingress&.first
+    if ingress.nil?
+      raise "No ingress found for ingress controller"
+    end
+
+    if ingress.ip
       {
-        value: service.status.loadBalancer.ingress[0].ip,
+        value: ingress.ip,
         type: :ip_address
       }
     else
       {
-        value: service.status.loadBalancer.ingress[0].hostname,
+        value: ingress.hostname,
         type: :hostname
       }
     end

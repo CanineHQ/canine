@@ -168,6 +168,25 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
       end
     end
 
+    context 'when renaming a key with unrevealed value via id' do
+      let!(:env_var) { project.environment_variables.create!(name: 'OLD_KEY', value: 'secret_value') }
+
+      let(:params) do
+        {
+          environment_variables: [
+            { id: env_var.id.to_s, name: 'NEW_KEY', value: '', keep_existing_value: 'true' }
+          ]
+        }
+      end
+
+      it 'renames the key and preserves the value' do
+        expect { subject }.not_to change { project.environment_variables.count }
+        env_var.reload
+        expect(env_var.name).to eq('NEW_KEY')
+        expect(env_var.value).to eq('secret_value')
+      end
+    end
+
     context 'when removing environment variables' do
       before do
         project.environment_variables.create!(name: 'VAR_TO_REMOVE', value: 'value')
