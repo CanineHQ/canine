@@ -42,7 +42,7 @@ RSpec.describe Providers::Create do
 
         it 'adds an error to the provider' do
           subject
-          expect(provider.errors[:access_token]).to include("Invalid access token")
+          expect(provider.errors[:base]).to include("Invalid access token")
         end
       end
 

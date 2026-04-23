@@ -17,7 +17,7 @@ class Providers::CreateGitlabProvider
     )
     if response.code != 200
       message = "Invalid access token"
-      context.provider.errors.add(:access_token, message)
+      context.provider.errors.add(:base, message)
       context.fail_and_return!(message)
       next
     end
@@ -26,7 +26,7 @@ class Providers::CreateGitlabProvider
     unless context.provider.enterprise?
       if (response["scopes"] & EXPECTED_SCOPES).sort != EXPECTED_SCOPES.sort
         message = "Invalid scopes. Please check that your personal access token has the following scopes: #{EXPECTED_SCOPES.join(", ")}"
-        context.provider.errors.add(:access_token, message)
+        context.provider.errors.add(:base, message)
         context.fail_and_return!(message)
         next
       end
@@ -40,7 +40,7 @@ class Providers::CreateGitlabProvider
     )
     if response.code != 200
       message = "Something went wrong while getting the user data"
-      context.provider.errors.add(:access_token, message)
+      context.provider.errors.add(:base, message)
       context.fail_and_return!(message)
       next
     end
@@ -50,7 +50,7 @@ class Providers::CreateGitlabProvider
     context.provider.save!
   rescue Errno::ECONNREFUSED, SocketError => e
     message = "Could not connect to GitLab server: #{e.message}"
-    context.provider.errors.add(:registry_url, message)
+    context.provider.errors.add(:base, message)
     context.fail_and_return!(message)
   end
 end

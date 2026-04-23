@@ -9,7 +9,7 @@ class Providers::CreateBitbucketProvider
     provider = context.provider
 
     if provider.username_param.blank?
-      provider.errors.add(:username_param, "Atlassian account email is required")
+      provider.errors.add(:base, "Atlassian account email is required")
       context.fail_and_return!("Atlassian account email is required")
       next
     end
@@ -25,18 +25,16 @@ class Providers::CreateBitbucketProvider
         "Accept" => "application/json"
       }
     )
-    debugger
-
     if response.code == 401
       message = "Invalid email or API token"
-      provider.errors.add(:access_token, message)
+      provider.errors.add(:base, message)
       context.fail_and_return!(message)
       next
     end
 
     if response.code != 200
       message = "Failed to validate credentials: #{response.body}"
-      provider.errors.add(:access_token, message)
+      provider.errors.add(:base, message)
       context.fail_and_return!(message)
       next
     end
@@ -55,7 +53,7 @@ class Providers::CreateBitbucketProvider
     provider.save!
   rescue Errno::ECONNREFUSED, SocketError => e
     message = "Could not connect to Bitbucket server: #{e.message}"
-    context.provider.errors.add(:registry_url, message)
+    context.provider.errors.add(:base, message)
     context.fail_and_return!(message)
   end
 end
