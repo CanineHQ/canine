@@ -25,8 +25,6 @@ class Providers::CreateBitbucketProvider
         "Accept" => "application/json"
       }
     )
-    debugger
-
     if response.code == 401
       message = "Invalid email or API token"
       provider.errors.add(:access_token, message)

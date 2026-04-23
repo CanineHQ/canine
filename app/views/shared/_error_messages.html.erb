@@ -6,7 +6,8 @@
           <%= I18n.t("errors.messages.not_saved", count: resource.errors.count, resource: resource.class.model_name.human.downcase) %>
         </h4>
         <ul>
-          <% resource.errors.full_messages.each do |message| %>
+          <% resource.errors.each do |error| %>
+            <% message = error.attribute == :base ? error.message : error.message.capitalize %>
             <li><%= message %></li>
           <% end %>
         </ul>

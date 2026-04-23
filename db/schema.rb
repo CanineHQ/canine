@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_15_192921) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -619,6 +619,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_192921) do
     t.string "registry_url"
     t.string "external_id"
     t.bigint "sso_provider_id"
+    t.string "name"
     t.index ["sso_provider_id", "uid"], name: "index_providers_on_sso_provider_id_and_uid", unique: true, where: "(sso_provider_id IS NOT NULL)"
     t.index ["sso_provider_id"], name: "index_providers_on_sso_provider_id"
     t.index ["user_id"], name: "index_providers_on_user_id"
