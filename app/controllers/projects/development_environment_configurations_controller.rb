@@ -55,7 +55,6 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
                    project: @project,
                    clusters: @development_environment_clusters,
                    git_providers: @git_providers,
-                   intelligence_providers: @llm_providers,
                    configuration: @development_environment_configuration,
                    notice_message: notice_message
                  },
@@ -75,6 +74,5 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
     @git_providers = current_user.providers.where(provider: @project.provider.provider)
-    @llm_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[Provider::INTELLIGENCE_TYPE])
   end
 end

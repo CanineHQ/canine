@@ -1,7 +1,6 @@
 <% configuration = local_assigns[:configuration] || project.development_environment_configuration || DevelopmentEnvironmentConfiguration.new(project: project, cluster: project.cluster, enabled: false) %>
 <% clusters = local_assigns[:clusters] || [project.cluster].compact %>
 <% git_providers = local_assigns[:git_providers] || [] %>
-<% llm_providers = local_assigns[:llm_providers] || [] %>
 
 <%= form_with(
   model: [project, configuration],
@@ -64,24 +63,6 @@
     <% end %>
     <label class="label">
       <span class="label-text-alt">Git credential used to clone repositories in the development environment.</span>
-    </label>
-  <% end %>
-
-  <%= render(FormFieldComponent.new(label: "Intelligence credential")) do %>
-    <% if llm_providers.any? %>
-      <%= render(RichSelectComponent.new(
-        name: form.field_name(:llm_provider_id),
-        id: "development_environment_llm_provider_id",
-        collection: llm_providers,
-        selected: configuration.llm_provider_id,
-        partial: "providers/selector_item",
-        placeholder: "Select an intelligence credential"
-      )) %>
-    <% else %>
-      <div class="text-sm text-base-content/60">No intelligence credentials available. <%= link_to "Add Credentials", providers_path, class: "link link-primary", target: "_blank" %></div>
-    <% end %>
-    <label class="label">
-      <span class="label-text-alt">AI provider credential used for coding assistance in the development environment.</span>
     </label>
   <% end %>
 

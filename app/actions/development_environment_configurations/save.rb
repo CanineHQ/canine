@@ -11,7 +11,6 @@ module DevelopmentEnvironmentConfigurations
       user = context.user
 
       validate_provider_ownership!(context, configuration.git_provider_id, :git_provider_id, user)
-      validate_provider_ownership!(context, configuration.llm_provider_id, :llm_provider_id, user)
       next if context.failure?
 
       unless configuration.save

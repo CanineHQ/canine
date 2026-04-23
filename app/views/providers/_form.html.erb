@@ -63,10 +63,9 @@
     </div>
   <% end %>
 
-  <% intelligence_provider = Provider::INTELLIGENCE_PROVIDERS.include?(params[:provider_type] || form.object.provider) %>
   <div class="form-control mt-1 w-full max-w-sm">
     <label class="label">
-      <span class="label-text"><%= intelligence_provider ? "API Key" : "Access Token" %></span>
+      <span class="label-text">Access Token</span>
     </label>
     <%= form.text_field :access_token, class: "input input-bordered", required: true %>
   </div>
