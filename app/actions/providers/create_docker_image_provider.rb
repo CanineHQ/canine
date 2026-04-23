@@ -18,7 +18,7 @@ class Providers::CreateDockerImageProvider
         Rails.logger.info("Container registry authentication successful")
       end
     rescue DockerCli::AuthenticationError => e
-      context.provider.errors.add(:base, "Invalid credentials: #{e.message}")
+      context.provider.errors.add(:access_token, "Invalid credentials: #{e.message}")
       context.fail_and_return!(e.message)
     end
 
