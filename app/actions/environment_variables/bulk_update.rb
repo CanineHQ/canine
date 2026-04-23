@@ -17,11 +17,15 @@ class EnvironmentVariables::BulkUpdate
       destroy_scope = destroy_scope.where.not(id: incoming_ids) if incoming_ids.any?
       destroy_scope.where.not(name: incoming_variable_names).destroy_all
 
+      current_vars = project.environment_variables.to_a
+      vars_by_id = current_vars.index_by(&:id)
+      vars_by_name = current_vars.index_by(&:name)
+
       env_variable_data.each do |ev|
         next if ev[:name].blank?
 
-        existing = project.environment_variables.find_by(id: ev[:id]) if ev[:id].present?
-        existing ||= project.environment_variables.find_by(name: ev[:name])
+        existing = vars_by_id[ev[:id].to_i] if ev[:id].present?
+        existing ||= vars_by_name[ev[:name]]
 
         if existing
           update_attrs = {}
@@ -53,6 +57,7 @@ class EnvironmentVariables::BulkUpdate
             storage_type: ev[:storage_type] || :config,
             current_user: context.current_user
           )
+          # eventable automatically creates an event
         end
       end
     end
