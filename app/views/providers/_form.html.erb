@@ -70,6 +70,16 @@
     <%= form.text_field :access_token, class: "input input-bordered", required: true %>
   </div>
 
+  <div class="form-control mt-1 w-full max-w-sm">
+    <label class="label">
+      <span class="label-text">Name</span>
+    </label>
+    <%= form.text_field :name, class: "input input-bordered", placeholder: "e.g. Production, Personal" %>
+    <label class="label">
+      <span class="label-text-alt">Optional</span>
+    </label>
+  </div>
+
   <% provider_type = params[:provider_type] || form.object.provider %>
   <% if provider_type == Provider::GITHUB_PROVIDER || provider_type == Provider::GITLAB_PROVIDER || provider_type == Provider::BITBUCKET_PROVIDER %>
     <% provider_name = case provider_type

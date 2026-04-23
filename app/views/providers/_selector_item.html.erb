@@ -13,6 +13,9 @@
   <div class="flex-1 min-w-0">
     <div class="font-semibold"><%= item.provider.titleize %></div>
     <div class="text-sm text-base-content/60">
+      <% if item.name.present? %>
+        <span class="font-semibold text-base-content/80"><%= item.name %></span> ·
+      <% end %>
       <%= item.username %> · <%= item.abbreviated_access_token %>
     </div>
   </div>

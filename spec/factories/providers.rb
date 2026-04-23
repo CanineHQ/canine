@@ -8,6 +8,7 @@
 #  auth                :text
 #  expires_at          :datetime
 #  last_used_at        :datetime
+#  name                :string
 #  provider            :string
 #  refresh_token       :string
 #  registry_url        :string

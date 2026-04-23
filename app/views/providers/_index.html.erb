@@ -24,14 +24,19 @@
               <iconify-icon icon="mdi:bitbucket" height="20"></iconify-icon>
             <% elsif provider.container_registry? %>
               <iconify-icon icon="mdi:docker" height="20"></iconify-icon>
+            <% elsif provider.provider == Provider::PORTAINER_PROVIDER %>
+              <iconify-icon icon="simple-icons:portainer" height="20"></iconify-icon>
             <% end %>
             <div>
               <%= provider.provider.titleize %>
-              <% if provider.registry_url.present? %>
-                <br />
-                <span class="text-gray-500 text-sm">
+              <% if provider.name.present? || provider.registry_url.present? %>
+                <div class="text-gray-500 text-sm">
+                  <% if provider.name.present? %>
+                    <span class="font-semibold text-gray-400"><%= provider.name %></span>
+                    <% if provider.registry_url.present? %>·<% end %>
+                  <% end %>
                   <%= provider.registry_url %>
-                </span>
+                </div>
               <% end %>
             </div>
           </td>
@@ -55,7 +60,7 @@
             <% remaining = project_credential_providers.size - max_display %>
             <% display_count = remaining > 1 ? max_display : project_credential_providers.size %>
             <% project_credential_providers.first(display_count).each_with_index do |project_credential_provider, index| %>
-              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline" %><%= ", " if index < display_count - 1 %>
+              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline", data: { turbo: false } %><%= ", " if index < display_count - 1 %>
             <% end %>
             <% if remaining > 1 %>
               <span class="text-gray-500">and <%= remaining %> others</span>
