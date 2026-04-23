@@ -1,17 +1,12 @@
-<% intelligence_mode = Provider::INTELLIGENCE_PROVIDERS.include?(params[:provider_type]) %>
 <%= settings_layout do %>
-  <%= turbo_frame_tag(intelligence_mode ? "intelligence_provider" : "provider") do %>
-    <%= render intelligence_mode ? "providers/intelligence_index" : "providers/index" %>
+  <%= turbo_frame_tag "provider" do %>
+    <%= render "providers/index" %>
     <div class="font-lg font-bold mt-4">
       Add <%= params[:provider_type]&.titleize || @provider.provider.titleize %> Credentials
     </div>
     <div>
       <div class="mt-2 mb-4">
-        <% if Provider::INTELLIGENCE_PROVIDERS.include?(params[:provider_type]) %>
-          <div class="text-sm text-gray-500">
-            Add your API key to enable AI-powered coding assistance in development environments.
-          </div>
-        <% elsif params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER %>
+        <% if params[:provider_type] == Provider::CUSTOM_REGISTRY_PROVIDER %>
           <div class="text-sm text-gray-500">
             Select your container registry provider or enter a custom URL.
           </div>

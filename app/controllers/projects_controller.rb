@@ -40,7 +40,6 @@ class ProjectsController < ApplicationController
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
     @git_providers = current_user.providers.where(provider: @project.provider.provider)
-    @llm_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[Provider::INTELLIGENCE_TYPE])
   end
 
   def create

@@ -2,6 +2,8 @@ class Projects::DestroyJob < ApplicationJob
   def perform(project, user)
     project.destroying!
 
+    DevEnvironments::Destroy.execute(project:)
+
     uninstall_service_class(project).new(project, user).call
 
     cleanup_auto_managed_domains(project)

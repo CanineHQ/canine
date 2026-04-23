@@ -47,25 +47,19 @@ class ProjectForks::CreateDevEnvironmentDefinition
       }
     end
 
-    if dev_config&.llm_provider&.anthropic?
-      definition["environment_variables"] << {
-        "name" => "ROVER_ANTHROPIC_API_KEY",
-        "value" => dev_config.llm_provider.access_token,
-        "storage_type" => "secret"
-      }
-    end
+    # Create volumes for the dev environment
+    definition["volumes"] ||= []
 
-    if dev_config&.llm_provider&.openai?
-      definition["environment_variables"] << {
-        "name" => "ROVER_OPENAI_API_KEY",
-        "value" => dev_config.llm_provider.access_token,
-        "storage_type" => "secret"
-      }
-    end
+    # Rover home directory (persists history, configs)
+    definition["volumes"] << {
+      "name" => "rover-home-#{suffix}",
+      "size" => "1Gi",
+      "mount_path" => "/home/rover",
+      "access_mode" => "read_write_once"
+    }
 
-    # Create a volume for the workspace directory
+    # Workspace volume (mounted in both rover and main container)
     if dev_config&.workspace_mount_path.present?
-      definition["volumes"] ||= []
       definition["volumes"] << {
         "name" => "rover-workspace-#{suffix}",
         "size" => "5Gi",

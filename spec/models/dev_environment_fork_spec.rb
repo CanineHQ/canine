@@ -20,6 +20,25 @@
 #
 require 'rails_helper'
 
-RSpec.describe DevEnvironmentFork, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+RSpec.describe DevEnvironments::Destroy do
+  it "disconnects child dev environments without deleting them when parent is destroyed" do
+    parent_project = create(:project)
+    forks = create_list(:dev_environment_fork, 3, parent_project: parent_project)
+    child_ids = forks.map(&:child_project_id)
+
+    DevEnvironments::Destroy.execute(project: parent_project)
+
+    expect(DevEnvironmentFork.where(parent_project_id: parent_project.id).count).to eq 0
+    child_ids.each { |id| expect(Project.exists?(id)).to be true }
+  end
+
+  it "disconnects from parent without deleting parent when child is destroyed" do
+    fork = create(:dev_environment_fork)
+    parent_project = fork.parent_project
+
+    DevEnvironments::Destroy.execute(project: fork.child_project)
+
+    expect(DevEnvironmentFork.exists?(fork.id)).to be false
+    expect(Project.exists?(parent_project.id)).to be true
+  end
 end

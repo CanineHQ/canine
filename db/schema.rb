@@ -232,16 +232,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_192921) do
   create_table "development_environment_configurations", force: :cascade do |t|
     t.bigint "cluster_id"
     t.bigint "project_id", null: false
-    t.bigint "llm_provider_id"
     t.bigint "git_provider_id"
-    t.string "dockerfile_path"
-    t.string "workspace_mount_path"
+    t.string "dockerfile_path", null: false
+    t.string "workspace_mount_path", null: false
     t.boolean "enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
     t.index ["git_provider_id"], name: "idx_on_git_provider_id_d487b7dad5"
-    t.index ["llm_provider_id"], name: "idx_on_llm_provider_id_3986b1c3b4"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 
@@ -813,7 +811,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_15_192921) do
   add_foreign_key "development_environment_configurations", "clusters"
   add_foreign_key "development_environment_configurations", "projects"
   add_foreign_key "development_environment_configurations", "providers", column: "git_provider_id"
-  add_foreign_key "development_environment_configurations", "providers", column: "llm_provider_id"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
