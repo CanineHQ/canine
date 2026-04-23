@@ -29,12 +29,12 @@
             <% end %>
             <div>
               <%= provider.provider.titleize %>
-              <% if provider.name.present? %>
-                <br />
-                <span class="text-gray-500 text-sm"><%= provider.name %></span>
-              <% elsif provider.registry_url.present? %>
-                <br />
-                <span class="text-gray-500 text-sm"><%= provider.registry_url %></span>
+              <% if provider.name.present? || provider.registry_url.present? %>
+                <div class="text-gray-500 text-sm">
+                  <%= provider.name %>
+                  <% if provider.name.present? && provider.registry_url.present? %>·<% end %>
+                  <%= provider.registry_url %>
+                </div>
               <% end %>
             </div>
           </td>
@@ -58,7 +58,7 @@
             <% remaining = project_credential_providers.size - max_display %>
             <% display_count = remaining > 1 ? max_display : project_credential_providers.size %>
             <% project_credential_providers.first(display_count).each_with_index do |project_credential_provider, index| %>
-              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline" %><%= ", " if index < display_count - 1 %>
+              <%= link_to project_credential_provider.project.name, project_path(project_credential_provider.project), class: "hover:underline", data: { turbo: false } %><%= ", " if index < display_count - 1 %>
             <% end %>
             <% if remaining > 1 %>
               <span class="text-gray-500">and <%= remaining %> others</span>
