@@ -31,8 +31,10 @@
               <%= provider.provider.titleize %>
               <% if provider.name.present? || provider.registry_url.present? %>
                 <div class="text-gray-500 text-sm">
-                  <%= provider.name %>
-                  <% if provider.name.present? && provider.registry_url.present? %>·<% end %>
+                  <% if provider.name.present? %>
+                    <span class="font-semibold text-gray-400"><%= provider.name %></span>
+                    <% if provider.registry_url.present? %>·<% end %>
+                  <% end %>
                   <%= provider.registry_url %>
                 </div>
               <% end %>
