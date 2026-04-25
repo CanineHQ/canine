@@ -220,15 +220,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
     t.index ["build_id"], name: "index_deployments_on_build_id", unique: true
   end
 
-  create_table "dev_environment_forks", force: :cascade do |t|
-    t.bigint "child_project_id", null: false
-    t.bigint "parent_project_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["child_project_id"], name: "index_dev_environment_forks_on_child_project_id", unique: true
-    t.index ["parent_project_id"], name: "index_dev_environment_forks_on_parent_project_id"
-  end
-
   create_table "development_environment_configurations", force: :cascade do |t|
     t.bigint "cluster_id"
     t.bigint "project_id", null: false
@@ -241,6 +232,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
     t.index ["git_provider_id"], name: "idx_on_git_provider_id_d487b7dad5"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
+  end
+
+  create_table "development_environments", force: :cascade do |t|
+    t.bigint "child_project_id", null: false
+    t.bigint "parent_project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["child_project_id"], name: "index_development_environments_on_child_project_id", unique: true
+    t.index ["parent_project_id"], name: "index_development_environments_on_parent_project_id"
   end
 
   create_table "domains", force: :cascade do |t|
@@ -765,9 +765,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.boolean "password_change_required", default: false
-    t.text "otp_secret"
-    t.boolean "otp_required_for_login", default: false
-    t.text "otp_backup_codes"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -807,11 +804,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
   add_foreign_key "cron_schedules", "services"
   add_foreign_key "deployment_configurations", "projects"
   add_foreign_key "deployments", "builds"
-  add_foreign_key "dev_environment_forks", "projects", column: "child_project_id"
-  add_foreign_key "dev_environment_forks", "projects", column: "parent_project_id"
   add_foreign_key "development_environment_configurations", "clusters"
   add_foreign_key "development_environment_configurations", "projects"
   add_foreign_key "development_environment_configurations", "providers", column: "git_provider_id"
+  add_foreign_key "development_environments", "projects", column: "child_project_id"
+  add_foreign_key "development_environments", "projects", column: "parent_project_id"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"

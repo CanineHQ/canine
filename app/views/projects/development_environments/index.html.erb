@@ -40,10 +40,10 @@
     </div>
   </div>
 
-  <% if @dev_environment_forks.any? %>
+  <% if @development_environments.any? %>
     <div class="space-y-3">
       <h3 class="text-lg font-semibold">Active Environments</h3>
-      <% @dev_environment_forks.each do |fork| %>
+      <% @development_environments.each do |fork| %>
         <div class="card border border-base-300 bg-base-100">
           <div class="card-body flex-row items-center justify-between py-4">
             <div class="flex items-center gap-4">

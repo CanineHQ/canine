@@ -16,9 +16,6 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
-#  otp_backup_codes           :text
-#  otp_required_for_login     :boolean          default(FALSE)
-#  otp_secret                 :text
 #  password_change_required   :boolean          default(FALSE)
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime

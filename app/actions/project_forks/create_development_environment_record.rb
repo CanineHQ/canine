@@ -1,11 +1,11 @@
-class ProjectForks::CreateDevEnvironmentForkRecord
+class ProjectForks::CreateDevelopmentEnvironmentRecord
   extend LightService::Action
 
   expects :parent_project, :project
-  promises :dev_environment_fork
+  promises :development_environment
 
   executed do |context|
-    context.dev_environment_fork = DevEnvironmentFork.create!(
+    context.development_environment = DevelopmentEnvironment.create!(
       child_project: context.project,
       parent_project: context.parent_project
     )

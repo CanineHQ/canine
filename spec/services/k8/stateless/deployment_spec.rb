@@ -33,7 +33,7 @@ RSpec.describe K8::Stateless::Deployment do
   describe 'rover sidecar' do
     let(:parent_project) { create(:project) }
     let(:llm_provider) { create(:provider, :anthropic, user: parent_project.account.owner) }
-    let(:dev_config) do
+    let(:development_environment_configuration) do
       create(:development_environment_configuration,
         project: parent_project,
         enabled: true,
@@ -43,8 +43,8 @@ RSpec.describe K8::Stateless::Deployment do
 
     context 'when in development environment' do
       before do
-        dev_config
-        create(:dev_environment_fork, child_project: project, parent_project: parent_project)
+        development_environment_configuration
+        create(:development_environment, child_project: project, parent_project: parent_project)
         project.reload
       end
 
@@ -73,7 +73,7 @@ RSpec.describe K8::Stateless::Deployment do
 
       it 'sets OPENAI_API_KEY when llm provider is openai' do
         openai_provider = create(:provider, :openai, user: parent_project.account.owner)
-        dev_config.update!(llm_provider: openai_provider)
+        development_environment_configuration.update!(llm_provider: openai_provider)
 
         yaml = deployment.to_yaml
 

@@ -1,4 +1,4 @@
-class DevEnvironments::Destroy
+class DevelopmentEnvironments::Destroy
   extend LightService::Action
 
   expects :project
@@ -7,9 +7,9 @@ class DevEnvironments::Destroy
     project = context.project
 
     # Disconnect parent → child fork records
-    project.dev_environment_forks.destroy_all
+    project.development_environments.destroy_all
 
     # Disconnect child → parent fork record
-    project.child_dev_environment_fork&.destroy
+    project.child_development_environment&.destroy
   end
 end

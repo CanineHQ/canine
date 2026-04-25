@@ -1,4 +1,4 @@
-class ProjectForks::CreateDevEnvironmentDefinition
+class ProjectForks::CreateDevelopmentEnvironmentDefinition
   extend LightService::Action
 
   expects :parent_project
@@ -6,7 +6,7 @@ class ProjectForks::CreateDevEnvironmentDefinition
 
   executed do |context|
     parent = context.parent_project
-    dev_config = parent.development_environment_configuration
+    development_environment_configuration = parent.development_environment_configuration
 
     definition = parent.to_canine_config
 
@@ -15,8 +15,8 @@ class ProjectForks::CreateDevEnvironmentDefinition
     definition["project"]["name"] = "#{parent.name}-dev-#{suffix}"
 
     # Use the dev Dockerfile when the build type is dockerfile
-    if dev_config&.dockerfile_path.present? && definition.dig("build_configuration", "build_type") == "dockerfile"
-      definition["build_configuration"]["dockerfile_path"] = dev_config.dockerfile_path
+    if development_environment_configuration&.dockerfile_path.present? && definition.dig("build_configuration", "build_type") == "dockerfile"
+      definition["build_configuration"]["dockerfile_path"] = development_environment_configuration.dockerfile_path
     end
 
     # Strip parent domains — the dev environment will get its own oncanine.run domain
@@ -25,10 +25,10 @@ class ProjectForks::CreateDevEnvironmentDefinition
     # Inject Rover environment variables for the dev environment
     definition["environment_variables"] ||= []
 
-    if dev_config&.workspace_mount_path.present?
+    if development_environment_configuration&.workspace_mount_path.present?
       definition["environment_variables"] << {
         "name" => "ROVER_WORKSPACE_DIR",
-        "value" => dev_config.workspace_mount_path,
+        "value" => development_environment_configuration.workspace_mount_path,
         "storage_type" => "config"
       }
     end
@@ -39,10 +39,10 @@ class ProjectForks::CreateDevEnvironmentDefinition
       "storage_type" => "config"
     }
 
-    if dev_config&.git_provider.present?
+    if development_environment_configuration&.git_provider.present?
       definition["environment_variables"] << {
         "name" => "ROVER_GIT_ACCESS_TOKEN",
-        "value" => dev_config.git_provider.access_token,
+        "value" => development_environment_configuration.git_provider.access_token,
         "storage_type" => "secret"
       }
     end
@@ -59,11 +59,11 @@ class ProjectForks::CreateDevEnvironmentDefinition
     }
 
     # Workspace volume (mounted in both rover and main container)
-    if dev_config&.workspace_mount_path.present?
+    if development_environment_configuration&.workspace_mount_path.present?
       definition["volumes"] << {
         "name" => "rover-workspace-#{suffix}",
         "size" => "5Gi",
-        "mount_path" => dev_config.workspace_mount_path,
+        "mount_path" => development_environment_configuration.workspace_mount_path,
         "access_mode" => "read_write_once"
       }
     end

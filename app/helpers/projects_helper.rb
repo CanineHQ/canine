@@ -4,11 +4,11 @@ module ProjectsHelper
   end
 
   def project_root_path(project)
-    project.dev_environment? ? project_workbench_path(project) : project_deployments_path(project)
+    project.development_environment? ? project_workbench_path(project) : project_deployments_path(project)
   end
 
   def project_root_url(project)
-    project.dev_environment? ? project_workbench_url(project) : project_deployments_url(project)
+    project.development_environment? ? project_workbench_url(project) : project_deployments_url(project)
   end
 
   def selectable_providers_json(providers)

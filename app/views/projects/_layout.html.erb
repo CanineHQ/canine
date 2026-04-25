@@ -2,9 +2,9 @@
   <div class="mb-2">
     <%= link_to "← Back to original project", project_path(project.parent_project), class: "btn btn-ghost" %>
   </div>
-<% elsif project.dev_environment? %>
+<% elsif project.development_environment? %>
   <div class="mb-2 flex items-center gap-2">
-    <%= link_to "← Back to original project", project_path(project.child_dev_environment_fork.parent_project), class: "btn btn-ghost" %>
+    <%= link_to "← Back to original project", project_path(project.child_development_environment.parent_project), class: "btn btn-ghost" %>
     <%= link_to "Workbench", project_workbench_path(project), class: "btn btn-ghost" %>
   </div>
 <% end %>
