@@ -52,5 +52,4 @@ class DevelopmentEnvironmentConfiguration < ApplicationRecord
 
     errors.add(:cluster_id, "must belong to the same account as the project")
   end
-
 end

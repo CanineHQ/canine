@@ -1,7 +1,7 @@
 <%= content_for :title, "Workbench - #{@project.name}" %>
 
 <div class="mb-2 flex items-center gap-2">
-  <%= link_to "← Back to original project", project_path(@project.child_dev_environment_fork.parent_project), class: "btn btn-ghost" %>
+  <%= link_to "← Back to original project", project_path(@project.child_development_environment.parent_project), class: "btn btn-ghost" %>
   <%= link_to "View Project", project_deployments_path(@project), class: "btn btn-ghost" %>
 </div>
 
@@ -25,7 +25,7 @@
     shell_token: @shell_token,
     pod_name: @pod_name,
     namespace: @namespace,
-    back_path: project_path(@project.child_dev_environment_fork.parent_project),
+    back_path: project_path(@project.child_development_environment.parent_project),
     project_name: @project.name,
     cluster: @project.cluster %>
 <% else %>

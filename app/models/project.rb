@@ -74,8 +74,8 @@ class Project < ApplicationRecord
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
   has_one :project_fork_cluster, class_name: "Cluster", foreign_key: :id, primary_key: :project_fork_cluster_id
 
-  has_one :child_dev_environment_fork, class_name: "DevEnvironmentFork", foreign_key: :child_project_id, dependent: :destroy
-  has_many :dev_environment_forks, class_name: "DevEnvironmentFork", foreign_key: :parent_project_id, dependent: :destroy
+  has_one :child_development_environment, class_name: "DevelopmentEnvironment", foreign_key: :child_project_id, dependent: :destroy
+  has_many :development_environments, class_name: "DevelopmentEnvironment", foreign_key: :parent_project_id, dependent: :destroy
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
@@ -229,12 +229,12 @@ class Project < ApplicationRecord
     child_fork.present?
   end
 
-  def dev_environment?
-    child_dev_environment_fork.present?
+  def development_environment?
+    child_development_environment.present?
   end
 
-  def show_dev_environment_options?
-    !dev_environment? && git?
+  def show_development_environment_options?
+    !development_environment? && git?
   end
 
   def build_provider

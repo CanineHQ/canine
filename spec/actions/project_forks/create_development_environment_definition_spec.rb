@@ -1,16 +1,16 @@
 require 'rails_helper'
 
-RSpec.describe ProjectForks::CreateDevEnvironmentDefinition do
+RSpec.describe ProjectForks::CreateDevelopmentEnvironmentDefinition do
   let(:account) { create(:account) }
   let(:parent_project) { create(:project, account:) }
   let(:provider) { create(:provider, :github, user: account.owner) }
   let!(:project_credential_provider) { create(:project_credential_provider, project: parent_project, provider:) }
   let!(:build_config) { create(:build_configuration, project: parent_project, build_type: "dockerfile", dockerfile_path: "./Dockerfile") }
-  let!(:service) { create(:service, project: parent_project, domains: [create(:domain)]) }
+  let!(:service) { create(:service, project: parent_project, domains: [ create(:domain) ]) }
 
   let(:git_provider) { create(:provider, :github, user: account.owner, access_token: "git-token-123") }
 
-  let!(:dev_config) do
+  let!(:development_environment_configuration) do
     create(:development_environment_configuration,
       project: parent_project,
       dockerfile_path: "./Dockerfile.dev",

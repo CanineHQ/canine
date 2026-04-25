@@ -26,8 +26,8 @@ spec:
       <% if service.pod_yaml.present? %>
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
       <% end %>
-      <% if project.dev_environment? %>
-      <% dev_config = project.child_dev_environment_fork.parent_project.development_environment_configuration %>
+      <% if project.development_environment? %>
+      <% development_environment_configuration = project.child_development_environment.parent_project.development_environment_configuration %>
       initContainers:
       - name: git-clone
         image: ghcr.io/caninehq/rover:latest

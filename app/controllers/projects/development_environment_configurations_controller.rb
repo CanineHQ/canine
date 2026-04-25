@@ -3,7 +3,7 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def create
     @configuration = @development_environment_configuration = @project.build_development_environment_configuration(configuration_params)
-    result = DevelopmentEnvironmentConfigurations::Save.execute(configuration: @configuration, user: current_user)
+    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration, user: current_user)
 
     if result.success?
       respond_with_configuration("Development environment configuration saved.")
@@ -15,7 +15,7 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   def update
     @development_environment_configuration = @configuration
     @configuration.assign_attributes(configuration_params)
-    result = DevelopmentEnvironmentConfigurations::Save.execute(configuration: @configuration, user: current_user)
+    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration, user: current_user)
 
     if result.success?
       respond_with_configuration("Development environment configuration updated.")

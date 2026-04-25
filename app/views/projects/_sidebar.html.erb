@@ -1,5 +1,5 @@
 <div class="tabs tabs-bordered mb-3" role="tablist">
-  <% if project.dev_environment? %>
+  <% if project.development_environment? %>
     <%= link_to project_workbench_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_workbench_path(project))}" do %>
       <div class="flex items-center gap-2">
         Workbench
@@ -37,7 +37,7 @@
       <iconify-icon icon="lucide:chart-line"></iconify-icon>
     </div>
   <% end %>
-  <% unless project.dev_environment? %>
+  <% unless project.development_environment? %>
     <% if @project.can_fork? %>
       <%= link_to project_project_forks_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_project_forks_path(project))}" do %>
         <div class="flex items-center gap-2">

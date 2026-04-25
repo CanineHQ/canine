@@ -4,17 +4,17 @@ module DevelopmentEnvironmentConfigurations
   class Save
     extend LightService::Action
 
-    expects :configuration, :user
+    expects :development_environment_configuration, :user
 
     executed do |context|
-      configuration = context.configuration
+      development_environment_configuration = context.development_environment_configuration
       user = context.user
 
-      validate_provider_ownership!(context, configuration.git_provider_id, :git_provider_id, user)
+      validate_provider_ownership!(context, development_environment_configuration.git_provider_id, :git_provider_id, user)
       next if context.failure?
 
-      unless configuration.save
-        context.fail!(configuration.errors.full_messages.join(", "))
+      unless development_environment_configuration.save
+        context.fail!(development_environment_configuration.errors.full_messages.join(", "))
       end
     end
 
@@ -24,8 +24,8 @@ module DevelopmentEnvironmentConfigurations
       return if provider_id.blank?
       return if user.providers.exists?(id: provider_id)
 
-      context.configuration.errors.add(field, "must belong to your user")
-      context.fail!(context.configuration.errors.full_messages.join(", "))
+      context.development_environment_configuration.errors.add(field, "must belong to your user")
+      context.fail!(context.development_environment_configuration.errors.full_messages.join(", "))
     end
   end
 end
