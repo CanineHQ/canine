@@ -1,0 +1,16 @@
+<%= turbo_frame_tag dom_id(project, :workbench_setup), data: { controller: "refresh-turbo-frame", refresh_turbo_frame_frequency_value: 5000 } do %>
+  <% current_stage = if project.deployments.any?
+                       3
+                     elsif project.builds.any?
+                       1
+                     else
+                       0
+                     end %>
+  <% if current_stage < 3 %>
+    <div class="mt-4">
+      <%= render "shared/partials/progress_stages",
+        stages: ["Queuing the magic", "Building your environment", "Spinning up your workspace"],
+        current_stage: current_stage %>
+    </div>
+  <% end %>
+<% end %>

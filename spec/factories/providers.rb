@@ -65,5 +65,13 @@ FactoryBot.define do
       provider { Provider::PORTAINER_PROVIDER }
       access_token { "sample_access_token" }
     end
+
+    trait :openai do
+      provider { Provider::OPENAI_PROVIDER }
+    end
+
+    trait :anthropic do
+      provider { Provider::ANTHROPIC_PROVIDER }
+    end
   end
 end

@@ -1,0 +1,84 @@
+<% configuration = local_assigns[:configuration] || project.development_environment_configuration || DevelopmentEnvironmentConfiguration.new(project: project, cluster: project.cluster, enabled: false) %>
+<% clusters = local_assigns[:clusters] || [project.cluster].compact %>
+<% git_providers = local_assigns[:git_providers] || [] %>
+
+<%= form_with(
+  model: [project, configuration],
+  url: project_development_environment_configuration_path(project),
+  method: configuration.persisted? ? :patch : :post,
+  class: "space-y-4",
+  data: { turbo_frame: dom_id(project, :development_environment_configuration) }
+) do |form| %>
+  <%= render "shared/error_messages", resource: configuration %>
+
+  <p class="text-sm text-gray-500">
+    Create an optional cloud development environment template for this project. When enabled, Canine will use these settings when creating managed development environments.
+  </p>
+
+  <%= render(FormFieldComponent.new(label: "Enabled")) do %>
+    <%= form.check_box :enabled, class: "checkbox" %>
+  <% end %>
+
+  <%= render(FormFieldComponent.new(label: "Target cluster")) do %>
+    <%= render(RichSelectComponent.new(
+      name: form.field_name(:cluster_id),
+      id: "development_environment_cluster_id",
+      collection: clusters,
+      selected: configuration.cluster_id || project.cluster_id,
+      partial: "clusters/selector_item",
+      placeholder: "Select a cluster",
+      required: configuration.enabled?
+    )) %>
+    <label class="label">
+      <span class="label-text-alt">Cluster where managed development environments should be created.</span>
+    </label>
+  <% end %>
+
+  <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>
+    <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm", placeholder: "./Dockerfile.dev" %>
+    <label class="label">
+      <span class="label-text-alt">Path to the development Dockerfile inside the repository.</span>
+    </label>
+  <% end %>
+
+  <%= render(FormFieldComponent.new(label: "Workspace mount path")) do %>
+    <%= form.text_field :workspace_mount_path, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm", placeholder: "/app" %>
+    <label class="label">
+      <span class="label-text-alt">Path where the shared writable workspace will be mounted.</span>
+    </label>
+  <% end %>
+
+  <%= render(FormFieldComponent.new(label: "Git credential")) do %>
+    <% if git_providers.any? %>
+      <%= render(RichSelectComponent.new(
+        name: form.field_name(:git_provider_id),
+        id: "development_environment_git_provider_id",
+        collection: git_providers,
+        selected: configuration.git_provider_id,
+        partial: "providers/selector_item",
+        placeholder: "Select a git credential",
+      )) %>
+    <% else %>
+      <div class="text-sm text-base-content/60">No git credentials available. <%= link_to "Add Credentials", providers_path, class: "link link-primary", target: "_blank" %></div>
+    <% end %>
+    <label class="label">
+      <span class="label-text-alt">Git credential used to clone repositories in the development environment.</span>
+    </label>
+  <% end %>
+
+  <div class="form-footer">
+    <%= form.button "Save Development Environment", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    <% if configuration.persisted? %>
+      <%= button_to "Remove Configuration",
+        project_development_environment_configuration_path(project),
+        method: :delete,
+        class: "btn btn-outline btn-error",
+        form: {
+          data: {
+            turbo_confirm: t("are_you_sure"),
+            turbo_frame: dom_id(project, :development_environment_configuration)
+          }
+        } %>
+    <% end %>
+  </div>
+<% end %>

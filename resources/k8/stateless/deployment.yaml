@@ -26,6 +26,42 @@ spec:
       <% if service.pod_yaml.present? %>
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
       <% end %>
+      <% if project.development_environment? %>
+      <% development_environment_configuration = project.child_development_environment.parent_project.development_environment_configuration %>
+      initContainers:
+      - name: git-clone
+        image: ghcr.io/caninehq/rover:latest
+        imagePullPolicy: Always
+        command: ["/usr/local/bin/rover-entrypoint", "/bin/true"]
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      - name: rover
+        image: ghcr.io/caninehq/rover:latest
+        imagePullPolicy: Always
+        restartPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      <% end %>
       containers:
       - name: <%= project.name %>
         image: <%= project.container_image_reference_with_digest %>
