@@ -1,5 +1,8 @@
 class Git::Client
   class Error < StandardError; end
+  class BranchNotFound < Error; end
+  class RepositoryNotFound < Error; end
+  class AuthenticationFailed < Error; end
 
   def self.from_provider(provider:, repository_url:)
     if provider.github?

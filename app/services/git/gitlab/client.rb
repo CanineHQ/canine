@@ -74,7 +74,11 @@ class Git::Gitlab::Client < Git::Client
       headers: { "Authorization" => "Bearer #{access_token}" }
     )
     unless response.success?
-      raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
+      if response.code == 404
+        raise Git::Client::BranchNotFound, "Branch '#{branch}' not found in repository '#{repository_url}'"
+      else
+        raise Git::Client::Error, "Failed to fetch commits: #{response.body}"
+      end
     end
 
     response.map do |commit|

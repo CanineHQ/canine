@@ -75,7 +75,16 @@ class ApplicationController < ActionController::Base
     end
 
     def handle_git_error(error)
-      message = "Git provider error. Please check that your credential is valid and connected to this project."
+      message = case error
+      when Git::Client::BranchNotFound
+        "#{error.message}. Please check the branch name in your project settings."
+      when Git::Client::RepositoryNotFound
+        "#{error.message}. Please check the repository URL and credentials."
+      when Git::Client::AuthenticationFailed
+        "#{error.message}. Please check your credentials."
+      else
+        "Git provider error. Please check that your credential is valid and connected to this project."
+      end
 
       respond_to do |format|
         format.html { redirect_back fallback_location: root_path, alert: message }
