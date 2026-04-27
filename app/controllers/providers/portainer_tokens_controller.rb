@@ -11,14 +11,26 @@ module Providers
         return
       end
 
+      stack_manager = current_account.stack_manager
+      client = Portainer::Client.new(
+        stack_manager.provider_url,
+        Portainer::Client::AccessToken.new(token)
+      )
+      user_info = client.authenticated?
+
       provider = current_user.providers.find_or_initialize_by(provider: Provider::PORTAINER_PROVIDER)
       provider.access_token = token
+      provider.auth = { info: { username: user_info["Username"] } }.to_json if user_info.is_a?(Hash)
       provider.save!
 
       # Clear the cached portainer_access_token on the user
       current_user.instance_variable_set(:@portainer_access_token, nil)
 
       redirect_to providers_path, notice: "Portainer API token saved successfully"
+    rescue Portainer::Client::UnauthorizedError
+      redirect_to providers_path, alert: "Invalid Portainer API token"
+    rescue Portainer::Client::ConnectionError => e
+      redirect_to providers_path, alert: "Could not connect to Portainer: #{e.message}"
     end
 
     def destroy
