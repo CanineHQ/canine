@@ -10,11 +10,13 @@
 #  updated_at           :datetime         not null
 #  cluster_id           :bigint
 #  git_provider_id      :bigint
+#  llm_provider_id      :bigint
 #  project_id           :bigint           not null
 #
 # Indexes
 #
 #  idx_on_git_provider_id_d487b7dad5                           (git_provider_id)
+#  idx_on_llm_provider_id_3986b1c3b4                           (llm_provider_id)
 #  index_development_environment_configurations_on_cluster_id  (cluster_id)
 #  index_development_environment_configurations_on_project_id  (project_id) UNIQUE
 #
@@ -22,6 +24,7 @@
 #
 #  fk_rails_...  (cluster_id => clusters.id)
 #  fk_rails_...  (git_provider_id => providers.id)
+#  fk_rails_...  (llm_provider_id => providers.id)
 #  fk_rails_...  (project_id => projects.id)
 #
 require "rails_helper"
@@ -34,6 +37,7 @@ RSpec.describe DevelopmentEnvironmentConfiguration, type: :model do
     it { is_expected.to validate_uniqueness_of(:project_id) }
 
     it "requires cluster, dockerfile path and workspace mount path when enabled" do
+      configuration.project.cluster = nil
       configuration.cluster = nil
       configuration.dockerfile_path = nil
       configuration.workspace_mount_path = nil

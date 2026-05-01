@@ -34,21 +34,21 @@
     </label>
   <% end %>
 
-  <%= render(FormFieldComponent.new(label: "Dockerfile path")) do %>
+  <%= render(FormFieldComponent.new(label: "Development Dockerfile path", description: "Path to the development Dockerfile inside the repository")) do %>
     <%= form.text_field :dockerfile_path, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm", placeholder: "./Dockerfile.dev" %>
     <label class="label">
-      <span class="label-text-alt">Path to the development Dockerfile inside the repository.</span>
+      <span class="label-text-alt">Ensure this dockerfile supports hot code reloading.</span>
     </label>
   <% end %>
 
-  <%= render(FormFieldComponent.new(label: "Workspace mount path")) do %>
+  <%= render(FormFieldComponent.new(label: "Workspace mount path", description: "Your git repository will get cloned into this path")) do %>
     <%= form.text_field :workspace_mount_path, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm", placeholder: "/app" %>
     <label class="label">
       <span class="label-text-alt">Path where the shared writable workspace will be mounted.</span>
     </label>
   <% end %>
 
-  <%= render(FormFieldComponent.new(label: "Git credential")) do %>
+  <%= render(FormFieldComponent.new(label: "Git credential", description: "Git credential used to clone repositories and submit code changes")) do %>
     <% if git_providers.any? %>
       <%= render(RichSelectComponent.new(
         name: form.field_name(:git_provider_id),
