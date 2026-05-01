@@ -1,7 +1,7 @@
 <%= content_for :title, t("scaffold.edit.title", model: "Project") %>
 <%= project_layout(@project) do %>
   <div class="space-y-10">
-    <div>
+    <div id="general">
       <h2 class="text-2xl font-bold">General</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <% unless @project.managed_namespace %>
@@ -11,7 +11,7 @@
     </div>
 
     <% if @project.show_fork_options? %>
-      <div>
+      <div id="pull-request-apps">
         <h2 class="text-2xl font-bold">Pull Request Apps</h2>
         <hr class="mt-3 mb-4 border-t border-base-300" />
         <%= render "projects/project_forks/form", project: @project %>
@@ -19,7 +19,7 @@
     <% end %>
 
     <% if @project.show_development_environment_options? %>
-      <div>
+      <div id="development-environment">
         <h2 class="text-2xl font-bold">Development Environment</h2>
         <hr class="mt-3 mb-4 border-t border-base-300" />
 
@@ -32,21 +32,21 @@
       </div>
     <% end %>
 
-    <div>
+    <div id="volumes">
       <h2 class="text-2xl font-bold">Volumes</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <%= render "projects/volumes/index", project: @project %>
     </div>
 
-    <div>
+    <div id="notifications">
       <h2 class="text-2xl font-bold">Notifications</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <%= render "projects/notifiers/index", project: @project %>
     </div>
 
-    <div>
+    <div id="cluster-migration">
       <h2 class="text-2xl font-bold">Cluster Migration</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <p class="text-sm text-gray-500 mb-4">
@@ -80,7 +80,7 @@
       <% end %>
     </div>
 
-    <div>
+    <div id="danger-zone">
       <h2 class="text-2xl font-bold">Danger zone</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="mt-6">

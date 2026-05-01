@@ -3,13 +3,12 @@
 <%= project_layout(@project) do %>
   <div class="mb-6">
     <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
-        <p class="text-base-content/60">
-          Managed cloud development environments created from this project's template configuration.
-        </p>
-      </div>
-      <%= button_to "New Dev Environment", project_development_environments_path(@project), method: :post, class: "btn btn-primary btn-sm" %>
+      <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
+      <%= button_to "New Development Environment", project_development_environments_path(@project), method: :post, class: "btn btn-primary btn-sm" %>
+    </div>
+    <p class="text-base-content/60">
+      Managed cloud development environments created from this project's template configuration.
+    </p>
     </div>
     <div class="divider"></div>
   </div>
@@ -17,13 +16,16 @@
   <div class="card border border-base-300 bg-base-100 mb-6">
     <div class="card-body space-y-4">
       <div>
-        <h3 class="text-lg font-semibold">Template Configuration</h3>
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-lg font-semibold">Template Configuration</h3>
+          <%= link_to "Edit", edit_project_path(@project, anchor: "development-environment"), class: "btn btn-sm" %>
+        </div>
         <p class="text-sm text-base-content/60">
           This project is configured to create development environments on demand.
         </p>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-4">
         <div>
           <div class="text-xs uppercase tracking-wide text-base-content/50">Target Cluster</div>
           <div class="mt-1 font-medium"><%= @development_environment_configuration.cluster&.name %></div>
@@ -35,6 +37,21 @@
         <div>
           <div class="text-xs uppercase tracking-wide text-base-content/50">Workspace Mount</div>
           <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.workspace_mount_path %></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Git Username</div>
+          <% if @development_environment_configuration.git_provider.present? %>
+            <div class="mt-1 flex items-center gap-1.5">
+              <% if @development_environment_configuration.git_provider.github? %>
+                <iconify-icon icon="mdi:github" height="18"></iconify-icon>
+              <% elsif @development_environment_configuration.git_provider.gitlab? %>
+                <iconify-icon icon="mdi:gitlab" height="18"></iconify-icon>
+              <% elsif @development_environment_configuration.git_provider.bitbucket? %>
+                <iconify-icon icon="mdi:bitbucket" height="18"></iconify-icon>
+              <% end %>
+              <span class="font-mono text-sm"><%= @development_environment_configuration.git_provider.username %></span>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

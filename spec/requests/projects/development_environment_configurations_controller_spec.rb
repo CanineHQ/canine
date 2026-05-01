@@ -7,7 +7,7 @@ RSpec.describe Projects::DevelopmentEnvironmentConfigurationsController, type: :
   let(:user) { account.owner }
   let(:cluster) { create(:cluster, account: account) }
   let(:target_cluster) { create(:cluster, account: account) }
-  let(:project) { create(:project, cluster: cluster) }
+  let(:project) { create(:project, cluster: cluster, account: account) }
 
   before do
     sign_in user

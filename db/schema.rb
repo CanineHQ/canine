@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -229,8 +229,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
     t.boolean "enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "llm_provider_id"
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
     t.index ["git_provider_id"], name: "idx_on_git_provider_id_d487b7dad5"
+    t.index ["llm_provider_id"], name: "idx_on_llm_provider_id_3986b1c3b4"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 
@@ -807,6 +809,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
   add_foreign_key "development_environment_configurations", "clusters"
   add_foreign_key "development_environment_configurations", "projects"
   add_foreign_key "development_environment_configurations", "providers", column: "git_provider_id"
+  add_foreign_key "development_environment_configurations", "providers", column: "llm_provider_id"
   add_foreign_key "development_environments", "projects", column: "child_project_id"
   add_foreign_key "development_environments", "projects", column: "parent_project_id"
   add_foreign_key "environment_variables", "projects"
