@@ -46,7 +46,7 @@
         </div>
       <% end %>
     <% end %>
-    <% if project.development_environment_enabled? %>
+    <% if project.development_environment_enabled? && Flipper.enabled?(:development_environments, current_account) %>
       <%= link_to project_development_environments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_development_environments_path(project))}" do %>
         <div class="flex items-center gap-2">
           Development Environments

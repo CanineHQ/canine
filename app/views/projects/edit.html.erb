@@ -27,7 +27,7 @@
           project: @project,
           clusters: @development_environment_clusters,
           git_providers: @git_providers,
-          configuration: (@development_environment_configuration || @project.development_environment_configuration),
+          configuration: (@configuration || @project.development_environment_configuration),
           notice_message: nil %>
       </div>
     <% end %>

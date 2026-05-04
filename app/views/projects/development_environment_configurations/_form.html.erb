@@ -7,7 +7,6 @@
   url: project_development_environment_configuration_path(project),
   method: configuration.persisted? ? :patch : :post,
   class: "space-y-4",
-  data: { turbo_frame: dom_id(project, :development_environment_configuration) }
 ) do |form| %>
   <%= render "shared/error_messages", resource: configuration %>
 
@@ -74,10 +73,7 @@
         method: :delete,
         class: "btn btn-outline btn-error",
         form: {
-          data: {
-            turbo_confirm: t("are_you_sure"),
-            turbo_frame: dom_id(project, :development_environment_configuration)
-          }
+          data: { turbo_confirm: t("are_you_sure") }
         } %>
     <% end %>
   </div>

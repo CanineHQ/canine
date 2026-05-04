@@ -19,7 +19,7 @@ RSpec.describe ProjectForks::CreateDevelopmentEnvironmentDefinition do
     )
   end
 
-  subject(:result) { described_class.execute(parent_project: parent_project) }
+  subject(:result) { described_class.execute(parent_project: parent_project, current_user: account.owner) }
   let(:definition) { result.definition }
 
   it "generates a unique dev environment name and substitutes the dev dockerfile" do
