@@ -18,7 +18,7 @@
       </div>
     <% end %>
 
-    <% if @project.show_development_environment_options? %>
+    <% if @project.show_development_environment_options? && Flipper.enabled?(:development_environments, current_account) %>
       <div id="development-environment">
         <h2 class="text-2xl font-bold">Development Environment</h2>
         <hr class="mt-3 mb-4 border-t border-base-300" />
