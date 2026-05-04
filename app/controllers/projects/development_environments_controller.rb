@@ -7,7 +7,7 @@ class Projects::DevelopmentEnvironmentsController < Projects::BaseController
   end
 
   def create
-    result = ProjectForks::CreateDevelopmentEnvironment.call(parent_project: @project)
+    result = ProjectForks::CreateDevelopmentEnvironment.call(parent_project: @project, current_user:)
 
     if result.success?
       Projects::DeployLatestCommit.execute(project: result.project, current_user:)

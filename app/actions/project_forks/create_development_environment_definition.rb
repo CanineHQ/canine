@@ -1,7 +1,7 @@
 class ProjectForks::CreateDevelopmentEnvironmentDefinition
   extend LightService::Action
 
-  expects :parent_project
+  expects :parent_project, :current_user
   promises :definition
 
   executed do |context|
@@ -46,6 +46,18 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
         "storage_type" => "secret"
       }
     end
+
+    user = context.current_user
+    definition["environment_variables"] << {
+      "name" => "ROVER_GIT_USER_NAME",
+      "value" => user.name.to_s,
+      "storage_type" => "config"
+    }
+    definition["environment_variables"] << {
+      "name" => "ROVER_GIT_USER_EMAIL",
+      "value" => user.email,
+      "storage_type" => "config"
+    }
 
     # Create volumes for the dev environment
     definition["volumes"] ||= []
