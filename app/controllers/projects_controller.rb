@@ -28,8 +28,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @pagy, @events = pagy(@project.events.order(created_at: :desc))
-    render "projects/deployments/index"
+    redirect_to project_root_path(@project)
   end
 
   def new
@@ -39,6 +38,8 @@ class ProjectsController < ApplicationController
   def edit
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
+    @development_environment_clusters = current_account.clusters.running.order(:name)
+    @git_providers = current_user.providers.where(provider: @project.provider.provider)
   end
 
   def create

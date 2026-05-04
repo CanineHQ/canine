@@ -1,4 +1,12 @@
 <div class="tabs tabs-bordered mb-3" role="tablist">
+  <% if project.development_environment? %>
+    <%= link_to project_workbench_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_workbench_path(project))}" do %>
+      <div class="flex items-center gap-2">
+        Workbench
+        <iconify-icon icon="lucide:terminal"></iconify-icon>
+      </div>
+    <% end %>
+  <% end %>
   <%= link_to project_deployments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_deployments_path(project))}" do %>
     <div class="flex items-center gap-2">
       Deployments
@@ -29,12 +37,22 @@
       <iconify-icon icon="lucide:chart-line"></iconify-icon>
     </div>
   <% end %>
-  <% if @project.can_fork? %>
-    <%= link_to project_project_forks_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_project_forks_path(project))}" do %>
-      <div class="flex items-center gap-2">
-        Preview Apps
-        <iconify-icon icon="lucide:eye"></iconify-icon>
-      </div>
+  <% unless project.development_environment? %>
+    <% if @project.can_fork? %>
+      <%= link_to project_project_forks_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_project_forks_path(project))}" do %>
+        <div class="flex items-center gap-2">
+          Preview Apps
+          <iconify-icon icon="lucide:eye"></iconify-icon>
+        </div>
+      <% end %>
+    <% end %>
+    <% if project.development_environment_enabled? && Flipper.enabled?(:development_environments, current_account) %>
+      <%= link_to project_development_environments_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(project_development_environments_path(project))}" do %>
+        <div class="flex items-center gap-2">
+          Development Environments
+          <iconify-icon icon="lucide:laptop-minimal-check"></iconify-icon>
+        </div>
+      <% end %>
     <% end %>
   <% end %>
   <%= link_to edit_project_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(edit_project_path(project))}" do %>

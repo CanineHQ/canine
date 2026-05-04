@@ -1,0 +1,13 @@
+<% urls = project.services.flat_map { |s| s.domains.any? ? s.domains.map(&:domain_name) : [s.auto_domain].compact } %>
+<% if urls.any? %>
+  <div class="my-3 flex items-center gap-3 flex-wrap">
+    <% urls.each do |url| %>
+      <span>
+        <%= link_to "https://#{url}", target: "_blank", class: "text-sm text-ellipsis" do %>
+          <%= url %>
+          <iconify-icon icon="lucide:external-link" class="text-xs"></iconify-icon>
+        <% end %>
+      </span>
+    <% end %>
+  </div>
+<% end %>

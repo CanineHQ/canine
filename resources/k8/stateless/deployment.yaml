@@ -23,8 +23,76 @@ spec:
       labels:
         app: <%= service.name %>
     spec:
+      securityContext:
+        fsGroup: 1001
       <% if service.pod_yaml.present? %>
 <%= service.pod_yaml.to_yaml_raw.to_s.lines.map { |line| "      #{line}" }.join %>
+      <% end %>
+      <% if project.development_environment? %>
+      <% development_environment_configuration = project.child_development_environment.parent_project.development_environment_configuration %>
+      initContainers:
+      - name: user-setup
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            chgrp -R 1001 <%= development_environment_configuration.workspace_mount_path %> || true
+            chmod -R g+rwX <%= development_environment_configuration.workspace_mount_path %> || true
+            chmod g+s <%= development_environment_configuration.workspace_mount_path %> || true
+            chgrp -R 1001 /home/rover || true
+            chmod -R g+rwX /home/rover || true
+            chmod g+s /home/rover || true
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      - name: git-clone
+        image: ghcr.io/caninehq/rover:latest
+        imagePullPolicy: Always
+        command: ["/usr/local/bin/rover-entrypoint", "/bin/true"]
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
+      - name: rover
+        image: ghcr.io/caninehq/rover:latest
+        imagePullPolicy: Always
+        restartPolicy: Always
+        env:
+        - name: WORKSPACE_DIR
+          value: "<%= development_environment_configuration.workspace_mount_path %>"
+        <% if development_environment_configuration.llm_provider&.provider == Provider::ANTHROPIC_PROVIDER %>
+        - name: ANTHROPIC_API_KEY
+          value: "<%= development_environment_configuration.llm_provider.read_attribute(:access_token) %>"
+        <% elsif development_environment_configuration.llm_provider&.provider == Provider::OPENAI_PROVIDER %>
+        - name: OPENAI_API_KEY
+          value: "<%= development_environment_configuration.llm_provider.read_attribute(:access_token) %>"
+        <% end %>
+        envFrom:
+        - configMapRef:
+            name: <%= project.name %>
+        - secretRef:
+            name: <%= project.name %>
+        <% if @project.volumes.present? %>
+        volumeMounts:
+        <% @project.volumes.each do |volume| %>
+        - name: <%= volume.name %>
+          mountPath: <%= volume.mount_path %>
+        <% end %>
+        <% end %>
       <% end %>
       containers:
       - name: <%= project.name %>
