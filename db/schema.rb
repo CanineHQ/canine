@@ -135,7 +135,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
     t.string "context_directory", default: "./", null: false
     t.string "dockerfile_path", default: "./Dockerfile", null: false
     t.integer "build_type", null: false
-    t.string "development_dockerfile_path"
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
     t.index ["provider_id"], name: "index_build_configurations_on_provider_id"
@@ -229,10 +228,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
     t.boolean "enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "llm_provider_id"
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
     t.index ["git_provider_id"], name: "idx_on_git_provider_id_d487b7dad5"
-    t.index ["llm_provider_id"], name: "idx_on_llm_provider_id_3986b1c3b4"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 
@@ -809,7 +806,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
   add_foreign_key "development_environment_configurations", "clusters"
   add_foreign_key "development_environment_configurations", "projects"
   add_foreign_key "development_environment_configurations", "providers", column: "git_provider_id"
-  add_foreign_key "development_environment_configurations", "providers", column: "llm_provider_id"
   add_foreign_key "development_environments", "projects", column: "child_project_id"
   add_foreign_key "development_environments", "projects", column: "parent_project_id"
   add_foreign_key "environment_variables", "projects"

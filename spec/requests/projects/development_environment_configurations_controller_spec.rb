@@ -31,24 +31,7 @@ RSpec.describe Projects::DevelopmentEnvironmentConfigurationsController, type: :
       expect(configuration.dockerfile_path).to eq("./Dockerfile.dev")
       expect(configuration.workspace_mount_path).to eq("/app")
       expect(configuration.enabled).to be(true)
-      expect(response).to redirect_to(edit_project_path(project))
-    end
-
-    it "re-renders the panel for turbo frame requests" do
-      post project_development_environment_configuration_path(project),
-           params: {
-             development_environment_configuration: {
-               cluster_id: target_cluster.id,
-               dockerfile_path: "./Dockerfile.dev",
-               workspace_mount_path: "/app",
-               enabled: "1"
-             }
-           },
-           headers: { "Turbo-Frame" => ActionView::RecordIdentifier.dom_id(project, :development_environment_configuration) }
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include(ActionView::RecordIdentifier.dom_id(project, :development_environment_configuration))
-      expect(response.body).to include("Development environment configuration saved.")
+      expect(response).to redirect_to(edit_project_path(project, anchor: "development-environment"))
     end
   end
 
@@ -68,7 +51,7 @@ RSpec.describe Projects::DevelopmentEnvironmentConfigurationsController, type: :
       expect(configuration.reload.cluster_id).to eq(target_cluster.id)
       expect(configuration.workspace_mount_path).to eq("/workspace")
       expect(configuration.enabled).to be(false)
-      expect(response).to redirect_to(edit_project_path(project))
+      expect(response).to redirect_to(edit_project_path(project, anchor: "development-environment"))
     end
   end
 
@@ -80,15 +63,7 @@ RSpec.describe Projects::DevelopmentEnvironmentConfigurationsController, type: :
         delete project_development_environment_configuration_path(project)
       }.to change(DevelopmentEnvironmentConfiguration, :count).by(-1)
 
-      expect(response).to redirect_to(edit_project_path(project))
-    end
-
-    it "re-renders the cleared panel for turbo frame requests" do
-      delete project_development_environment_configuration_path(project),
-             headers: { "Turbo-Frame" => ActionView::RecordIdentifier.dom_id(project, :development_environment_configuration) }
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Development environment configuration removed.")
+      expect(response).to redirect_to(edit_project_path(project, anchor: "development-environment"))
     end
   end
 end

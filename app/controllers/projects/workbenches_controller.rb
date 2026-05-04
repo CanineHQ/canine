@@ -1,9 +1,11 @@
 class Projects::WorkbenchesController < Projects::BaseController
+  ROVER_CONTAINER = "rover"
+
   before_action :require_development_environment
 
   def show
     @pods = running_pods
-    @pod = @pods.find { |pod| pod.spec.initContainers&.any? { |c| c.name == "rover" } }
+    @pod = @pods.find { |pod| pod.spec.initContainers&.any? { |c| c.name == ROVER_CONTAINER } }
 
     if @pod
       @pod_name = @pod.metadata.name
@@ -13,7 +15,7 @@ class Projects::WorkbenchesController < Projects::BaseController
         cluster: @project.cluster,
         pod_name: @pod_name,
         namespace: @namespace,
-        container: "rover"
+        container: ROVER_CONTAINER
       )
     end
   end

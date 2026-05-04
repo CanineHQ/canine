@@ -32,13 +32,11 @@ RSpec.describe K8::Stateless::Deployment do
 
   describe 'rover sidecar' do
     let(:parent_project) { create(:project) }
-    let(:llm_provider) { create(:provider, :anthropic, user: parent_project.account.owner) }
     let(:development_environment_configuration) do
       create(:development_environment_configuration,
         project: parent_project,
         enabled: true,
-        workspace_mount_path: "/workspace",
-        llm_provider: llm_provider)
+        workspace_mount_path: "/workspace")
     end
 
     context 'when in development environment' do
@@ -64,22 +62,6 @@ RSpec.describe K8::Stateless::Deployment do
         expect(yaml).to include("/workspace")
       end
 
-      it 'sets ANTHROPIC_API_KEY when llm provider is anthropic' do
-        yaml = deployment.to_yaml
-
-        expect(yaml).to include("ANTHROPIC_API_KEY")
-        expect(yaml).not_to include("OPENAI_API_KEY")
-      end
-
-      it 'sets OPENAI_API_KEY when llm provider is openai' do
-        openai_provider = create(:provider, :openai, user: parent_project.account.owner)
-        development_environment_configuration.update!(llm_provider: openai_provider)
-
-        yaml = deployment.to_yaml
-
-        expect(yaml).to include("OPENAI_API_KEY")
-        expect(yaml).not_to include("ANTHROPIC_API_KEY")
-      end
 
       it 'mounts project volumes to the rover sidecar' do
         create(:volume, project: project, name: "app-storage", mount_path: "/data")

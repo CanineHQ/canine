@@ -74,13 +74,7 @@ spec:
         env:
         - name: WORKSPACE_DIR
           value: "<%= development_environment_configuration.workspace_mount_path %>"
-        <% if development_environment_configuration.llm_provider&.provider == Provider::ANTHROPIC_PROVIDER %>
-        - name: ANTHROPIC_API_KEY
-          value: "<%= development_environment_configuration.llm_provider.read_attribute(:access_token) %>"
-        <% elsif development_environment_configuration.llm_provider&.provider == Provider::OPENAI_PROVIDER %>
-        - name: OPENAI_API_KEY
-          value: "<%= development_environment_configuration.llm_provider.read_attribute(:access_token) %>"
-        <% end %>
+
         envFrom:
         - configMapRef:
             name: <%= project.name %>

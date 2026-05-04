@@ -1,6 +1,9 @@
 class ProjectForks::CreateDevelopmentEnvironmentDefinition
   extend LightService::Action
 
+  ROVER_HOME_SIZE = "1Gi"
+  ROVER_WORKSPACE_SIZE = "5Gi"
+
   expects :parent_project, :current_user
   promises :definition
 
@@ -65,7 +68,7 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
     # Rover home directory (persists history, configs)
     definition["volumes"] << {
       "name" => "rover-home-#{suffix}",
-      "size" => "1Gi",
+      "size" => ROVER_HOME_SIZE,
       "mount_path" => "/home/rover",
       "access_mode" => "read_write_once"
     }
@@ -74,7 +77,7 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
     if development_environment_configuration&.workspace_mount_path.present?
       definition["volumes"] << {
         "name" => "rover-workspace-#{suffix}",
-        "size" => "5Gi",
+        "size" => ROVER_WORKSPACE_SIZE,
         "mount_path" => development_environment_configuration.workspace_mount_path,
         "access_mode" => "read_write_once"
       }
