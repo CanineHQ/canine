@@ -1,36 +1,18 @@
 <%= content_for :title, "Workbench - #{@project.name}" %>
 
-<div class="mb-2 flex items-center gap-2">
-  <%= link_to "← Back to original project", project_path(@project.child_development_environment.parent_project), class: "btn btn-ghost" %>
-  <%= link_to "View Project", project_deployments_path(@project), class: "btn btn-ghost" %>
-</div>
-
-<h2 class="text-2xl font-bold mb-4">Workbench</h2>
-
-<% urls = @project.services.flat_map { |s| s.domains.any? ? s.domains.map(&:domain_name) : [s.auto_domain].compact } %>
-<% if urls.any? %>
-  <div class="mb-4 flex items-center gap-3">
-    <span class="text-sm text-base-content/60">Hosted at:</span>
-    <% urls.each do |url| %>
-      <%= link_to url, "https://#{url}", target: "_blank", class: "link link-primary text-sm flex items-center gap-1" do %>
-        <%= url %>
-        <iconify-icon icon="lucide:external-link" class="text-xs"></iconify-icon>
-      <% end %>
+<%= project_layout(@project) do %>
+  <% if @pod %>
+    <%= render "processes/terminal",
+      shell_token: @shell_token,
+      pod_name: @pod_name,
+      namespace: @namespace,
+      back_path: project_path(@project.child_development_environment.parent_project),
+      project_name: @project.name,
+      cluster: @project.cluster %>
+  <% else %>
+    <% unless @project.deployments.any? %>
+      <%= render "shared/partials/wizard_animation" %>
     <% end %>
-  </div>
-<% end %>
-
-<% if @pod %>
-  <%= render "processes/terminal",
-    shell_token: @shell_token,
-    pod_name: @pod_name,
-    namespace: @namespace,
-    back_path: project_path(@project.child_development_environment.parent_project),
-    project_name: @project.name,
-    cluster: @project.cluster %>
-<% else %>
-  <% unless @project.deployments.any? %>
-    <%= render "shared/partials/wizard_animation" %>
+    <%= render "projects/workbenches/setup_progress", project: @project %>
   <% end %>
-  <%= render "projects/workbenches/setup_progress", project: @project %>
 <% end %>

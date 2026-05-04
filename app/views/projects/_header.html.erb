@@ -1,0 +1,10 @@
+<% if project.development_environment? %>
+  <% parent = project.child_development_environment.parent_project %>
+  <div class="text-sm text-base-content/60 mb-1">
+    development environment created from <%= link_to parent.name, project_path(parent), class: "link link-hover font-semibold text-base-content" %>
+  </div>
+<% elsif project.forked? %>
+  <div class="text-sm text-base-content/60 mb-1">
+    preview app created from <%= link_to project.parent_project.name, project_path(project.parent_project), class: "link link-hover font-semibold text-base-content" %>
+  </div>
+<% end %>
