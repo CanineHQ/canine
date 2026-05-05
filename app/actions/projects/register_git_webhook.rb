@@ -6,7 +6,6 @@ class Projects::RegisterGitWebhook
     client = Git::Client.from_project(context.project)
     client.register_webhook!
   rescue StandardError => e
-    context.project.errors.add(:repository_url, "Failed to create webhook: #{e.message}")
-    context.fail_and_return!("Failed to create webhook: #{e.message}")
+    Rails.logger.warn("Failed to register webhook for project #{context.project.id}: #{e.message}. Falling back to polling.")
   end
 end
