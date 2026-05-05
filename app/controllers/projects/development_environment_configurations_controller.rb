@@ -15,7 +15,10 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def update
     @configuration.assign_attributes(configuration_params)
-    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration, user: current_user)
+    result = DevelopmentEnvironmentConfigurations::Save.execute(
+      development_environment_configuration: @configuration,
+      user: current_user,
+    )
 
     if result.success?
       redirect_to edit_project_path(@project, anchor: "development-environment"), notice: "Development environment configuration updated."

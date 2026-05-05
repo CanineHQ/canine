@@ -8,13 +8,13 @@
 #  workspace_mount_path :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  cluster_id           :bigint
+#  cluster_id           :bigint           not null
 #  git_provider_id      :bigint
 #  project_id           :bigint           not null
 #
 # Indexes
 #
-#  idx_on_git_provider_id_d487b7dad5                           (git_provider_id)
+#  index_dev_env_configs_on_git_provider_id                    (git_provider_id)
 #  index_development_environment_configurations_on_cluster_id  (cluster_id)
 #  index_development_environment_configurations_on_project_id  (project_id) UNIQUE
 #
@@ -33,8 +33,7 @@ RSpec.describe DevelopmentEnvironmentConfiguration, type: :model do
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_uniqueness_of(:project_id) }
 
-    it "requires cluster, dockerfile path and workspace mount path when enabled" do
-      configuration.project.cluster = nil
+    it "requires cluster, dockerfile path and workspace mount path" do
       configuration.cluster = nil
       configuration.dockerfile_path = nil
       configuration.workspace_mount_path = nil
@@ -43,14 +42,6 @@ RSpec.describe DevelopmentEnvironmentConfiguration, type: :model do
       expect(configuration.errors[:cluster]).to be_present
       expect(configuration.errors[:dockerfile_path]).to be_present
       expect(configuration.errors[:workspace_mount_path]).to be_present
-    end
-
-    it "allows blank settings when disabled" do
-      configuration.enabled = false
-      configuration.dockerfile_path = nil
-      configuration.workspace_mount_path = nil
-
-      expect(configuration).to be_valid
     end
 
     it "requires the cluster to belong to the same account as the project" do

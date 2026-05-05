@@ -3,6 +3,8 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
 
   ROVER_HOME_SIZE = "1Gi"
   ROVER_WORKSPACE_SIZE = "5Gi"
+  ROVER_HOME_MOUNT_PATH = "/home/rover"
+  DEFAULT_ACCESS_MODE = "read_write_once"
 
   expects :parent_project, :current_user
   promises :definition
@@ -69,8 +71,8 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
     definition["volumes"] << {
       "name" => "rover-home-#{suffix}",
       "size" => ROVER_HOME_SIZE,
-      "mount_path" => "/home/rover",
-      "access_mode" => "read_write_once"
+      "mount_path" => ROVER_HOME_MOUNT_PATH,
+      "access_mode" => DEFAULT_ACCESS_MODE
     }
 
     # Workspace volume (mounted in both rover and main container)
@@ -79,7 +81,7 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
         "name" => "rover-workspace-#{suffix}",
         "size" => ROVER_WORKSPACE_SIZE,
         "mount_path" => development_environment_configuration.workspace_mount_path,
-        "access_mode" => "read_write_once"
+        "access_mode" => DEFAULT_ACCESS_MODE
       }
     end
 

@@ -8,13 +8,13 @@
 #  workspace_mount_path :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  cluster_id           :bigint
+#  cluster_id           :bigint           not null
 #  git_provider_id      :bigint
 #  project_id           :bigint           not null
 #
 # Indexes
 #
-#  idx_on_git_provider_id_d487b7dad5                           (git_provider_id)
+#  index_dev_env_configs_on_git_provider_id                    (git_provider_id)
 #  index_development_environment_configurations_on_cluster_id  (cluster_id)
 #  index_development_environment_configurations_on_project_id  (project_id) UNIQUE
 #
@@ -26,18 +26,24 @@
 #
 class DevelopmentEnvironmentConfiguration < ApplicationRecord
   belongs_to :project
-  belongs_to :cluster, optional: true
+  belongs_to :cluster
   belongs_to :git_provider, class_name: "Provider", optional: true
 
   validates :project, presence: true
   validates :project_id, uniqueness: true
-  validates :cluster, presence: true, if: :enabled?
-  validates :dockerfile_path, :workspace_mount_path, presence: true, if: :enabled?
+  validates :dockerfile_path, :workspace_mount_path, presence: true
   validate :cluster_belongs_to_project_account
   before_validation :default_cluster_from_project, on: :create
 
   def self.permit_params(params)
-    params.permit(:id, :cluster_id, :git_provider_id, :dockerfile_path, :workspace_mount_path, :enabled)
+    params.permit(
+      :id,
+      :cluster_id,
+      :git_provider_id,
+      :dockerfile_path,
+      :workspace_mount_path,
+      :enabled,
+    )
   end
 
   private

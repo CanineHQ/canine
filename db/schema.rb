@@ -220,7 +220,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
   end
 
   create_table "development_environment_configurations", force: :cascade do |t|
-    t.bigint "cluster_id"
+    t.bigint "cluster_id", null: false
     t.bigint "project_id", null: false
     t.bigint "git_provider_id"
     t.string "dockerfile_path", null: false
@@ -229,7 +229,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
-    t.index ["git_provider_id"], name: "idx_on_git_provider_id_d487b7dad5"
+    t.index ["git_provider_id"], name: "index_dev_env_configs_on_git_provider_id"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 

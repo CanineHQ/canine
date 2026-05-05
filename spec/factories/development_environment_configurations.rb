@@ -8,13 +8,13 @@
 #  workspace_mount_path :string           not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
-#  cluster_id           :bigint
+#  cluster_id           :bigint           not null
 #  git_provider_id      :bigint
 #  project_id           :bigint           not null
 #
 # Indexes
 #
-#  idx_on_git_provider_id_d487b7dad5                           (git_provider_id)
+#  index_dev_env_configs_on_git_provider_id                    (git_provider_id)
 #  index_development_environment_configurations_on_cluster_id  (cluster_id)
 #  index_development_environment_configurations_on_project_id  (project_id) UNIQUE
 #
