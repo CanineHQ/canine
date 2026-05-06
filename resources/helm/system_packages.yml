@@ -16,17 +16,17 @@ packages:
         kubernetesIngress:
           publishedService:
             enabled: true
-      additionalArguments:
-        - "--entrypoints.web.http.redirections.entryPoint.to=:443"
-        - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
-        - "--entrypoints.websecure.http.tls=true"
       ports:
         web:
           port: 8000
           exposedPort: 80
+          redirectTo:
+            port: websecure
         websecure:
           port: 8443
           exposedPort: 443
+          tls:
+            enabled: true
 
   - name: nginx-ingress
     display_name: Nginx Ingress (Legacy)
