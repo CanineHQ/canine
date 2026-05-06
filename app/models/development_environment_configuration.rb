@@ -33,13 +33,10 @@ class DevelopmentEnvironmentConfiguration < ApplicationRecord
   validates :project_id, uniqueness: true
   validates :dockerfile_path, :workspace_mount_path, presence: true
   validate :cluster_belongs_to_project_account
-  before_validation :default_cluster_from_project, on: :create
 
   def self.permit_params(params)
     params.permit(
       :id,
-      :cluster_id,
-      :git_provider_id,
       :dockerfile_path,
       :workspace_mount_path,
       :enabled,
@@ -47,10 +44,6 @@ class DevelopmentEnvironmentConfiguration < ApplicationRecord
   end
 
   private
-
-  def default_cluster_from_project
-    self.cluster ||= project&.cluster
-  end
 
   def cluster_belongs_to_project_account
     return if cluster_id.blank? || project.blank?

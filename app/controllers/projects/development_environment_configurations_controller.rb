@@ -3,7 +3,9 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def create
     @configuration = @project.build_development_environment_configuration(configuration_params)
-    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration, user: current_user)
+    @configuration.cluster = current_account.clusters.find(dev_env_params[:cluster_id])
+    @configuration.git_provider = current_user.providers.find(dev_env_params[:git_provider_id])
+    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration)
 
     if result.success?
       redirect_to edit_project_path(@project, anchor: "development-environment"), notice: "Development environment configuration saved."
@@ -15,10 +17,9 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
 
   def update
     @configuration.assign_attributes(configuration_params)
-    result = DevelopmentEnvironmentConfigurations::Save.execute(
-      development_environment_configuration: @configuration,
-      user: current_user,
-    )
+    @configuration.cluster = current_account.clusters.find(dev_env_params[:cluster_id])
+    @configuration.git_provider = current_user.providers.find(dev_env_params[:git_provider_id])
+    result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration)
 
     if result.success?
       redirect_to edit_project_path(@project, anchor: "development-environment"), notice: "Development environment configuration updated."
@@ -42,10 +43,12 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
     redirect_to edit_project_path(@project), alert: "Development environment configuration not found."
   end
 
+  def dev_env_params
+    params.require(:development_environment_configuration)
+  end
+
   def configuration_params
-    DevelopmentEnvironmentConfiguration.permit_params(
-      params.require(:development_environment_configuration)
-    )
+    DevelopmentEnvironmentConfiguration.permit_params(dev_env_params)
   end
 
   def prepare_edit_page
