@@ -22,6 +22,7 @@ class Clusters::InstallComponents
       rescue StandardError => e
         package.failed!
         cluster.error("#{definition['display_name']} failed to install: #{e.message}")
+        context.fail!(e.message)
       end
     end
   end
