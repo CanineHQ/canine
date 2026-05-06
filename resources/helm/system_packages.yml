@@ -17,7 +17,7 @@ packages:
           publishedService:
             enabled: true
       additionalArguments:
-        - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+        - "--entrypoints.web.http.redirections.entryPoint.to=:443"
         - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
         - "--entrypoints.websecure.http.tls=true"
       ports:
