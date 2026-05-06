@@ -10,7 +10,8 @@ class ClusterPackage::Installer::CertManager < ClusterPackage::Installer::Base
     cluster = kubectl.connection.cluster
     cluster.info("Installing ACME issuer...", color: :yellow)
     email = cluster.account.owner.email
-    acme_issuer_yaml = K8::Shared::AcmeIssuer.new(email).to_yaml
+    ingress_class_name = cluster.cluster_packages.exists?(name: "traefik-ingress") ? "traefik" : "nginx"
+    acme_issuer_yaml = K8::Shared::AcmeIssuer.new(email, ingress_class_name: ingress_class_name).to_yaml
     kubectl.apply_yaml(acme_issuer_yaml)
     cluster.success("ACME issuer installed")
   end

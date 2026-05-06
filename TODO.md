@@ -19,3 +19,4 @@
 - [ ] Clear our historical logs
 - [ ] log drain from application
 - [ ] Check the pods in the namespace and ensure they are running. - app/services/k8/build_cloud_manager.rb
+- [ ] Handle stuck helm `pending-upgrade` releases — detect and rollback before retrying in `K8::Helm::Client#install`

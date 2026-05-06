@@ -7,7 +7,7 @@ class Clusters::InstallComponents
     cluster = context.cluster
     kubectl = context.kubectl
 
-    cluster.cluster_packages.where(status: [ :pending, :failed ]).find_each do |package|
+    cluster.cluster_packages.find_each do |package|
       definition = package.definition
       next unless definition
 
@@ -16,13 +16,6 @@ class Clusters::InstallComponents
 
       begin
         installer = package.installer
-
-        if installer.installed?(kubectl)
-          cluster.success("#{definition['display_name']} is already installed")
-          package.update!(status: :installed, installed_at: Time.current)
-          next
-        end
-
         installer.install!(kubectl)
         package.update!(status: :installed, installed_at: Time.current)
         cluster.success("#{definition['display_name']} installed successfully")

@@ -12,7 +12,4 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
-    - http01:
-        ingress:
-          class: traefik
+          ingressClassName: <%= ingress_class_name %>
