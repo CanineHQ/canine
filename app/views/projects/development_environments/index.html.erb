@@ -1,0 +1,123 @@
+<%= content_for :title, t("scaffold.edit.title", model: "Project") %>
+
+<%= project_layout(@project) do %>
+  <div class="mb-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
+      <button class="btn btn-primary btn-sm" onclick="new_dev_env_modal.showModal()">New Development Environment</button>
+    </div>
+    <p class="text-base-content/60">
+      Managed cloud development environments created from this project's template configuration.
+    </p>
+    </div>
+    <div class="divider"></div>
+  </div>
+
+  <div class="card border border-base-300 bg-base-100 mb-6">
+    <div class="card-body space-y-4">
+      <div>
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-lg font-semibold">Template Configuration</h3>
+          <%= link_to "Edit", edit_project_path(@project, anchor: "development-environment"), class: "btn btn-sm" %>
+        </div>
+        <p class="text-sm text-base-content/60">
+          This project is configured to create development environments on demand.
+        </p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Target Cluster</div>
+          <div class="mt-1 font-medium"><%= @development_environment_configuration.cluster&.name %></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Dockerfile</div>
+          <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.dockerfile_path %></div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50">Workspace Mount</div>
+          <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.workspace_mount_path %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @development_environments.any? %>
+    <div class="space-y-3">
+      <h3 class="text-lg font-semibold">Active Environments</h3>
+      <% @development_environments.each do |fork| %>
+        <div class="card border border-base-300 bg-base-100">
+          <div class="card-body flex-row items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+              <div>
+                <h4 class="font-medium">
+                  <%= link_to fork.child_project.name, project_path(fork.child_project), class: "link link-hover" %>
+                </h4>
+                <p class="text-sm text-base-content/60">
+                  Branch: <span class="font-mono"><%= fork.child_project.branch %></span>
+                  &middot; Created <%= time_ago_in_words(fork.created_at) %> ago
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <%= render partial: "projects/status", locals: { project: fork.child_project } %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card border border-base-300 bg-base-100">
+      <div class="card-body items-center text-center py-12">
+        <iconify-icon icon="lucide:code-2" class="text-4xl text-base-content/30 mb-2"></iconify-icon>
+        <p class="text-base-content/60">No development environments yet. Create one to get started.</p>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<dialog aria-label="New Development Environment" class="modal" id="new_dev_env_modal">
+  <div class="modal-box bg-base-300 w-11/12 max-w-3xl">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-4 w-full text-xl font-bold">New Development Environment</div>
+    <p class="mb-6 text-sm text-base-content/70">
+      Select the git credential to use for cloning repositories and submitting code changes in this development environment.
+    </p>
+
+    <%= form_with url: project_development_environments_path(@project), method: :post, class: "space-y-4" do |f| %>
+      <div class="form-control">
+        <label class="label">
+          <span class="font-bold">Git credential</span>
+        </label>
+        <% if @git_providers.any? %>
+          <%= render(RichSelectComponent.new(
+            name: "git_provider_id",
+            id: "dev_env_git_provider_id",
+            collection: @git_providers,
+            selected: @git_providers.count == 1 ? @git_providers.first.id : nil,
+            partial: "providers/selector_item",
+            placeholder: "Select a git credential",
+            required: true
+          )) %>
+        <% else %>
+          <div class="text-sm text-base-content/60">No git credentials available. <%= link_to "Add Credentials", providers_path, class: "link link-primary", target: "_blank" %></div>
+        <% end %>
+        <label class="label">
+          <span class="label-text-alt"><%= link_to "+ Add Credentials", providers_path, class: "hover:underline", target: "_blank" %></span>
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-outline" onclick="new_dev_env_modal.close()">Cancel</button>
+        <%= f.submit "Create Environment", class: "btn btn-primary", disabled: @git_providers.empty?, data: { turbo_submits_with: "Creating..." } %>
+      </div>
+    <% end %>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
