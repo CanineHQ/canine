@@ -12,5 +12,10 @@
         stages: ["Queuing the magic", "Building your environment", "Spinning up your workspace"],
         current_stage: current_stage %>
     </div>
+  <% else %>
+    <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">
+      <p class="font-medium">Rover pod is not running.</p>
+      <p class="mt-1">The development environment pod may have been stopped or encountered an error. Try redeploying or check the project's events for more details.</p>
+    </div>
   <% end %>
 <% end %>

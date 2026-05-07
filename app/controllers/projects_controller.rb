@@ -40,7 +40,7 @@ class ProjectsController < ApplicationController
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
-    @git_providers = current_user.providers.where(provider: @project.provider.provider)
+    @configuration = @project.development_environment_configuration
   end
 
   def create

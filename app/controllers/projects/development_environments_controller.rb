@@ -4,10 +4,12 @@ class Projects::DevelopmentEnvironmentsController < Projects::BaseController
   def index
     @development_environment_configuration = @project.development_environment_configuration
     @development_environments = @project.development_environments.includes(:child_project)
+    @git_providers = current_user.providers.where(provider: @project.provider.provider)
   end
 
   def create
-    result = ProjectForks::CreateDevelopmentEnvironment.call(parent_project: @project, current_user:)
+    git_provider = current_user.providers.find(params[:git_provider_id])
+    result = ProjectForks::CreateDevelopmentEnvironment.call(parent_project: @project, current_user:, git_provider:)
 
     if result.success?
       Projects::DeployLatestCommit.execute(project: result.project, current_user:)

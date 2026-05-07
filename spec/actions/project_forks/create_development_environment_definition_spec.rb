@@ -14,12 +14,11 @@ RSpec.describe ProjectForks::CreateDevelopmentEnvironmentDefinition do
     create(:development_environment_configuration,
       project: parent_project,
       dockerfile_path: "./Dockerfile.dev",
-      workspace_mount_path: "/app",
-      git_provider: git_provider
+      workspace_mount_path: "/app"
     )
   end
 
-  subject(:result) { described_class.execute(parent_project: parent_project, current_user: account.owner) }
+  subject(:result) { described_class.execute(parent_project: parent_project, current_user: account.owner, git_provider: git_provider) }
   let(:definition) { result.definition }
 
   it "generates a unique dev environment name and substitutes the dev dockerfile" do

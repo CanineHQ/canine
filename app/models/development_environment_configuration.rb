@@ -9,26 +9,21 @@
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
 #  cluster_id           :bigint           not null
-#  git_provider_id      :bigint
 #  project_id           :bigint           not null
 #
 # Indexes
 #
-#  index_dev_env_configs_on_git_provider_id                    (git_provider_id)
 #  index_development_environment_configurations_on_cluster_id  (cluster_id)
 #  index_development_environment_configurations_on_project_id  (project_id) UNIQUE
 #
 # Foreign Keys
 #
 #  fk_rails_...  (cluster_id => clusters.id)
-#  fk_rails_...  (git_provider_id => providers.id)
 #  fk_rails_...  (project_id => projects.id)
 #
 class DevelopmentEnvironmentConfiguration < ApplicationRecord
   belongs_to :project
   belongs_to :cluster
-  belongs_to :git_provider, class_name: "Provider", optional: true
-
   validates :project, presence: true
   validates :project_id, uniqueness: true
   validates :dockerfile_path, :workspace_mount_path, presence: true

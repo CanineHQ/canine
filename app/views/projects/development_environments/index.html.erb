@@ -4,7 +4,7 @@
   <div class="mb-6">
     <div class="flex items-center justify-between">
       <h2 class="text-2xl font-bold text-base-content mb-2">Development Environments</h2>
-      <%= button_to "New Development Environment", project_development_environments_path(@project), method: :post, class: "btn btn-primary btn-sm" %>
+      <button class="btn btn-primary btn-sm" onclick="new_dev_env_modal.showModal()">New Development Environment</button>
     </div>
     <p class="text-base-content/60">
       Managed cloud development environments created from this project's template configuration.
@@ -25,7 +25,7 @@
         </p>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-4">
+      <div class="grid gap-4 md:grid-cols-3">
         <div>
           <div class="text-xs uppercase tracking-wide text-base-content/50">Target Cluster</div>
           <div class="mt-1 font-medium"><%= @development_environment_configuration.cluster&.name %></div>
@@ -37,21 +37,6 @@
         <div>
           <div class="text-xs uppercase tracking-wide text-base-content/50">Workspace Mount</div>
           <div class="mt-1 font-mono text-sm"><%= @development_environment_configuration.workspace_mount_path %></div>
-        </div>
-        <div>
-          <div class="text-xs uppercase tracking-wide text-base-content/50">Git Username</div>
-          <% if @development_environment_configuration.git_provider.present? %>
-            <div class="mt-1 flex items-center gap-1.5">
-              <% if @development_environment_configuration.git_provider.github? %>
-                <iconify-icon icon="mdi:github" height="18"></iconify-icon>
-              <% elsif @development_environment_configuration.git_provider.gitlab? %>
-                <iconify-icon icon="mdi:gitlab" height="18"></iconify-icon>
-              <% elsif @development_environment_configuration.git_provider.bitbucket? %>
-                <iconify-icon icon="mdi:bitbucket" height="18"></iconify-icon>
-              <% end %>
-              <span class="font-mono text-sm"><%= @development_environment_configuration.git_provider.username %></span>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
@@ -90,3 +75,49 @@
     </div>
   <% end %>
 <% end %>
+
+<dialog aria-label="New Development Environment" class="modal" id="new_dev_env_modal">
+  <div class="modal-box bg-base-300 w-11/12 max-w-3xl">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-4 w-full text-xl font-bold">New Development Environment</div>
+    <p class="mb-6 text-sm text-base-content/70">
+      Select the git credential to use for cloning repositories and submitting code changes in this development environment.
+    </p>
+
+    <%= form_with url: project_development_environments_path(@project), method: :post, class: "space-y-4" do |f| %>
+      <div class="form-control">
+        <label class="label">
+          <span class="font-bold">Git credential</span>
+        </label>
+        <% if @git_providers.any? %>
+          <%= render(RichSelectComponent.new(
+            name: "git_provider_id",
+            id: "dev_env_git_provider_id",
+            collection: @git_providers,
+            selected: @git_providers.count == 1 ? @git_providers.first.id : nil,
+            partial: "providers/selector_item",
+            placeholder: "Select a git credential",
+            required: true
+          )) %>
+        <% else %>
+          <div class="text-sm text-base-content/60">No git credentials available. <%= link_to "Add Credentials", providers_path, class: "link link-primary", target: "_blank" %></div>
+        <% end %>
+        <label class="label">
+          <span class="label-text-alt"><%= link_to "+ Add Credentials", providers_path, class: "hover:underline", target: "_blank" %></span>
+        </label>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn btn-outline" onclick="new_dev_env_modal.close()">Cancel</button>
+        <%= f.submit "Create Environment", class: "btn btn-primary", disabled: @git_providers.empty?, data: { turbo_submits_with: "Creating..." } %>
+      </div>
+    <% end %>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

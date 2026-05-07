@@ -4,7 +4,6 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   def create
     @configuration = @project.build_development_environment_configuration(configuration_params)
     @configuration.cluster = current_account.clusters.find(dev_env_params[:cluster_id])
-    @configuration.git_provider = current_user.providers.find(dev_env_params[:git_provider_id])
     result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration)
 
     if result.success?
@@ -18,7 +17,6 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   def update
     @configuration.assign_attributes(configuration_params)
     @configuration.cluster = current_account.clusters.find(dev_env_params[:cluster_id])
-    @configuration.git_provider = current_user.providers.find(dev_env_params[:git_provider_id])
     result = DevelopmentEnvironmentConfigurations::Save.execute(development_environment_configuration: @configuration)
 
     if result.success?
@@ -30,8 +28,11 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   end
 
   def destroy
-    @configuration.destroy
-    redirect_to edit_project_path(@project, anchor: "development-environment"), notice: "Development environment configuration removed."
+    if @configuration.destroy
+      redirect_to edit_project_path(@project, anchor: "development-environment"), notice: "Development environment configuration removed."
+    else
+      redirect_to edit_project_path(@project, anchor: "development-environment"), alert: "Failed to remove development environment configuration."
+    end
   end
 
   private
@@ -55,6 +56,5 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
     @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
-    @git_providers = current_user.providers.where(provider: @project.provider.provider)
   end
 end

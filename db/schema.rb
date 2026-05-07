@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -222,23 +222,23 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
   create_table "development_environment_configurations", force: :cascade do |t|
     t.bigint "cluster_id", null: false
     t.bigint "project_id", null: false
-    t.bigint "git_provider_id"
     t.string "dockerfile_path", null: false
     t.string "workspace_mount_path", null: false
     t.boolean "enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["cluster_id"], name: "index_development_environment_configurations_on_cluster_id"
-    t.index ["git_provider_id"], name: "index_dev_env_configs_on_git_provider_id"
     t.index ["project_id"], name: "index_development_environment_configurations_on_project_id", unique: true
   end
 
   create_table "development_environments", force: :cascade do |t|
     t.bigint "child_project_id", null: false
     t.bigint "parent_project_id", null: false
+    t.bigint "git_provider_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["child_project_id"], name: "index_development_environments_on_child_project_id", unique: true
+    t.index ["git_provider_id"], name: "index_dev_envs_on_git_provider_id"
     t.index ["parent_project_id"], name: "index_development_environments_on_parent_project_id"
   end
 
@@ -805,9 +805,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_29_203452) do
   add_foreign_key "deployments", "builds"
   add_foreign_key "development_environment_configurations", "clusters"
   add_foreign_key "development_environment_configurations", "projects"
-  add_foreign_key "development_environment_configurations", "providers", column: "git_provider_id"
   add_foreign_key "development_environments", "projects", column: "child_project_id"
   add_foreign_key "development_environments", "projects", column: "parent_project_id"
+  add_foreign_key "development_environments", "providers", column: "git_provider_id"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"

@@ -6,7 +6,7 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
   ROVER_HOME_MOUNT_PATH = "/home/rover"
   DEFAULT_ACCESS_MODE = "read_write_once"
 
-  expects :parent_project, :current_user
+  expects :parent_project, :current_user, :git_provider
   promises :definition
 
   executed do |context|
@@ -44,10 +44,11 @@ class ProjectForks::CreateDevelopmentEnvironmentDefinition
       "storage_type" => "config"
     }
 
-    if development_environment_configuration&.git_provider.present?
+    git_provider = context.git_provider
+    if git_provider.present?
       definition["environment_variables"] << {
         "name" => "ROVER_GIT_ACCESS_TOKEN",
-        "value" => development_environment_configuration.git_provider.access_token,
+        "value" => git_provider.access_token,
         "storage_type" => "secret"
       }
     end
