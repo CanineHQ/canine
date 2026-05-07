@@ -15,12 +15,20 @@
   <div class="flex items-center justify-center">
     <details class="mx-auto dropdown">
       <summary class="btn m-1"><%= truncate(current_account.name, length: 20) %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
-      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow">
+      <ul class="menu dropdown-content w-72 z-50 rounded-box bg-base-300 p-2 shadow">
         <!-- Current Account Section -->
         <li class="menu-title text-xs opacity-60 px-4 py-2">CURRENT ORGANIZATION</li>
         <li>
-          <div class="flex items-center gap-3 px-4 py-3 cursor-default hover:bg-base-200">
+          <div class="group flex items-center justify-between px-4 py-3 cursor-default hover:bg-base-200 rounded-lg">
             <span class="font-semibold"><%= truncate(current_account.name, length: 24) %></span>
+            <% current_au = current_user.account_users.find_by(account: current_account) %>
+            <% if current_au&.default? %>
+              <span class="badge badge-xs badge-primary">Default</span>
+            <% else %>
+              <%= button_to set_default_account_path(current_account), method: :put, class: "btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity" do %>
+                Set as default
+              <% end %>
+            <% end %>
           </div>
         </li>
 
@@ -29,10 +37,21 @@
         <% if other_accounts.any? %>
           <li class="menu-title text-xs opacity-60 px-4 py-2 mt-2">OTHER ORGANIZATIONS</li>
           <% other_accounts.each do |account| %>
+            <% au = current_user.account_users.find_by(account: account) %>
             <li>
-              <%= link_to switch_account_path(account), data: { turbo_method: :put }, class: "flex items-center gap-3 px-4 py-3" do %>
-                <span class="font-semibold"><%= truncate(account.name, length: 24) %></span>
-              <% end %>
+              <div class="group flex items-center justify-between px-4 py-1 hover:bg-base-200 rounded-lg">
+                <%= link_to switch_account_path(account), data: { turbo_method: :put }, class: "flex-1 flex items-center gap-3 py-2" do %>
+                  <span class="font-semibold"><%= truncate(account.name, length: 20) %></span>
+                  <% if au&.default? %>
+                    <span class="badge badge-xs badge-primary">Default</span>
+                  <% end %>
+                <% end %>
+                <% unless au&.default? %>
+                  <%= button_to set_default_account_path(account), method: :put, class: "btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity" do %>
+                    Set as default
+                  <% end %>
+                <% end %>
+              </div>
             </li>
           <% end %>
         <% end %>

@@ -41,7 +41,7 @@ module Api
           if account_id
             current_user.accounts.friendly.find(account_id)
           else
-            current_user.accounts.first
+            current_user.default_account || current_user.accounts.first
           end
         end
       end

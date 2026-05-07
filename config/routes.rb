@@ -86,6 +86,7 @@ Rails.application.routes.draw do
     end
     member do
       put :switch
+      put :set_default
     end
   end
 
