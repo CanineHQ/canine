@@ -50,3 +50,40 @@
     ) %>
   </div>
 <% end %>
+
+<% if @add_on.chart_url == "bitnami/postgresql" %>
+<h6 class="text-xl font-bold">Fork</h6>
+<div class="mb-4">
+  <p class="text-sm text-gray-500 mb-4">
+    Create a copy of this database with all its data on the same cluster.
+  </p>
+  <button class="btn btn-primary" onclick="fork_database_modal.showModal()">Fork Database</button>
+</div>
+
+<dialog aria-label="Fork Database" class="modal" id="fork_database_modal">
+  <div class="modal-box bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="mb-4 w-full text-xl font-bold">Fork Database</div>
+    <p class="mb-6 text-sm text-base-content/70">
+      Create a copy of <strong><%= @add_on.name %></strong> with all its data on the same cluster.
+    </p>
+    <%= form_with(url: add_on_fork_path(@add_on), method: :post, class: "space-y-4") do |form| %>
+      <%= render(FormFieldComponent.new(label: "Name", description: "Name for the forked database. Leave blank to auto-generate.")) do %>
+        <%= form.text_field :name, class: "input input-bordered w-full", placeholder: @add_on.name %>
+      <% end %>
+      <%= render "shared/partials/namespace_input_group", form: %>
+      <div class="flex justify-end gap-2 mt-4">
+        <button type="button" class="btn btn-outline" onclick="fork_database_modal.close()">Cancel</button>
+        <%= form.submit "Fork Database", class: "btn btn-primary", data: { turbo_submits_with: "Forking..." } %>
+      </div>
+    <% end %>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+<% end %>

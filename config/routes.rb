@@ -137,6 +137,7 @@ Rails.application.routes.draw do
       get :download_values
     end
     resource :cluster_migration, only: %i[create], module: :add_ons
+    resource :fork, only: %i[create], module: :add_ons
     resource :metrics, only: [ :show ], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
     resources :processes, only: %i[index show], module: :add_ons do
