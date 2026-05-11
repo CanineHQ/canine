@@ -1,5 +1,7 @@
 <div id="<%= dom_id(build, :status) %>">
-  <%= turbo_stream_from dom_id(build, :status) %>
+  <% if local_assigns.fetch(:stream, true) %>
+    <%= turbo_stream_from dom_id(build, :status) %>
+  <% end %>
   <%
     status = (build.deployment&.status || build.status)
     status = status == "in_progress" ? "pending" : status.humanize
