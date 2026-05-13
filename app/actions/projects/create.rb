@@ -20,6 +20,7 @@ class Projects::Create
       :branch,
       :cluster_id,
       :container_registry_url,
+      :autodeploy,
       :predeploy_command,
       :project_fork_status,
       :project_fork_cluster_id
