@@ -53,7 +53,7 @@ class Account < ApplicationRecord
   end
 
   def github_provider
-    @_github_account ||= owner.providers.find_by(provider: "github")
+    @_github_account ||= owner.providers.where(provider: "github").order(Arel.sql("uid IS NOT NULL DESC")).first
   end
 
   def gitlab_username
