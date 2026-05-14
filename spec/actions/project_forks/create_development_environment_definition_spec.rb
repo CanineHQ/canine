@@ -32,26 +32,22 @@ RSpec.describe ProjectForks::CreateDevelopmentEnvironmentDefinition do
     end
   end
 
-  it "injects rover environment variables" do
+  it "injects git environment variables" do
     env_vars = definition["environment_variables"]
     env_names = env_vars.map { |e| e["name"] }
 
-    expect(env_names).to include("ROVER_WORKSPACE_DIR", "ROVER_GIT_REPOSITORY_URL", "ROVER_GIT_ACCESS_TOKEN")
-    expect(env_vars.find { |e| e["name"] == "ROVER_WORKSPACE_DIR" }["value"]).to eq "/app"
-    expect(env_vars.find { |e| e["name"] == "ROVER_GIT_ACCESS_TOKEN" }["storage_type"]).to eq "secret"
+    expect(env_names).to include("GIT_REPOSITORY_URL", "GIT_ACCESS_TOKEN", "GIT_USER_NAME", "GIT_USER_EMAIL")
+    expect(env_vars.find { |e| e["name"] == "GIT_ACCESS_TOKEN" }["storage_type"]).to eq "secret"
   end
 
-  it "creates rover-home and rover-workspace volumes with matching suffix" do
+  it "creates a workspace volume" do
     project_name = definition["project"]["name"]
     suffix = project_name.split("-").last
 
     volumes = definition["volumes"]
-    home_vol = volumes.find { |v| v["mount_path"] == "/home/rover" }
     workspace_vol = volumes.find { |v| v["mount_path"] == "/app" }
 
-    expect(home_vol["name"]).to eq "rover-home-#{suffix}"
-    expect(home_vol["size"]).to eq "1Gi"
-    expect(workspace_vol["name"]).to eq "rover-workspace-#{suffix}"
+    expect(workspace_vol["name"]).to eq "workspace-#{suffix}"
     expect(workspace_vol["size"]).to eq "5Gi"
   end
 end

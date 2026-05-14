@@ -30,7 +30,7 @@ RSpec.describe K8::Stateless::Deployment do
     expect(yaml).to include("name: cache")
   end
 
-  describe 'rover sidecar' do
+  describe 'development environment git clone' do
     let(:parent_project) { create(:project) }
     let(:development_environment_configuration) do
       create(:development_environment_configuration,
@@ -46,40 +46,39 @@ RSpec.describe K8::Stateless::Deployment do
         project.reload
       end
 
-      it 'includes the rover sidecar' do
+      it 'includes the git-clone init container' do
         yaml = deployment.to_yaml
 
         expect(yaml).to include("initContainers:")
-        expect(yaml).to include("name: rover")
-        expect(yaml).to include("image: ghcr.io/caninehq/rover:latest")
-        expect(yaml).to include("restartPolicy: Always")
+        expect(yaml).to include("name: git-clone")
+        expect(yaml).to include("image: alpine/git:latest")
+        expect(yaml).not_to include("name: rover")
       end
 
-      it 'sets WORKSPACE_DIR from dev config' do
+      it 'does not include a rover sidecar' do
         yaml = deployment.to_yaml
 
-        expect(yaml).to include("WORKSPACE_DIR")
-        expect(yaml).to include("/workspace")
+        expect(yaml).not_to include("ghcr.io/caninehq/rover")
+        expect(yaml).not_to include("restartPolicy: Always")
       end
 
-
-      it 'mounts project volumes to the rover sidecar' do
+      it 'mounts project volumes to the git-clone init container' do
         create(:volume, project: project, name: "app-storage", mount_path: "/data")
 
         yaml = deployment.to_yaml
-        rover_section = yaml.split("name: rover").last.split("containers:").first
+        clone_section = yaml.split("name: git-clone").last.split("containers:").first
 
-        expect(rover_section).to include("volumeMounts:")
-        expect(rover_section).to include("name: app-storage")
-        expect(rover_section).to include("mountPath: /data")
+        expect(clone_section).to include("volumeMounts:")
+        expect(clone_section).to include("name: app-storage")
+        expect(clone_section).to include("mountPath: /data")
       end
     end
 
     context 'when not in development environment' do
-      it 'does not include the rover sidecar' do
+      it 'does not include init containers' do
         yaml = deployment.to_yaml
 
-        expect(yaml).not_to include("name: rover")
+        expect(yaml).not_to include("name: git-clone")
         expect(yaml).not_to include("initContainers:")
       end
     end
