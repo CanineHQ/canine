@@ -1,3 +1,10 @@
+<% if Flipper.enabled?(:demo_mode, add_on) %>
+  <div class="alert alert-info mb-4">
+    <iconify-icon icon="lucide:monitor-play"></iconify-icon>
+    <span>This add-on is in demo mode. It will be automatically reset every <%= ENV.fetch("DEMO_RESET_INTERVAL_HOURS", 24) %> hours.</span>
+  </div>
+<% end %>
+
 <% if add_on.installing? %>
 <div class="card card-bordered bg-base-100">
   <div class="card-body">

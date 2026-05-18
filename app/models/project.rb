@@ -46,7 +46,7 @@ class Project < ApplicationRecord
   include AccountUniqueName
   broadcasts_refreshes
 
-  attr_accessor :intended_deployment
+  attr_accessor :intended_deployment, :public_image_url
 
   def self.ransackable_attributes(auth_object = nil)
     %w[name]
@@ -86,8 +86,10 @@ class Project < ApplicationRecord
                             format: {
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
                               message: "must be in the format 'owner/repository'"
-                            }
-  validates :project_credential_provider, presence: true
+                            },
+                            unless: :public_image?
+  validates :repository_url, presence: true, if: :public_image?
+  validates :project_credential_provider, presence: true, unless: :public_image?
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
@@ -114,8 +116,12 @@ class Project < ApplicationRecord
     disabled: 0,
     manually_create: 1
   }, prefix: :forks
-  delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider
-  delegate :container_registry?, to: :project_credential_provider
+  delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider, allow_nil: true
+  delegate :container_registry?, to: :project_credential_provider, allow_nil: true
+
+  def public_image?
+    project_credential_provider.nil? || project_credential_provider.provider_id.nil?
+  end
 
   def generate_slug
     self.slug = self.name
@@ -170,8 +176,10 @@ class Project < ApplicationRecord
         "https://gitlab.com/#{repository_url}"
       elsif bitbucket?
         "https://bitbucket.org/#{repository_url}"
-      else
+      elsif provider.present?
         provider.registry_web_url(repository_url)
+      else
+        "#"
       end
     end
   end
@@ -241,7 +249,7 @@ class Project < ApplicationRecord
     if build_configuration.present?
       build_configuration.provider
     else
-      project_credential_provider.provider
+      project_credential_provider&.provider
     end
   end
 
@@ -257,7 +265,7 @@ class Project < ApplicationRecord
         "managed_namespace" => managed_namespace,
         "autodeploy" => autodeploy
       }.compact,
-      "credential_provider" => { "provider_id" => project_credential_provider.provider_id },
+      "credential_provider" => project_credential_provider ? { "provider_id" => project_credential_provider.provider_id } : nil,
       "scripts" => {
         "predeploy" => predeploy_command,
         "postdeploy" => postdeploy_command,

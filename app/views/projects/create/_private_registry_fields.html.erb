@@ -1,0 +1,29 @@
+<div class="form-control mt-4 w-full max-w-sm">
+  <label class="label">
+    <span class="label-text">Container Registry Credentials</span>
+  </label>
+  <%= render "projects/create/select_credentials", form:, selectable_providers: %>
+</div>
+
+<div class="form-control mt-1 w-full max-w-sm">
+  <label class="label">
+    <span class="label-text">Container Registry Repository</span>
+  </label>
+  <%= form.text_field(
+    :repository_url,
+    class: "input input-bordered w-full focus:outline-offset-0",
+    placeholder: "accountname/repo",
+  ) %>
+</div>
+
+<div class="form-control mt-1 w-full max-w-sm">
+  <label class="label">
+    <span class="label-text">Image Tag</span>
+  </label>
+  <%= form.text_field(
+    :branch,
+    class: "input input-bordered w-full focus:outline-offset-0",
+    placeholder: "latest",
+    value: form.object.branch.presence || "latest",
+  ) %>
+</div>

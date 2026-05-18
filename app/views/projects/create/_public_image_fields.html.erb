@@ -1,0 +1,13 @@
+<div class="form-control mt-4 w-full max-w-sm">
+  <label class="label">
+    <span class="label-text">Image URL</span>
+  </label>
+  <%= form.text_field(
+    :public_image_url,
+    class: "input input-bordered w-full focus:outline-offset-0",
+    placeholder: "docker.io/library/nginx:latest",
+  ) %>
+  <label class="label">
+    <span class="label-text-alt">Fully qualified image URL including tag</span>
+  </label>
+</div>
