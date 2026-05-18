@@ -28,6 +28,8 @@ class Deployments::BaseDeploymentService
   end
 
   def upload_registry_secrets
+    return if @project.public_image?
+
     @logger.info("Creating registry secret for #{@project.container_image_reference}", color: :yellow)
     provider = @project.build_provider
     result = Providers::GenerateConfigJson.execute(provider:)

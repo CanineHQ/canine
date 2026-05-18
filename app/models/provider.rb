@@ -146,6 +146,18 @@ class Provider < ApplicationRecord
     end
   end
 
+  def source_base_url
+    if github?
+      enterprise? ? URI.parse(registry_url).host : "github.com"
+    elsif gitlab?
+      enterprise? ? URI.parse(registry_url).host : "gitlab.com"
+    elsif bitbucket?
+      enterprise? ? URI.parse(registry_url).host : "bitbucket.org"
+    elsif container_registry?
+      registry_url
+    end
+  end
+
   def registry_base_url
     if github?
       "ghcr.io"

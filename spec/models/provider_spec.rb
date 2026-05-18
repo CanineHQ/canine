@@ -60,6 +60,16 @@ RSpec.describe Provider, type: :model do
     end
   end
 
+  describe '#source_base_url' do
+    it 'returns the correct host for each provider type' do
+      expect(build(:provider, :github, registry_url: nil).source_base_url).to eq('github.com')
+      expect(build(:provider, :gitlab, registry_url: nil).source_base_url).to eq('gitlab.com')
+      expect(build(:provider, provider: 'bitbucket', registry_url: nil).source_base_url).to eq('bitbucket.org')
+      expect(build(:provider, :github, registry_url: 'https://github.example.com').source_base_url).to eq('github.example.com')
+      expect(build(:provider, :container_registry).source_base_url).to eq(build(:provider, :container_registry).registry_url)
+    end
+  end
+
   describe '#api_base_url' do
     it 'returns registry_url without trailing slash when present' do
       provider = build(:provider, :github, registry_url: 'https://github.example.com/')

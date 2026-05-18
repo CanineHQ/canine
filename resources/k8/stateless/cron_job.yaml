@@ -66,8 +66,10 @@ spec:
               <% end %>
             <% end %>
           restartPolicy: OnFailure
+          <% unless project.public_image? %>
           imagePullSecrets:
           - name: dockerconfigjson-github-com
+          <% end %>
           <% if @project.volumes.present? %>
           volumes:
           <% project.volumes.each do |volume| %>

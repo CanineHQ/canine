@@ -17,6 +17,8 @@
 #  predeploy_command              :text
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
+#  provider_type                  :integer          default("github"), not null
+#  repository_base_url            :string
 #  repository_url                 :string           not null
 #  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
@@ -53,6 +55,9 @@ FactoryBot.define do
     dockerfile_path { "./Dockerfile" }
     docker_build_context_directory { "." }
 
+    provider_type { Provider::GITHUB_PROVIDER }
+    repository_base_url { "github.com" }
+
     after(:build) do |project|
       provider = create(:provider, :github)
       project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
@@ -61,6 +66,7 @@ FactoryBot.define do
     end
 
     trait :github do
+      provider_type { Provider::GITHUB_PROVIDER }
       after(:build) do |project|
         provider = create(:provider, :github)
         project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
@@ -70,6 +76,7 @@ FactoryBot.define do
     end
 
     trait :gitlab do
+      provider_type { Provider::GITLAB_PROVIDER }
       after(:build) do |project|
         provider = create(:provider, :gitlab)
         project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
@@ -79,11 +86,13 @@ FactoryBot.define do
     end
 
     trait :container_registry do
+      provider_type { Provider::CUSTOM_REGISTRY_PROVIDER }
       after(:build) do |project|
         provider = create(:provider, :container_registry)
-        project.build_configuration ||= build(:build_configuration, project: project, provider: provider, image_repository: project.repository_url)
+        project.build_configuration = nil
         project.project_credential_provider = build(:project_credential_provider, project: project, provider: provider)
         project.deployment_configuration ||= build(:deployment_configuration, project: project)
+        project.repository_base_url ||= provider.registry_url
       end
     end
   end
