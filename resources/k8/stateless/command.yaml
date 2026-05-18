@@ -33,8 +33,10 @@ spec:
           mountPath: <%= volume.mount_path %>
         <% end %>
         <% end %>
+      <% unless project.public_image? %>
       imagePullSecrets:
       - name: dockerconfigjson-github-com
+      <% end %>
       <% if @project.volumes.present? %>
       volumes:
       <% project.volumes.each do |volume| %>

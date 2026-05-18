@@ -23,7 +23,8 @@ class Projects::Create
       :autodeploy,
       :predeploy_command,
       :project_fork_status,
-      :project_fork_cluster_id
+      :project_fork_cluster_id,
+      :public_image_url
     )
   end
 
@@ -32,8 +33,9 @@ class Projects::Create
     user
   )
     project = Project.new(create_params(params))
+    parse_public_image_url(project, params)
     provider = find_provider(user, params)
-    project_credential_provider = build_project_credential_provider(project, provider)
+    project_credential_provider = provider ? build_project_credential_provider(project, provider) : nil
     build_configuration = build_build_configuration(project, params)
 
     steps = create_steps(provider)
@@ -76,7 +78,7 @@ class Projects::Create
 
   def self.create_steps(provider)
     steps = []
-    if provider.git?
+    if provider&.git?
       steps << Projects::ValidateGitRepository
     end
 
@@ -88,17 +90,35 @@ class Projects::Create
     steps << Projects::Save
 
     # Only register webhook in cloud mode
-    if Rails.application.config.cloud_mode && provider.git?
+    if Rails.application.config.cloud_mode && provider&.git?
       steps << Projects::RegisterGitWebhook
     end
 
     steps
   end
 
+  def self.parse_public_image_url(project, params)
+    url = params[:project][:public_image_url]
+    return unless url.present?
+
+    # Split "docker.io/library/nginx:latest" into repository_url and tag
+    # Use rindex to find the last colon, avoiding port colons (e.g., localhost:5000/repo)
+    last_colon = url.rindex(":")
+    if last_colon && !url[last_colon..].include?("/")
+      project.repository_url = url[0...last_colon]
+      project.branch = url[(last_colon + 1)..]
+    else
+      project.repository_url = url
+      project.branch = "latest"
+    end
+  end
+
   def self.find_provider(user, params)
-    provider_id = params[:project][:project_credential_provider][:provider_id]
-    user.providers.find(provider_id)
+    provider_params = params[:project][:project_credential_provider]
+    return nil unless provider_params.present? && provider_params[:provider_id].present?
+
+    user.providers.find(provider_params[:provider_id])
   rescue ActiveRecord::RecordNotFound
-    raise "Provider #{provider_id} not found"
+    raise "Provider #{provider_params[:provider_id]} not found"
   end
 end

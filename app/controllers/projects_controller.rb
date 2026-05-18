@@ -37,7 +37,7 @@ class ProjectsController < ApplicationController
   end
 
   def edit
-    @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
+    @selectable_providers = @project.provider ? current_account.providers.where(provider: @project.provider.provider) : Provider.none
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
     @configuration = @project.development_environment_configuration
