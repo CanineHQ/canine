@@ -17,6 +17,8 @@
 #  predeploy_command              :text
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
+#  provider_type                  :integer          default("github"), not null
+#  repository_base_url            :string
 #  repository_url                 :string           not null
 #  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
@@ -46,7 +48,7 @@ class Project < ApplicationRecord
   include AccountUniqueName
   broadcasts_refreshes
 
-  attr_accessor :intended_deployment
+  attr_accessor :intended_deployment, :public_image_url
 
   def self.ransackable_attributes(auth_object = nil)
     %w[name]
@@ -82,12 +84,16 @@ class Project < ApplicationRecord
   validates :namespace, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :branch, presence: true
-  validates :repository_url, presence: true,
-                            format: {
+  validates :repository_url, presence: true
+  validates :repository_url, format: {
                               with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
                               message: "must be in the format 'owner/repository'"
-                            }
-  validates :project_credential_provider, presence: true
+                            }, if: :git?
+  validates :repository_url, format: {
+                              with: /\A[a-zA-Z0-9][a-zA-Z0-9._-]*(\/[a-zA-Z0-9._-]+)*\z/,
+                              message: "must contain only alphanumeric characters, dots, hyphens, underscores, and slashes"
+                            }, unless: :git?
+  validates :project_credential_provider, presence: true, unless: :public_image?
   validates_presence_of :project_fork_cluster_id, unless: :forks_disabled?
   validate :project_fork_cluster_id_is_owned_by_account
   validates_presence_of :build_configuration, if: :git?
@@ -114,8 +120,26 @@ class Project < ApplicationRecord
     disabled: 0,
     manually_create: 1
   }, prefix: :forks
-  delegate :git?, :github?, :gitlab?, :bitbucket?, to: :project_credential_provider
-  delegate :container_registry?, to: :project_credential_provider
+  enum :provider_type, {
+    github: 0,
+    gitlab: 1,
+    bitbucket: 2,
+    container_registry: 3
+  }
+
+  validates :provider_type, presence: true
+
+  def git?
+    github? || gitlab? || bitbucket?
+  end
+
+  def container_registry?
+    !git?
+  end
+
+  def public_image?
+    project_credential_provider.nil? || project_credential_provider.provider_id.nil?
+  end
 
   def generate_slug
     self.slug = self.name
@@ -164,14 +188,12 @@ class Project < ApplicationRecord
         "https://bitbucket.org/#{repository_url}/pull-requests/#{child_fork.number}"
       end
     else
-      if github?
-        "https://github.com/#{repository_url}"
-      elsif gitlab?
-        "https://gitlab.com/#{repository_url}"
-      elsif bitbucket?
-        "https://bitbucket.org/#{repository_url}"
+      if git?
+        "https://#{repository_base_url}/#{repository_url}"
+      elsif container_registry? && repository_base_url.present?
+        "https://#{repository_base_url}"
       else
-        provider.registry_web_url(repository_url)
+        "#"
       end
     end
   end
@@ -241,7 +263,7 @@ class Project < ApplicationRecord
     if build_configuration.present?
       build_configuration.provider
     else
-      project_credential_provider.provider
+      project_credential_provider&.provider
     end
   end
 
@@ -257,7 +279,7 @@ class Project < ApplicationRecord
         "managed_namespace" => managed_namespace,
         "autodeploy" => autodeploy
       }.compact,
-      "credential_provider" => { "provider_id" => project_credential_provider.provider_id },
+      "credential_provider" => project_credential_provider ? { "provider_id" => project_credential_provider.provider_id } : nil,
       "scripts" => {
         "predeploy" => predeploy_command,
         "postdeploy" => postdeploy_command,

@@ -4,7 +4,8 @@ module Projects
   class InitializeBuildPacks
     extend LightService::Action
 
-    expects :build_configuration, :params
+    expects :params
+    expects :build_configuration
     promises :build_packs
 
     def self.fetch_buildpack_details!(build_pack)

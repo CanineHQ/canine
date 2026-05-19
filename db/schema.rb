@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_18_132120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -597,6 +597,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_165234) do
     t.boolean "managed_namespace", default: true
     t.string "slug", null: false
     t.bigint "current_deployment_id"
+    t.string "repository_base_url"
+    t.integer "provider_type", default: 0, null: false
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
     t.index ["name"], name: "index_projects_on_name"

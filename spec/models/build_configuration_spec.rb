@@ -70,6 +70,7 @@ RSpec.describe BuildConfiguration, type: :model do
 
       before do
         project.project_credential_provider.update(provider: new_provider)
+        project.update_column(:provider_type, Project.provider_types[:container_registry])
       end
 
       it 'returns the container image reference with latest tag' do

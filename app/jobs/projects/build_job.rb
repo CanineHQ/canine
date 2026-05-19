@@ -12,7 +12,7 @@ class Projects::BuildJob < ApplicationJob
     notify_build(project, build)
     # If its a container registry deploy, we don't need to build the docker image
     if project.container_registry?
-      build.info("Skipping build for #{project.name} because it's a deploying from a container registry")
+      build.info("Skipping build for #{project.name} because it's deploying from a container registry")
     else
       project_credential_provider = project.project_credential_provider
       project_credential_provider.used!

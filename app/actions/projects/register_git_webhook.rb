@@ -3,6 +3,8 @@ class Projects::RegisterGitWebhook
   expects :project
 
   executed do |context|
+    next context unless Rails.application.config.cloud_mode && context.project.git?
+
     client = Git::Client.from_project(context.project)
     client.register_webhook!
   rescue StandardError => e

@@ -21,6 +21,7 @@ module Projects
     def self.handle_project_credential_provider(project, params, user)
       provider_params = params[:project][:project_credential_provider]
       return unless provider_params.present? && provider_params[:provider_id].present?
+      return unless project.project_credential_provider.present?
 
       provider = user.providers.find(provider_params[:provider_id])
       project.project_credential_provider.provider = provider
@@ -32,7 +33,7 @@ module Projects
 
       build_config = project.build_configuration || project.build_build_configuration
       build_config.assign_attributes({
-          provider_id: project.project_credential_provider.provider_id
+          provider_id: project.project_credential_provider&.provider_id
         }.merge(BuildConfiguration.permit_params(build_config_params)))
       build_config
     end
