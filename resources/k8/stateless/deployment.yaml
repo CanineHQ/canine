@@ -55,12 +55,13 @@ spec:
           - sh
           - -c
           - |
+            set -e
             if [ ! -d "<%= development_environment_configuration.workspace_mount_path %>/.git" ]; then
               REPO_URL="${GIT_REPOSITORY_URL}"
               if [ -n "${GIT_ACCESS_TOKEN:-}" ]; then
                 REPO_URL=$(echo "${REPO_URL}" | sed "s|https://|https://oauth2:${GIT_ACCESS_TOKEN}@|")
               fi
-              git clone "${REPO_URL}" "<%= development_environment_configuration.workspace_mount_path %>"
+              git clone --branch "<%= project.child_development_environment.parent_project.branch %>" "${REPO_URL}" "<%= development_environment_configuration.workspace_mount_path %>"
             fi
             git config --global --add safe.directory "<%= development_environment_configuration.workspace_mount_path %>"
         envFrom:

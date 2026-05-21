@@ -53,7 +53,7 @@ class Projects::DevelopmentEnvironmentConfigurationsController < Projects::BaseC
   end
 
   def prepare_edit_page
-    @selectable_providers = current_account.providers.where(provider: @project.provider.provider)
+    @selectable_providers = current_account.providers.where(provider: @project.provider.provider).ordered
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
   end

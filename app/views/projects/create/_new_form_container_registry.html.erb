@@ -1,4 +1,5 @@
 <%= form_with(model: project, data: { turbo: false }) do |form| %>
+  <%= hidden_field_tag :provider_type, Provider::REGISTRY_TYPE %>
   <h2 class="text-2xl font-bold">Create a new project from a container registry</h2>
   <%= link_to(
     "Deploy from Git repository instead →",

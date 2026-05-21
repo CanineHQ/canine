@@ -11,14 +11,14 @@ module Projects
       project = context.project
       provider = find_provider(context.user, context.params)
 
-      if provider
-        configure_from_provider(project, provider)
-        context.provider = provider
-        context.project_credential_provider = ProjectCredentialProvider.new(project:, provider:)
-      elsif context.params[:project][:public_image_url].present?
+      if context.params[:project][:public_image_url].present?
         configure_from_public_image_url(project, context.params)
         context.provider = nil
         context.project_credential_provider = nil
+      elsif provider
+        configure_from_provider(project, provider)
+        context.provider = provider
+        context.project_credential_provider = ProjectCredentialProvider.new(project:, provider:)
       else
         context.fail_and_return!("A provider or public image URL is required")
       end

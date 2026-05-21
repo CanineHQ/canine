@@ -37,7 +37,7 @@ class ProjectsController < ApplicationController
   end
 
   def edit
-    @selectable_providers = @project.provider ? current_account.providers.where(provider: @project.provider.provider) : Provider.none
+    @selectable_providers = @project.provider ? current_account.providers.where(provider: @project.provider.provider).ordered : Provider.none
     @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
     @development_environment_clusters = current_account.clusters.running.order(:name)
     @configuration = @project.development_environment_configuration
@@ -98,6 +98,6 @@ class ProjectsController < ApplicationController
 
   def set_provider_type
     @selected_provider_type = params[:provider_type] || Provider::GIT_TYPE
-    @selectable_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[@selected_provider_type])
+    @selectable_providers = current_user.providers.where(provider: Provider::PROVIDER_TYPES[@selected_provider_type]).ordered
   end
 end

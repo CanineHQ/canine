@@ -53,6 +53,7 @@ class Provider < ApplicationRecord
   validates :registry_url, presence: true, if: :container_registry?
   scope :has_container_registry, -> { where(provider: PROVIDERS_WITH_CONTAINER_REGISTRY + [ CUSTOM_REGISTRY_PROVIDER ]) }
   scope :non_sso, -> { where(sso_provider_id: nil) }
+  scope :ordered, -> { order(created_at: :desc) }
 
   belongs_to :user
   belongs_to :sso_provider, class_name: "SSOProvider", optional: true

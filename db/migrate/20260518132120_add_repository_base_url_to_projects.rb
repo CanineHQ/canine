@@ -24,5 +24,6 @@ class AddRepositoryBaseUrlToProjects < ActiveRecord::Migration[7.2]
   def down
     remove_column :projects, :repository_base_url
     remove_column :projects, :provider_type
+    remove_column :projects, :source_type if column_exists?(:projects, :source_type)
   end
 end

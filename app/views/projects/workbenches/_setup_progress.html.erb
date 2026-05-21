@@ -1,16 +1,14 @@
-<%= turbo_frame_tag dom_id(project, :workbench_setup), data: { controller: "refresh-turbo-frame", refresh_turbo_frame_frequency_value: 5000 } do %>
-  <% current_stage = if project.deployments.any?
-                       3
-                     elsif project.builds.any?
-                       1
-                     else
-                       0
-                     end %>
-  <% if current_stage < 3 %>
+<%= turbo_frame_tag dom_id(workbench_status.project, :workbench_setup), data: { controller: "refresh-turbo-frame", refresh_turbo_frame_frequency_value: 5000 } do %>
+  <% if workbench_status.error? %>
+    <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+      <p class="font-medium">Failed to clone the repository.</p>
+      <p class="mt-1"><%= workbench_status.error_message %></p>
+    </div>
+  <% elsif workbench_status.in_progress? %>
     <div class="mt-4">
       <%= render "shared/partials/progress_stages",
-        stages: ["Queuing the magic", "Building your environment", "Spinning up your workspace"],
-        current_stage: current_stage %>
+        stages: Workbench::Status::STAGES,
+        current_stage: workbench_status.current_stage %>
     </div>
   <% else %>
     <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">

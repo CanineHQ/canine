@@ -23,11 +23,11 @@
         <%= render(RichSelectComponent.new(
           name: bc_form.field_name(:provider_id),
           id: "project_build_configuration_provider_id",
-          collection: current_account.providers.has_container_registry,
+          collection: current_account.providers.has_container_registry.ordered,
           selected: build_configuration.provider_id,
           partial: "providers/selector_item",
           placeholder: "Select a provider...",
-          disabled: current_account.providers.has_container_registry.reject { |p| current_user.providers.include?(p) }.map(&:id)
+          disabled: current_account.providers.has_container_registry.ordered.reject { |p| current_user.providers.include?(p) }.map(&:id)
         )) %>
         <label class="label">
           <span class="label-text-alt">Select a credential that gives access to a container registry</span>
