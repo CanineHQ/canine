@@ -35,6 +35,21 @@ RSpec.describe Scheduled::CheckHealthJob do
     end
   end
 
+  context 'transitioning unhealthy -> healthy' do
+    let(:previous_status) { :unhealthy }
+
+    it 'emails account users about the recovery' do
+      stub_request(:get, healthcheck_url).to_return(status: 200)
+
+      expect {
+        perform_enqueued_jobs { described_class.new.perform }
+      }.to change { ActionMailer::Base.deliveries.size }.by(account.users.count)
+
+      expect(service.reload.status).to eq('healthy')
+      expect(ActionMailer::Base.deliveries.last.subject).to include('recovered')
+    end
+  end
+
   context 'staying unhealthy' do
     let(:previous_status) { :unhealthy }
 

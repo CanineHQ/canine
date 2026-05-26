@@ -23,14 +23,27 @@ class Scheduled::CheckHealthJob < ApplicationJob
         service.last_health_checked_at = DateTime.current
         service.save
 
-        notify_unhealthy(service, url) if previous_status == "healthy" && service.status == "unhealthy"
+        notify_transition(service, url, previous_status)
       end
     end
   end
 
   private
 
-  def notify_unhealthy(service, url)
+  def notify_transition(service, url, previous_status)
+    case [ previous_status, service.status ]
+    when [ "healthy", "unhealthy" ]
+      notify(service,
+             title: "#{service.project.name}/#{service.name} is unhealthy",
+             text: "The healthcheck at #{url} failed. The service has transitioned from healthy to unhealthy.")
+    when [ "unhealthy", "healthy" ]
+      notify(service,
+             title: "#{service.project.name}/#{service.name} has recovered",
+             text: "The healthcheck at #{url} is responding again. The service has transitioned from unhealthy to healthy.")
+    end
+  end
+
+  def notify(service, title:, text:)
     project = service.project
     recipients = project.account.users.pluck(:email).compact.uniq
     return if recipients.empty?
@@ -40,8 +53,8 @@ class Scheduled::CheckHealthJob < ApplicationJob
     recipients.each do |email|
       NotificationMailer.notify(
         to: email,
-        title: "#{project.name}/#{service.name} is unhealthy",
-        text: "The healthcheck at #{url} failed. The service has transitioned from healthy to unhealthy.",
+        title: title,
+        text: text,
         link: link,
         link_text: "View project"
       ).deliver_later
