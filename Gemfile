@@ -50,6 +50,8 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  # Preview outgoing emails in the browser instead of sending them
+  gem "letter_opener"
 end
 
 group :test do
