@@ -35,16 +35,7 @@ RSpec.describe K8::Helm::Client do
       )
 
       expect(command).to eq(
-        "helm upgrade --install my-release /path/to/chart " \
-        "-f /tmp/values.yaml " \
-        "--namespace production " \
-        "--timeout=5m0s " \
-        "--version 1.0.0 " \
-        "--atomic " \
-        "--wait " \
-        "--history-max=10 " \
-        "--create-namespace " \
-        "--kube-insecure-skip-tls-verify"
+        %w[helm upgrade --install my-release /path/to/chart -f /tmp/values.yaml --namespace production --timeout=5m0s --version 1.0.0 --atomic --wait --history-max=10 --create-namespace --kube-insecure-skip-tls-verify]
       )
     end
 
@@ -65,11 +56,7 @@ RSpec.describe K8::Helm::Client do
       )
 
       expect(command).to eq(
-        "helm upgrade --install my-release /path/to/chart " \
-        "-f /tmp/values.yaml " \
-        "--namespace default " \
-        "--timeout=1000s " \
-        "--version 1.0.0"
+        %w[helm upgrade --install my-release /path/to/chart -f /tmp/values.yaml --namespace default --timeout=1000s --version 1.0.0]
       )
     end
   end

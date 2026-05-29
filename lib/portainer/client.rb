@@ -120,7 +120,7 @@ module Portainer
         body: { namespaces: [ Clusters::Install::DEFAULT_NAMESPACE ] }
       )
       secret_name = "registry-#{registry_id}"
-      secret = kubectl.call("get secret #{secret_name} -n #{Clusters::Install::DEFAULT_NAMESPACE} -o json")
+      secret = kubectl.call(%w[get secret] + [ secret_name, "-n", Clusters::Install::DEFAULT_NAMESPACE, "-o", "json" ])
       raw_secret = Base64.decode64(JSON.parse(secret)['data']['.dockerconfigjson'])
       credentials = JSON.parse(raw_secret)
       credentials

@@ -66,12 +66,12 @@ class Builders::Frontends::BuildpackBuilder
 
     command += [ "--report-output-dir", report_dir ]
 
-    command.shelljoin
+    command
   end
 
   def run_pack_command(command)
     runner = Cli::RunAndLog.new(build, killable: build)
-    runner.call(command)
+    runner.call(Array(command))
   rescue Cli::CommandFailedError => e
     raise Projects::BuildJob::BuildFailure, "Pack build failed: #{e.message}"
   end

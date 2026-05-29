@@ -16,8 +16,8 @@ class K8::Stateless::Command < K8::Base
   end
 
   def delete_if_exists!
-    return if kubectl.call("get job #{name} -n #{namespace}").strip.empty?
-    kubectl.call("delete job #{name} -n #{namespace}")
+    return if kubectl.call(%w[get job] + [ name, "-n", namespace ]).strip.empty?
+    kubectl.call(%w[delete job] + [ name, "-n", namespace ])
   rescue StandardError => e
     nil
   end
@@ -44,7 +44,7 @@ class K8::Stateless::Command < K8::Base
 
   def statuses
     begin
-      output = kubectl.call("get job #{name} -n #{namespace} -o jsonpath='{.status.conditions[*].type}'")
+      output = kubectl.call(%w[get job] + [ name, "-n", namespace, "-o", "jsonpath={.status.conditions[*].type}" ])
       conditions = output.split
       conditions.map { |condition| condition.strip }
     rescue => e

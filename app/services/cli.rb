@@ -2,10 +2,10 @@ module Cli
   class CommandFailedError < StandardError; end
   class RunAndReturnOutput
     def call(command, envs: {})
-      command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
-      output = `#{command.strip}`
-      raise CommandFailedError, "Command `#{command}` failed with exit code #{$?.exitstatus}" unless $?.success?
-      output
+      command = Array(command)
+      stdout, stderr, status = Open3.capture3(envs, *command)
+      raise CommandFailedError, "Command `#{command.join(' ')}` failed with exit code #{status.exitstatus}: #{stderr}" unless status.success?
+      stdout
     end
   end
 
@@ -24,13 +24,13 @@ module Cli
       if clear_output
         @output = ""
       end
-      command = envs.map { |k, v| "#{k}=#{v}" }.join(" ") + " #{command}"
-      @loggable.info("Running command: #{command}") if @log_command
+      command = Array(command)
+      @loggable.info("Running command: #{command.join(' ')}") if @log_command
 
       # Start monitoring thread if killable is provided
       start_monitor_thread if @killable
 
-      Open3.popen3(command.strip) do |stdin, stdout, stderr, wait_thr|
+      Open3.popen3(envs, *command) do |stdin, stdout, stderr, wait_thr|
         @process = wait_thr
         stdin.close
 

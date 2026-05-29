@@ -82,7 +82,7 @@ class Projects::BuildJob < ApplicationJob
 
     # Execute the git clone command with killable support
     runner = Cli::RunAndLog.new(build, killable: build)
-    runner.call(git_clone_command.join(" "))
+    runner.call(git_clone_command)
   rescue Cli::CommandFailedError => e
     raise BuildFailure, "Failed to clone repository: #{e.message}"
   end
