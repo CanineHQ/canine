@@ -11,6 +11,7 @@ class CanineConfig::Initialize
     definition.services.each do |service|
       service.project = project
       service.save!
+      Domains::AttachAutoManagedDomain.execute(service:) if service.web_service? && service.allow_public_networking?
     end
 
     definition.environment_variables.each do |env_var|

@@ -1,90 +1,85 @@
-<div data-controller="new-project">
-  <%= form_with(model: project, data: { turbo: false }) do |form| %>
-    <h2 class="text-2xl font-bold">Create a new project from a container registry</h2>
-    <%= link_to(
-      "Deploy from Git repository instead →",
-      new_project_path(provider: Provider::GITHUB_PROVIDER),
-      class: "inline-block mt-2 underline underline-offset-4 text-blue-300 hover:text-blue-200 text-sm",
-    ) %>
-    <hr class="mt-3 mb-4 border-t border-base-300" />
+<%= form_with(model: project, data: { turbo: false }) do |form| %>
+  <%= hidden_field_tag :provider_type, Provider::REGISTRY_TYPE %>
+  <h2 class="text-2xl font-bold">Create a new project from a container registry</h2>
+  <%= link_to(
+    "Deploy from Git repository instead →",
+    new_project_path(provider: Provider::GITHUB_PROVIDER),
+    class: "inline-block mt-2 underline underline-offset-4 text-blue-300 hover:text-blue-200 text-sm",
+  ) %>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
 
-    <%= render "shared/error_messages", resource: form.object %>
+  <%= render "shared/error_messages", resource: form.object %>
 
-    <div class="space-y-8">
-      <%= render(FormFieldComponent.new(
-        label: "Name",
-        description: "A unique name for your project, only lowercase letters, numbers, and hyphens are allowed."
-      )) do %>
-        <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
-        <label class="label">
-          <span class="label-text-alt">* Required</span>
-        </label>
-      <% end %>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(
+      label: "Name",
+      description: "A unique name for your project, only lowercase letters, numbers, and hyphens are allowed."
+    )) do %>
+      <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+      <label class="label">
+        <span class="label-text-alt">* Required</span>
+      </label>
+    <% end %>
 
-      <%= render(FormFieldComponent.new(
-        label: "Cluster",
-        description: "The cluster to deploy your project to."
-      )) do %>
-        <%= render(RichSelectComponent.new(
-          name: "project[cluster_id]",
-          id: "project_cluster_id",
-          collection: current_account.clusters.where.not(status: [:deleted, :destroying]).sort_by { |c| c.running? ? 0 : 1 },
-          selected: form.object.cluster_id,
-          partial: "clusters/selector_item",
-          placeholder: "Select a cluster",
-          disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id),
-          required: true
-        )) %>
-      <% end %>
+    <%= render(FormFieldComponent.new(
+      label: "Cluster",
+      description: "The cluster to deploy your project to."
+    )) do %>
+      <%= render(RichSelectComponent.new(
+        name: "project[cluster_id]",
+        id: "project_cluster_id",
+        collection: current_account.clusters.where.not(status: [:deleted, :destroying]).sort_by { |c| c.running? ? 0 : 1 },
+        selected: form.object.cluster_id,
+        partial: "clusters/selector_item",
+        placeholder: "Select a cluster",
+        disabled: current_account.clusters.where.not(status: [:deleted, :destroying]).reject(&:running?).map(&:id),
+        required: true
+      )) %>
+    <% end %>
 
-      <%= render(FormFieldComponent.new(
-        label: "Container Registry Credentials",
-        description: "The credentials to use to connect to your container registry."
-      )) do %>
-        <%= render "projects/create/select_credentials", form:, selectable_providers: %>
-      <% end %>
+    <%= render(FormFieldComponent.new(
+      label: "Image Source",
+      description: "Choose whether to deploy from a public image or a private container registry."
+    )) do %>
+      <%= render "shared/partials/radio_selector", selected: "public", options: [
+        {
+          icon: "lucide:globe",
+          name: "image_source",
+          label: "Public Image",
+          value: "public",
+          description: "Deploy a publicly available container image. No credentials needed.",
+          partial: "projects/create/public_image_fields",
+          locals: { form: }
+        },
+        {
+          icon: "lucide:lock",
+          name: "image_source",
+          label: "Private Registry",
+          value: "private",
+          description: "Deploy from a private container registry with credentials.",
+          partial: "projects/create/private_registry_fields",
+          locals: { form:, selectable_providers: }
+        }
+      ] %>
+    <% end %>
 
-      <%= render(FormFieldComponent.new(
-        label: "Container Registry Repository",
-        description: "The image to pull from your container registry."
-      )) do %>
-        <%= form.text_field(
-          :repository_url,
-          class: "input input-bordered w-full focus:outline-offset-0",
-          placeholder: "accountname/repo",
-        ) %>
-      <% end %>
+    <%= render(FormFieldComponent.new(
+      label: "Predeploy command",
+      description: "The command to run before deploying the project. This is useful for running migrations or other setup commands."
+    )) do %>
+      <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm" %>
+    <% end %>
 
-      <%= render(FormFieldComponent.new(
-        label: "Image Tag",
-        description: "The tag of the image to deploy (e.g., latest, v1.0.0, latest-cpu)."
-      )) do %>
-        <%= form.text_field(
-          :branch,
-          class: "input input-bordered w-full focus:outline-offset-0",
-          placeholder: "latest",
-          value: form.object.branch.presence || "latest",
-        ) %>
-      <% end %>
+    <%= render "shared/partials/namespace_input_group", form: %>
+  </div>
 
-      <%= render(FormFieldComponent.new(
-        label: "Predeploy command",
-        description: "The command to run before deploying the project. This is useful for running migrations or other setup commands."
-      )) do %>
-        <%= form.text_field :predeploy_command, class: "input input-bordered w-full focus:outline-offset-0 font-mono text-sm" %>
-      <% end %>
+  <div class="form-footer">
+    <%= form.button "Submit", class: "btn btn-primary", data: { disable_with: "Submitting..." } %>
 
-      <%= render "shared/partials/namespace_input_group", form: %>
-    </div>
-
-    <div class="form-footer">
-      <%= form.button "Submit", class: "btn btn-primary", data: { disable_with: "Submitting..." } %>
-
-      <% if form.object.new_record? %>
-        <%= link_to t("cancel"), projects_path, class: "btn btn-secondary", data: { turbo: false } %>
-      <% else %>
-        <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary", data: { turbo: false } %>
-      <% end %>
-    </div>
-  <% end %>
-</div>
+    <% if form.object.new_record? %>
+      <%= link_to t("cancel"), projects_path, class: "btn btn-secondary", data: { turbo: false } %>
+    <% else %>
+      <%= link_to t("cancel"), project_path(@project), class: "btn btn-secondary", data: { turbo: false } %>
+    <% end %>
+  </div>
+<% end %>

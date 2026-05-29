@@ -33,13 +33,15 @@ class Event < ApplicationRecord
 
   def external_link
     if project.github?
-      "https://github.com/#{project.repository_url}/commit/#{eventable.commit_sha}"
+      "https://#{project.repository_base_url}/#{project.repository_url}/commit/#{eventable.commit_sha}"
     elsif project.gitlab?
-      "https://gitlab.com/#{project.repository_url}/-/commit/#{eventable.commit_sha}"
+      "https://#{project.repository_base_url}/#{project.repository_url}/-/commit/#{eventable.commit_sha}"
     elsif project.bitbucket?
-      "https://bitbucket.org/#{project.repository_url}/commits/#{eventable.commit_sha}"
+      "https://#{project.repository_base_url}/#{project.repository_url}/commits/#{eventable.commit_sha}"
+    elsif project.repository_base_url.present?
+      "https://#{project.repository_base_url}"
     else
-      project.provider.registry_web_url(project.repository_url)
+      "#"
     end
   end
 end

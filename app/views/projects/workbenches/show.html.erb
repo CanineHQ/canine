@@ -13,6 +13,6 @@
     <% unless @project.deployments.any? %>
       <%= render "shared/partials/wizard_animation" %>
     <% end %>
-    <%= render "projects/workbenches/setup_progress", project: @project %>
+    <%= render "projects/workbenches/setup_progress", workbench_status: @workbench_status %>
   <% end %>
 <% end %>

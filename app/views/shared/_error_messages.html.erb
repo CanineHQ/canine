@@ -7,7 +7,7 @@
         </h4>
         <ul>
           <% resource.errors.each do |error| %>
-            <% message = error.attribute == :base ? error.message : error.message.capitalize %>
+            <% message = error.attribute == :base ? error.message : error.full_message %>
             <li><%= message %></li>
           <% end %>
         </ul>

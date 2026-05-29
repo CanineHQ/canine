@@ -50,6 +50,16 @@ Rails.application.configure do
         cron: Rails.application.config.cloud_mode ? "*/5 * * * *" : "* * * * *",
         class: "Scheduled::CheckForNewCommitsJob",
         description: "Check for new commits every minute"
+      },
+      reset_demo_projects: {
+        cron: "*/5 * * * *",
+        class: "Scheduled::ResetDemoProjectsJob",
+        description: "Reset demo mode projects every 5 minutes"
+      },
+      reset_demo_add_ons: {
+        cron: "*/5 * * * *",
+        class: "Scheduled::ResetDemoAddOnsJob",
+        description: "Reset demo mode add-ons every 5 minutes"
       }
     }
   }

@@ -17,6 +17,8 @@
 #  predeploy_command              :text
 #  predestroy_command             :text
 #  project_fork_status            :integer          default("disabled")
+#  provider_type                  :integer          default("github"), not null
+#  repository_base_url            :string
 #  repository_url                 :string           not null
 #  slug                           :string           not null
 #  status                         :integer          default("creating"), not null
@@ -121,6 +123,7 @@ RSpec.describe Project, type: :model do
 
   describe '#link_to_view' do
     it 'returns the full GitHub URL' do
+      project.repository_base_url = 'github.com'
       project.repository_url = 'owner/repository-name'
       expect(project.link_to_view).to eq('https://github.com/owner/repository-name')
     end
@@ -205,7 +208,7 @@ RSpec.describe Project, type: :model do
     end
 
     it 'uses branch as tag for container registry without gsub' do
-      docker_project = create(:project, :container_registry, repository_url: 'owner/repo', branch: 'latest-cpu')
+      docker_project = create(:project, :container_registry, repository_base_url: 'docker.io', repository_url: 'owner/repo', branch: 'latest-cpu')
       expect(docker_project.container_image_reference).to eq('docker.io/owner/repo:latest-cpu')
     end
   end

@@ -2,15 +2,18 @@
   <%= render "shared/error_messages", resource: form.object %>
   <div class="space-y-4">
     <%= render(FormFieldComponent.new(label: "Repository path")) do %>
-      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: "accountname/repo" %>
-      <div class="form-control mt-1 w-full">
-        <div class="card bg-base-300 shadow-xl">
-          <div class="card-body">
-            <%= render "providers/provider", provider: project.project_credential_provider.provider %>
+      <%= form.text_field :repository_url, class: "input input-bordered w-full focus:outline-offset-0", placeholder: project.public_image? ? "docker.io/library/nginx" : "accountname/repo" %>
+      <% if project.project_credential_provider.present? %>
+        <div class="form-control mt-1 w-full">
+          <div class="card bg-base-300 shadow-xl">
+            <div class="card-body">
+              <%= render "providers/provider", provider: project.project_credential_provider.provider %>
+            </div>
           </div>
         </div>
-      </div>
-
+      <% else %>
+        <div class="mt-1 text-sm text-gray-400">Public image — no credentials required</div>
+      <% end %>
     <% end %>
 
     <%= render(FormFieldComponent.new(label: "Image Tag")) do %>

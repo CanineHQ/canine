@@ -16,7 +16,7 @@ class Builders::Base
     docker_login_command = [ "docker", "login", base_url, "--username" ] +
                             [ provider.username, "--password", provider.access_token ]
 
-    build.info("Logging into #{base_url} as #{provider.username}", color: :yellow)
+    build.info("Logging into #{base_url} as #{provider.username} with token #{provider.abbreviated_access_token}", color: :yellow)
     _stdout, stderr, status = Open3.capture3(*docker_login_command)
 
     if status.success?

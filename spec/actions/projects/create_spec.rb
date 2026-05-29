@@ -145,46 +145,45 @@ RSpec.describe Projects::Create do
         expect(subject).to be_success
       end
     end
-  end
 
-  describe '.create_steps' do
-    let(:subject) { described_class.create_steps(provider) }
-
-    context 'in cloud mode' do
-      before do
-        allow(Rails.application.config).to receive(:cloud_mode).and_return(true)
+    context 'for public image' do
+      let(:params) do
+        ActionController::Parameters.new({
+          project: {
+            name: 'stirling-pdf',
+            cluster_id: cluster.id,
+            public_image_url: 'docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest',
+            project_credential_provider: { provider_id: '' }
+          }
+        })
       end
 
-      it 'validates with github and registers webhooks' do
-        expect(subject).to eq([
-          Projects::ValidateGitRepository,
-          Projects::Create::ToNamespaced,
-          Projects::BuildDeploymentConfiguration,
-          Namespaced::SetUpNamespace,
-          Namespaced::ValidateNamespace,
-          Projects::InitializeBuildPacks,
-          Projects::Save,
-          Projects::RegisterGitWebhook
-        ])
+      it 'creates a project without credentials' do
+        expect(subject).to be_success
+        project = subject.project
+        expect(project.repository_base_url).to eq('docker.stirlingpdf.com')
+        expect(project.repository_url).to eq('stirlingtools/stirling-pdf')
+        expect(project.branch).to eq('latest')
+        expect(project.project_credential_provider).to be_nil
+        expect(project.public_image?).to be true
       end
     end
+  end
 
-    context 'in local mode' do
-      before do
-        allow(Rails.application.config).to receive(:cloud_mode).and_return(false)
-      end
-
-      it 'validates with github and does not register webhooks' do
-        expect(subject).to eq([
-          Projects::ValidateGitRepository,
-          Projects::Create::ToNamespaced,
-          Projects::BuildDeploymentConfiguration,
-          Namespaced::SetUpNamespace,
-          Namespaced::ValidateNamespace,
-          Projects::InitializeBuildPacks,
-          Projects::Save
-        ])
-      end
+  describe '.steps' do
+    it 'returns the expected action pipeline' do
+      expect(described_class.steps).to eq([
+        Projects::ConfigureSource,
+        Projects::BuildBuildConfiguration,
+        Projects::ValidateGitRepository,
+        Projects::Create::ToNamespaced,
+        Projects::BuildDeploymentConfiguration,
+        Namespaced::SetUpNamespace,
+        Namespaced::ValidateNamespace,
+        Projects::InitializeBuildPacks,
+        Projects::Save,
+        Projects::RegisterGitWebhook
+      ])
     end
   end
 end

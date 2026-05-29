@@ -53,6 +53,7 @@ class Provider < ApplicationRecord
   validates :registry_url, presence: true, if: :container_registry?
   scope :has_container_registry, -> { where(provider: PROVIDERS_WITH_CONTAINER_REGISTRY + [ CUSTOM_REGISTRY_PROVIDER ]) }
   scope :non_sso, -> { where(sso_provider_id: nil) }
+  scope :ordered, -> { order(created_at: :desc) }
 
   belongs_to :user
   belongs_to :sso_provider, class_name: "SSOProvider", optional: true
@@ -143,6 +144,18 @@ class Provider < ApplicationRecord
       "#{registry_url} (#{username}) - #{abbreviated_access_token}"
     else
       "#{provider.titleize} (#{username}) - #{abbreviated_access_token}"
+    end
+  end
+
+  def source_base_url
+    if github?
+      enterprise? ? URI.parse(registry_url).host : "github.com"
+    elsif gitlab?
+      enterprise? ? URI.parse(registry_url).host : "gitlab.com"
+    elsif bitbucket?
+      enterprise? ? URI.parse(registry_url).host : "bitbucket.org"
+    elsif container_registry?
+      registry_url
     end
   end
 

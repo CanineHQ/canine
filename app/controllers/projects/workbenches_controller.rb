@@ -2,7 +2,8 @@ class Projects::WorkbenchesController < Projects::BaseController
   before_action :require_development_environment
 
   def show
-    @pods = running_pods
+    all_pods = fetch_pods
+    @pods = all_pods.select { |pod| pod.status.phase == "Running" }
     @pod = @pods.first
 
     if @pod
@@ -15,6 +16,9 @@ class Projects::WorkbenchesController < Projects::BaseController
         namespace: @namespace,
         container: @project.name
       )
+    else
+      pending_pod = all_pods.find { |pod| pod.status.phase == "Pending" }
+      @workbench_status = Workbench::Status.new(@project, pending_pod: pending_pod)
     end
   end
 
@@ -24,9 +28,9 @@ class Projects::WorkbenchesController < Projects::BaseController
     redirect_to project_path(@project), alert: "Workbench is only available for development environments." unless @project.development_environment?
   end
 
-  def running_pods
+  def fetch_pods
     client = K8::Client.new(active_connection)
-    client.get_pods(namespace: @project.namespace).select { |pod| pod.status.phase == "Running" }
+    client.get_pods(namespace: @project.namespace)
   rescue StandardError
     []
   end

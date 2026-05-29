@@ -1,4 +1,4 @@
-<% if project.container_registry? %>
+<% if project.public_image? || project.container_registry? %>
   <%= render "projects/update/edit_form_container_registry", project: %>
 <% else %>
   <%= render "projects/update/edit_form_git", project: %>

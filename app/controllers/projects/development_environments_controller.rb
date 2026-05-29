@@ -4,7 +4,7 @@ class Projects::DevelopmentEnvironmentsController < Projects::BaseController
   def index
     @development_environment_configuration = @project.development_environment_configuration
     @development_environments = @project.development_environments.includes(:child_project)
-    @git_providers = current_user.providers.where(provider: @project.provider.provider)
+    @git_providers = current_user.providers.where(provider: @project.provider.provider).ordered
   end
 
   def create

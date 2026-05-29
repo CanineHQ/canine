@@ -26,8 +26,10 @@ spec:
         name: <%= project.name %>
     - secretRef:
         name: <%= project.name %>
+  <% unless project.public_image? %>
   imagePullSecrets:
   - name: dockerconfigjson-github-com
+  <% end %>
   volumes:
   <% project.volumes.deployed.each do |volume| %>
   - name: <%= volume.name %>
