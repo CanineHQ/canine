@@ -33,6 +33,7 @@
 
     <div>
       <h2 class="text-2xl font-bold">Account</h2>
+      <p class="text-xs text-gray-500 mt-1">ID: <%= current_account.id %></p>
       <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <%= form_for(current_account, url: account_path(current_account), html: { method: :patch }) do |f| %>
