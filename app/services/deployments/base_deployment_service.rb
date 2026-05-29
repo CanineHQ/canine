@@ -50,7 +50,7 @@ class Deployments::BaseDeploymentService
   end
 
   def kill_one_off_containers
-    @kubectl.call("-n #{@project.namespace} delete pods -l oneoff=true")
+    @kubectl.call(%w[-n] + [ @project.namespace, "delete", "pods", "-l", "oneoff=true" ])
   end
 
   def predeploy

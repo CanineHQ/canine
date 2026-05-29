@@ -6,7 +6,7 @@ class Projects::LegacyUninstallService < Projects::BaseUninstallService
   def uninstall_resources
     DELETABLE_RESOURCES.each do |resource_type|
       @logger.info("Deleting all #{resource_type} resources with label caninemanaged=true", color: :yellow)
-      @kubectl.call("delete #{resource_type.downcase} -l caninemanaged=true -n #{@project.namespace}")
+      @kubectl.call(%w[delete] + [ resource_type.downcase, "-l", "caninemanaged=true", "-n", @project.namespace ])
     end
   end
 end

@@ -33,8 +33,7 @@ class K8::Kubectl
         yaml_file.flush
 
         # Apply the YAML file to the cluster using the kubeconfig file
-        command = "kubectl apply -f #{yaml_file.path}"
-        runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+        runner.call(%w[kubectl apply -f] + [ yaml_file.path ], envs: { "KUBECONFIG" => kubeconfig_file.path })
       end
     end
 
@@ -44,9 +43,9 @@ class K8::Kubectl
   end
 
   def call(command)
+    command = Array(command)
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      full_command = "kubectl #{command}"
-      runner.call(full_command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+      runner.call([ "kubectl" ] + command, envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
   end
 end

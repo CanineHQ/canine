@@ -28,7 +28,7 @@ module Builders
       runner = Cli::RunAndLog.new(build, killable: build)
       connection = build_cloud_manager.connection
       K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-        runner.call(command.join(" "), envs: { "KUBECONFIG" => kubeconfig_file.path })
+        runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       end
 
       parse_digest_from_metadata(metadata_file)

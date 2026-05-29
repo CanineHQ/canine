@@ -25,7 +25,7 @@ class K8::Helm::Client
   def get_values_yaml(name, namespace: 'default')
     return StandardError.new("Can't get current values yaml if not connected") unless connected?
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      command = "helm get values #{name} --namespace #{namespace} --kubeconfig=#{kubeconfig_file.path}"
+      command = %w[helm get values] + [ name, "--namespace", namespace, "--kubeconfig=#{kubeconfig_file.path}" ]
       output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       # Remove the key USER-SUPPLIED VALUES
       output = YAML.safe_load(output)
@@ -37,7 +37,7 @@ class K8::Helm::Client
   def get_all_values_yaml(name, namespace: 'default')
     return StandardError.new("Can't get all values yaml if not connected") unless connected?
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      command = "helm get values #{name} --all --namespace #{namespace} --kubeconfig=#{kubeconfig_file.path}"
+      command = %w[helm get values] + [ name, "--all", "--namespace", namespace, "--kubeconfig=#{kubeconfig_file.path}" ]
       output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       output
     end
@@ -46,19 +46,20 @@ class K8::Helm::Client
   def ls
     return StandardError.new("Can't list helm charts if not connected") unless connected?
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      command_output = `helm ls --all-namespaces --kubeconfig=#{kubeconfig_file.path} -o yaml`
+      command = %w[helm ls --all-namespaces -o yaml] + [ "--kubeconfig=#{kubeconfig_file.path}" ]
+      command_output = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       output = YAML.safe_load(command_output)
     end
   end
 
   def repo_update_all
-    exit_status = runner.("helm repo update")
+    exit_status = runner.(%w[helm repo update])
     raise "`helm repo update` failed with exit status #{exit_status}" unless exit_status.success?
     exit_status
   end
 
   def repo_update(repo_name:)
-    exit_status = runner.("helm repo update #{repo_name}")
+    exit_status = runner.(%w[helm repo update] + [ repo_name ])
     raise "`helm repo update #{repo_name}` failed with exit status #{exit_status}" unless exit_status.success?
     exit_status
   end
@@ -68,8 +69,8 @@ class K8::Helm::Client
   end
 
   def self.add_repo(repository_name, repository_url, runner)
-    add_repo_command = "helm repo add #{repository_name} #{repository_url} --force-update"
-    runner.(add_repo_command)
+    command = %w[helm repo add] + [ repository_name, repository_url, "--force-update" ]
+    runner.(command)
   end
 
   def add_repo(repository_name, repository_url)
@@ -77,13 +78,8 @@ class K8::Helm::Client
   end
 
   def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:, create_namespace:, skip_tls_verify:, skip_schema_validation: false)
-    command_parts = [
-      "helm upgrade --install #{name} #{chart_url}",
-      "-f #{values_file_path}",
-      "--namespace #{namespace}",
-      "--timeout=#{timeout}"
-    ]
-    command_parts << "--version #{version}" if version.present?
+    command_parts = %w[helm upgrade --install] + [ name, chart_url, "-f", values_file_path, "--namespace", namespace, "--timeout=#{timeout}" ]
+    command_parts += [ "--version", version ] if version.present?
     command_parts << "--dry-run" if dry_run
     command_parts << "--atomic" if atomic
     command_parts << "--wait" if wait
@@ -92,7 +88,7 @@ class K8::Helm::Client
     command_parts << "--kube-insecure-skip-tls-verify" if skip_tls_verify
     command_parts << "--skip-schema-validation" if skip_schema_validation
 
-    command_parts.join(" ")
+    command_parts
   end
 
   def install(
@@ -135,7 +131,7 @@ class K8::Helm::Client
           skip_schema_validation: skip_schema_validation
         )
         exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
-        raise "`#{command}` failed with exit status #{exit_status}" unless exit_status.success?
+        raise "`#{command.join(' ')}` failed with exit status #{exit_status}" unless exit_status.success?
         exit_status
       end
     end
@@ -145,7 +141,7 @@ class K8::Helm::Client
     return StandardError.new("Can't uninstall helm chart if not connected") unless connected?
 
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      command = "helm uninstall #{name} --namespace #{namespace}"
+      command = %w[helm uninstall] + [ name, "--namespace", namespace ]
       exit_status = runner.(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
       raise "Helm uninstall failed with exit status #{exit_status}" unless exit_status.success?
       exit_status

@@ -26,7 +26,7 @@ class K8::Helm::Service
   end
 
   def restart
-    kubectl.call("rollout restart deployment -n #{add_on.name}")
+    kubectl.call(%w[rollout restart deployment -n] + [ add_on.name ])
   end
 
   def get_ingresses
@@ -92,7 +92,7 @@ class K8::Helm::Service
   end
 
   def get_volume_usage(pod_name, mount_path)
-    output = kubectl.call("exec #{pod_name} -n #{add_on.name} -- df -h #{mount_path}")
+    output = kubectl.call(%w[exec] + [ pod_name, "-n", add_on.name, "--", "df", "-h", mount_path ])
     lines = output.strip.split("\n")
     return nil if lines.size < 2
 
@@ -105,12 +105,12 @@ class K8::Helm::Service
   end
 
   def get_persistent_volume
-    pv = kubectl.call("get pv #{service_name} -o json")
+    pv = kubectl.call(%w[get pv] + [ service_name, "-o", "json" ])
     JSON.parse(pv)
   end
 
   def exec_df_command
-    output = kubectl.call("exec #{service_name} -- df -h /data")
+    output = kubectl.call(%w[exec] + [ service_name, "--", "df", "-h", "/data" ])
     output.strip
   end
 end

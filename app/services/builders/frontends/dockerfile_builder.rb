@@ -14,7 +14,7 @@ class Builders::Frontends::DockerfileBuilder
     runner = Cli::RunAndLog.new(build, killable: build)
 
     # Call the runner with the command (joined as a string since RunAndLog expects a string)
-    runner.call(docker_build_command.join(" "))
+    runner.call(docker_build_command)
 
     parse_digest_from_metadata(metadata_file)
   rescue Cli::CommandFailedError => e
