@@ -23,7 +23,9 @@ class K8::Helm::Redis < K8::Helm::Service
   end
 
   def password
-    output = K8::Kubectl.new(connection, Cli::RunAndReturnOutput.new).call("get secret --namespace #{add_on.name} #{service_basename} -o jsonpath='{.data.redis-password}' | base64 -d")
-    output.strip
+    output = K8::Kubectl.new(connection, Cli::RunAndReturnOutput.new).call(
+      %w[get secret --namespace] + [ add_on.name, service_basename, "-o", "jsonpath={.data.redis-password}" ]
+    )
+    Base64.decode64(output.strip)
   end
 end

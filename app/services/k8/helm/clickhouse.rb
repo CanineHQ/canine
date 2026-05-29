@@ -11,8 +11,8 @@ class K8::Helm::Clickhouse < K8::Helm::Service
     output = K8::Kubectl.new(
       connection,
       Cli::RunAndReturnOutput.new,
-    ).call("get secret --namespace #{add_on.name} #{service_name} -o jsonpath='{.data.admin-password}' | base64 -d")
-    output
+    ).call(%w[get secret --namespace] + [ add_on.name, service_name, "-o", "jsonpath={.data.admin-password}" ])
+    Base64.decode64(output)
   end
 
   def database

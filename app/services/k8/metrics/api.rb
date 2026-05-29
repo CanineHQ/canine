@@ -5,12 +5,12 @@ module K8::Metrics::Api
       cluster = connection.cluster
       # Here, run kubectl top nodes
       kubectl = K8::Kubectl.new(connection)
-      response = kubectl.call("top nodes")
+      response = kubectl.call(%w[top nodes])
       parsed_data = parse_output(response)
       #  get --raw /apis/metrics.k8s.io/v1beta1/nodes/#{node}
       # Infer total memory
       parsed_data.map do |data|
-        capacities = YAML.safe_load(kubectl.call("get node/#{data[:name]} -o wide -o yaml"))
+        capacities = YAML.safe_load(kubectl.call(%w[get] + [ "node/#{data[:name]}", "-o", "wide", "-o", "yaml" ]))
 
         total_memory = memory_to_integer(capacities["status"]["allocatable"]["memory"])
         total_cpu = compute_to_integer(capacities["status"]["allocatable"]["cpu"])
@@ -103,7 +103,7 @@ module K8::Metrics::Api
 
     def self.fetch(connection, namespace)
       kubectl = K8::Kubectl.new(connection)
-      response = kubectl.call("top pods -n #{namespace}")
+      response = kubectl.call(%w[top pods -n] + [ namespace ])
       parsed_data = parse_output(response)
       parsed_data.map do |data|
         Pod.new(
