@@ -5,5 +5,6 @@ class Avo::Resources::DevelopmentEnvironment < Avo::BaseResource
     field :id, as: :id
     field :child_project, as: :belongs_to
     field :parent_project, as: :belongs_to
+    field :created_by, as: :belongs_to
   end
 end
