@@ -56,6 +56,7 @@
                 <p class="text-sm text-base-content/60">
                   Branch: <span class="font-mono"><%= fork.child_project.branch %></span>
                   &middot; Created <%= time_ago_in_words(fork.created_at) %> ago
+                  &middot; Created by: <%= fork.created_by.first_name.present? ? "#{fork.created_by.first_name} #{fork.created_by.last_name}".strip : fork.created_by.email %>
                 </p>
               </div>
             </div>

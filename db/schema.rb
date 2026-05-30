@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_18_132120) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_30_104140) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -237,7 +237,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_18_132120) do
     t.bigint "git_provider_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "created_by_id", null: false
     t.index ["child_project_id"], name: "index_development_environments_on_child_project_id", unique: true
+    t.index ["created_by_id"], name: "index_development_environments_on_created_by_id"
     t.index ["git_provider_id"], name: "index_dev_envs_on_git_provider_id"
     t.index ["parent_project_id"], name: "index_development_environments_on_parent_project_id"
   end
@@ -810,6 +812,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_18_132120) do
   add_foreign_key "development_environments", "projects", column: "child_project_id"
   add_foreign_key "development_environments", "projects", column: "parent_project_id"
   add_foreign_key "development_environments", "providers", column: "git_provider_id"
+  add_foreign_key "development_environments", "users", column: "created_by_id"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
