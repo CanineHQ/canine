@@ -11,7 +11,13 @@ class Domains::AttachAutoManagedDomain
     next unless service.web_service?
     next if service.domains.exists?(auto_managed: true)
 
-    domain_name = "#{service.name}-#{service.project.slug}.oncanine.run"
+    project = service.project
+    public_web_services = project.services.web_service.where(allow_public_networking: true)
+    domain_name = if public_web_services.count <= 1
+      "#{project.slug}.oncanine.run"
+    else
+      "#{service.name}-#{project.slug}.oncanine.run"
+    end
 
     service.domains.create!(
       domain_name: domain_name,
