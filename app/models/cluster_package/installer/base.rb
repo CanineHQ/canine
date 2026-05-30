@@ -28,14 +28,14 @@ class ClusterPackage::Installer::Base
       helm.uninstall(definition["chart_name"], namespace: namespace)
     when "manifest"
       manifest_path = definition["manifest_path"]
-      kubectl.("delete -f #{Rails.root.join(manifest_path)} --ignore-not-found")
+      kubectl.(%W[delete -f #{Rails.root.join(manifest_path)} --ignore-not-found])
     end
   end
 
   def installed?(kubectl)
     namespace = Clusters::Install::DEFAULT_NAMESPACE
     check_ns = definition["check_namespace"] || namespace
-    kubectl.("#{definition['check_command']} -n #{check_ns}")
+    kubectl.(definition['check_command'].split + ["-n", check_ns])
     true
   rescue Cli::CommandFailedError
     false
