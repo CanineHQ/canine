@@ -59,7 +59,7 @@ module K8
     end
 
     def version
-      result = K8::Kubectl.new(@connection).call("version -o yaml")
+      result = K8::Kubectl.new(@connection).call(%w[version -o yaml])
       YAML.safe_load(result)
     end
 
