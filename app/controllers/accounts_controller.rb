@@ -7,6 +7,13 @@ class AccountsController < ApplicationController
     redirect_to root_path
   end
 
+  def set_default
+    account = current_user.accounts.friendly.find(params[:id])
+    account_user = current_user.account_users.find_by!(account: account)
+    account_user.set_default!
+    redirect_back fallback_location: root_path, notice: "Default organization updated."
+  end
+
   def show
   end
 

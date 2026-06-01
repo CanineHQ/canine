@@ -25,11 +25,20 @@ class AccountUser < ApplicationRecord
 
   enum :role, { owner: 0, admin: 1, member: 2 }
 
+  scope :default_account, -> { find_by(default: true) }
+
   def admin_or_owner?
     owner? || admin?
   end
 
   def destroyable?
     !owner?
+  end
+
+  def set_default!
+    transaction do
+      user.account_users.where(default: true).where.not(id: id).update_all(default: false)
+      update!(default: true)
+    end
   end
 end
