@@ -5,217 +5,226 @@
 
 ## Overview
 
-This Helm chart deploys [Canine](https://github.com/czhu12/canine) - a Rails-based Kubernetes deployment platform that provides an intuitive web interface for managing applications on Kubernetes clusters.
-
-Canine simplifies application deployment to Kubernetes with features including:
-- **Git Integration**: Connect to GitHub/GitLab repositories for automated deployments
-- **Docker Registry Support**: Works with Docker Hub, GitHub Container Registry, and more
-- **Multi-cluster Management**: Deploy to multiple Kubernetes clusters from a single interface
-- **CI/CD Pipeline**: Built-in build and deployment pipelines
-- **Environment Management**: Manage multiple environments (dev, staging, production)
-- **DNS Management**: Automatic DNS configuration with Cloudflare integration
+This Helm chart deploys [Canine](https://github.com/czhu12/canine) - a modern, open source alternative to Heroku. Canine provides an intuitive web interface for managing application deployments on Kubernetes clusters.
 
 ## Prerequisites
 
 - Kubernetes 1.19+
 - Helm 3.2.0+
 - PV provisioner support in the underlying infrastructure (for PostgreSQL persistence)
-- (Optional) Ingress controller for external access
 
 ## Installation
 
-### Quick Start
-
-#### From Artifact Hub
+### Add the Helm Repository
 
 ```bash
-# Add the Canine Helm repository
 helm repo add canine https://czhu12.github.io/canine
 helm repo update
-
-# Install Canine
-helm install canine canine/canine --namespace canine --create-namespace
 ```
 
-#### From Source
+### Option 1: With a Domain Name (Recommended)
 
-```bash
-# Clone the repository
-git clone https://github.com/czhu12/canine.git
-cd canine/helm/canine
+This installs Canine with Traefik ingress, cert-manager for automatic TLS, and a custom domain.
 
-# Add Bitnami repository (for PostgreSQL dependency)
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
+Create a `values.yaml`:
 
-# Install dependencies
-helm dependency update
-
-# Install the chart
-helm install canine . --namespace canine --create-namespace
-```
-
-### Install with custom values
-
-```bash
-# Create a custom values file
-cat > custom-values.yaml <<EOF
+```yaml
 canine:
-  auth:
-    username: myadmin
-    password: mysecurepassword
-  secretKeyBase: "your-secure-secret-key-base"
+  secretKeyBase: "generate-a-secure-key-with-openssl-rand-hex-64"
+  acmeEmail: "you@example.com"
 
 ingress:
   enabled: true
-  className: nginx
   hosts:
     - host: canine.example.com
       paths:
         - path: /
           pathType: Prefix
-EOF
+  tls:
+    - secretName: canine-tls
+      hosts:
+        - canine.example.com
+```
 
-# Install with custom values
+Install:
+
+```bash
 helm install canine canine/canine \
   --namespace canine \
   --create-namespace \
-  -f custom-values.yaml
+  -f values.yaml
 ```
 
-## Configuration
+#### DNS Setup
 
-The following table lists the configurable parameters and their default values:
+After installation, get the external IP of the load balancer:
+
+```bash
+kubectl get svc -n canine -l "app.kubernetes.io/name=traefik" \
+  -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}"
+```
+
+Some cloud providers assign a hostname instead of an IP:
+
+```bash
+kubectl get svc -n canine -l "app.kubernetes.io/name=traefik" \
+  -o jsonpath="{.items[0].status.loadBalancer.ingress[0].hostname}"
+```
+
+Then create a DNS record:
+
+| Type | Name | Value |
+|------|------|-------|
+| A | canine.example.com | `<IP from above>` |
+
+Or if your provider gave a hostname:
+
+| Type | Name | Value |
+|------|------|-------|
+| CNAME | canine.example.com | `<hostname from above>` |
+
+Once DNS propagates, cert-manager will automatically issue a Let's Encrypt TLS certificate. Your site will be live at `https://canine.example.com`.
+
+#### Already have cert-manager or an ingress controller?
+
+If your cluster already has these installed, disable them to avoid conflicts:
+
+```yaml
+cert-manager:
+  enabled: false
+
+traefik:
+  enabled: false
+
+ingress:
+  className: "your-existing-ingress-class"
+```
+
+### Option 2: Without a Domain (Local / Port-Forward)
+
+This is the simplest setup — no ingress, no TLS, just access via port-forward.
+
+Create a `values.yaml`:
+
+```yaml
+canine:
+  secretKeyBase: "generate-a-secure-key-with-openssl-rand-hex-64"
+
+ingress:
+  enabled: false
+
+cert-manager:
+  enabled: false
+
+traefik:
+  enabled: false
+```
+
+Install:
+
+```bash
+helm install canine canine/canine \
+  --namespace canine \
+  --create-namespace \
+  -f values.yaml
+```
+
+Access Canine via port-forward:
+
+```bash
+kubectl port-forward -n canine svc/canine 3000:3000
+```
+
+Then open http://localhost:3000.
+
+## Configuration
 
 ### Canine Application
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Canine image repository | `czhu12/canine` |
-| `image.tag` | Canine image tag | `latest` |
-| `image.pullPolicy` | Image pull policy | `IfNotPresent` |
+| `replicaCount` | Number of web replicas | `1` |
+| `image.repository` | Image repository | `chriszhu12/canine` |
+| `image.tag` | Image tag | `latest` |
 | `canine.port` | Application port | `3000` |
-| `canine.localMode` | Enable local mode | `true` |
-| `canine.appHost` | Application host URL | `http://localhost:3000` |
-| `canine.secretKeyBase` | Rails secret key base | `<generated>` |
+| `canine.bootMode` | Boot mode | `cluster` |
+| `canine.secretKeyBase` | Rails secret key base | `<default>` |
+| `canine.allowedHostname` | Allowed hostnames for Rails | `*` |
+| `canine.acmeEmail` | Email for Let's Encrypt | `admin@example.com` |
 
-### Service Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `service.type` | Kubernetes service type | `ClusterIP` |
-| `service.port` | Service port | `3000` |
-
-### Ingress Configuration
+### Ingress
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `ingress.enabled` | Enable ingress | `false` |
-| `ingress.className` | Ingress class name | `""` |
-| `ingress.hosts[0].host` | Hostname | `canine.local` |
+| `ingress.className` | Ingress class name | `traefik` |
+| `ingress.hosts[0].host` | Hostname | `canine.example.com` |
+| `ingress.tls[0].secretName` | TLS secret name | `canine-tls` |
 
-### PostgreSQL (Bitnami)
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `postgresql.enabled` | Enable PostgreSQL | `true` |
-| `postgresql.auth.username` | PostgreSQL username | `postgres` |
-| `postgresql.auth.password` | PostgreSQL password | `password` |
-| `postgresql.auth.database` | PostgreSQL database | `canine_production` |
-| `postgresql.primary.persistence.size` | PVC size | `8Gi` |
-
-### Worker Configuration
+### Worker
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `worker.enabled` | Enable background worker | `true` |
 | `worker.replicaCount` | Number of worker replicas | `1` |
 | `worker.maxThreads` | Maximum worker threads | `5` |
-| `worker.queues` | Job queues to process | `*` |
 
-## Uninstalling the Chart
+### PostgreSQL (Bitnami)
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `postgresql.enabled` | Enable PostgreSQL | `true` |
+| `postgresql.auth.username` | Username | `postgres` |
+| `postgresql.auth.password` | Password | `password` |
+| `postgresql.auth.database` | Database name | `canine_production` |
+| `postgresql.primary.persistence.size` | PVC size | `8Gi` |
+
+### Cert Manager (Jetstack)
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `cert-manager.enabled` | Enable cert-manager | `true` |
+| `cert-manager.crds.enabled` | Install CRDs | `true` |
+
+### Traefik Ingress Controller
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `traefik.enabled` | Enable Traefik | `true` |
+| `traefik.ingressClass.name` | IngressClass name | `traefik` |
+
+## Uninstalling
 
 ```bash
 helm uninstall canine --namespace canine
 ```
 
-## Upgrading the Chart
-
-```bash
-helm upgrade canine . --namespace canine
-```
-
-## Development
-
-To use a local Docker image:
-
-1. Build your Docker image locally
-2. Update the values:
-```yaml
-image:
-  repository: canine
-  tag: dev
-  pullPolicy: Never
-```
-
-## Production Considerations
-
-### Security
-
-1. **Change Default Credentials**: Always change the default admin username and password
-2. **Secret Key Base**: Generate a secure SECRET_KEY_BASE for production:
-   ```bash
-   openssl rand -hex 64
-   ```
-3. **Database Passwords**: Use strong passwords for PostgreSQL
-4. **TLS/SSL**: Enable ingress with TLS certificates for production deployments
-
-### High Availability
-
-For production deployments, consider:
-- Increasing `replicaCount` for the application
-- Enabling PostgreSQL replication
-- Using external managed databases (RDS, Cloud SQL, etc.)
-- Configuring pod anti-affinity rules
-
-### Resource Requirements
-
-Recommended minimum resources for production:
-- Canine application: 1 CPU, 1Gi memory
-- PostgreSQL: 1 CPU, 2Gi memory
-- Worker: 0.5 CPU, 512Mi memory
-
 ## Troubleshooting
 
-### Database Connection Issues
+### Pods not starting
 
-If the application can't connect to PostgreSQL:
 ```bash
-# Check PostgreSQL pod status
-kubectl get pods -n canine -l app.kubernetes.io/name=postgresql
-
-# View application logs
-kubectl logs -n canine -l app.kubernetes.io/name=canine
+kubectl get pods -n canine
+kubectl describe pod -n canine -l app.kubernetes.io/name=canine
 ```
 
-### Worker Not Processing Jobs
+### Database connection issues
 
-Check worker pod logs:
+The web pod will crash-loop until PostgreSQL is ready. This is normal on first install — it will recover automatically.
+
+### Certificate not issuing
+
+Check the certificate and challenge status:
+
 ```bash
-kubectl logs -n canine -l app.kubernetes.io/component=worker
+kubectl get certificate -n canine
+kubectl describe challenge -n canine
 ```
 
-## Support
-
-- **Documentation**: [GitHub Wiki](https://github.com/czhu12/canine/wiki)
-- **Issues**: [GitHub Issues](https://github.com/czhu12/canine/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/czhu12/canine/discussions)
+Common issues:
+- DNS not pointing to the load balancer IP yet
+- cert-manager can't resolve the domain from inside the cluster (the chart configures public DNS resolvers by default)
 
 ## License
 
-This Helm chart is licensed under the MIT License. See the [LICENSE](https://github.com/czhu12/canine/blob/main/LICENSE) file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+MIT License. See [LICENSE](https://github.com/czhu12/canine/blob/main/LICENSE).

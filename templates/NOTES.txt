@@ -5,6 +5,23 @@
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
   {{- end }}
 {{- end }}
+
+2. DNS Setup:
+   ----------
+   Get the external IP of your ingress controller:
+
+   kubectl get svc --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name=traefik" -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}"
+
+   If your provider assigns a hostname instead of an IP:
+   kubectl get svc --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name=traefik" -o jsonpath="{.items[0].status.loadBalancer.ingress[0].hostname}"
+
+   Then create the following DNS record(s):
+   {{- range .Values.ingress.hosts }}
+   {{ .host }}  ->  A record (IP) or CNAME record (hostname) pointing to the value above
+   {{- end }}
+
+   Note: It may take a few minutes for the LoadBalancer IP to be assigned.
+   Once DNS propagates, cert-manager will automatically issue a TLS certificate.
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "canine.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")

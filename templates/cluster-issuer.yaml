@@ -1,0 +1,21 @@
+{{- if and .Values.ingress.enabled (index .Values "cert-manager" "enabled") -}}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt
+  labels:
+    {{- include "canine.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+spec:
+  acme:
+    email: {{ .Values.canine.acmeEmail | default "admin@example.com" }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-secret
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: {{ .Values.ingress.className | default "traefik" }}
+{{- end }}

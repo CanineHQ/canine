@@ -24,6 +24,8 @@ canine:
   # Use comma-separated list for specific hosts: "example.com,api.example.com"
   # Leave empty to only allow localhost (default)
   allowedHostname: "*"
+  # Email for Let's Encrypt certificate registration
+  acmeEmail: "admin@example.com"
 
 # Worker configuration for GoodJob background jobs
 worker:
@@ -47,19 +49,18 @@ service:
 # Ingress configuration
 ingress:
   enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  className: "traefik"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
   hosts:
-    - host: canine.local
+    - host: canine.example.com
       paths:
         - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: canine-tls
-  #    hosts:
-  #      - canine.local
+          pathType: Prefix
+  tls:
+    - secretName: canine-tls
+      hosts:
+        - canine.example.com
 
 # Resource limits and requests
 resources: {}
@@ -115,4 +116,37 @@ postgresql:
     init.sql: |
       CREATE DATABASE IF NOT EXISTS canine_development;
       GRANT ALL PRIVILEGES ON DATABASE canine_development TO postgres;
+
+# Cert Manager configuration (jetstack/cert-manager chart)
+# Set enabled: false if cert-manager is already installed on your cluster
+cert-manager:
+  enabled: true
+  crds:
+    enabled: true
+  extraArgs:
+    - --acme-http01-solver-nameservers=8.8.8.8:53
+
+# Traefik Ingress Controller configuration (traefik/traefik chart)
+# Set enabled: false if an ingress controller is already installed on your cluster
+traefik:
+  enabled: true
+  ingressClass:
+    name: traefik
+  providers:
+    kubernetesIngress:
+      publishedService:
+        enabled: true
+  ports:
+    web:
+      port: 8000
+      exposedPort: 80
+      allowACMEByPass: true
+      http:
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+    websecure:
+      port: 8443
+      exposedPort: 443
 

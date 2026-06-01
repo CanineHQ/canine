@@ -75,3 +75,11 @@ dependencies:
     version: 16.3.1
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
+  - name: cert-manager
+    version: v1.15.3
+    repository: https://charts.jetstack.io
+    condition: cert-manager.enabled
+  - name: traefik
+    version: 40.2.0
+    repository: https://traefik.github.io/charts
+    condition: traefik.enabled

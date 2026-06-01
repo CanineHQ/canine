@@ -1,8 +1,5 @@
 # Patterns to ignore when building packages.
-# This supports shell glob matching, relative path matching, and
-# negation (prefixed with !). Only one pattern per line.
 .DS_Store
-# Common VCS dirs
 .git/
 .gitignore
 .bzr/
@@ -10,17 +7,46 @@
 .hg/
 .hgignore
 .svn/
-# Common backup files
 *.swp
 *.bak
 *.tmp
 *.orig
 *~
-# Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
+.claude/
+
+# Rails application (not part of the helm chart)
+app/
+bin/
+config/
+db/
+lib/
+log/
+public/
+resources/
+spec/
+storage/
+swagger/
+tmp/
+vendor/
+coverage/
+node_modules/
+Gemfile
+Gemfile.lock
+Rakefile
+package.json
+yarn.lock
+Procfile*
+Dockerfile*
+docker-compose*
+*.rb
+*.ru
+
+# Helm package archives (but not charts/ directory)
+canine-*.tgz
 
 # Output files
 output.txt
