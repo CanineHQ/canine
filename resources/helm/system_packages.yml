@@ -89,7 +89,6 @@ packages:
     install_type: manifest
     manifest_path: resources/k8/shared/metrics_server.yaml
     check_command: get deployment metrics-server
-    check_namespace: kube-system
 
   - name: telepresence
     display_name: Telepresence
