@@ -73,26 +73,26 @@ class K8::Connection
       "apiVersion" => "v1",
       "kind" => "Config",
       "current-context" => "in-cluster",
-      "clusters" => [{
+      "clusters" => [ {
         "name" => "in-cluster",
         "cluster" => {
           "server" => "https://#{host}:#{port}",
           "certificate-authority-data" => ca_data
         }
-      }],
-      "contexts" => [{
+      } ],
+      "contexts" => [ {
         "name" => "in-cluster",
         "context" => {
           "cluster" => "in-cluster",
           "user" => "service-account"
         }
-      }],
-      "users" => [{
+      } ],
+      "users" => [ {
         "name" => "service-account",
         "user" => {
           "token" => token
         }
-      }]
+      } ]
     }
   end
 end
