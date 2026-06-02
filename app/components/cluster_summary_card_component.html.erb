@@ -1,0 +1,67 @@
+<div class="card bg-base-200 border border-base-300 shadow-sm">
+  <div class="card-body p-5">
+    <% if error %>
+      <div class="flex items-center gap-2 text-warning">
+        <iconify-icon icon="lucide:alert-triangle" width="20"></iconify-icon>
+        <span class="text-sm">Unable to fetch cluster details: <%= error %></span>
+      </div>
+    <% else %>
+      <div class="flex items-center gap-2 mb-3">
+        <iconify-icon icon="lucide:server" width="20" class="text-primary"></iconify-icon>
+        <h3 class="font-semibold text-lg">Kubernetes Cluster Detected</h3>
+      </div>
+
+      <p class="text-sm text-base-content/70 mb-4">
+        Canine is running inside this cluster and will connect to it automatically.
+      </p>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <%# Nodes %>
+        <div class="bg-base-100 rounded-lg p-3">
+          <div class="text-xs text-base-content/60 uppercase tracking-wide">Nodes</div>
+          <div class="text-2xl font-bold mt-1"><%= nodes.size %></div>
+        </div>
+
+        <%# Version %>
+        <% if version %>
+          <div class="bg-base-100 rounded-lg p-3">
+            <div class="text-xs text-base-content/60 uppercase tracking-wide">Version</div>
+            <div class="text-2xl font-bold mt-1"><%= version %></div>
+          </div>
+        <% end %>
+
+        <%# CPU %>
+        <div class="bg-base-100 rounded-lg p-3">
+          <div class="text-xs text-base-content/60 uppercase tracking-wide">CPU</div>
+          <div class="text-2xl font-bold mt-1"><%= integer_to_compute(total_cpu) %></div>
+          <div class="text-xs text-base-content/60 mt-1"><%= cpu_percent %>% used</div>
+        </div>
+
+        <%# Memory %>
+        <div class="bg-base-100 rounded-lg p-3">
+          <div class="text-xs text-base-content/60 uppercase tracking-wide">Memory</div>
+          <div class="text-2xl font-bold mt-1"><%= integer_to_memory(total_memory) %></div>
+          <div class="text-xs text-base-content/60 mt-1"><%= memory_percent %>% used</div>
+        </div>
+      </div>
+
+      <%# Per-node breakdown %>
+      <% if nodes.size > 1 %>
+        <div class="mt-3">
+          <div class="text-xs text-base-content/60 uppercase tracking-wide mb-2">Nodes</div>
+          <div class="space-y-2">
+            <% nodes.each do |node| %>
+              <div class="flex items-center justify-between bg-base-100 rounded-lg px-3 py-2 text-sm">
+                <span class="font-medium"><%= node.name %></span>
+                <div class="flex gap-4 text-base-content/70">
+                  <span><%= integer_to_compute(node.total_cpu) %> CPU</span>
+                  <span><%= integer_to_memory(node.total_memory) %> RAM</span>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

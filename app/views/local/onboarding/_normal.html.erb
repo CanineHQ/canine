@@ -1,4 +1,14 @@
 <div>
+  <% if @in_cluster %>
+    <div class="mb-6">
+      <%= render(ClusterSummaryCardComponent.new(
+        nodes: @cluster_nodes,
+        version: @cluster_version,
+        error: @cluster_nodes.empty? ? "Could not connect to cluster" : nil
+      )) %>
+    </div>
+  <% end %>
+
   <%= form_with url: local_onboarding_index_path, method: :post, class: "space-y-8" do |form| %>
     <%= form.hidden_field :onboarding_method, value: "normal", name: "onboarding_method" %>
 
