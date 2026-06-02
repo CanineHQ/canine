@@ -3,15 +3,16 @@ class Clusters::ValidateKubeConfig
   expects :cluster, :user
 
   executed do |context|
-    # Validate structure first
     connection = K8::Connection.new(context.cluster, context.user)
-    validation_result = valid_kubeconfig_structure?(context.cluster.kubeconfig)
-    unless validation_result[:valid]
-      context.cluster.errors.add(:kubeconfig, validation_result[:error])
-      context.fail_and_return!(validation_result[:error])
+
+    unless context.cluster.external? || context.cluster.in_cluster?
+      validation_result = valid_kubeconfig_structure?(context.cluster.kubeconfig)
+      unless validation_result[:valid]
+        context.cluster.errors.add(:kubeconfig, validation_result[:error])
+        context.fail_and_return!(validation_result[:error])
+      end
     end
 
-    # Then check if we can connect
     unless can_connect?(connection)
       context.cluster.errors.add(:kubeconfig, "appears to be valid, but we cannot connect to the cluster")
       context.fail_and_return!("Cannot connect to Kubernetes cluster")

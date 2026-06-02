@@ -76,6 +76,14 @@ RSpec.describe Clusters::ValidateKubeConfig do
       it 'returns true when connection is successful' do
         expect(described_class.execute(cluster:, user:)).to be_success
       end
+
+      it 'skips structure validation for external clusters' do
+        external_cluster = create(:cluster, kubeconfig: nil, external_id: "external-123")
+
+        expect(described_class).not_to receive(:valid_kubeconfig_structure?)
+
+        expect(described_class.execute(cluster: external_cluster, user:)).to be_success
+      end
     end
 
     context 'when cannot connect' do
