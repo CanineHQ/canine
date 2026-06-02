@@ -261,14 +261,11 @@ Rails.application.routes.draw do
       resources :onboarding, only: [ :index, :create ] do
         collection do
           get :account_select
+          get :portainer
         end
       end
     end
-    if Rails.application.config.onboarding_methods.any?
-      root to: "local/onboarding#index"
-    else
-      root to: "local/onboarding#account_select"
-    end
+    root to: "local/onboarding#index"
   else
     root to: "static#index"
   end

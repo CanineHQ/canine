@@ -13,7 +13,7 @@ class Portainer::Onboarding::CreateUserWithStackManager
         password: context.password,
         password_confirmation: context.password,
       )
-      if context.user.new_record?
+      if context.user.new_record? && User.count.zero?
         context.user.write_attribute(:admin, true)
       end
       context.user.save!

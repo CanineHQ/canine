@@ -1,0 +1,27 @@
+<div class="min-h-screen py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <img src="/images/logo-full.webp" alt="Canine Logo" class="h-[40px] mb-10">
+
+    <div class="max-w-2xl mb-8">
+      <h1 class="text-4xl font-bold text-base-content mb-3">
+        Set up Canine with Portainer
+      </h1>
+      <p class="text-base text-base-content/70">
+        Connect your Portainer instance and create the first admin account for this installation.
+      </p>
+    </div>
+
+    <% if flash[:alert] %>
+      <div class="alert alert-error mb-6">
+        <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
+        <span><%= flash[:alert] %></span>
+      </div>
+    <% end %>
+
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
+      <div class="card-body">
+        <%= render "local/onboarding/portainer" %>
+      </div>
+    </div>
+  </div>
+</div>

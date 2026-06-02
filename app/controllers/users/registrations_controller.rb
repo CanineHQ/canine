@@ -4,6 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create
     ActiveRecord::Base.transaction do
       super do |user|
+        User.where(id: user.id).update_all(admin: true) if user.persisted? && User.count == 1
         account = Account.create!(name: "#{user.first_name}'s Account", owner: user) if user.persisted?
         AccountUser.create!(account:, user:, role: :owner)
       end
