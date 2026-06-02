@@ -4,6 +4,7 @@ class Clusters::Install
   DEFAULT_RECIPE = [
     Clusters::IsReady,
     Clusters::CreateNamespace,
+    Clusters::SyncPackages,
     Clusters::InstallComponents
   ]
 

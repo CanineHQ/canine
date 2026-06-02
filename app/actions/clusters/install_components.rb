@@ -10,6 +10,7 @@ class Clusters::InstallComponents
     cluster.cluster_packages.find_each do |package|
       definition = package.definition
       next unless definition
+      next if package.installed?
 
       package.installing!
       cluster.info("Installing #{definition['display_name']}...", color: :yellow)
