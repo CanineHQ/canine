@@ -6,6 +6,9 @@ metadata:
     {{- include "canine.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
     resources: ["namespaces", "pods", "pods/log", "services", "endpoints", "secrets", "persistentvolumeclaims", "events", "configmaps"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["apps"]
