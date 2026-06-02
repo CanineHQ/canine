@@ -1,6 +1,7 @@
 <div>
   <%= form_with url: local_onboarding_index_path, method: :post, class: "space-y-8" do |form| %>
-    <%= form.hidden_field :onboarding_method, value: "portainer", name: "onboarding_method" %>
+    <%= form.hidden_field :onboarding_method, value: "normal", name: "onboarding_method" %>
+
     <%= render(FormFieldComponent.new(
       label: "Account Details",
       description: "The name of your team, organization or account."
@@ -50,41 +51,30 @@
       </div>
     <% end %>
 
-    <%= render(FormFieldComponent.new(
-      label: "Portainer Configuration",
-      description: "Configure your Portainer instance URL and access token."
-    )) do %>
-      <%= render "accounts/stack_managers/url", form: form %>
-
-      <div class="mt-4">
-        <div data-controller="expandable-optional-input">
-          <div>
-            <a data-action="expandable-optional-input#show" class="btn btn-ghost">
-              + Add personal access token
-            </a>
+    <% if @in_cluster %>
+      <%= render(FormFieldComponent.new(
+        label: "Cluster",
+        description: "Deploy to the cluster Canine is running in."
+      )) do %>
+        <div class="space-y-3">
+          <%= render(ClusterSummaryCardComponent.new(
+            nodes: @cluster_nodes,
+            version: @cluster_version,
+            error: @cluster_nodes.empty? ? "Could not connect to cluster" : nil
+          )) %>
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4">
+            <label class="label mt-1">
+              <span class="label-text cursor-pointer">Connect Canine to this cluster</span>
+              <%= form.check_box :connect_cluster, { checked: true, class: "checkbox", name: "connect_cluster" }, "1", "0" %>
+            </label>
           </div>
-          <div data-expandable-optional-input-target="container">
-            <div class="form-group">
-              <%= form.label :personal_access_token, "Personal Access Token" %>
-              <%= form.text_field(
-                :personal_access_token,
-                name: "user[personal_access_token]",
-                placeholder: "Enter your personal access token",
-                class: "input input-bordered w-full",
-              ) %>
-            </div>
-          </div>
+          <span class="label-text-alt">Unchecking this will skip connecting to the cluster. You can add clusters later.</span>
         </div>
-        <div class="label">
-          <span class="label-text-alt text-gray-500">
-            If not provided, the account's access token will be used for your Portainer access.
-          </span>
-        </div>
-      </div>
+      <% end %>
     <% end %>
 
     <div class="form-footer">
-      <%= form.submit "Save", class: "btn btn-primary" %>
+      <%= form.submit "Get Started", class: "btn btn-primary" %>
     </div>
   <% end %>
 </div>

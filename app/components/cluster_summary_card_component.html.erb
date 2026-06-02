@@ -1,0 +1,41 @@
+<div>
+  <% if error %>
+    <div class="alert alert-warning">
+      <iconify-icon icon="lucide:alert-triangle" width="18"></iconify-icon>
+      <span class="text-sm">Unable to fetch cluster details: <%= error %></span>
+    </div>
+  <% else %>
+    <%# Alert %>
+    <div class="alert alert-info mb-3">
+      <iconify-icon icon="lucide:server" width="18"></iconify-icon>
+      <span class="text-sm">Kubernetes cluster detected. Canine can deploy to this cluster automatically.</span>
+    </div>
+
+    <%# Cluster card %>
+    <div class="rounded-lg border border-base-300 bg-base-200 px-4 py-3">
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:boxes" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= nodes.size %></span>
+          <span class="text-base-content/60"><%= nodes.size == 1 ? "node" : "nodes" %></span>
+        </span>
+        <% if version %>
+          <span class="flex items-center gap-1.5">
+            <iconify-icon icon="lucide:tag" width="15" class="text-base-content/50"></iconify-icon>
+            <span class="font-medium"><%= version %></span>
+          </span>
+        <% end %>
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:cpu" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= integer_to_compute(total_cpu) %></span>
+          <span class="text-base-content/60">CPU</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:memory-stick" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= integer_to_memory(total_memory) %></span>
+          <span class="text-base-content/60">RAM</span>
+        </span>
+      </div>
+    </div>
+  <% end %>
+</div>

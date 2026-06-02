@@ -18,7 +18,7 @@ module Canine
     config.local_mode_passwordless = ENV.fetch("LOCAL_MODE_PASSWORDLESS", "false") == "true"
     config.cloud_mode = config.boot_mode == "cloud"
     config.cluster_mode = config.boot_mode == "cluster"
-    config.onboarding_methods = ENV.fetch("ONBOARDING_METHODS", "").split(",") # normal, portainer
+    config.onboarding_method = ENV.fetch("ONBOARDING_METHOD", "") # normal, portainer
     config.account_sign_in_only = ENV.fetch("ACCOUNT_SIGN_IN_ONLY", "") == "true"
     config.build_configuration_enabled = ENV.fetch("BUILD_CONFIGURATION_ENABLED", "true") != "false"
     config.remap_localhost = ENV.fetch("REMAP_LOCALHOST", "")
