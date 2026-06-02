@@ -33,9 +33,7 @@ class ClusterPackage::Installer::Base
   end
 
   def installed?(kubectl)
-    namespace = Clusters::Install::DEFAULT_NAMESPACE
-    check_ns = definition["check_namespace"] || namespace
-    kubectl.(definition['check_command'].split + [ "-n", check_ns ])
+    kubectl.(definition['check_command'].split + [ "-A" ])
     true
   rescue Cli::CommandFailedError
     false
