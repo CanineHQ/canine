@@ -19,6 +19,7 @@ module K8
       @connection = connection
       @_kubeconfig = connection.kubeconfig
       @kubeconfig = @_kubeconfig.is_a?(String) ? JSON.parse(@_kubeconfig) : @_kubeconfig
+      @tempfiles = []
       @client = build_client
     end
 
@@ -109,8 +110,14 @@ module K8
 
     def ssl_options(user_info, cluster_info)
       _ssl_options = {}
-      if user_info["client-certificate-data"] && user_info["client-key-data"]
+      if cluster_info["insecure-skip-tls-verify"]
+        _ssl_options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
+      elsif cluster_info["certificate-authority-data"]
+        _ssl_options[:ca_file] = write_temp_file(Base64.decode64(cluster_info["certificate-authority-data"]))
+        _ssl_options[:verify_ssl] = OpenSSL::SSL::VERIFY_PEER
+      end
 
+      if user_info["client-certificate-data"] && user_info["client-key-data"]
         begin
           _ssl_options[:client_key] = OpenSSL::PKey::RSA.new(Base64.decode64(user_info["client-key-data"]))
         rescue OpenSSL::PKey::RSAError
@@ -118,11 +125,7 @@ module K8
         end
         _ssl_options[:client_cert] =
           OpenSSL::X509::Certificate.new(Base64.decode64(user_info["client-certificate-data"]))
-        _ssl_options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
       end
-      # if cluster_info['certificate-authority-data']
-      #  ssl_options[:ca_file] = write_temp_file(Base64.decode64(cluster_info['certificate-authority-data']))
-      # end
       _ssl_options
     end
 
@@ -138,6 +141,7 @@ module K8
       file = Tempfile.new
       file.write(content)
       file.close
+      @tempfiles << file
       file.path
     end
   end
