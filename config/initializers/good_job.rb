@@ -64,3 +64,7 @@ Rails.application.configure do
     }
   }
 end
+
+Rails.application.config.after_initialize do
+  GoodJob::AdvisoryLockable.hash_function = "hashtext"
+end
