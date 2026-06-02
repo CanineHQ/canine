@@ -12,7 +12,15 @@ class Local::OnboardingController < ApplicationController
   end
 
   def create
-    result = Portainer::Onboarding::Create.call(params)
+    result = case params[:onboarding_method]
+    when "portainer"
+      Portainer::Onboarding::Create.call(params)
+    when "normal"
+      Onboarding::Create.call(params)
+    else
+      redirect_to local_onboarding_index_path, alert: "Invalid onboarding method"
+      return
+    end
 
     if result.success?
       sign_in(result.user)

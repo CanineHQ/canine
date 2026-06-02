@@ -44,7 +44,7 @@ class Cluster < ApplicationRecord
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
                    uniqueness: { scope: :account_id }
-  validates_presence_of :kubeconfig, unless: :external?
+  validates_presence_of :kubeconfig, unless: -> { external? || in_cluster? }
   enum :status, {
     initializing: 0,
     installing: 1,
@@ -69,6 +69,10 @@ class Cluster < ApplicationRecord
 
   def external?
     external_id.present?
+  end
+
+  def in_cluster?
+    options&.dig("in_cluster") == true
   end
 
   private

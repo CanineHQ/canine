@@ -264,7 +264,7 @@ Rails.application.routes.draw do
         end
       end
     end
-    if Rails.application.config.onboarding_methods.any?
+    if Rails.application.config.onboarding_method.present?
       root to: "local/onboarding#index"
     else
       root to: "local/onboarding#account_select"
