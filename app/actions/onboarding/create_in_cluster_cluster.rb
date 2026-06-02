@@ -12,7 +12,6 @@ class Onboarding::CreateInClusterCluster
       status: :running
     )
 
-    # Sync packages to detect what's already installed (e.g. traefik, cert-manager from helm chart)
-    Clusters::SyncPackages.execute(cluster: context[:cluster], user: context.user)
+    Clusters::InstallJob.perform_later(context[:cluster], context.user)
   end
 end
