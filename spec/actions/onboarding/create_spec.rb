@@ -32,6 +32,7 @@ RSpec.describe Onboarding::Create do
     context 'when running in-cluster and connect_cluster is enabled' do
       before do
         allow(K8::Connection).to receive(:in_cluster?).and_return(true)
+        allow(Clusters::SyncPackages).to receive(:execute).and_return(LightService::Context.make)
       end
 
       it 'creates admin user, account, and in-cluster cluster' do
