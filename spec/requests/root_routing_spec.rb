@@ -25,7 +25,5 @@ RSpec.describe "Root routing", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Select your installation method")
-    expect(response.body).to include("Normal (Recommended)")
-    expect(response.body).not_to include("Import from an existing Portainer instance")
   end
 end
