@@ -5,7 +5,7 @@ class Clusters::ValidateKubeConfig
   executed do |context|
     connection = K8::Connection.new(context.cluster, context.user)
 
-    unless context.cluster.in_cluster?
+    unless context.cluster.external? || context.cluster.in_cluster?
       validation_result = valid_kubeconfig_structure?(context.cluster.kubeconfig)
       unless validation_result[:valid]
         context.cluster.errors.add(:kubeconfig, validation_result[:error])
