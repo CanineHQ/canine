@@ -6,6 +6,7 @@ class Onboarding::Create
       account_name: params[:account][:name],
       email: params[:user][:email],
       password: params[:user][:password],
+      connect_cluster: params[:connect_cluster] == "1",
     ).reduce(actions)
   end
 

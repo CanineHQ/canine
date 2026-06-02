@@ -1,9 +1,9 @@
 class Onboarding::CreateInClusterCluster
   extend LightService::Action
-  expects :account
+  expects :account, :connect_cluster
 
   executed do |context|
-    next context unless K8::Connection.in_cluster?
+    next context unless context.connect_cluster && K8::Connection.in_cluster?
 
     context[:cluster] = Cluster.create!(
       name: "in-cluster",

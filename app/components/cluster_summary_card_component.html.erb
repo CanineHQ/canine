@@ -1,91 +1,41 @@
-<div class="card bg-base-200 border border-base-300 shadow-sm">
-  <div class="card-body p-5">
-    <% if error %>
-      <div class="flex items-center gap-2 text-warning">
-        <iconify-icon icon="lucide:alert-triangle" width="20"></iconify-icon>
-        <span class="text-sm">Unable to fetch cluster details: <%= error %></span>
-      </div>
-    <% else %>
-      <div class="flex items-center gap-2 mb-3">
-        <iconify-icon icon="lucide:server" width="20" class="text-primary"></iconify-icon>
-        <h3 class="font-semibold text-lg">Kubernetes Cluster Detected</h3>
-      </div>
+<div>
+  <% if error %>
+    <div class="alert alert-warning">
+      <iconify-icon icon="lucide:alert-triangle" width="18"></iconify-icon>
+      <span class="text-sm">Unable to fetch cluster details: <%= error %></span>
+    </div>
+  <% else %>
+    <%# Alert %>
+    <div class="alert alert-info mb-3">
+      <iconify-icon icon="lucide:server" width="18"></iconify-icon>
+      <span class="text-sm">Kubernetes cluster detected. Canine can deploy to this cluster automatically.</span>
+    </div>
 
-      <p class="text-sm text-base-content/70 mb-4">
-        Canine is running inside this cluster and will connect to it automatically.
-      </p>
-
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <%# Nodes %>
-        <div class="bg-base-100 rounded-lg p-3">
-          <div class="flex items-center gap-1.5 text-xs text-base-content/60 uppercase tracking-wide">
-            <iconify-icon icon="lucide:boxes" width="14"></iconify-icon>
-            Nodes
-          </div>
-          <div class="text-2xl font-bold mt-1"><%= nodes.size %></div>
-        </div>
-
-        <%# Version %>
+    <%# Cluster card %>
+    <div class="rounded-lg border border-base-300 bg-base-200 px-4 py-3">
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:boxes" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= nodes.size %></span>
+          <span class="text-base-content/60"><%= nodes.size == 1 ? "node" : "nodes" %></span>
+        </span>
         <% if version %>
-          <div class="bg-base-100 rounded-lg p-3">
-            <div class="flex items-center gap-1.5 text-xs text-base-content/60 uppercase tracking-wide">
-              <iconify-icon icon="lucide:tag" width="14"></iconify-icon>
-              Version
-            </div>
-            <div class="text-2xl font-bold mt-1"><%= version %></div>
-          </div>
+          <span class="flex items-center gap-1.5">
+            <iconify-icon icon="lucide:tag" width="15" class="text-base-content/50"></iconify-icon>
+            <span class="font-medium"><%= version %></span>
+          </span>
         <% end %>
-
-        <%# CPU %>
-        <div class="bg-base-100 rounded-lg p-3">
-          <div class="flex items-center gap-1.5 text-xs text-base-content/60 uppercase tracking-wide">
-            <iconify-icon icon="lucide:cpu" width="14"></iconify-icon>
-            CPU
-          </div>
-          <div class="text-2xl font-bold mt-1"><%= integer_to_compute(total_cpu) %></div>
-          <div class="text-xs text-base-content/60 mt-1"><%= cpu_percent %>% used</div>
-        </div>
-
-        <%# Memory %>
-        <div class="bg-base-100 rounded-lg p-3">
-          <div class="flex items-center gap-1.5 text-xs text-base-content/60 uppercase tracking-wide">
-            <iconify-icon icon="lucide:memory-stick" width="14"></iconify-icon>
-            Memory
-          </div>
-          <div class="text-2xl font-bold mt-1"><%= integer_to_memory(total_memory) %></div>
-          <div class="text-xs text-base-content/60 mt-1"><%= memory_percent %>% used</div>
-        </div>
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:cpu" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= integer_to_compute(total_cpu) %></span>
+          <span class="text-base-content/60">CPU</span>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <iconify-icon icon="lucide:memory-stick" width="15" class="text-base-content/50"></iconify-icon>
+          <span class="font-medium"><%= integer_to_memory(total_memory) %></span>
+          <span class="text-base-content/60">RAM</span>
+        </span>
       </div>
-
-      <%# Per-node breakdown %>
-      <% if nodes.size > 1 %>
-        <div class="mt-3">
-          <div class="flex items-center gap-1.5 text-xs text-base-content/60 uppercase tracking-wide mb-2">
-            <iconify-icon icon="lucide:network" width="14"></iconify-icon>
-            Nodes
-          </div>
-          <div class="space-y-2">
-            <% nodes.each do |node| %>
-              <div class="flex items-center justify-between bg-base-100 rounded-lg px-3 py-2 text-sm">
-                <div class="flex items-center gap-2">
-                  <iconify-icon icon="lucide:hard-drive" width="14" class="text-base-content/50"></iconify-icon>
-                  <span class="font-medium"><%= node.name %></span>
-                </div>
-                <div class="flex gap-4 text-base-content/70">
-                  <span class="flex items-center gap-1">
-                    <iconify-icon icon="lucide:cpu" width="12"></iconify-icon>
-                    <%= integer_to_compute(node.total_cpu) %>
-                  </span>
-                  <span class="flex items-center gap-1">
-                    <iconify-icon icon="lucide:memory-stick" width="12"></iconify-icon>
-                    <%= integer_to_memory(node.total_memory) %>
-                  </span>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

@@ -1,14 +1,4 @@
 <div>
-  <% if @in_cluster %>
-    <div class="mb-6">
-      <%= render(ClusterSummaryCardComponent.new(
-        nodes: @cluster_nodes,
-        version: @cluster_version,
-        error: @cluster_nodes.empty? ? "Could not connect to cluster" : nil
-      )) %>
-    </div>
-  <% end %>
-
   <%= form_with url: local_onboarding_index_path, method: :post, class: "space-y-8" do |form| %>
     <%= form.hidden_field :onboarding_method, value: "normal", name: "onboarding_method" %>
 
@@ -59,6 +49,28 @@
           </button>
         </div>
       </div>
+    <% end %>
+
+    <% if @in_cluster %>
+      <%= render(FormFieldComponent.new(
+        label: "Cluster",
+        description: "Deploy to the cluster Canine is running in."
+      )) do %>
+        <div class="space-y-3">
+          <%= render(ClusterSummaryCardComponent.new(
+            nodes: @cluster_nodes,
+            version: @cluster_version,
+            error: @cluster_nodes.empty? ? "Could not connect to cluster" : nil
+          )) %>
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4">
+            <label class="label mt-1">
+              <span class="label-text cursor-pointer">Connect Canine to this cluster</span>
+              <%= form.check_box :connect_cluster, { checked: true, class: "checkbox", name: "connect_cluster" }, "1", "0" %>
+            </label>
+          </div>
+          <span class="label-text-alt">Unchecking this will skip connecting to the cluster. You can add clusters later.</span>
+        </div>
+      <% end %>
     <% end %>
 
     <div class="form-footer">
