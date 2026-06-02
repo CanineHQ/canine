@@ -1,5 +1,27 @@
 <div class="min-h-screen py-8">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <% onboarding_options = [
+      {
+        icon: "/images/logo-compact.webp",
+        name: "project[build_configuration][driver]",
+        label: "Normal (Recommended)",
+        value: "normal",
+        description: "Standard installation of Canine. Select this if it's your first time using Canine.",
+        href: new_user_registration_url
+      }
+    ] %>
+    <% unless Rails.application.config.cluster_mode %>
+      <% onboarding_options << {
+        icon: "/images/helm/portainer.webp",
+        name: "project[build_configuration][driver]",
+        label: "Portainer",
+        description: "Import from an existing Portainer instance. Only select this if you want to integrate Canine with Portainer.",
+        value: "portainer",
+        partial: "local/onboarding/portainer",
+        locals: { current_account: }
+      } %>
+    <% end %>
+
     <!-- Header and Navigation -->
     <img src="/images/logo-full.webp" alt="Canine Logo" class="h-[40px]">
     <div class="mb-8">
@@ -18,25 +40,7 @@
 
     <!-- render radio selector -->
     <div class="form-control mt-4">
-      <%= render "shared/partials/radio_selector", selected: nil, options: [
-        {
-          icon: "/images/logo-compact.webp",
-          name: "project[build_configuration][driver]",
-          label: "Normal (Recommended)",
-          value: "normal",
-          description: "Standard installation of Canine. Select this if it's your first time using Canine.",
-          href: new_user_registration_url
-        },
-        {
-          icon: "/images/helm/portainer.webp",
-          name: "project[build_configuration][driver]",
-          label: "Portainer",
-          description: "Import from an existing Portainer instance. Only select this if you want to integrate Canine with Portainer.",
-          value: "portainer",
-          partial: "local/onboarding/portainer",
-          locals: { current_account: }
-        }
-      ] %>
+      <%= render "shared/partials/radio_selector", selected: nil, options: onboarding_options %>
     </div>
   </div>
 </div>
