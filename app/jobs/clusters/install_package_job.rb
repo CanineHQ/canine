@@ -10,6 +10,12 @@ module Clusters
       connection = K8::Connection.new(cluster, user)
       kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
 
+      if cluster_package.installer.installed?(kubectl)
+        cluster_package.update!(status: :installed, installed_at: cluster_package.installed_at || Time.current)
+        cluster.info("#{definition['display_name']} is already installed. Uninstall first to reinstall with new settings.", color: :yellow)
+        return
+      end
+
       cluster_package.installing!
       cluster.info("Installing #{definition['display_name']}...", color: :yellow)
 
