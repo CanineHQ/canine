@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: chriszhu12/canine
+  repository: ghcr.io/caninehq/canine
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -149,4 +149,3 @@ traefik:
     websecure:
       port: 8443
       exposedPort: 443
-

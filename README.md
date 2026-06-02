@@ -144,7 +144,7 @@ Then open http://localhost:3000.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `replicaCount` | Number of web replicas | `1` |
-| `image.repository` | Image repository | `chriszhu12/canine` |
+| `image.repository` | Image repository | `ghcr.io/caninehq/canine` |
 | `image.tag` | Image tag | `latest` |
 | `canine.port` | Application port | `3000` |
 | `canine.bootMode` | Boot mode | `cluster` |
