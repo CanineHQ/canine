@@ -19,6 +19,8 @@ canine:
   port: 3000
   bootMode: "cluster"
   secretKeyBase: "a38fcb39d60f9d146d2a0053a25024b9"
+  # Onboarding method: "normal" or "portainer"
+  onboardingMethod: "normal"
   # Allowed hostnames for Rails host authorization
   # Use "*" to allow all hosts (useful for Kubernetes with dynamic IPs)
   # Use comma-separated list for specific hosts: "example.com,api.example.com"

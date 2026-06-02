@@ -28,6 +28,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "canine.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}-worker
           securityContext:
@@ -49,6 +50,8 @@ spec:
                   key: secret-key-base
             - name: ALLOWED_HOSTNAME
               value: "{{ .Values.canine.allowedHostname }}"
+            - name: ONBOARDING_METHOD
+              value: "{{ .Values.canine.onboardingMethod }}"
             - name: GOOD_JOB_MAX_THREADS
               value: "{{ .Values.worker.maxThreads | default 5 }}"
             - name: GOOD_JOB_QUEUES

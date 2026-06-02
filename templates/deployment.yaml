@@ -29,6 +29,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "canine.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -53,6 +54,8 @@ spec:
                   key: secret-key-base
             - name: ALLOWED_HOSTNAME
               value: "{{ .Values.canine.allowedHostname }}"
+            - name: ONBOARDING_METHOD
+              value: "{{ .Values.canine.onboardingMethod }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

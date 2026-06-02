@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "canine.fullname" . }}
+  labels:
+    {{- include "canine.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "canine.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "canine.fullname" . }}
+    namespace: {{ .Release.Namespace }}
