@@ -1,6 +1,6 @@
 class Onboarding::CreateInClusterCluster
   extend LightService::Action
-  expects :account, :connect_cluster
+  expects :account, :user, :connect_cluster
 
   executed do |context|
     next context unless context.connect_cluster && K8::Connection.in_cluster?
@@ -11,5 +11,7 @@ class Onboarding::CreateInClusterCluster
       options: { "in_cluster" => true },
       status: :running
     )
+
+    Clusters::InstallJob.perform_later(context[:cluster], context.user)
   end
 end
