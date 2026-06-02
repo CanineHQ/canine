@@ -251,7 +251,7 @@ Rails.application.routes.draw do
   get "/model-context-protocol", to: "static#mcp_tools"
   get "/self-hosted", to: "static#self_hosted"
   # Public marketing homepage
-  if Rails.application.config.local_mode
+  if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do
       resources :authentication do
         member do
@@ -264,7 +264,7 @@ Rails.application.routes.draw do
         end
       end
     end
-    if Rails.application.config.onboarding_methods.any?
+    if Rails.application.config.cluster_mode || Rails.application.config.onboarding_methods.any?
       root to: "local/onboarding#index"
     else
       root to: "local/onboarding#account_select"
