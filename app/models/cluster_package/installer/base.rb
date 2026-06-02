@@ -33,8 +33,13 @@ class ClusterPackage::Installer::Base
   end
 
   def installed?(kubectl)
-    kubectl.(definition['check_command'].split + [ "-A" ])
-    true
+    parts = definition['check_command'].split
+    verb = parts[0]
+    resource_type = parts[1]
+    resource_name = parts[2]
+
+    output = kubectl.(%W[#{verb} #{resource_type} -A --no-headers])
+    output.to_s.split("\n").any? { |line| line.split(/\s+/).any? { |col| col.include?(resource_name) } }
   rescue Cli::CommandFailedError
     false
   end
