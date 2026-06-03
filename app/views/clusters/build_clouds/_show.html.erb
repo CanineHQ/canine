@@ -18,6 +18,11 @@
             <p class="mt-3 text-sm text-base-content/70">Installing build cloud...</p>
           </div>
         </div>
+
+        <!-- Logs during installation -->
+        <div class="mt-4">
+          <%= render "log_outputs/logs", loggable: build_cloud %>
+        </div>
       <% else %>
         <!-- Main info grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
