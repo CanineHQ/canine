@@ -20,6 +20,8 @@ class K8::BuildCloudManager
     }
 
     begin
+      build_cloud.info("Starting build cloud installation on cluster #{build_cloud.cluster.name}")
+
       # Initialize the K8::BuildCloud service with the build_cloud model
       build_cloud_manager = K8::BuildCloudManager.new(
         connection,
@@ -28,6 +30,8 @@ class K8::BuildCloudManager
 
       # Run the setup
       build_cloud_manager.create_or_update_builder!
+
+      build_cloud.info("Verifying builder is ready...")
 
       # Check if builder is ready
       if build_cloud_manager.builder_ready?
@@ -42,7 +46,7 @@ class K8::BuildCloudManager
           )
         )
 
-        Rails.logger.info("Successfully installed build cloud on cluster #{build_cloud.cluster.name}")
+        build_cloud.success("Build cloud installed successfully!")
       else
         raise "Builder was created but is not ready"
       end
@@ -60,7 +64,7 @@ class K8::BuildCloudManager
         )
       )
 
-      Rails.logger.error("Failed to install build cloud on cluster #{build_cloud.cluster.name}: #{e.message}")
+      build_cloud.error("Installation failed: #{e.message}")
       raise e
     end
   end
@@ -94,13 +98,10 @@ class K8::BuildCloudManager
 
   # Check if the builder is ready and running
   def builder_ready?
-    status = runner.call(%w[docker buildx ls --format json])
-    if status.success?
-      builder_names = runner.output.split("\n").map do |x| JSON.parse(x) end.map { |x| x["Name"] }
-      builder_names.include?(build_cloud.name)
-    else
-      false
-    end
+    quiet_runner = Cli::RunAndReturnOutput.new
+    output = quiet_runner.call(%w[docker buildx ls --format json])
+    builder_names = output.split("\n").map { |x| JSON.parse(x) }.map { |x| x["Name"] }
+    builder_names.include?(build_cloud.name)
   rescue StandardError
     false
   end
@@ -154,13 +155,15 @@ class K8::BuildCloudManager
   def create_builder!
     return if local_builder_exists?
 
+    build_cloud.info("Creating namespace #{namespace}...")
     ensure_namespace!
     # Write kubeconfig to temp file for docker buildx
 
     # Create the buildx builder with kubernetes driver
     # The --bootstrap flag will start the builder immediately
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      command = %w[docker buildx create --bootstrap]
+      build_cloud.info("Creating BuildKit builder with #{build_cloud.replicas} replicas...")
+      command = %w[docker buildx create]
       command += [ "--name", build_cloud.name ]
       command += [ "--driver", "kubernetes" ]
       command += [ "--driver-opt", "namespace=#{build_cloud.namespace}" ]
@@ -174,6 +177,7 @@ class K8::BuildCloudManager
     end
 
     # Wait for builder to be ready
+    build_cloud.info("Waiting for builder to become ready...")
     wait_for_builder_ready!
   end
 
@@ -183,6 +187,7 @@ class K8::BuildCloudManager
 
     while attempts < max_attempts
       if builder_ready?
+        build_cloud.success("Builder is ready!")
         return true
       end
 
