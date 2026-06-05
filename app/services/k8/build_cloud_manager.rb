@@ -124,10 +124,11 @@ class K8::BuildCloudManager
     if builder_ready?
       build_cloud.info("Existing builder found, removing...")
       remove_builder!
-      create_builder!
     else
-      create_builder!
+      # Clean up any stale resources in the namespace even if builder isn't registered locally
+      cleanup_stale_resources!
     end
+    create_builder!
   end
 
   def create_local_builder!
@@ -224,6 +225,13 @@ class K8::BuildCloudManager
   rescue StandardError => e
     # Namespace might already exist, which is fine
     build_cloud.info("Namespace #{namespace} might already exist: #{e.message}")
+  end
+
+  def cleanup_stale_resources!
+    build_cloud.info("Cleaning up stale resources in namespace #{namespace}...")
+    K8::Kubectl.new(connection).call(%w[delete all --all --ignore-not-found=true] + [ "-n", namespace ])
+  rescue StandardError => e
+    build_cloud.warn("Failed to clean up stale resources: #{e.message}")
   end
 
   def remove_builder!
