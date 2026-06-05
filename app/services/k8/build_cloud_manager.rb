@@ -2,6 +2,9 @@ class K8::BuildCloudManager
   include StorageHelper
   # Only referenced in the migration for now.
   BUILDKIT_BUILDER_DEFAULT_NAMESPACE = 'canine-k8s-builder'
+  READY_MAX_ATTEMPTS = 120
+  READY_POLL_INTERVAL = 5 # seconds
+  WARNING_CHECK_INTERVAL = 6 # check every 6 attempts (30 seconds)
 
   attr_reader :connection, :build_cloud
 
@@ -182,22 +185,21 @@ class K8::BuildCloudManager
   end
 
   def wait_for_builder_ready!
-    max_attempts = 120
     attempts = 0
     logged_warnings = Set.new
 
-    while attempts < max_attempts
+    while attempts < READY_MAX_ATTEMPTS
       if builder_ready?
         build_cloud.success("Builder is ready!")
         return true
       end
 
       # Periodically check for pod scheduling issues
-      if (attempts % 6).zero? # every 30 seconds
+      if (attempts % WARNING_CHECK_INTERVAL).zero?
         check_pod_warnings(logged_warnings)
       end
 
-      sleep 5
+      sleep READY_POLL_INTERVAL
       attempts += 1
     end
 
