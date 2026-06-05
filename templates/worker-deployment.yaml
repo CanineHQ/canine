@@ -52,10 +52,8 @@ spec:
               value: "{{ .Values.canine.allowedHostname }}"
             - name: ONBOARDING_METHOD
               value: "{{ .Values.canine.onboardingMethod }}"
-            {{- if .Values.ingress.enabled }}
             - name: APP_HOST
-              value: "{{ (index .Values.ingress.hosts 0).host }}"
-            {{- end }}
+              value: "{{ .Values.canine.appHost | default (ternary (index .Values.ingress.hosts 0).host "localhost" .Values.ingress.enabled) }}"
             - name: GOOD_JOB_MAX_THREADS
               value: "{{ .Values.worker.maxThreads | default 5 }}"
             - name: GOOD_JOB_QUEUES
