@@ -184,6 +184,7 @@ class K8::BuildCloudManager
   def wait_for_builder_ready!
     max_attempts = 120
     attempts = 0
+    logged_warnings = Set.new
 
     while attempts < max_attempts
       if builder_ready?
@@ -191,10 +192,16 @@ class K8::BuildCloudManager
         return true
       end
 
+      # Periodically check for pod scheduling issues
+      if (attempts % 6).zero? # every 30 seconds
+        check_pod_warnings(logged_warnings)
+      end
+
       sleep 5
       attempts += 1
     end
 
+    check_pod_warnings(logged_warnings)
     raise "BuildKit builder did not become ready in time"
   end
 
@@ -224,6 +231,26 @@ class K8::BuildCloudManager
     runner.call(%w[docker buildx rm] + [ build_cloud.name ])
   rescue StandardError => e
     Rails.logger.warn("Error removing builder: #{e.message}")
+  end
+
+  def check_pod_warnings(logged_warnings)
+    kubectl = Cli::RunAndReturnOutput.new
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
+      output = kubectl.call(
+        %w[kubectl get events --field-selector type=Warning -o json] + [ "-n", namespace ],
+        envs: { "KUBECONFIG" => kubeconfig_file.path }
+      )
+      events = JSON.parse(output)
+      (events["items"] || []).each do |event|
+        message = "#{event.dig("reason")}: #{event.dig("message")}"
+        unless logged_warnings.include?(message)
+          logged_warnings.add(message)
+          build_cloud.warn(message)
+        end
+      end
+    end
+  rescue StandardError => e
+    Rails.logger.debug("Failed to check pod warnings: #{e.message}")
   end
 
   def runner
