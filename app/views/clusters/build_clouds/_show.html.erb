@@ -106,8 +106,14 @@
                 Removing...
               </button>
             <% elsif build_cloud.uninstalled? || build_cloud.failed? %>
-              <%= button_to cluster_build_cloud_path(cluster), 
-                            method: :post, 
+              <%= link_to edit_cluster_build_cloud_path(cluster),
+                          class: "btn btn-outline btn-sm",
+                          data: { turbo_frame: dom_id(cluster, "build_cloud") } do %>
+                <iconify-icon icon="lucide:settings" height="16"></iconify-icon>
+                Edit
+              <% end %>
+              <%= button_to cluster_build_cloud_path(cluster),
+                            method: :post,
                             class: "btn btn-primary btn-sm",
                             data: { turbo_confirm: "Reinstall BuildKit on your cluster?" } do %>
                 <iconify-icon icon="lucide:refresh-cw" height="16"></iconify-icon>

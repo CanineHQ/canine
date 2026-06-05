@@ -2,6 +2,9 @@ class K8::BuildCloudManager
   include StorageHelper
   # Only referenced in the migration for now.
   BUILDKIT_BUILDER_DEFAULT_NAMESPACE = 'canine-k8s-builder'
+  READY_MAX_ATTEMPTS = 120
+  READY_POLL_INTERVAL = 5 # seconds
+  WARNING_CHECK_INTERVAL = 6 # check every 6 attempts (30 seconds)
 
   attr_reader :connection, :build_cloud
 
@@ -182,19 +185,25 @@ class K8::BuildCloudManager
   end
 
   def wait_for_builder_ready!
-    max_attempts = 120
     attempts = 0
+    logged_warnings = Set.new
 
-    while attempts < max_attempts
+    while attempts < READY_MAX_ATTEMPTS
       if builder_ready?
         build_cloud.success("Builder is ready!")
         return true
       end
 
-      sleep 5
+      # Periodically check for pod scheduling issues
+      if (attempts % WARNING_CHECK_INTERVAL).zero?
+        check_pod_warnings(logged_warnings)
+      end
+
+      sleep READY_POLL_INTERVAL
       attempts += 1
     end
 
+    check_pod_warnings(logged_warnings)
     raise "BuildKit builder did not become ready in time"
   end
 
@@ -224,6 +233,26 @@ class K8::BuildCloudManager
     runner.call(%w[docker buildx rm] + [ build_cloud.name ])
   rescue StandardError => e
     Rails.logger.warn("Error removing builder: #{e.message}")
+  end
+
+  def check_pod_warnings(logged_warnings)
+    kubectl = Cli::RunAndReturnOutput.new
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
+      output = kubectl.call(
+        %w[kubectl get events --field-selector type=Warning -o json] + [ "-n", namespace ],
+        envs: { "KUBECONFIG" => kubeconfig_file.path }
+      )
+      events = JSON.parse(output)
+      (events["items"] || []).each do |event|
+        message = "#{event.dig("reason")}: #{event.dig("message")}"
+        unless logged_warnings.include?(message)
+          logged_warnings.add(message)
+          build_cloud.warn(message)
+        end
+      end
+    end
+  rescue StandardError => e
+    Rails.logger.debug("Failed to check pod warnings: #{e.message}")
   end
 
   def runner
