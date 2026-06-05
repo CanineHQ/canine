@@ -40,7 +40,7 @@ class Clusters::BuildCloudsController < Clusters::BaseController
   end
 
   def create
-    if @cluster.build_cloud.present? && !@cluster.build_cloud.uninstalled?
+    if @cluster.build_cloud.present? && !@cluster.build_cloud.uninstalled? && !@cluster.build_cloud.failed?
       redirect_to edit_cluster_path(@cluster), alert: "Build cloud is already installed on this cluster"
       return
     end
