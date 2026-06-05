@@ -56,6 +56,10 @@ spec:
               value: "{{ .Values.canine.allowedHostname }}"
             - name: ONBOARDING_METHOD
               value: "{{ .Values.canine.onboardingMethod }}"
+            {{- if .Values.ingress.enabled }}
+            - name: APP_HOST
+              value: "{{ (index .Values.ingress.hosts 0).host }}"
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
