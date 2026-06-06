@@ -2,19 +2,21 @@ module Clusters
   class DestroyBuildCloudJob < ApplicationJob
     queue_as :default
 
-    def perform(cluster)
+    def perform(cluster, user)
       Rails.logger.info("Starting build cloud removal for cluster #{cluster.name}")
 
       build_cloud = cluster.build_cloud
-      build_cloud.update(error_message: nil)
       return unless build_cloud
+
+      build_cloud.update(error_message: nil)
 
       begin
         # Update status to indicate removal is in progress
         build_cloud.update!(status: :uninstalling)
 
         # Initialize the build cloud manager
-        build_cloud_manager = K8::BuildCloudManager.new(cluster, build_cloud)
+        connection = K8::Connection.new(cluster, user)
+        build_cloud_manager = K8::BuildCloudManager.new(connection, build_cloud)
 
         # Teardown the builder
         build_cloud_manager.remove_builder!
