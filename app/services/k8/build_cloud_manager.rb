@@ -103,8 +103,13 @@ class K8::BuildCloudManager
   def builder_ready?
     quiet_runner = Cli::RunAndReturnOutput.new
     output = quiet_runner.call(%w[docker buildx ls --format json])
-    builder_names = output.split("\n").map { |x| JSON.parse(x) }.map { |x| x["Name"] }
-    builder_names.include?(build_cloud.name)
+    builders = output.split("\n").map { |x| JSON.parse(x) }
+    builder = builders.find { |x| x["Name"] == build_cloud.name }
+    return false unless builder
+
+    # Verify at least one node is running, not just registered
+    nodes = builder["Nodes"] || []
+    nodes.any? { |n| n["Status"] == "running" }
   rescue StandardError
     false
   end
