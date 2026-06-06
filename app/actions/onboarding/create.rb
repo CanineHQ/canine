@@ -14,7 +14,9 @@ class Onboarding::Create
   def self.actions
     [
       Onboarding::CreateUserWithAccount,
-      Onboarding::CreateInClusterCluster
+      reduce_if(->(ctx) { ctx.connect_cluster && K8::Connection.in_cluster? }, [
+        Onboarding::CreateInClusterCluster
+      ])
     ]
   end
 end
