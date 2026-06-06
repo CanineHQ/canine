@@ -6,8 +6,9 @@ module Clusters
       Rails.logger.info("Starting build cloud removal for cluster #{cluster.name}")
 
       build_cloud = cluster.build_cloud
-      build_cloud.update(error_message: nil)
       return unless build_cloud
+
+      build_cloud.update(error_message: nil)
 
       begin
         # Update status to indicate removal is in progress

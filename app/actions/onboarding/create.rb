@@ -7,6 +7,7 @@ class Onboarding::Create
       email: params[:user][:email],
       password: params[:user][:password],
       connect_cluster: params[:connect_cluster] == "1",
+      install_build_cloud: params[:install_build_cloud] == "1",
     ).reduce(actions)
   end
 
