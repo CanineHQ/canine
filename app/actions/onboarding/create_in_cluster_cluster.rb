@@ -12,10 +12,11 @@ class Onboarding::CreateInClusterCluster
       status: :running
     )
 
-    if context.install_build_cloud
-      context.cluster.create_build_cloud!
-    end
-
     Clusters::InstallJob.perform_later(context.cluster, context.user)
+
+    if context.install_build_cloud
+      build_cloud = context.cluster.create_build_cloud!
+      Clusters::InstallBuildCloudJob.perform_later(build_cloud, context.user)
+    end
   end
 end
