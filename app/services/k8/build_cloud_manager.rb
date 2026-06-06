@@ -24,6 +24,9 @@ class K8::BuildCloudManager
 
     begin
       build_cloud.info("Starting build cloud installation on cluster #{build_cloud.cluster.name}")
+      build_cloud.info("Builder name: #{build_cloud.name}")
+      build_cloud.info("Namespace: #{build_cloud.namespace}")
+      build_cloud.info("Configuration: #{build_cloud.replicas} replicas, CPU #{integer_to_compute(build_cloud.cpu_requests)}/#{integer_to_compute(build_cloud.cpu_limits)}, Memory #{integer_to_memory(build_cloud.memory_requests)}/#{integer_to_memory(build_cloud.memory_limits)}")
 
       # Initialize the K8::BuildCloud service with the build_cloud model
       build_cloud_manager = K8::BuildCloudManager.new(
@@ -38,11 +41,12 @@ class K8::BuildCloudManager
 
       # Check if builder is ready
       if build_cloud_manager.builder_ready?
+        version = build_cloud_manager.get_buildkit_version
         # Update build cloud record with success
         build_cloud.update!(
           status: :active,
           installed_at: Time.current,
-          driver_version: build_cloud_manager.get_buildkit_version,
+          driver_version: version,
           installation_metadata: build_cloud.installation_metadata.merge(
             completed_at: Time.current,
             builder_ready: true
@@ -50,6 +54,7 @@ class K8::BuildCloudManager
         )
 
         build_cloud.success("Build cloud installed successfully!")
+        build_cloud.info("BuildKit version: #{version}")
       else
         raise "Builder was created but is not ready"
       end
@@ -196,12 +201,13 @@ class K8::BuildCloudManager
 
     while attempts < READY_MAX_ATTEMPTS
       if builder_ready?
-        build_cloud.success("Builder is ready!")
+        build_cloud.success("Builder is ready! All pods are running.")
         return true
       end
 
-      # Periodically check for pod scheduling issues
+      # Periodically log pod status and check for warnings
       if (attempts % WARNING_CHECK_INTERVAL).zero?
+        log_pod_status
         check_pod_warnings(logged_warnings)
       end
 
@@ -209,8 +215,9 @@ class K8::BuildCloudManager
       attempts += 1
     end
 
+    log_pod_status
     check_pod_warnings(logged_warnings)
-    raise "BuildKit builder did not become ready in time"
+    raise "BuildKit builder did not become ready in time (waited #{READY_MAX_ATTEMPTS * READY_POLL_INTERVAL / 60} minutes)"
   end
 
   def ensure_builder_active!
@@ -224,12 +231,14 @@ class K8::BuildCloudManager
 
   def ensure_namespace!
     # Create namespace if it doesn't exist
+    quiet_runner = Cli::RunAndReturnOutput.new
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
-      runner.call(%w[kubectl create namespace] + [ namespace ], envs: { "KUBECONFIG" => kubeconfig_file.path })
+      quiet_runner.call(%w[kubectl create namespace] + [ namespace ], envs: { "KUBECONFIG" => kubeconfig_file.path })
     end
+    build_cloud.success("Namespace #{namespace} created")
   rescue StandardError => e
     # Namespace might already exist, which is fine
-    build_cloud.info("Namespace #{namespace} might already exist: #{e.message}")
+    build_cloud.info("Namespace #{namespace} already exists")
   end
 
   def cleanup_stale_resources!
@@ -246,6 +255,30 @@ class K8::BuildCloudManager
     runner.call(%w[docker buildx rm] + [ build_cloud.name ])
   rescue StandardError => e
     Rails.logger.warn("Error removing builder: #{e.message}")
+  end
+
+  def log_pod_status
+    quiet_runner = Cli::RunAndReturnOutput.new
+    K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
+      output = quiet_runner.call(
+        %w[kubectl get pods -o json] + [ "-n", namespace ],
+        envs: { "KUBECONFIG" => kubeconfig_file.path }
+      )
+      pods = JSON.parse(output)
+      (pods["items"] || []).each do |pod|
+        name = pod.dig("metadata", "name")
+        phase = pod.dig("status", "phase")
+        ready = pod.dig("status", "containerStatuses")&.all? { |c| c["ready"] }
+        status_text = ready ? "Ready" : phase
+        build_cloud.info("Pod #{name}: #{status_text}")
+      end
+
+      total = (pods["items"] || []).size
+      ready_count = (pods["items"] || []).count { |p| p.dig("status", "containerStatuses")&.all? { |c| c["ready"] } }
+      build_cloud.info("Pods ready: #{ready_count}/#{total} (need #{build_cloud.replicas})")
+    end
+  rescue StandardError => e
+    Rails.logger.debug("Failed to check pod status: #{e.message}")
   end
 
   def check_pod_warnings(logged_warnings)
