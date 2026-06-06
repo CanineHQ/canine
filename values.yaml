@@ -26,6 +26,9 @@ canine:
   # Use comma-separated list for specific hosts: "example.com,api.example.com"
   # Leave empty to only allow localhost (default)
   allowedHostname: "*"
+  # Application hostname used for generating URLs in background jobs
+  # Defaults to the first ingress host if ingress is enabled
+  appHost: ""
   # Email for Let's Encrypt certificate registration
   acmeEmail: "admin@example.com"
 
