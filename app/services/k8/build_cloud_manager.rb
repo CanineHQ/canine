@@ -171,10 +171,8 @@ class K8::BuildCloudManager
 
     build_cloud.info("Creating namespace #{namespace}...")
     ensure_namespace!
-    # Write kubeconfig to temp file for docker buildx
 
-    # Create the buildx builder with kubernetes driver
-    # The --bootstrap flag will start the builder immediately
+    # Create the buildx builder with kubernetes driver and bootstrap it
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: connection.cluster.skip_tls_verify) do |kubeconfig_file|
       build_cloud.info("Creating BuildKit builder with #{build_cloud.replicas} replicas...")
       command = %w[docker buildx create]
@@ -188,6 +186,16 @@ class K8::BuildCloudManager
       command += [ "--driver-opt", "limits.memory=#{integer_to_memory(build_cloud.memory_limits)}" ]
 
       runner.call(command, envs: { "KUBECONFIG" => kubeconfig_file.path })
+
+      # Bootstrap the builder to create the pods (don't wait for it to finish — we poll ourselves)
+      build_cloud.info("Bootstrapping builder pods...")
+      Cli::RunAndReturnOutput.new.call(
+        %w[docker buildx inspect --bootstrap] + [ build_cloud.name ],
+        envs: { "KUBECONFIG" => kubeconfig_file.path }
+      )
+    rescue Cli::CommandFailedError => e
+      # Bootstrap may fail with a timeout, but pods could still be starting
+      build_cloud.warn("Bootstrap returned an error (pods may still be starting): #{e.message}")
     end
 
     # Wait for builder to be ready
