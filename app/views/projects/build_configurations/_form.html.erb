@@ -65,7 +65,7 @@
         <label class="label mb-2">
           <span class="label-text">Build driver</span>
         </label>
-        <%= render "shared/partials/radio_selector", selected: build_configuration.driver || (Rails.application.config.local_mode ? "docker" : "cloud"), options: [
+        <%= render "shared/partials/radio_selector", selected: build_configuration.driver || BuildConfiguration::DEFAULT_BUILDER.to_s, options: [
           {
             icon: "skill-icons:docker",
             name: "project[build_configuration][driver]",
