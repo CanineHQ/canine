@@ -71,6 +71,21 @@
           <span class="label-text-alt">Unchecking this will skip connecting to the cluster. You can add clusters later.</span>
         </div>
       <% end %>
+
+      <%= render(FormFieldComponent.new(
+        label: "Build Cloud",
+        description: "Set up a build cloud to build container images directly in your cluster."
+      )) do %>
+        <div class="space-y-3">
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4">
+            <label class="label mt-1">
+              <span class="label-text cursor-pointer">Install Build Cloud on this cluster</span>
+              <%= form.check_box :install_build_cloud, { checked: true, class: "checkbox", name: "install_build_cloud" }, "1", "0" %>
+            </label>
+          </div>
+          <span class="label-text-alt">This will install the build cloud components needed to build container images. You can configure this later in cluster settings.</span>
+        </div>
+      <% end %>
     <% end %>
 
     <div class="form-footer">

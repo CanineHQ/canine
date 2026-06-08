@@ -69,7 +69,7 @@ class Clusters::BuildCloudsController < Clusters::BaseController
       return
     end
 
-    Clusters::DestroyBuildCloudJob.perform_later(@cluster)
+    Clusters::DestroyBuildCloudJob.perform_later(@cluster, current_user)
     redirect_to edit_cluster_path(@cluster), notice: "Build cloud removal started. This may take a few minutes..."
   end
 

@@ -18,10 +18,10 @@ module Scheduled
     private
 
     def demo_reset_due?(project)
-      last_deployed = project.last_deployment_at
-      return true if last_deployed.nil?
+      last_build_at = project.builds.maximum(:created_at)
+      return true if last_build_at.nil?
 
-      last_deployed + DEMO_RESET_INTERVAL <= Time.current
+      last_build_at + DEMO_RESET_INTERVAL <= Time.current
     end
   end
 end

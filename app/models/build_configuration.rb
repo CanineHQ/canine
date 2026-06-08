@@ -28,7 +28,13 @@
 #  fk_rails_...  (provider_id => providers.id)
 #
 class BuildConfiguration < ApplicationRecord
-  DEFAULT_BUILDER = Rails.application.config.cloud_mode ? :cloud : :docker
+  DEFAULT_BUILDER = if Rails.application.config.cloud_mode
+    :cloud
+  elsif Rails.application.config.cluster_mode
+    :k8s
+  else
+    :docker
+  end
   BUILDER_OPTIONS = if Rails.application.config.local_mode
     [ :docker, :k8s ]
   elsif Rails.application.config.cloud_mode

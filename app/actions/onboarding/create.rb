@@ -7,13 +7,16 @@ class Onboarding::Create
       email: params[:user][:email],
       password: params[:user][:password],
       connect_cluster: params[:connect_cluster] == "1",
+      install_build_cloud: params[:install_build_cloud] == "1",
     ).reduce(actions)
   end
 
   def self.actions
     [
       Onboarding::CreateUserWithAccount,
-      Onboarding::CreateInClusterCluster
+      reduce_if(->(ctx) { ctx[:connect_cluster] && K8::Connection.in_cluster? }, [
+        Onboarding::CreateInClusterCluster
+      ])
     ]
   end
 end

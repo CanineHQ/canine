@@ -37,10 +37,7 @@ class ProjectsController < ApplicationController
   end
 
   def edit
-    @selectable_providers = @project.provider ? current_account.providers.where(provider: @project.provider.provider).ordered : Provider.none
-    @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
-    @development_environment_clusters = current_account.clusters.running.order(:name)
-    @configuration = @project.development_environment_configuration
+    set_edit_instance_variables
   end
 
   def create
@@ -70,7 +67,10 @@ class ProjectsController < ApplicationController
         format.html { redirect_to @project, notice: "Project is successfully updated." }
         format.json { render :show, status: :ok, location: @project }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html do
+          set_edit_instance_variables
+          render :edit, status: :unprocessable_entity
+        end
         format.json { render json: @project.errors, status: :unprocessable_entity }
       end
     end
@@ -85,6 +85,13 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def set_edit_instance_variables
+    @selectable_providers = @project.provider ? current_account.providers.where(provider: @project.provider.provider).ordered : Provider.none
+    @clusters = current_account.clusters.running.where.not(id: @project.cluster_id)
+    @development_environment_clusters = current_account.clusters.running.order(:name)
+    @configuration = @project.development_environment_configuration
+  end
 
   def set_project
     projects = Projects::VisibleToUser.execute(account_user: current_account_user).projects
