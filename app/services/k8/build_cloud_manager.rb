@@ -82,9 +82,11 @@ class K8::BuildCloudManager
     @build_cloud = build_cloud
   end
 
-  def ensure_active!
-    # TODO: Check the pods in the namespace and ensure they are running.
-    K8::Client.new(connection).pods_for_namespace(build_cloud.namespace).any?
+  def remote_builder_active?
+    pods = K8::Client.new(connection).pods_for_namespace(build_cloud.namespace)
+    return false if pods.empty?
+
+    pods.all? { |pod| pod.status.phase == "Running" }
   end
 
   def get_buildkit_version
@@ -136,7 +138,7 @@ class K8::BuildCloudManager
   end
 
   def create_local_builder!
-    if ensure_active!
+    if remote_builder_active?
       create_builder!
     else
       raise "Remote builder is not active, please enable the build cloud first."
@@ -144,7 +146,7 @@ class K8::BuildCloudManager
   end
 
   def remove_local_builder!
-    if ensure_active!
+    if remote_builder_active?
       local_runner = Cli::RunAndReturnOutput.new
       local_runner.call(%w[docker buildx rm --keep-daemon] + [ build_cloud.name ])
     else
