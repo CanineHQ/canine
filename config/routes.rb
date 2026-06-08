@@ -204,7 +204,9 @@ Rails.application.routes.draw do
       get :logs
     end
     resource :metrics, only: [ :show ], module: :clusters
-    resource :build_cloud, only: [ :show, :edit, :update, :create, :destroy ], module: :clusters
+    resource :build_cloud, only: [ :show, :edit, :update, :create, :destroy ], module: :clusters do
+      post :refresh, on: :member
+    end
     resources :cluster_packages, only: [ :create, :destroy ], module: :clusters do
       collection do
         post :sync
