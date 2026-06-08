@@ -82,9 +82,11 @@ class K8::BuildCloudManager
     @build_cloud = build_cloud
   end
 
-  def ensure_active!
-    # TODO: Check the pods in the namespace and ensure they are running.
-    K8::Client.new(connection).pods_for_namespace(build_cloud.namespace).any?
+  def remote_builder_active?
+    pods = K8::Client.new(connection).pods_for_namespace(build_cloud.namespace)
+    return false if pods.empty?
+
+    pods.all? { |pod| pod.status.phase == "Running" }
   end
 
   def get_buildkit_version
@@ -131,18 +133,12 @@ class K8::BuildCloudManager
   end
 
   def create_or_update_builder!
-    if builder_ready?
-      build_cloud.info("Existing builder found, removing...")
-      remove_builder!
-    else
-      # Clean up any stale resources in the namespace even if builder isn't registered locally
-      cleanup_stale_resources!
-    end
+    cleanup_stale_resources!
     create_builder!
   end
 
   def create_local_builder!
-    if ensure_active!
+    if remote_builder_active?
       create_builder!
     else
       raise "Remote builder is not active, please enable the build cloud first."
@@ -150,7 +146,7 @@ class K8::BuildCloudManager
   end
 
   def remove_local_builder!
-    if ensure_active!
+    if remote_builder_active?
       local_runner = Cli::RunAndReturnOutput.new
       local_runner.call(%w[docker buildx rm --keep-daemon] + [ build_cloud.name ])
     else
@@ -252,6 +248,11 @@ class K8::BuildCloudManager
   def cleanup_stale_resources!
     build_cloud.info("Cleaning up stale resources in namespace #{namespace}...")
     K8::Kubectl.new(connection).call(%w[delete all --all --ignore-not-found=true] + [ "-n", namespace ])
+
+    if local_builder_exists?
+      build_cloud.info("Removing stale local builder registration...")
+      Cli::RunAndReturnOutput.new.call(%w[docker buildx rm] + [ build_cloud.name ])
+    end
   rescue StandardError => e
     build_cloud.warn("Failed to clean up stale resources: #{e.message}")
   end
