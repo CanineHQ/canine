@@ -50,7 +50,6 @@ class ProjectsController < ApplicationController
         format.json { render :show, status: :created, location: @project }
       else
         format.html do
-          debugger
           @provider = @project.provider
           render :new, status: :unprocessable_entity
         end
