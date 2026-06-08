@@ -36,7 +36,7 @@ module Canine
     config.autoload_lib(ignore: %w[assets tasks])
     config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.{rb,yml}")]
     config.after_initialize do |app|
-      Rails.application.routes.default_url_options[:host] = ENV["APP_HOST"]
+      Rails.application.routes.default_url_options[:host] = ENV["APP_HOST"] if ENV["APP_HOST"].present?
     end
     config.hosts << ENV['APP_HOST']
 
