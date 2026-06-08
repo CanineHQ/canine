@@ -36,6 +36,15 @@
           value: "portainer",
           partial: "local/onboarding/portainer",
           locals: { current_account: }
+        },
+        {
+          icon: "/images/helm/rancher.webp",
+          name: "project[build_configuration][driver]",
+          label: "Rancher",
+          description: "Import from an existing Rancher instance. Only select this if you want to integrate Canine with Rancher.",
+          value: "rancher",
+          partial: "local/onboarding/rancher",
+          locals: { current_account: }
         }
       ] %>
     </div>

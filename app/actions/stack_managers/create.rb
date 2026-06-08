@@ -9,9 +9,9 @@ class StackManagers::Create
       context.stack_manager.assign_attributes(context.stack_manager_params)
       context.stack_manager.save!
 
-      portainer_access_token = context.personal_access_token.presence || context.stack_manager.access_token
-      provider = context.user.providers.find_or_initialize_by(provider: Provider::PORTAINER_PROVIDER)
-      provider.access_token = portainer_access_token
+      access_token = context.personal_access_token.presence || context.stack_manager.access_token
+      provider = context.user.providers.find_or_initialize_by(provider: context.stack_manager.provider_name)
+      provider.access_token = access_token
       provider.save!
     end
   end
