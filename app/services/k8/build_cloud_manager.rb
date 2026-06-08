@@ -137,8 +137,6 @@ class K8::BuildCloudManager
     else
       # Clean up any stale resources in the namespace even if builder isn't registered locally
       cleanup_stale_resources!
-      # Remove stale local builder registration (inactive, temp kubeconfig gone, etc.)
-      remove_local_stale_builder! if local_builder_exists?
     end
     create_builder!
   end
@@ -256,14 +254,6 @@ class K8::BuildCloudManager
     K8::Kubectl.new(connection).call(%w[delete all --all --ignore-not-found=true] + [ "-n", namespace ])
   rescue StandardError => e
     build_cloud.warn("Failed to clean up stale resources: #{e.message}")
-  end
-
-  def remove_local_stale_builder!
-    build_cloud.info("Removing stale local builder registration...")
-    local_runner = Cli::RunAndReturnOutput.new
-    local_runner.call(%w[docker buildx rm] + [ build_cloud.name ])
-  rescue StandardError => e
-    build_cloud.warn("Failed to remove stale builder: #{e.message}")
   end
 
   def remove_builder!

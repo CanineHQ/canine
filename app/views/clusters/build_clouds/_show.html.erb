@@ -8,15 +8,7 @@
           <iconify-icon icon="lucide:cloud" height="24" class="text-primary"></iconify-icon>
           <h3 class="card-title text-lg">Build Cloud</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <%= button_to refresh_cluster_build_cloud_path(cluster),
-                        method: :post,
-                        class: "btn btn-ghost btn-xs",
-                        data: { turbo_frame: dom_id(cluster, "build_cloud") } do %>
-            <iconify-icon icon="lucide:refresh-cw" height="14"></iconify-icon>
-          <% end %>
-          <%= render "clusters/build_clouds/status", build_cloud: %>
-        </div>
+        <%= render "clusters/build_clouds/status", build_cloud: %>
       </div>
 
       <% if build_cloud.installing? %>

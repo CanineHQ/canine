@@ -56,31 +56,6 @@ class Clusters::BuildCloudsController < Clusters::BaseController
     redirect_to edit_cluster_path(@cluster), notice: "Build cloud installation started. This may take a few minutes..."
   end
 
-  def refresh
-    @build_cloud = @cluster.build_cloud
-
-    if @build_cloud.blank?
-      redirect_to edit_cluster_path(@cluster), alert: "No build cloud found for this cluster"
-      return
-    end
-
-    connection = K8::Connection.new(@cluster, current_user)
-    manager = K8::BuildCloudManager.new(connection, @build_cloud)
-
-    if manager.builder_ready?
-      @build_cloud.update!(status: :active, error_message: nil) unless @build_cloud.active?
-    elsif manager.ensure_active!
-      @build_cloud.update!(status: :active, error_message: nil) unless @build_cloud.active?
-    else
-      @build_cloud.update!(status: :failed, error_message: "Builder pods are not running") unless @build_cloud.installing?
-    end
-
-    render partial: "clusters/build_clouds/show", locals: { cluster: @cluster }
-  rescue StandardError => e
-    @build_cloud.update!(status: :failed, error_message: e.message) unless @build_cloud.installing?
-    render partial: "clusters/build_clouds/show", locals: { cluster: @cluster }
-  end
-
   def destroy
     @build_cloud = @cluster.build_cloud
 
