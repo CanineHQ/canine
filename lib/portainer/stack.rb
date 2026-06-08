@@ -15,8 +15,8 @@ class Portainer::Stack
   def retrieve_access_token(user, allow_anonymous: false)
     if !stack_manager.enable_role_based_access_control && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
-    elsif user.present? && user.portainer_access_token.present?
-      Portainer::Client::AccessToken.new(user.portainer_access_token)
+    elsif user.present? && user.stack_manager_access_token(stack_manager).present?
+      Portainer::Client::AccessToken.new(user.stack_manager_access_token(stack_manager))
     elsif user.nil? && allow_anonymous && stack_manager.access_token.present?
       Portainer::Client::AccessToken.new(stack_manager.access_token)
     else

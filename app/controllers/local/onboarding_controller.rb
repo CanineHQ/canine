@@ -19,6 +19,8 @@ class Local::OnboardingController < ApplicationController
     result = case params[:onboarding_method]
     when "portainer"
       Portainer::Onboarding::Create.call(params)
+    when "rancher"
+      Rancher::Onboarding::Create.call(params)
     when "normal"
       Onboarding::Create.call(params)
     else

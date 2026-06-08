@@ -81,15 +81,23 @@ class User < ApplicationRecord
     providers.find_by(provider: "github")
   end
 
+  def stack_manager_access_token(stack_manager)
+    return nil unless stack_manager
+    provider_name = stack_manager.provider_name
+    return nil unless provider_name
+    providers.find_by(provider: provider_name)&.access_token
+  end
+
   def portainer_access_token
     return @portainer_access_token if @portainer_access_token
     @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
   end
 
-  def needs_portainer_credential?(account)
-    account.stack_manager&.portainer? &&
-      account.stack_manager.enable_role_based_access_control? &&
-      portainer_access_token.blank?
+  def needs_stack_manager_credential?(account)
+    sm = account.stack_manager
+    sm.present? &&
+      sm.enable_role_based_access_control? &&
+      stack_manager_access_token(sm).blank?
   end
 
   private

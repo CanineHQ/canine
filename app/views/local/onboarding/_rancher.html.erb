@@ -1,0 +1,138 @@
+<div>
+  <%= form_with url: local_onboarding_index_path, method: :post, class: "space-y-8" do |form| %>
+    <%= form.hidden_field :onboarding_method, value: "rancher", name: "onboarding_method" %>
+    <%= render(FormFieldComponent.new(
+      label: "Account Details",
+      description: "The name of your team, organization or account."
+    )) do %>
+      <div class="form-group">
+        <%= form.label :account_name, "Organization Name" %>
+        <%= form.text_field(
+          :account_name,
+          placeholder: "My Organization",
+          name: "account[name]",
+          class: "input input-bordered w-full",
+          required: true,
+        ) %>
+      </div>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Admin User",
+      description: "Create the first admin user for this account. (You can configure SSO later.)"
+    )) do %>
+      <div class="form-group">
+        <%= form.label :email, "Email" %>
+        <%= form.email_field(
+          :email,
+          placeholder: "admin@example.com",
+          name: "user[email]",
+          inputmode: "email",
+          class: "input input-bordered w-full",
+          required: true,
+        ) %>
+      </div>
+      <div class="form-group" data-controller="toggle-password">
+        <%= form.label :password, "Password" %>
+        <div class="flex items-center">
+          <%= form.password_field(
+            :password,
+            placeholder: "Enter your password",
+            name: "user[password]",
+            class: "input input-bordered w-full",
+            required: true,
+            data: { toggle_password_target: "input" },
+          ) %>
+          <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
+            <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(
+      label: "Rancher Configuration",
+      description: "Configure your Rancher instance URL and API key."
+    )) do %>
+      <div data-controller="stack-manager--url-input">
+        <div class="form-group">
+          <%= form.label :provider_url, "Rancher URL" %>
+          <%= form.text_field(
+            :provider_url,
+            name: "stack_manager[provider_url]",
+            inputmode: "url",
+            class: "input input-bordered w-full",
+            placeholder: "https://rancher.localhost",
+            data: { "stack-manager--url-input-target": "urlInput", action: "blur->stack-manager--url-input#verifyUrl" },
+          ) %>
+        </div>
+
+        <div class="form-group">
+          <%= form.label :access_token, "API Key (Bearer Token)" %>
+          <%= form.text_field(
+            :access_token,
+            name: "stack_manager[access_token]",
+            placeholder: "token-xxxxx:xxxxxxxxxxxxxxxx",
+            class: "input input-bordered w-full",
+            required: true,
+            data: { "stack-manager--url-input-target": "accessTokenInput", action: "blur->stack-manager--url-input#verifyUrl" },
+          ) %>
+          <div>
+            <label class="label" for="access_token">
+              <span class="label-text-alt">
+                This API key is used for all members of the account, to perform asynchronous Git deployments.
+              </span>
+            </label>
+          </div>
+        </div>
+        <div class="label justify-end">
+          <span class="label-text-alt">
+            <%= render "accounts/stack_managers/url_connection_statuses" %>
+          </span>
+        </div>
+
+        <div class="form-control">
+          <%= form.label :enable_role_based_access_control, class: "label cursor-pointer justify-start gap-2" do %>
+            <%= form.check_box :enable_role_based_access_control, class: "checkbox" %>
+            <span class="label-text">Enable role based access control (recommended)</span>
+          <% end %>
+          <div class="label">
+            <span class="label-text-alt text-gray-500">
+              If enabled, any access to the cluster will be done through the user's Rancher API key, and the API key above will only be used for async Git deployments.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <div data-controller="expandable-optional-input">
+          <div>
+            <a data-action="expandable-optional-input#show" class="btn btn-ghost">
+              + Add personal API key
+            </a>
+          </div>
+          <div data-expandable-optional-input-target="container">
+            <div class="form-group">
+              <%= form.label :personal_access_token, "Personal API Key" %>
+              <%= form.text_field(
+                :personal_access_token,
+                name: "user[personal_access_token]",
+                placeholder: "Enter your personal API key",
+                class: "input input-bordered w-full",
+              ) %>
+            </div>
+          </div>
+        </div>
+        <div class="label">
+          <span class="label-text-alt text-gray-500">
+            If not provided, the account's API key will be used for your Rancher access.
+          </span>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="form-footer">
+      <%= form.submit "Save", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

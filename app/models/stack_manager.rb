@@ -23,7 +23,8 @@ class StackManager < ApplicationRecord
   belongs_to :account
 
   enum :stack_manager_type, {
-    portainer: 0
+    portainer: 0,
+    rancher: 1
   }
 
   validates_presence_of :account, :provider_url, :stack_manager_type
@@ -35,10 +36,31 @@ class StackManager < ApplicationRecord
     access_token.blank?
   end
 
+  STACK_CLASSES = {
+    "portainer" => Portainer::Stack,
+    "rancher" => Rancher::Stack
+  }.freeze
+
+  CLIENT_CLASSES = {
+    "portainer" => Portainer::Client,
+    "rancher" => Rancher::Client
+  }.freeze
+
+  PROVIDER_NAMES = {
+    "portainer" => Provider::PORTAINER_PROVIDER,
+    "rancher" => Provider::RANCHER_PROVIDER
+  }.freeze
+
   def stack
-    if portainer?
-      @_stack ||= Portainer::Stack.new(self)
-    end
+    @_stack ||= STACK_CLASSES[stack_manager_type]&.new(self)
+  end
+
+  def client_class
+    CLIENT_CLASSES[stack_manager_type]
+  end
+
+  def provider_name
+    PROVIDER_NAMES[stack_manager_type]
   end
 
   def domain_host

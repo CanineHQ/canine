@@ -9,7 +9,10 @@ module Accounts
 
     def check_reachable
       url = params[:stack_manager][:url]
-      unless Portainer::Client.reachable?(url)
+      type = params[:stack_manager][:type] || "portainer"
+      client_class = StackManager::CLIENT_CLASSES[type]
+      return head(:unprocessable_entity) unless client_class
+      unless client_class.reachable?(url)
         head :bad_gateway
         return
       end
@@ -26,7 +29,7 @@ module Accounts
         return
       end
 
-      if current_user.portainer_access_token.blank?
+      if current_user.stack_manager_access_token(stack_manager).blank?
         respond_to do |format|
           format.json { head :unauthorized }
           format.html { render_connection_result(:unauthorized) }
@@ -46,12 +49,13 @@ module Accounts
           format.html { render_connection_result(:unauthorized) }
         end
       end
-    rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError
+    rescue Portainer::Client::MissingCredentialError, Portainer::Client::UnauthorizedError,
+           Rancher::Client::MissingCredentialError, Rancher::Client::UnauthorizedError
       respond_to do |format|
         format.json { head :unauthorized }
         format.html { render_connection_result(:unauthorized) }
       end
-    rescue Portainer::Client::ConnectionError
+    rescue Portainer::Client::ConnectionError, Rancher::Client::ConnectionError
       respond_to do |format|
         format.json { head :bad_gateway }
         format.html { render_connection_result(:error, "Connection failed") }
@@ -61,11 +65,14 @@ module Accounts
     def verify_url
       url = params[:stack_manager][:url]
       access_token = params[:stack_manager][:access_token]
+      type = params[:stack_manager][:type] || "portainer"
       stack_manager = StackManager.new(
         provider_url: url,
         access_token: access_token,
+        stack_manager_type: type,
       )
-      unless Portainer::Client.reachable?(url)
+      reachable = stack_manager.client_class.reachable?(url)
+      unless reachable
         return head :bad_gateway
       end
 
