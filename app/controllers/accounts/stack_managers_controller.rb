@@ -10,7 +10,8 @@ module Accounts
     def check_reachable
       url = params[:stack_manager][:url]
       type = params[:stack_manager][:type] || "portainer"
-      client_class = StackManager::CLIENT_CLASSES[type] || Portainer::Client
+      client_class = StackManager::CLIENT_CLASSES[type]
+      return head(:unprocessable_entity) unless client_class
       unless client_class.reachable?(url)
         head :bad_gateway
         return

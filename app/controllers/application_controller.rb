@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   layout :determine_layout
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-  rescue_from Portainer::Client::MissingCredentialError, with: :missing_portainer_credential
+  rescue_from Portainer::Client::MissingCredentialError, Rancher::Client::MissingCredentialError, with: :missing_stack_manager_credential
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from Git::Client::Error, with: :handle_git_error
 
@@ -65,8 +65,10 @@ class ApplicationController < ActionController::Base
       current_account_user
     end
 
-    def missing_portainer_credential
-      redirect_to providers_path, alert: "Please add your Portainer API token to continue."
+    def missing_stack_manager_credential
+      stack_manager = current_account&.stack_manager
+      name = stack_manager&.stack_manager_type&.titleize || "Stack manager"
+      redirect_to providers_path, alert: "Please add your #{name} API token to continue."
     end
 
     def user_not_authorized
