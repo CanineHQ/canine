@@ -131,12 +131,7 @@ class K8::BuildCloudManager
   end
 
   def create_or_update_builder!
-    if builder_ready?
-      build_cloud.info("Existing builder found, removing...")
-      remove_builder!
-    else
-      cleanup_stale_resources!
-    end
+    cleanup_stale_resources!
     create_builder!
   end
 
