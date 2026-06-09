@@ -120,6 +120,21 @@ GEM
       view_component (>= 3.7.0)
       zeitwerk (>= 2.6.12)
     avo-heroicons (0.1.1)
+    aws-eventstream (1.4.0)
+    aws-partitions (1.1258.0)
+    aws-sdk-core (3.251.0)
+      aws-eventstream (~> 1, >= 1.3.0)
+      aws-partitions (~> 1, >= 1.992.0)
+      aws-sigv4 (~> 1.9)
+      base64
+      bigdecimal
+      jmespath (~> 1, >= 1.6.1)
+      logger
+    aws-sdk-route53 (1.136.0)
+      aws-sdk-core (~> 3, >= 3.248.0)
+      aws-sigv4 (~> 1.5)
+    aws-sigv4 (1.12.1)
+      aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt (3.1.20)
     benchmark (0.5.0)
@@ -302,6 +317,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
+    jmespath (1.6.2)
     jsbundling-rails (1.3.1)
       railties (>= 6.0.0)
     json (2.13.2)
@@ -736,6 +752,7 @@ DEPENDENCIES
   actioncable-enhanced-postgresql-adapter (~> 1.0)
   annotate (~> 3.2)
   avo (~> 3.25)
+  aws-sdk-route53 (~> 1.0)
   bootsnap
   brakeman
   capybara

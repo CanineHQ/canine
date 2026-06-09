@@ -9,8 +9,7 @@ class Dns::AutoSetupService
 
   def self.enabled?
     ENV["ENABLE_AUTOMATIC_DNS_MAPPING"] == "true" &&
-      Dns::Cloudflare::API_TOKEN.present? &&
-      Dns::Cloudflare::ZONE_ID.present?
+      ENV["DNS_PROVIDER"].present?
   end
 
   def call
