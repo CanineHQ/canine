@@ -3,6 +3,11 @@ class Local::OnboardingController < ApplicationController
   skip_before_action :authenticate_user!
 
   def index
+    if Account.exists?
+      redirect_to new_user_session_path
+      return
+    end
+
     @in_cluster = K8::Connection.in_cluster?
     if @in_cluster
       @cluster_nodes, @cluster_version = fetch_in_cluster_info
