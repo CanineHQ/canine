@@ -1,4 +1,7 @@
 {{- if and .Values.ingress.enabled (index .Values "cert-manager" "enabled") -}}
+{{- if not .Values.canine.acmeEmail -}}
+{{- fail "canine.acmeEmail is required when ingress and cert-manager are enabled" -}}
+{{- end -}}
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -10,7 +13,7 @@ metadata:
     "helm.sh/hook-weight": "1"
 spec:
   acme:
-    email: {{ .Values.canine.acmeEmail | default "admin@example.com" }}
+    email: {{ .Values.canine.acmeEmail }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
       name: letsencrypt-secret

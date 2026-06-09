@@ -30,7 +30,7 @@ canine:
   # Defaults to the first ingress host if ingress is enabled
   appHost: ""
   # Email for Let's Encrypt certificate registration
-  acmeEmail: "admin@example.com"
+  acmeEmail: ""
 
 # Worker configuration for GoodJob background jobs
 worker:
