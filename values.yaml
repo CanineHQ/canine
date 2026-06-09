@@ -57,15 +57,7 @@ ingress:
   className: "traefik"
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
-  hosts:
-    - host: canine.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: canine-tls
-      hosts:
-        - canine.example.com
+  hostname: ""
 
 # Resource limits and requests
 resources: {}
