@@ -2,16 +2,19 @@ class Dns::Client
   class Error < StandardError; end
 
   def self.for_provider(provider)
-    case provider.to_sym
-    when :cloudflare
+    case provider.to_s
+    when "cloudflare"
       Dns::Cloudflare.new
+    when "route53"
+      Dns::Route53.new
     else
       raise Error, "Unsupported DNS provider: #{provider}"
     end
   end
 
   def self.default
-    Dns::Cloudflare.new
+    provider = ENV.fetch("DNS_PROVIDER", "cloudflare")
+    for_provider(provider)
   end
 
   # Interface methods - subclasses must implement these
