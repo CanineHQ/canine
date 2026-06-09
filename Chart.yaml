@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.4
+version: 0.1.5
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -66,7 +66,7 @@ annotations:
   # Optional: changes introduced in this version
   artifacthub.io/changes: |
     - kind: changed
-      description: Added environment variable support for deployments
+      description: Auto-generate secretKeyBase when not provided
   # Optional: indicates the maturity of the chart
   artifacthub.io/prerelease: "false"
 
