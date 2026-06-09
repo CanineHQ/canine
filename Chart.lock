@@ -1,12 +1,12 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 16.3.1
+  version: 18.7.3
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v1.15.3
 - name: traefik
   repository: https://traefik.github.io/charts
   version: 40.2.0
-digest: sha256:2d7ce83d07f56d70ac496429ccc46a55e86222cb80d93eb260505617ab3f3451
-generated: "2026-06-01T23:23:42.927834+01:00"
+digest: sha256:2ceac9ca0256ef98032512f30092bd34e587635cf4d50ad235e2b3db294101ec
+generated: "2026-06-09T12:17:28.643846+01:00"
