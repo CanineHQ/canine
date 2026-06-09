@@ -17,7 +17,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T11:46:41.489836+01:00"
+    created: "2026-06-09T11:49:59.484176+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -52,62 +52,8 @@ entries:
     - https://github.com/czhu12/canine
     type: application
     urls:
-    - https://czhu12.github.io/canine/canine-0.1.4.tgz
+    - https://caninehq.github.io/canine/canine-0.1.4.tgz
     version: 0.1.4
-  - annotations:
-      artifacthub.io/changes: |
-        - kind: changed
-          description: Grant full cluster-admin permissions to service account
-        - kind: changed
-          description: Added in-cluster onboarding support with RBAC
-      artifacthub.io/containsSecurityUpdates: "false"
-      artifacthub.io/license: MIT
-      artifacthub.io/links: |
-        - name: Chart Source
-          url: https://github.com/czhu12/canine/tree/main/helm/canine
-        - name: Support
-          url: https://github.com/czhu12/canine/issues
-      artifacthub.io/prerelease: "false"
-      artifacthub.io/recommendations: |
-        - url: https://artifacthub.io/packages/helm/bitnami/postgresql
-    apiVersion: v2
-    appVersion: 1.0.0
-    created: "2026-06-02T22:47:50Z"
-    dependencies:
-    - condition: postgresql.enabled
-      name: postgresql
-      repository: https://charts.bitnami.com/bitnami
-      version: 16.3.1
-    - condition: cert-manager.enabled
-      name: cert-manager
-      repository: https://charts.jetstack.io
-      version: v1.15.3
-    - condition: traefik.enabled
-      name: traefik
-      repository: https://traefik.github.io/charts
-      version: 40.2.0
-    description: The Helm chart for Canine - the easiest way to deploy apps to the
-      cloud.
-    home: https://github.com/czhu12/canine
-    icon: https://raw.githubusercontent.com/czhu12/canine/main/public/images/logo-compact.png
-    keywords:
-    - kubernetes
-    - deployment
-    - rails
-    - platform
-    - ci-cd
-    - gitops
-    maintainers:
-    - email: czhu12@example.com
-      name: czhu12
-      url: https://github.com/czhu12
-    name: canine
-    sources:
-    - https://github.com/czhu12/canine
-    type: application
-    urls:
-    - https://czhu12.github.io/canine/canine-0.1.3.tgz
-    version: 0.1.3
   - annotations:
       artifacthub.io/changes: |
         - kind: added
@@ -124,7 +70,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T11:46:41.476379+01:00"
+    created: "2026-06-09T11:49:59.474021+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -151,7 +97,7 @@ entries:
     - https://github.com/czhu12/canine
     type: application
     urls:
-    - https://czhu12.github.io/canine/canine-0.1.1.tgz
+    - https://caninehq.github.io/canine/canine-0.1.1.tgz
     version: 0.1.1
   - annotations:
       artifacthub.io/changes: |
@@ -169,7 +115,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T11:46:41.46958+01:00"
+    created: "2026-06-09T11:49:59.469232+01:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -196,7 +142,7 @@ entries:
     - https://github.com/czhu12/canine
     type: application
     urls:
-    - https://czhu12.github.io/canine/canine-0.1.0.tgz
+    - https://caninehq.github.io/canine/canine-0.1.0.tgz
     version: 0.1.0
   cert-manager:
   - annotations:
@@ -208,7 +154,7 @@ entries:
         url: https://cert-manager.io/public-keys/cert-manager-keyring-2021-09-20-1020CF3C033D4F35BAE1C19E1226061C665DF13E.gpg
     apiVersion: v2
     appVersion: v1.15.3
-    created: "2026-06-09T11:46:41.495455+01:00"
+    created: "2026-06-09T11:49:59.48692+01:00"
     description: A Helm chart for cert-manager
     digest: 016e68d9f7083d2c4fd302f951ee6490dbf4cb1ef44cfc06914c39cbfb01d858
     home: https://cert-manager.io
@@ -227,7 +173,7 @@ entries:
     sources:
     - https://github.com/cert-manager/cert-manager
     urls:
-    - https://czhu12.github.io/canine/charts/cert-manager-v1.15.3.tgz
+    - https://caninehq.github.io/canine/charts/cert-manager-v1.15.3.tgz
     version: v1.15.3
   postgresql:
   - annotations:
@@ -242,7 +188,7 @@ entries:
       licenses: Apache-2.0
     apiVersion: v2
     appVersion: 17.2.0
-    created: "2026-06-09T11:46:41.500077+01:00"
+    created: "2026-06-09T11:49:59.490052+01:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -269,7 +215,7 @@ entries:
     sources:
     - https://github.com/bitnami/charts/tree/main/bitnami/postgresql
     urls:
-    - https://czhu12.github.io/canine/charts/postgresql-16.3.1.tgz
+    - https://caninehq.github.io/canine/charts/postgresql-16.3.1.tgz
     version: 16.3.1
   traefik:
   - annotations:
@@ -283,7 +229,7 @@ entries:
       traefik.io/proxy-min-version: v3.6.0
     apiVersion: v2
     appVersion: v3.7.1
-    created: "2026-06-09T11:46:41.507744+01:00"
+    created: "2026-06-09T11:49:59.495152+01:00"
     description: A Traefik based Kubernetes ingress controller
     digest: b73d0159fc1222cc9bdaefde80000a9bad2dfe81de4caed14b9509b3bf6c1df9
     home: https://traefik.io/
@@ -305,6 +251,6 @@ entries:
     - https://github.com/traefik/traefik
     type: application
     urls:
-    - https://czhu12.github.io/canine/charts/traefik-40.2.0.tgz
+    - https://caninehq.github.io/canine/charts/traefik-40.2.0.tgz
     version: 40.2.0
-generated: "2026-06-09T11:46:41.463977+01:00"
+generated: "2026-06-09T11:49:59.464658+01:00"

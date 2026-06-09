@@ -18,7 +18,7 @@ This Helm chart deploys [Canine](https://github.com/czhu12/canine) - a modern, o
 ### Add the Helm Repository
 
 ```bash
-helm repo add canine https://czhu12.github.io/canine
+helm repo add canine https://caninehq.github.io/canine
 helm repo update
 ```
 
