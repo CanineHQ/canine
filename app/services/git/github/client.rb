@@ -34,6 +34,10 @@ class Git::Github::Client < Git::Client
         url: commit.html_url
       )
     end
+  rescue Octokit::NotFound
+    raise Git::Client::BranchNotFound, "Branch '#{branch}' not found in repository '#{repository_url}'"
+  rescue Octokit::Conflict
+    raise Git::Client::BranchNotFound, "Could not fetch commits for branch '#{branch}': the repository may be empty"
   rescue Octokit::Error => e
     raise Git::Client::Error, "Failed to fetch commits: #{e.message}"
   end
