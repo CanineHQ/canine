@@ -1,0 +1,13 @@
+<h1 style="font-family: sans-serif; font-size: 20px; margin: 0 0 16px;"><%= @title %></h1>
+
+<div style="font-family: sans-serif; font-size: 14px; line-height: 1.5; color: #333;">
+  <%= simple_format(@text) %>
+</div>
+
+<% if @link.present? %>
+  <p style="margin-top: 24px;">
+    <a href="<%= @link %>" style="display: inline-block; padding: 10px 16px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-family: sans-serif; font-size: 14px;">
+      <%= @link_text %>
+    </a>
+  </p>
+<% end %>
