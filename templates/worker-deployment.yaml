@@ -54,6 +54,21 @@ spec:
               value: "{{ .Values.canine.onboardingMethod }}"
             - name: APP_HOST
               value: "{{ .Values.canine.appHost | default (ternary .Values.ingress.hostname "localhost" .Values.ingress.enabled) }}"
+            - name: ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: encryption-primary-key
+            - name: ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: encryption-deterministic-key
+            - name: ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "canine.fullname" . }}
+                  key: encryption-key-derivation-salt
             - name: GOOD_JOB_MAX_THREADS
               value: "{{ .Values.worker.maxThreads | default 5 }}"
             - name: GOOD_JOB_QUEUES
