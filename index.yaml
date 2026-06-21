@@ -3,6 +3,112 @@ entries:
   canine:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: Fix NOTES.txt to use ingress.hostname and show DNS record instructions
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/czhu12/canine/tree/main/helm/canine
+        - name: Support
+          url: https://github.com/czhu12/canine/issues
+      artifacthub.io/prerelease: "false"
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/bitnami/postgresql
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-21T19:44:09.206631+02:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.7.3
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.15.3
+    - condition: traefik.enabled
+      name: traefik
+      repository: https://traefik.github.io/charts
+      version: 40.2.0
+    description: The Helm chart for Canine - the easiest way to deploy apps to the
+      cloud.
+    digest: 51ca4b9a04ca6e1c9e37c845db501268475a1d1633f7c247e7906b23d623241c
+    home: https://github.com/czhu12/canine
+    icon: https://raw.githubusercontent.com/czhu12/canine/main/public/images/logo-compact.png
+    keywords:
+    - kubernetes
+    - deployment
+    - rails
+    - platform
+    - ci-cd
+    - gitops
+    maintainers:
+    - email: czhu12@example.com
+      name: czhu12
+      url: https://github.com/czhu12
+    name: canine
+    sources:
+    - https://github.com/czhu12/canine
+    type: application
+    urls:
+    - https://caninehq.github.io/canine/canine-0.1.10.tgz
+    version: 0.1.10
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
+          description: Fix NOTES.txt to use ingress.hostname and show DNS record instructions
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/czhu12/canine/tree/main/helm/canine
+        - name: Support
+          url: https://github.com/czhu12/canine/issues
+      artifacthub.io/prerelease: "false"
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/bitnami/postgresql
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-21T19:44:09.264212+02:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.7.3
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.15.3
+    - condition: traefik.enabled
+      name: traefik
+      repository: https://traefik.github.io/charts
+      version: 40.2.0
+    description: The Helm chart for Canine - the easiest way to deploy apps to the
+      cloud.
+    digest: eadf9e8b3fdbd01f0dfc3f3028ff7a2b26b4b0a08e0e4f9362fccade4edb14f0
+    home: https://github.com/czhu12/canine
+    icon: https://raw.githubusercontent.com/czhu12/canine/main/public/images/logo-compact.png
+    keywords:
+    - kubernetes
+    - deployment
+    - rails
+    - platform
+    - ci-cd
+    - gitops
+    maintainers:
+    - email: czhu12@example.com
+      name: czhu12
+      url: https://github.com/czhu12
+    name: canine
+    sources:
+    - https://github.com/czhu12/canine
+    type: application
+    urls:
+    - https://caninehq.github.io/canine/canine-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Auto-generate secretKeyBase when not provided
       artifacthub.io/containsSecurityUpdates: "false"
@@ -17,7 +123,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.683843+01:00"
+    created: "2026-06-21T19:44:09.254904+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -70,7 +176,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.67507+01:00"
+    created: "2026-06-21T19:44:09.245726+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -123,7 +229,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.665629+01:00"
+    created: "2026-06-21T19:44:09.235845+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -176,7 +282,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.65656+01:00"
+    created: "2026-06-21T19:44:09.225855+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -229,7 +335,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.646774+01:00"
+    created: "2026-06-21T19:44:09.216589+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -282,7 +388,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.636906+01:00"
+    created: "2026-06-21T19:44:09.196991+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -327,7 +433,7 @@ entries:
         - url: https://artifacthub.io/packages/helm/bitnami/postgresql
     apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-09T13:32:45.633141+01:00"
+    created: "2026-06-21T19:44:09.193058+02:00"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -366,7 +472,7 @@ entries:
         url: https://cert-manager.io/public-keys/cert-manager-keyring-2021-09-20-1020CF3C033D4F35BAE1C19E1226061C665DF13E.gpg
     apiVersion: v2
     appVersion: v1.15.3
-    created: "2026-06-09T13:32:45.685878+01:00"
+    created: "2026-06-21T19:44:09.266053+02:00"
     description: A Helm chart for cert-manager
     digest: 016e68d9f7083d2c4fd302f951ee6490dbf4cb1ef44cfc06914c39cbfb01d858
     home: https://cert-manager.io
@@ -404,7 +510,7 @@ entries:
       tanzuCategory: service
     apiVersion: v2
     appVersion: 18.4.0
-    created: "2026-06-09T13:32:45.688588+01:00"
+    created: "2026-06-21T19:44:09.26871+02:00"
     dependencies:
     - name: common
       repository: oci://registry-1.docker.io/bitnamicharts
@@ -433,47 +539,6 @@ entries:
     urls:
     - https://caninehq.github.io/canine/charts/postgresql-18.7.3.tgz
     version: 18.7.3
-  - annotations:
-      category: Database
-      images: |
-        - name: os-shell
-          image: docker.io/bitnami/os-shell:12-debian-12-r33
-        - name: postgres-exporter
-          image: docker.io/bitnami/postgres-exporter:0.16.0-debian-12-r1
-        - name: postgresql
-          image: docker.io/bitnami/postgresql:17.2.0-debian-12-r2
-      licenses: Apache-2.0
-    apiVersion: v2
-    appVersion: 17.2.0
-    created: "2026-06-09T12:09:06.515512+01:00"
-    dependencies:
-    - name: common
-      repository: oci://registry-1.docker.io/bitnamicharts
-      tags:
-      - bitnami-common
-      version: 2.x.x
-    description: PostgreSQL (Postgres) is an open source object-relational database
-      known for reliability and data integrity. ACID-compliant, it supports foreign
-      keys, joins, views, triggers and stored procedures.
-    digest: 7ea2c56d9cde18fc5e68ea486b7f4833b21b158c20361d51c8ac55880bb636ce
-    home: https://bitnami.com
-    icon: https://bitnami.com/assets/stacks/postgresql/img/postgresql-stack-220x234.png
-    keywords:
-    - postgresql
-    - postgres
-    - database
-    - sql
-    - replication
-    - cluster
-    maintainers:
-    - name: Broadcom, Inc. All Rights Reserved.
-      url: https://github.com/bitnami/charts
-    name: postgresql
-    sources:
-    - https://github.com/bitnami/charts/tree/main/bitnami/postgresql
-    urls:
-    - https://caninehq.github.io/canine/charts/postgresql-16.3.1.tgz
-    version: 16.3.1
   traefik:
   - annotations:
       artifacthub.io/changes: "- \"fix: remove Gateway API CRDs\"\n- \"feat(provider):
@@ -486,7 +551,7 @@ entries:
       traefik.io/proxy-min-version: v3.6.0
     apiVersion: v2
     appVersion: v3.7.1
-    created: "2026-06-09T13:32:45.692862+01:00"
+    created: "2026-06-21T19:44:09.27296+02:00"
     description: A Traefik based Kubernetes ingress controller
     digest: b73d0159fc1222cc9bdaefde80000a9bad2dfe81de4caed14b9509b3bf6c1df9
     home: https://traefik.io/
@@ -510,4 +575,4 @@ entries:
     urls:
     - https://caninehq.github.io/canine/charts/traefik-40.2.0.tgz
     version: 40.2.0
-generated: "2026-06-09T13:32:45.628775+01:00"
+generated: "2026-06-21T19:44:09.188434+02:00"

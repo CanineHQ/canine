@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.8
+version: 0.1.10
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -65,8 +65,8 @@ annotations:
       url: https://github.com/czhu12/canine/issues
   # Optional: changes introduced in this version
   artifacthub.io/changes: |
-    - kind: changed
-      description: Auto-generate secretKeyBase when not provided
+    - kind: fixed
+      description: Fix NOTES.txt to use ingress.hostname and show DNS record instructions
   # Optional: indicates the maturity of the chart
   artifacthub.io/prerelease: "false"
 

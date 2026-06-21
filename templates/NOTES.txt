@@ -1,27 +1,48 @@
-1. Get the application URL by running these commands:
+1. DNS Setup:
 {{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+{{- $svcList := (lookup "v1" "Service" .Release.Namespace "canine-traefik") }}
+{{- $lbIP := "" }}
+{{- $lbHostname := "" }}
+{{- if $svcList }}
+  {{- if $svcList.status }}
+    {{- if $svcList.status.loadBalancer }}
+      {{- if $svcList.status.loadBalancer.ingress }}
+        {{- $ingress := index $svcList.status.loadBalancer.ingress 0 }}
+        {{- if $ingress.ip }}
+          {{- $lbIP = $ingress.ip }}
+        {{- end }}
+        {{- if $ingress.hostname }}
+          {{- $lbHostname = $ingress.hostname }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
   {{- end }}
 {{- end }}
+{{- if $lbIP }}
 
-2. DNS Setup:
-   ----------
-   Get the external IP of your ingress controller:
+   Create this DNS record:
+
+   {{ .Values.ingress.hostname }}  ->  {{ $lbIP }}  (A record)
+{{- else if $lbHostname }}
+
+   Create this DNS record:
+
+   {{ .Values.ingress.hostname }}  ->  {{ $lbHostname }}  (CNAME record)
+{{- else }}
+
+   The load balancer IP is not yet available. Run this command to get it:
 
    kubectl get svc --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name=traefik" -o jsonpath="{.items[0].status.loadBalancer.ingress[0].ip}"
 
-   If your provider assigns a hostname instead of an IP:
-   kubectl get svc --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name=traefik" -o jsonpath="{.items[0].status.loadBalancer.ingress[0].hostname}"
+   Then create this DNS record:
 
-   Then create the following DNS record(s):
-   {{- range .Values.ingress.hosts }}
-   {{ .host }}  ->  A record (IP) or CNAME record (hostname) pointing to the value above
-   {{- end }}
+   {{ .Values.ingress.hostname }}  ->  <LOAD_BALANCER_IP>
+{{- end }}
 
-   Note: It may take a few minutes for the LoadBalancer IP to be assigned.
-   Once DNS propagates, cert-manager will automatically issue a TLS certificate.
+   Once DNS propagates, cert-manager will automatically issue a TLS certificate
+   and your app will be live at:
+
+   https://{{ .Values.ingress.hostname }}
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "canine.fullname" . }})
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")

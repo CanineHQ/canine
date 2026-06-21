@@ -26,33 +26,13 @@ helm repo update
 
 This installs Canine with Traefik ingress, cert-manager for automatic TLS, and a custom domain.
 
-Create a `values.yaml`:
-
-```yaml
-canine:
-  secretKeyBase: "generate-a-secure-key-with-openssl-rand-hex-64"
-  acmeEmail: "you@example.com"
-
-ingress:
-  enabled: true
-  hosts:
-    - host: canine.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: canine-tls
-      hosts:
-        - canine.example.com
-```
-
-Install:
-
 ```bash
 helm install canine canine/canine \
   --namespace canine \
   --create-namespace \
-  -f values.yaml
+  --set ingress.enabled=true \
+  --set ingress.hostname=canine.example.com \
+  --set canine.acmeEmail=you@example.com
 ```
 
 #### DNS Setup
@@ -89,44 +69,29 @@ Once DNS propagates, cert-manager will automatically issue a Let's Encrypt TLS c
 
 If your cluster already has these installed, disable them to avoid conflicts:
 
-```yaml
-cert-manager:
-  enabled: false
-
-traefik:
-  enabled: false
-
-ingress:
-  className: "your-existing-ingress-class"
+```bash
+helm install canine canine/canine \
+  --namespace canine \
+  --create-namespace \
+  --set ingress.enabled=true \
+  --set ingress.hostname=canine.example.com \
+  --set ingress.className=your-existing-ingress-class \
+  --set canine.acmeEmail=you@example.com \
+  --set cert-manager.enabled=false \
+  --set traefik.enabled=false
 ```
 
 ### Option 2: Without a Domain (Local / Port-Forward)
 
 This is the simplest setup — no ingress, no TLS, just access via port-forward.
 
-Create a `values.yaml`:
-
-```yaml
-canine:
-  secretKeyBase: "generate-a-secure-key-with-openssl-rand-hex-64"
-
-ingress:
-  enabled: false
-
-cert-manager:
-  enabled: false
-
-traefik:
-  enabled: false
-```
-
-Install:
-
 ```bash
 helm install canine canine/canine \
   --namespace canine \
   --create-namespace \
-  -f values.yaml
+  --set ingress.enabled=false \
+  --set cert-manager.enabled=false \
+  --set traefik.enabled=false
 ```
 
 Access Canine via port-forward:
