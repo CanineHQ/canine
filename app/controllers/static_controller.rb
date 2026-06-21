@@ -2,6 +2,8 @@ class StaticController < ApplicationController
   INSTALL_SCRIPT = "curl -sSL https://canine.sh/install.sh | bash"
   MAC_INSTALL_SCRIPT = "brew tap CanineHQ/canine && brew install canine"
   MAC_START_SCRIPT = "canine local start"
+  HELM_REPO_SCRIPT = "helm repo add canine https://caninehq.github.io/canine && helm repo update"
+  HELM_INSTALL_SCRIPT = "helm install canine canine/canine \\\n  --namespace canine \\\n  --create-namespace \\\n  --set ingress.enabled=true \\\n  --set ingress.hostname=canine.example.com \\\n  --set canine.acmeEmail=you@example.com"
   skip_before_action :authenticate_user!
   ILLUSTRATIONS = [
     {
