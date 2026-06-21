@@ -19,7 +19,7 @@
 
     <ul class="menu rounded bg-base-200 self-start !pb-6">
       <li>
-        <h2 class="menu-title">Settings</h2>
+        <h2 class="menu-title">User</h2>
         <ul>
           <li class="<%= 'underline' if current_page?(edit_user_registration_path) %>" style="text-underline-offset: 0.25rem;">
             <%= link_to edit_user_registration_path do %>
@@ -27,16 +27,27 @@
               Profile
             <% end %>
           </li>
-          <li class="<%= 'underline' if current_page?(account_users_path) || controller_name == 'teams' %>" style="text-underline-offset: 0.25rem;">
-            <%= link_to account_users_path do %>
-              <iconify-icon icon="lucide:users" ></iconify-icon>
-              Team Members
-            <% end %>
-          </li>
           <li class="<%= 'underline' if current_page?(providers_path) %>" style="text-underline-offset: 0.25rem;">
             <%= link_to providers_path do %>
               <iconify-icon icon="lucide:key-round" ></iconify-icon>
               Credentials
+            <% end %>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h2 class="menu-title">Account</h2>
+        <ul>
+          <li class="<%= 'underline' if current_page?(edit_account_path(current_account)) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to edit_account_path(current_account) do %>
+              <iconify-icon icon="lucide:settings" ></iconify-icon>
+              General
+            <% end %>
+          </li>
+          <li class="<%= 'underline' if current_page?(account_users_path) || controller_name == 'teams' %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to account_users_path do %>
+              <iconify-icon icon="lucide:users" ></iconify-icon>
+              Team Members
             <% end %>
           </li>
           <li class="<%= 'underline' if current_page?(sso_provider_path) || current_page?(new_sso_provider_path) || current_page?(edit_sso_provider_path) %>" style="text-underline-offset: 0.25rem;">

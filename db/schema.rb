@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_02_210630) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_21_213014) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -778,6 +778,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_02_210630) do
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.boolean "password_change_required", default: false
+    t.string "otp_secret"
+    t.boolean "otp_required_for_login"
+    t.integer "consumed_timestep"
+    t.string "otp_backup_codes", array: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"

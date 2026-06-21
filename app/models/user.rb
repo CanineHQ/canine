@@ -5,6 +5,7 @@
 #  id                         :bigint           not null, primary key
 #  admin                      :boolean          default(FALSE)
 #  announcements_last_read_at :datetime
+#  consumed_timestep          :integer
 #  email                      :string           default(""), not null
 #  encrypted_password         :string           default(""), not null
 #  first_name                 :string
@@ -16,6 +17,9 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
+#  otp_backup_codes           :string           is an Array
+#  otp_required_for_login     :boolean
+#  otp_secret                 :string
 #  password_change_required   :boolean          default(FALSE)
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime
@@ -35,7 +39,9 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :recoverable
-  devise :invitable, :database_authenticatable, :registerable, :rememberable, :validatable, :omniauthable
+  devise :invitable, :two_factor_authenticatable, :two_factor_backupable,
+         :registerable, :rememberable, :validatable, :omniauthable,
+         otp_number_of_backup_codes: 10
 
   has_one_attached :avatar
   has_person_name
@@ -91,6 +97,13 @@ class User < ApplicationRecord
   def portainer_access_token
     return @portainer_access_token if @portainer_access_token
     @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
+  end
+
+  def two_factor_qr_code_svg
+    issuer = "Canine"
+    uri = otp_provisioning_uri(email, issuer: issuer)
+    qrcode = RQRCode::QRCode.new(uri)
+    qrcode.as_svg(module_size: 6, standalone: true, use_path: false, fill: "fff", color: "000", shape_rendering: "crispEdges")
   end
 
   def needs_stack_manager_credential?(account)

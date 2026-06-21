@@ -10,7 +10,15 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def create
-    super
+    user = User.find_by(email: sign_in_params[:email]&.downcase)
+
+    if user&.valid_password?(sign_in_params[:password]) && user.otp_required_for_login?
+      session[:otp_user_id] = user.id
+      session[:otp_remember_me] = sign_in_params[:remember_me]
+      redirect_to new_two_factor_verification_path
+    else
+      super
+    end
   end
 
   def destroy

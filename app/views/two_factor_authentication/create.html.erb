@@ -1,0 +1,30 @@
+<%= settings_layout do %>
+  <div class="max-w-lg">
+    <h2 class="text-2xl font-bold">Set Up Two-Factor Authentication</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+
+    <p class="text-sm text-gray-500 mb-6">
+      Scan this QR code with your authenticator app (e.g. Google Authenticator, 1Password, Authy), then enter the code below to verify.
+    </p>
+
+    <div class="bg-white rounded-lg p-4 mb-6 inline-block">
+      <%= @qr_svg.html_safe %>
+    </div>
+
+    <div class="mb-6">
+      <details>
+        <summary class="text-sm cursor-pointer hover:underline">Can't scan? Enter this key manually</summary>
+        <div class="mt-2">
+          <code class="text-xs break-all select-all"><%= current_user.otp_secret %></code>
+        </div>
+      </details>
+    </div>
+
+    <%= form_with url: confirm_two_factor_authentication_path, method: :post, class: "space-y-4", data: { turbo: false } do |f| %>
+      <div>
+        <%= f.text_field :otp_attempt, placeholder: "6-digit code", class: "input input-bordered w-full", autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9]*", maxlength: 6, required: true, autofocus: true %>
+      </div>
+      <%= f.submit "Verify & Enable", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+<% end %>
