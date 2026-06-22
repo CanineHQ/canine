@@ -70,6 +70,7 @@ Rails.application.routes.draw do
       end
       resource :password_reset, only: [ :create ]
       resource :promote_to_admin, only: [ :create, :destroy ]
+      resource :two_factor_reset, only: [ :create ]
     end
   end
   resources :accounts, only: [ :create, :update, :edit ] do

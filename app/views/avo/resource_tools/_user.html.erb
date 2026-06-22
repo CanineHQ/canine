@@ -32,6 +32,25 @@
           </div>
         </div>
 
+        <!-- Disable 2FA -->
+        <div style="padding: 1rem; border-bottom: 1px solid #282d34;">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <h4 style="font-size: 0.875rem; font-weight: 500; color: #eaebee;">Two-Factor Authentication</h4>
+              <% if @resource.record.otp_required_for_login? %>
+                <p style="font-size: 0.75rem; color: #8a909a; margin-top: 0.125rem;">Disable 2FA for this user</p>
+              <% else %>
+                <p style="font-size: 0.75rem; color: #8a909a; margin-top: 0.125rem;">2FA is not enabled</p>
+              <% end %>
+            </div>
+            <%= form_with url: avo.two_factor_reset_path(user_id: @resource.record.id), method: :post do |f| %>
+              <button type="submit" <%= "disabled" unless @resource.record.otp_required_for_login? %> style="display: inline-flex; align-items: center; padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.375rem; color: white; background-color: <%= @resource.record.otp_required_for_login? ? "#dc2626" : "#4b5563" %>; border: none; cursor: <%= @resource.record.otp_required_for_login? ? "pointer" : "not-allowed" %>; opacity: <%= @resource.record.otp_required_for_login? ? "1" : "0.5" %>;" data-confirm="Disable two-factor authentication for <%= @resource.record.email %>?">
+                Disable 2FA
+              </button>
+            <% end %>
+          </div>
+        </div>
+
         <!-- Promote/Demote Site Admin -->
         <div style="padding: 1rem;">
           <div style="display: flex; align-items: center; justify-content: space-between;">
