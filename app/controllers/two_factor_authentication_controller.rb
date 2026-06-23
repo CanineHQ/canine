@@ -5,6 +5,7 @@ class TwoFactorAuthenticationController < ApplicationController
     current_user.otp_secret = User.generate_otp_secret
     current_user.save!
     @qr_svg = current_user.two_factor_qr_code_svg
+    render layout: false
   end
 
   def confirm
@@ -14,7 +15,7 @@ class TwoFactorAuthenticationController < ApplicationController
     else
       @qr_svg = current_user.two_factor_qr_code_svg
       flash.now[:alert] = "Invalid code. Please try again."
-      render :create
+      render :create, layout: false
     end
   end
 

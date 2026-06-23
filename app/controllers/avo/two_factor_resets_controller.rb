@@ -3,6 +3,6 @@ class Avo::TwoFactorResetsController < Avo::ApplicationController
     user = User.find(params[:user_id])
     user.update!(otp_required_for_login: false, otp_secret: nil, otp_backup_codes: nil)
 
-    redirect_to avo.resources_user_path(user), notice: "Two-factor authentication disabled for #{user.email}."
+    redirect_to avo.resources_user_path(user), flash: { success: "Two-factor authentication disabled for #{user.email}." }
   end
 end

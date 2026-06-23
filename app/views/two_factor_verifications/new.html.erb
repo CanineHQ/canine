@@ -2,24 +2,54 @@
   <div class="card w-96 bg-base-100 shadow-xl">
     <div class="card-body">
       <h1 class="text-2xl font-bold text-center">Two-Factor Verification</h1>
-      <p class="text-center text-sm text-gray-500 mt-1">Enter the code from your authenticator app or a recovery code</p>
+      <p class="text-center text-sm text-gray-500 mt-1">Enter the code from your authenticator app</p>
 
-      <%= form_with url: two_factor_verification_path, method: :post, html: { class: "space-y-4" }, data: { turbo: false } do |f| %>
-        <% if flash[:alert] %>
-          <div class="alert alert-error mb-4">
-            <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
-            <span><%= flash[:alert] %></span>
-          </div>
-        <% end %>
-
-        <div class="form-control">
-          <%= f.text_field :otp_attempt, placeholder: "6-digit code or recovery code", class: "input input-bordered w-full text-center text-lg tracking-widest", autocomplete: "one-time-code", required: true, autofocus: true %>
-        </div>
-
-        <div class="form-control mt-6">
-          <%= f.submit "Verify", class: "btn btn-primary w-full" %>
+      <% if flash[:alert] %>
+        <div class="alert alert-error mt-4">
+          <iconify-icon icon="lucide:alert-triangle" class="mr-2 text-white"></iconify-icon>
+          <span><%= flash[:alert] %></span>
         </div>
       <% end %>
+
+      <%= form_with url: two_factor_verification_path, method: :post, class: "space-y-4 mt-4", data: { turbo: false } do %>
+        <div id="otp-mode">
+          <%= render "shared/otp_input" %>
+        </div>
+
+        <div id="recovery-mode" class="hidden">
+          <div class="form-control">
+            <input type="text" name="" placeholder="Recovery code" class="input input-bordered w-full text-center text-lg tracking-widest" autocomplete="off" id="recovery_code_input" />
+          </div>
+        </div>
+
+        <div class="form-control mt-2">
+          <input type="submit" value="Verify" class="btn btn-primary w-full" />
+        </div>
+      <% end %>
+
+      <div class="text-center mt-2">
+        <a href="#" class="text-sm text-gray-500 hover:underline" id="toggle-recovery" onclick="
+          var otpMode = document.getElementById('otp-mode');
+          var recoveryMode = document.getElementById('recovery-mode');
+          var link = document.getElementById('toggle-recovery');
+          var recoveryInput = document.getElementById('recovery_code_input');
+          var otpInput = otpMode.querySelector('input[name=otp_attempt]');
+          if (otpMode.classList.contains('hidden')) {
+            otpMode.classList.remove('hidden');
+            recoveryMode.classList.add('hidden');
+            link.textContent = 'Use a recovery code instead';
+            if (recoveryInput) { recoveryInput.name = ''; }
+            if (otpInput) { otpInput.name = 'otp_attempt'; otpInput.focus(); }
+          } else {
+            otpMode.classList.add('hidden');
+            recoveryMode.classList.remove('hidden');
+            link.textContent = 'Use authenticator app instead';
+            if (recoveryInput) { recoveryInput.name = 'otp_attempt'; recoveryInput.focus(); }
+            if (otpInput) { otpInput.name = ''; }
+          }
+          return false;
+        ">Use a recovery code instead</a>
+      </div>
     </div>
   </div>
 </div>

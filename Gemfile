@@ -116,5 +116,5 @@ gem "mcp", "~> 0.4.0"
 
 gem "doorkeeper", "~> 5.8"
 
-gem "devise-two-factor", "~> 6.0"
+gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 2.2"

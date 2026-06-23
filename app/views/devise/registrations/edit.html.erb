@@ -51,33 +51,7 @@
         </div>
       <% end %>
 
-      <h3 class="text-lg font-semibold mt-8 mb-3">Two-Factor Authentication</h3>
-      <% if current_user.otp_required_for_login? %>
-        <div class="flex items-center gap-2 mb-4">
-          <iconify-icon icon="lucide:shield-check" class="text-success text-xl"></iconify-icon>
-          <span class="text-success font-semibold">Enabled</span>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">
-          Your account is protected with two-factor authentication. Enter a code from your authenticator app to disable it.
-        </p>
-        <%= form_with url: two_factor_authentication_path, method: :delete, class: "space-y-4", data: { turbo: false } do |f| %>
-          <div>
-            <%= f.text_field :otp_attempt, placeholder: "6-digit code", class: "input input-bordered w-full", autocomplete: "one-time-code", inputmode: "numeric", pattern: "[0-9]*", maxlength: 6, required: true %>
-          </div>
-          <%= f.submit "Disable Two-Factor", class: "btn btn-error btn-sm" %>
-        <% end %>
-      <% else %>
-        <div class="flex items-center gap-2 mb-4">
-          <iconify-icon icon="lucide:shield-off" class="text-warning text-xl"></iconify-icon>
-          <span class="text-warning font-semibold">Not enabled</span>
-        </div>
-        <p class="text-sm text-gray-500 mb-4">
-          Add an extra layer of security by requiring a code from an authenticator app when you sign in.
-        </p>
-        <%= form_with url: two_factor_authentication_path, method: :post, data: { turbo: false } do %>
-          <%= submit_tag "Set Up Two-Factor", class: "btn btn-primary btn-sm" %>
-        <% end %>
-      <% end %>
+      <%= render "devise/registrations/two_factor" %>
     </div>
 
     <div>

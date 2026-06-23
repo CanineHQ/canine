@@ -1,0 +1,12 @@
+<div class="form-control">
+  <input type="text"
+         name="<%= local_assigns[:name] || 'otp_attempt' %>"
+         class="input input-bordered w-full text-center text-xl font-mono tracking-[0.5em]"
+         placeholder="000000"
+         maxlength="6"
+         inputmode="numeric"
+         pattern="[0-9]*"
+         autocomplete="one-time-code"
+         autofocus
+         required>
+</div>

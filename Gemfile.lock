@@ -169,11 +169,6 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise-two-factor (6.4.0)
-      activesupport (>= 7.2, < 8.2)
-      devise (>= 4.0, < 6.0)
-      railties (>= 7.2, < 8.2)
-      rotp (~> 6.0)
     devise_invitable (2.0.11)
       actionmailer (>= 5.0)
       devise (>= 4.6)
@@ -756,7 +751,6 @@ DEPENDENCIES
   database_cleaner-active_record (~> 2.2.2)
   debug
   devise (~> 4.9)
-  devise-two-factor (~> 6.0)
   devise_invitable (~> 2.0)
   doorkeeper (~> 5.8)
   dotenv (~> 3.1)
@@ -799,6 +793,7 @@ DEPENDENCIES
   ransack (~> 4.2)
   redcarpet (~> 3.6)
   responders!
+  rotp (~> 6.3)
   rqrcode (~> 2.2)
   rspec-rails (~> 8.0)
   rswag-api (~> 2.10, >= 2.10.1)
