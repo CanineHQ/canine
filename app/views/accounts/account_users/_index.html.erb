@@ -11,6 +11,9 @@
         <th>
           <span class="text-sm font-medium text-base-content/80">Role</span>
         </th>
+        <th>
+          <span class="text-sm font-medium text-base-content/80">2FA</span>
+        </th>
         <th></th>
       </tr>
     </thead>
@@ -39,6 +42,13 @@
               <% end %>
             <% else %>
               <span class="badge"><%= account_user.role.capitalize %></span>
+            <% end %>
+          </td>
+          <td>
+            <% if account_user.user.otp_required_for_login? %>
+              <iconify-icon icon="lucide:shield-check" class="text-success" height="18"></iconify-icon>
+            <% else %>
+              <iconify-icon icon="lucide:shield-off" class="text-base-content/30" height="18"></iconify-icon>
             <% end %>
           </td>
           <td>

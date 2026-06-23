@@ -8,9 +8,9 @@
   <p class="text-sm text-gray-500 mb-4">
     Your account is protected with two-factor authentication.
   </p>
-  <% disable_2fa_modal_id = "disable_2fa_#{SecureRandom.hex(8)}" %>
-  <button class="btn btn-error btn-sm" onclick="<%= disable_2fa_modal_id %>.showModal()">Disable Two-Factor</button>
-  <dialog id="<%= disable_2fa_modal_id %>" class="modal">
+
+  <button class="btn btn-error btn-sm" onclick="disable_2fa_modal.showModal()">Disable Two-Factor</button>
+  <dialog id="disable_2fa_modal" class="modal">
     <div class="modal-box bg-base-300">
       <form method="dialog">
         <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
