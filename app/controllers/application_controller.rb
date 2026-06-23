@@ -20,7 +20,11 @@ class ApplicationController < ActionController::Base
   protected
     def current_account
       return nil unless user_signed_in?
-      @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.accounts.first
+      @current_account ||= current_user.accounts.find_by(id: session[:account_id]) || current_user.default_account || current_user.accounts.first
+
+      if @current_account && !current_user.account_users.exists?(default: true)
+        current_user.account_users.find_by(account: @current_account)&.set_default!
+      end
 
       @current_account
     end
