@@ -7,7 +7,8 @@ class AccountsController < ApplicationController
     redirect_to root_path
   end
 
-  def show
+  def edit
+    @account = current_account
   end
 
   def create
@@ -22,9 +23,9 @@ class AccountsController < ApplicationController
 
   def update
     if current_account.update(account_params)
-      redirect_to edit_user_registration_path, notice: "Account settings updated."
+      redirect_to edit_account_path(current_account), notice: "Account settings updated."
     else
-      redirect_to edit_user_registration_path, alert: current_account.errors.full_messages.to_sentence
+      redirect_to edit_account_path(current_account), alert: current_account.errors.full_messages.to_sentence
     end
   end
 

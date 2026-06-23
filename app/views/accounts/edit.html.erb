@@ -1,0 +1,75 @@
+<%= settings_layout do %>
+  <div class="space-y-16">
+    <div>
+      <h2 class="text-2xl font-bold">Account</h2>
+      <p class="text-xs text-gray-500 mt-1">ID: <%= current_account.id %></p>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <%= form_for(current_account, url: account_path(current_account), html: { method: :patch }) do |f| %>
+        <div class="mb-3">
+          <%= f.text_field :name, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Account name" %>
+        </div>
+
+        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mb-3">
+          <label class="label mt-1">
+            <span class="label-text cursor-pointer">Allow MCP access</span>
+            <%= f.check_box :allow_mcp, class: "checkbox" %>
+          </label>
+        </div>
+        <a class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block mb-4"
+           onclick="mcp_setup_modal.showModal()">
+          How do I add this as an MCP server?
+        </a>
+
+        <div class="mb-3">
+          <%= f.submit "Save Account", class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+
+      <dialog id="mcp_setup_modal" class="modal">
+        <div class="modal-box w-11/12 max-w-2xl bg-base-300">
+          <form method="dialog">
+            <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+              <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+            </button>
+          </form>
+          <h3 class="mb-6 text-xl font-bold">Adding Canine as an MCP server</h3>
+          <p class="mb-6 text-sm text-base-content/70">Connect your AI tools to Canine to manage deployments, clusters, and more.</p>
+          <div class="mb-6">
+            <p class="text-sm text-base-content"><strong>Claude Code</strong></p>
+            <p class="mb-2 text-sm text-base-content/70">Run this in your terminal:</p>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="claude mcp add --transport http canine <%= request.base_url %>/mcp" class="input input-bordered input-sm flex-1 font-mono text-xs">
+              <button type="button" class="btn btn-sm btn-square btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.clipboardText)" data-clipboard-text="claude mcp add --transport http canine <%= request.base_url %>/mcp">
+                <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          <div class="mb-6">
+            <p class="text-sm text-base-content"><strong>Cursor</strong></p>
+            <p class="mb-2 text-sm text-base-content/70">Go to <strong>Settings → MCP</strong> and add a new server with this URL:</p>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="<%= request.base_url %>/mcp" class="input input-bordered input-sm flex-1 font-mono text-xs">
+              <button type="button" class="btn btn-sm btn-square btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.clipboardText)" data-clipboard-text="<%= request.base_url %>/mcp">
+                <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+              </button>
+            </div>
+          </div>
+          <div class="mb-2">
+            <p class="text-sm text-base-content"><strong>Claude Desktop</strong> &amp; other MCP clients</p>
+            <p class="mb-2 text-sm text-base-content/70">Use the server URL:</p>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="<%= request.base_url %>/mcp" class="input input-bordered input-sm flex-1 font-mono text-xs">
+              <button type="button" class="btn btn-sm btn-square btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.clipboardText)" data-clipboard-text="<%= request.base_url %>/mcp">
+                <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    </div>
+  </div>
+<% end %>

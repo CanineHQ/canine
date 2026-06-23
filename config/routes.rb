@@ -70,9 +70,10 @@ Rails.application.routes.draw do
       end
       resource :password_reset, only: [ :create ]
       resource :promote_to_admin, only: [ :create, :destroy ]
+      resource :two_factor_reset, only: [ :create ]
     end
   end
-  resources :accounts, only: [ :create, :update ] do
+  resources :accounts, only: [ :create, :update, :edit ] do
     collection do
       resources :account_users, only: %i[create index update destroy], module: :accounts
       resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
@@ -233,6 +234,11 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks", registrations: "users/registrations", sessions: "users/sessions" }
 
   resource :password_change, only: [ :show, :update ], controller: "password_change"
+
+  resource :two_factor_authentication, only: [ :create, :destroy ], controller: "two_factor_authentication" do
+    post :confirm
+  end
+  resource :two_factor_verification, only: [ :new, :create ], controller: "two_factor_verifications"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

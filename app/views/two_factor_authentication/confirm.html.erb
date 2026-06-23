@@ -1,0 +1,39 @@
+<%= settings_layout do %>
+  <div class="max-w-xl">
+    <h2 class="text-xl font-bold">Save your recovery codes</h2>
+    <p class="text-sm text-gray-500 mt-1 mb-6">
+      If you lose access to your authenticator app, you can log in using your recovery codes. Each code can only be used once.
+    </p>
+
+    <div class="bg-base-200 rounded-lg p-6 mb-6">
+      <div class="grid grid-cols-3 gap-x-8 gap-y-3 justify-items-center font-mono text-sm font-semibold select-all">
+        <% @recovery_codes.each do |code| %>
+          <span><%= code %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 mb-6">
+      <button class="btn btn-outline btn-sm"
+              data-controller="clipboard"
+              data-clipboard-text="<%= @recovery_codes.join("\n") %>">
+        <iconify-icon icon="lucide:copy"></iconify-icon>
+        Copy
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="(() => { const w = window.open('', '_blank'); w.document.write('<pre>' + document.querySelector('[data-recovery-codes]').textContent + '</pre>'); w.print(); w.close(); })()">
+        <iconify-icon icon="lucide:printer"></iconify-icon>
+        Print
+      </button>
+      <a class="btn btn-outline btn-sm" download="canine-recovery-codes.txt" href="data:text/plain;charset=utf-8,<%= ERB::Util.url_encode(@recovery_codes.join("\n")) %>">
+        <iconify-icon icon="lucide:download"></iconify-icon>
+        Download
+      </a>
+    </div>
+
+    <div class="flex justify-end">
+      <%= link_to "Continue", edit_user_registration_path, class: "btn btn-primary btn-sm" %>
+    </div>
+
+    <div class="hidden" data-recovery-codes><%= @recovery_codes.join("\n") %></div>
+  </div>
+<% end %>

@@ -115,3 +115,6 @@ gem "ruby-saml", "~> 1.17"
 gem "mcp", "~> 0.4.0"
 
 gem "doorkeeper", "~> 5.8"
+
+gem "rotp", "~> 6.3"
+gem "rqrcode", "~> 2.2"

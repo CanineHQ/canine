@@ -1,0 +1,36 @@
+<%= turbo_frame_tag "two_factor_setup" do %>
+<h3 class="text-lg font-semibold mt-8 mb-3">Two-Factor Authentication</h3>
+
+<div class="flex flex-col md:flex-row md:items-start gap-8 max-w-3xl">
+  <div class="flex flex-col items-center shrink-0">
+    <div class="bg-white rounded-lg p-3">
+      <%= @qr_svg.html_safe %>
+    </div>
+    <p class="text-sm text-gray-500 mt-3 text-center">Scan with your authenticator app</p>
+  </div>
+
+  <div class="flex-1 space-y-6">
+    <div>
+      <h3 class="text-sm font-semibold mb-2">Setup Key</h3>
+      <div class="flex items-center gap-2 bg-base-200 rounded-lg px-4 py-3">
+        <code class="text-sm font-mono break-all select-all flex-1"><%= current_user.otp_secret %></code>
+        <button type="button" class="btn btn-ghost btn-sm btn-square" data-controller="clipboard" data-clipboard-text="<%= current_user.otp_secret %>">
+          <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Enter this key manually if you can't scan the QR code.</p>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold mb-2">Verification Code</h3>
+      <%= form_with url: confirm_two_factor_authentication_path, method: :post, class: "space-y-4", data: { turbo: false } do |f| %>
+        <%= render "shared/otp_input" %>
+        <div class="flex items-center gap-3 mt-4">
+          <%= f.submit "Verify & Enable", class: "btn btn-primary" %>
+          <%= link_to "Cancel", edit_user_registration_path, class: "btn btn-ghost" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

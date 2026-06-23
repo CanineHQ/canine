@@ -5,6 +5,7 @@
 #  id                         :bigint           not null, primary key
 #  admin                      :boolean          default(FALSE)
 #  announcements_last_read_at :datetime
+#  consumed_timestep          :integer
 #  email                      :string           default(""), not null
 #  encrypted_password         :string           default(""), not null
 #  first_name                 :string
@@ -16,6 +17,9 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
+#  otp_backup_codes           :string           is an Array
+#  otp_required_for_login     :boolean
+#  otp_secret                 :string
 #  password_change_required   :boolean          default(FALSE)
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime
@@ -35,7 +39,8 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :recoverable
-  devise :invitable, :database_authenticatable, :registerable, :rememberable, :validatable, :omniauthable
+  devise :invitable, :database_authenticatable,
+         :registerable, :rememberable, :validatable, :omniauthable
 
   has_one_attached :avatar
   has_person_name
@@ -91,6 +96,43 @@ class User < ApplicationRecord
   def portainer_access_token
     return @portainer_access_token if @portainer_access_token
     @portainer_access_token = providers.find_by(provider: "portainer")&.access_token
+  end
+
+  # Two-factor authentication (ROTP)
+  def self.generate_otp_secret
+    ROTP::Base32.random
+  end
+
+  def validate_and_consume_otp!(code)
+    return false unless code.present? && otp_secret.present?
+
+    totp = ROTP::TOTP.new(otp_secret)
+    totp.verify(code.gsub(/\s+/, ""), drift_behind: 90, drift_ahead: 90).present?
+  end
+
+  def invalidate_otp_backup_code!(code)
+    return false unless code.present? && otp_backup_codes.present?
+
+    codes = otp_backup_codes.dup
+    if codes.delete(code.strip)
+      update!(otp_backup_codes: codes)
+      true
+    else
+      false
+    end
+  end
+
+  def generate_otp_backup_codes!
+    codes = Array.new(12) { SecureRandom.hex(4) }
+    update!(otp_backup_codes: codes)
+    codes
+  end
+
+  def two_factor_qr_code_svg
+    totp = ROTP::TOTP.new(otp_secret, issuer: "Canine")
+    uri = totp.provisioning_uri(email)
+    qrcode = RQRCode::QRCode.new(uri)
+    qrcode.as_svg(module_size: 5, standalone: true, use_path: false, fill: "fff", color: "000", shape_rendering: "crispEdges")
   end
 
   def needs_stack_manager_credential?(account)

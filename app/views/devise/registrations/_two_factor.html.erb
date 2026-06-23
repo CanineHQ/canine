@@ -1,0 +1,43 @@
+<%= turbo_frame_tag "two_factor_setup" do %>
+<h3 class="text-lg font-semibold mt-8 mb-3">Two-Factor Authentication</h3>
+<% if current_user.otp_required_for_login? %>
+  <div class="flex items-center gap-2 mb-4">
+    <iconify-icon icon="lucide:shield-check" class="text-success text-xl"></iconify-icon>
+    <span class="text-success font-semibold">Enabled</span>
+  </div>
+  <p class="text-sm text-gray-500 mb-4">
+    Your account is protected with two-factor authentication.
+  </p>
+
+  <button class="btn btn-error btn-sm" onclick="disable_2fa_modal.showModal()">Disable Two-Factor</button>
+  <dialog id="disable_2fa_modal" class="modal">
+    <div class="modal-box bg-base-300">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <h3 class="text-lg font-bold mb-2">Disable Two-Factor Authentication</h3>
+      <p class="text-sm text-gray-500 mb-4">Enter a code from your authenticator app to confirm.</p>
+      <%= form_with url: two_factor_authentication_path, method: :delete, class: "space-y-4", data: { turbo: false } do |f| %>
+        <%= render "shared/otp_input" %>
+        <%= f.submit "Disable", class: "btn btn-error w-full" %>
+      <% end %>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+<% else %>
+  <div class="flex items-center gap-2 mb-4">
+    <iconify-icon icon="lucide:shield-off" class="text-warning text-xl"></iconify-icon>
+    <span class="text-warning font-semibold">Not enabled</span>
+  </div>
+  <p class="text-sm text-gray-500 mb-4">
+    Add an extra layer of security by requiring a code from an authenticator app when you sign in.
+  </p>
+  <%= form_with url: two_factor_authentication_path, method: :post do %>
+    <%= submit_tag "Set Up Two-Factor", class: "btn btn-primary btn-sm" %>
+  <% end %>
+<% end %>
+<% end %>

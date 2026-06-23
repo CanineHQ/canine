@@ -5,6 +5,7 @@
 #  id                         :bigint           not null, primary key
 #  admin                      :boolean          default(FALSE)
 #  announcements_last_read_at :datetime
+#  consumed_timestep          :integer
 #  email                      :string           default(""), not null
 #  encrypted_password         :string           default(""), not null
 #  first_name                 :string
@@ -16,6 +17,9 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
+#  otp_backup_codes           :string           is an Array
+#  otp_required_for_login     :boolean
+#  otp_secret                 :string
 #  password_change_required   :boolean          default(FALSE)
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime
