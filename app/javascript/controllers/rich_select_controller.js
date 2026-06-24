@@ -5,11 +5,13 @@ export default class extends Controller {
 
   connect() {
     this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this)
-    this.inputTarget.addEventListener("invalid", this.onInvalid.bind(this))
+    this.boundOnInvalid = this.onInvalid.bind(this)
+    this.inputTarget.addEventListener("invalid", this.boundOnInvalid)
   }
 
   disconnect() {
     document.removeEventListener("click", this.closeOnOutsideClick)
+    this.inputTarget.removeEventListener("invalid", this.boundOnInvalid)
   }
 
   toggle() {

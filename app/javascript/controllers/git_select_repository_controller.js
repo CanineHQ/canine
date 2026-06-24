@@ -8,7 +8,8 @@ export default class extends Controller {
 
   connect() {
     this.page = 1
-    this.repositoriesListTarget.addEventListener("scroll", this.onScroll.bind(this))
+    this.boundOnScroll = this.onScroll.bind(this)
+    this.repositoriesListTarget.addEventListener("scroll", this.boundOnScroll)
     this.searchFunc = debounce(async (e) => {
       const searchTerm = e.target.value.toLowerCase()
       await get(`${this.endpointValue}?q=${searchTerm}&provider_id=${this.selectedProviderId}`, {
@@ -60,6 +61,10 @@ export default class extends Controller {
     this.buttonTarget.setAttribute("disabled", "true")
     this.page = 1
     this.fetchMoreRepositories();
+  }
+
+  disconnect() {
+    this.repositoriesListTarget.removeEventListener("scroll", this.boundOnScroll)
   }
 
   async onScroll(event) {

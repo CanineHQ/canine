@@ -11,12 +11,12 @@ export default class extends Controller {
     this.selectedPacks = []
     this.initializeSortable()
 
-    // Listen for buildpack selection from search
-    this.element.addEventListener("buildpack-search:buildpack-selected", this.handleSearchSelection.bind(this))
+    this.boundHandleSearchSelection = this.handleSearchSelection.bind(this)
+    this.element.addEventListener("buildpack-search:buildpack-selected", this.boundHandleSearchSelection)
   }
 
   disconnect() {
-    this.element.removeEventListener("buildpack-search:buildpack-selected", this.handleSearchSelection.bind(this))
+    this.element.removeEventListener("buildpack-search:buildpack-selected", this.boundHandleSearchSelection)
   }
 
   handleSearchSelection(event) {

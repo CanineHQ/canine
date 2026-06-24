@@ -9,19 +9,18 @@ export default class extends Controller {
   }
 
   connect() {
-    // Scroll to the bottom of the container
     this.scrollToBottom();
 
-    // Add event listener for Turbo Frame load
-    document.addEventListener('turbo:frame-load', this.scrollToBottom.bind(this));
+    this.boundScrollToBottom = this.scrollToBottom.bind(this);
+    document.addEventListener('turbo:frame-load', this.boundScrollToBottom);
     this.interval = setInterval(() => {
-      // Fetch new logs
       this.loadNewLogs();
     }, REFRESH_INTERVAL);
   }
 
   disconnect() {
     clearInterval(this.interval);
+    document.removeEventListener('turbo:frame-load', this.boundScrollToBottom);
   }
 
   async loadNewLogs() {
