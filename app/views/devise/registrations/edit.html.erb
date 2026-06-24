@@ -36,19 +36,23 @@
       <hr class="mt-3 mb-4 border-t border-base-300" />
 
       <h3 class="text-lg font-semibold mb-3">Password</h3>
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, data: { turbo: false } }) do |f| %>
-        <div class="mb-3">
-          <%= f.password_field :password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "New password", autocomplete: "new-password" %>
-        </div>
-        <div class="mb-3">
-          <%= f.password_field :password_confirmation, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Confirm new password", autocomplete: "new-password" %>
-        </div>
-        <div class="mb-3">
-          <%= f.password_field :current_password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Current password", autocomplete: "current-password" %>
-        </div>
-        <div class="mb-3">
-          <%= f.submit "Update Password", class: 'btn btn-primary btn-sm' %>
-        </div>
+      <% if current_user.omniauth_user? %>
+        <p class="text-sm text-base-content/70">You signed in with <strong>GitHub</strong>. Your password is managed by your authentication provider.</p>
+      <% else %>
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, data: { turbo: false } }) do |f| %>
+          <div class="mb-3">
+            <%= f.password_field :password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "New password", autocomplete: "new-password" %>
+          </div>
+          <div class="mb-3">
+            <%= f.password_field :password_confirmation, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Confirm new password", autocomplete: "new-password" %>
+          </div>
+          <div class="mb-3">
+            <%= f.password_field :current_password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Current password", autocomplete: "current-password" %>
+          </div>
+          <div class="mb-3">
+            <%= f.submit "Update Password", class: 'btn btn-primary btn-sm' %>
+          </div>
+        <% end %>
       <% end %>
 
       <%= render "devise/registrations/two_factor" %>
