@@ -82,6 +82,10 @@ class User < ApplicationRecord
   # has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   # has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
 
+  def omniauth_user?
+    providers.where(provider: Devise.omniauth_configs.keys.map(&:to_s)).where.not(uid: nil).exists?
+  end
+
   def github_provider
     providers.find_by(provider: "github")
   end
