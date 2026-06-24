@@ -1,6 +1,7 @@
 class Local::OnboardingController < ApplicationController
   layout "homepage"
   skip_before_action :authenticate_user!
+  before_action :redirect_if_onboarded
 
   def index
     @in_cluster = K8::Connection.in_cluster?
@@ -38,6 +39,10 @@ class Local::OnboardingController < ApplicationController
   end
 
   private
+
+  def redirect_if_onboarded
+    redirect_to new_user_session_path if User.exists?
+  end
 
   def fetch_in_cluster_info
     cluster = Cluster.new(options: { "in_cluster" => true })
