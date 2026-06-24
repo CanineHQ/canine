@@ -13,8 +13,6 @@ RSpec.describe "Local::Onboarding", type: :request do
 
   describe "redirect_if_onboarded" do
     context "when no users exist" do
-      before { User.delete_all }
-
       it "allows access to the onboarding page" do
         allow(K8::Connection).to receive(:in_cluster?).and_return(false)
         get local_onboarding_index_path
