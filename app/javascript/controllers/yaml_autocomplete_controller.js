@@ -22,10 +22,18 @@ export default class extends YamlEditorController {
       this.fetchSchema(this.chartUrlValue, this.versionValue)
     } else if (this.hasChartUrlInputIdValue) {
       this.chartUrlInput = document.getElementById(this.chartUrlInputIdValue)
-      this.chartUrlInput.addEventListener('change', (e) => {
+      this.chartUrlChangeHandler = (e) => {
         this.fetchSchema(e.target.value)
-      })
+      }
+      this.chartUrlInput.addEventListener('change', this.chartUrlChangeHandler)
     }
+  }
+
+  disconnect() {
+    if (this.chartUrlInput && this.chartUrlChangeHandler) {
+      this.chartUrlInput.removeEventListener('change', this.chartUrlChangeHandler)
+    }
+    super.disconnect()
   }
 
   // version is only null for new add-ons, in which case it fetches the latest

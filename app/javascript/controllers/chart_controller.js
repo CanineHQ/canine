@@ -9,7 +9,7 @@ export default class extends Controller {
 
   connect() {
     const title = this.configValue.title
-    const chart = new ApexCharts(this.element, {
+    this.chart = new ApexCharts(this.element, {
       chart: {
         foreColor: '#fff',
         type: 'area',
@@ -98,7 +98,13 @@ export default class extends Controller {
         max: this.suggestedMaxY(),
       }
     })
-    chart.render();
+    this.chart.render();
+  }
+
+  disconnect() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
   }
 
   value(point) {

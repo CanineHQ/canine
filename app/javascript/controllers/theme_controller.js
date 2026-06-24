@@ -10,7 +10,7 @@ export default class extends Controller {
       html.setAttribute("data-leftbar-type", "mobile");
     }
     // Also, if the window is resized, check again
-    window.addEventListener("resize", () => {
+    this.resizeHandler = () => {
       if (window.innerWidth < NARROW_WIDTH) {
         html.setAttribute("data-leftbar-hide", "true");
         html.setAttribute("data-leftbar-type", "mobile");
@@ -18,7 +18,12 @@ export default class extends Controller {
         html.removeAttribute("data-leftbar-hide");
         html.removeAttribute("data-leftbar-type");
       }
-    });
+    };
+    window.addEventListener("resize", this.resizeHandler);
+  }
+
+  disconnect() {
+    window.removeEventListener("resize", this.resizeHandler);
   }
 
   leftbarToggle() {
