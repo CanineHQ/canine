@@ -1,10 +1,22 @@
 class ClusterPackage::Installer::CertManager < ClusterPackage::Installer::Base
   def install!(kubectl)
+    if cert_manager_present?(kubectl)
+      package.cluster.info("cert-manager already installed, skipping", color: :yellow)
+      return
+    end
+
     install_helm(kubectl)
     install_acme_issuer(kubectl)
   end
 
   private
+
+  def cert_manager_present?(kubectl)
+    kubectl.(%w[get crd certificates.cert-manager.io])
+    true
+  rescue Cli::CommandFailedError
+    false
+  end
 
   def install_acme_issuer(kubectl)
     cluster = kubectl.connection.cluster

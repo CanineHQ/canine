@@ -7,11 +7,12 @@ class Clusters::SyncPackages
     user = context.user
 
     connection = K8::Connection.new(cluster, user)
-    kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
+    kubectl = K8::Kubectl.new(connection)
 
     cluster.info("Syncing package statuses...", color: :yellow)
 
     ClusterPackage.definitions.each do |definition|
+      cluster.info("Checking for #{definition['display_name']}...", color: :yellow)
       package = cluster.cluster_packages.find_by(name: definition["name"])
       check_package = package || cluster.cluster_packages.build(name: definition["name"])
       found = check_package.installer.installed?(kubectl)
