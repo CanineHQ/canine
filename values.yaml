@@ -111,7 +111,7 @@ postgresql:
   # See: https://github.com/bitnami/charts/tree/main/bitnami/postgresql
   initdbScripts:
     init.sql: |
-      CREATE DATABASE IF NOT EXISTS canine_development;
+      SELECT 'CREATE DATABASE canine_development' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'canine_development')\gexec
       GRANT ALL PRIVILEGES ON DATABASE canine_development TO postgres;
 
 # Cert Manager configuration (jetstack/cert-manager chart)

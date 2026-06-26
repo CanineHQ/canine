@@ -13,10 +13,12 @@ spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
+  {{- if index .Values "cert-manager" "enabled" }}
   tls:
     - hosts:
         - {{ .Values.ingress.hostname | quote }}
       secretName: canine-tls
+  {{- end }}
   rules:
     - host: {{ .Values.ingress.hostname | quote }}
       http:
