@@ -1,0 +1,57 @@
+apiVersion: v1
+entries:
+  canine:
+  - annotations:
+      artifacthub.io/changes: |
+        - kind: fixed
+          description: Fix NOTES.txt to use ingress.hostname and show DNS record instructions
+      artifacthub.io/containsSecurityUpdates: "false"
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/czhu12/canine/tree/main/helm/canine
+        - name: Support
+          url: https://github.com/czhu12/canine/issues
+      artifacthub.io/prerelease: "false"
+      artifacthub.io/recommendations: |
+        - url: https://artifacthub.io/packages/helm/bitnami/postgresql
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-26T12:12:32.552292+01:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 18.7.3
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: v1.15.3
+    - condition: traefik.enabled
+      name: traefik
+      repository: https://traefik.github.io/charts
+      version: 40.2.0
+    description: The Helm chart for Canine - the easiest way to deploy apps to the
+      cloud.
+    digest: 22eca6f2bd53b734d1fa55a0e07aa5184fa1c3b4dd1e35ae729272c950b8f905
+    home: https://github.com/czhu12/canine
+    icon: https://raw.githubusercontent.com/czhu12/canine/main/public/images/logo-compact.png
+    keywords:
+    - kubernetes
+    - deployment
+    - rails
+    - platform
+    - ci-cd
+    - gitops
+    maintainers:
+    - email: czhu12@example.com
+      name: czhu12
+      url: https://github.com/czhu12
+    name: canine
+    sources:
+    - https://github.com/czhu12/canine
+    type: application
+    urls:
+    - https://caninehq.github.io/canine/canine-0.1.11.tgz
+    version: 0.1.11
+generated: "2026-06-26T12:12:32.540215+01:00"
