@@ -8,6 +8,7 @@ class Onboarding::Create
       password: params[:user][:password],
       connect_cluster: params[:connect_cluster] == "1",
       install_build_cloud: params[:install_build_cloud] == "1",
+      packages: params[:packages],
     ).reduce(actions)
   end
 
