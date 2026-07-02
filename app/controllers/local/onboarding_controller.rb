@@ -41,6 +41,7 @@ class Local::OnboardingController < ApplicationController
   private
 
   def redirect_if_onboarded
+    return if Rails.env.development?
     redirect_to new_user_session_path if User.exists?
   end
 

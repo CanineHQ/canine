@@ -86,6 +86,8 @@
           <span class="label-text-alt">This will install the build cloud components needed to build container images. You can configure this later in cluster settings.</span>
         </div>
       <% end %>
+
+      <%= render "clusters/cluster_packages/system_packages" %>
     <% end %>
 
     <div class="form-footer">

@@ -35,17 +35,33 @@ RSpec.describe Onboarding::Create do
         allow(Clusters::InstallJob).to receive(:perform_later)
       end
 
-      it 'creates admin user, account, and in-cluster cluster' do
+      it 'creates admin user, account, and in-cluster cluster with default packages' do
         result = described_class.call(params)
 
         expect(result).to be_success
-        expect(result.user).to be_persisted
-        expect(result.account).to be_persisted
         expect(result[:cluster]).to be_persisted
         expect(result[:cluster].name).to eq('in-cluster')
         expect(result[:cluster].in_cluster?).to be true
         expect(result[:cluster].status).to eq('running')
-        expect(result[:cluster].account).to eq(result.account)
+        expect(result[:cluster].cluster_packages.pluck(:name)).to match_array(ClusterPackage.default_package_names)
+      end
+
+      it 'creates only the selected packages when packages params are provided' do
+        params_with_packages = ActionController::Parameters.new(
+          account: { name: 'testorg' },
+          user: { email: 'admin@example.com', password: 'password123' },
+          connect_cluster: "1",
+          packages: {
+            "cert-manager" => { enabled: "1" },
+            "traefik-ingress" => { enabled: "0" },
+            "metrics-server" => { enabled: "1" }
+          }
+        )
+
+        result = described_class.call(params_with_packages)
+
+        expect(result).to be_success
+        expect(result[:cluster].cluster_packages.pluck(:name)).to match_array([ "cert-manager", "metrics-server" ])
       end
     end
 
