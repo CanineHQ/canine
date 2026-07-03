@@ -14,7 +14,7 @@ class Clusters::SyncPackages
     ClusterPackage.definitions.each do |definition|
       cluster.info("Checking for #{definition['display_name']}...", color: :yellow)
       package = cluster.cluster_packages.find_by(name: definition["name"])
-      check_package = package || cluster.cluster_packages.build(name: definition["name"])
+      check_package = package || ClusterPackage.new(name: definition["name"], cluster: cluster)
       found = check_package.installer.installed?(kubectl)
 
       if found
