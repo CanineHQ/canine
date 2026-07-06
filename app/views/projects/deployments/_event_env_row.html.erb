@@ -10,7 +10,7 @@
     </div>
   </td>
   <td title="<%= event.user&.name || event.user&.email || "Automated" %>">
-    <div class="text-sm capitalize truncate w-[100px]">
+    <div class="text-sm truncate w-[100px] <%= 'capitalize' unless event.user&.email && event.user&.name.blank? %>">
       <%= event.user&.name || event.user&.email || "Automated" %>
     </div>
   </td>
