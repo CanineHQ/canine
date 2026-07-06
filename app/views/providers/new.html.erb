@@ -23,9 +23,13 @@
             permissions.
           </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
-          <div role="tablist" class="tabs tabs-bordered tabs-sm mb-3">
-            <input type="radio" name="gitlab_token_type" role="tab" class="tab" aria-label="Classic Token" checked="checked" />
-            <div role="tabpanel" class="tab-content pt-3">
+          <div data-controller="tabs">
+            <div role="tablist" class="tabs tabs-bordered tabs-sm mb-3">
+              <a role="tab" class="tab tab-active" data-action="click->tabs#select" data-tabs-target="tab" data-tab="classic">Classic Token</a>
+              <a role="tab" class="tab" data-action="click->tabs#select" data-tabs-target="tab" data-tab="fine-grained">Fine-grained Token</a>
+            </div>
+
+            <div data-tabs-target="panel" data-tab="classic">
               <%= link_to "Create a classic token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500" %>
               <div class="mt-2 flex flex-wrap gap-1">
                 <span class="text-sm">Required scopes:</span>
@@ -35,8 +39,7 @@
               </div>
             </div>
 
-            <input type="radio" name="gitlab_token_type" role="tab" class="tab" aria-label="Fine-grained Token" />
-            <div role="tabpanel" class="tab-content pt-3">
+            <div data-tabs-target="panel" data-tab="fine-grained" class="hidden">
               <%= link_to "Create a fine-grained token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500" %>
               <div class="mt-2 flex flex-wrap gap-1">
                 <span class="text-sm">Required permissions:</span>
