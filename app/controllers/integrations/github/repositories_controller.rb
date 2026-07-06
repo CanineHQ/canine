@@ -6,9 +6,9 @@ class Integrations::Github::RepositoriesController < ApplicationController
       api_base_url: provider.api_base_url
     )
     if params[:q].present?
-      client.auto_paginate = true
-      @repositories = client.repos
-      @repositories = @repositories.select { |repo| repo.full_name.downcase.include?(params[:q].downcase) }
+      query = "#{params[:q]} in:name fork:true"
+      results = client.search_repos(query, per_page: 30)
+      @repositories = results.items
     else
       page = params[:page] || 1
       @repositories = client.repos(nil, page:)
