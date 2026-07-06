@@ -23,13 +23,27 @@
             permissions.
           </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
-          <%= link_to "Create your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500 " %>
-          <div class="mt-2">
-            Select the
-            <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>
-              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
-            <% end %>
-            permissions.
+          <div class="mb-3">
+            <p class="font-semibold text-sm mb-1">Classic Personal Access Token</p>
+            <%= link_to "Create a classic token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500" %>
+            <div class="mt-1">
+              Select the
+              <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>
+                <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
+              <% end %>
+              scopes.
+            </div>
+          </div>
+          <div>
+            <p class="font-semibold text-sm mb-1">Fine-grained Personal Access Token</p>
+            <%= link_to "Create a fine-grained token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500" %>
+            <div class="mt-1">
+              Select the
+              <% Providers::CreateGitlabProvider::EXPECTED_FINE_GRAINED_PERMISSIONS.each do |perm| %>
+                <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= perm %></code>
+              <% end %>
+              permissions.
+            </div>
           </div>
         <% elsif params[:provider_type] == Provider::BITBUCKET_PROVIDER %>
           <%= link_to "Create your Bitbucket API Token →", "https://id.atlassian.com/manage-profile/security/api-tokens", target: "_blank", class: "text-sm text-gray-500 " %>
