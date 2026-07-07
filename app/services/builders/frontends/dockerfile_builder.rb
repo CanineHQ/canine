@@ -35,7 +35,7 @@ class Builders::Frontends::DockerfileBuilder
 
     # Add environment variables to the build command
     project.environment_variables.each do |envar|
-      docker_build_command.push("--build-arg", "#{envar.name}=\"#{envar.value}\"")
+      docker_build_command.push("--build-arg", "#{envar.name}=#{envar.value}")
     end
 
     docker_build_command.push("--push")
