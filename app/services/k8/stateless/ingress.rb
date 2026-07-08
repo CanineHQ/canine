@@ -36,11 +36,13 @@ class K8::Stateless::Ingress < K8::Base
     results['items'].find { |r| r['metadata']['name'] == "#{@service.project.namespace}-ingress" }
   end
 
-  INGRESS_SERVICE_NAMES = %w[traefik ingress-nginx-controller].freeze
+  INGRESS_APP_LABELS = %w[traefik ingress-nginx].freeze
 
   def self.hostname(client)
-    services = client.get_services
-    service = INGRESS_SERVICE_NAMES.lazy.filter_map { |name| services.find { |s| s['metadata']['name'] == name } }.first
+    services = client.get_services(namespace: nil).select { |s| s.spec.type == "LoadBalancer" }
+    service = INGRESS_APP_LABELS.lazy.filter_map { |label|
+      services.find { |s| s.metadata.labels&.[]("app.kubernetes.io/name") == label }
+    }.first
 
     if service.nil?
       raise "No ingress controller service found"
