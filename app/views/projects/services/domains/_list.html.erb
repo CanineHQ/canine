@@ -13,12 +13,17 @@
     <% service.domains.each do |domain| %>
       <tr id="<%= dom_id(domain) %>">
         <td>
-          <%= link_to domain.domain_name, "https://#{domain.domain_name}", target: "_blank" %>
-          <% if domain.auto_managed? %>
-            <div class="tooltip tooltip-right inline-block ml-2" data-tip="Automatically managed by Canine">
-              <span class="badge badge-sm badge-info">Auto</span>
-            </div>
-          <% end %>
+          <div class="flex items-center gap-1.5">
+            <span class="cursor-pointer" data-controller="clipboard" data-clipboard-text="<%= domain.domain_name %>"><%= domain.domain_name %></span>
+            <%= link_to "https://#{domain.domain_name}", target: "_blank" do %>
+              <iconify-icon icon="lucide:external-link" class="text-xs"></iconify-icon>
+            <% end %>
+            <% if domain.auto_managed? %>
+              <div class="tooltip tooltip-right inline-block" data-tip="Automatically managed by Canine">
+                <span class="badge badge-sm badge-info">Auto</span>
+              </div>
+            <% end %>
+          </div>
         </td>
         <td>
           <div class="flex items-center gap-1.5">
