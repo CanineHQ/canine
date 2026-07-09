@@ -1,10 +1,13 @@
 class Projects::DestroyJob < ApplicationJob
+  UNINSTALL_RETRIES = 3
+  UNINSTALL_RETRY_INTERVAL = 5
+
   def perform(project, user)
     project.destroying!
 
     DevelopmentEnvironments::Destroy.execute(project:)
 
-    uninstall_service_class(project).new(project, user).call
+    uninstall_with_retries(project, user)
 
     cleanup_auto_managed_domains(project)
     remove_github_webhook(project) if should_remove_webhook?(project)
@@ -12,6 +15,21 @@ class Projects::DestroyJob < ApplicationJob
   end
 
   private
+
+  def uninstall_with_retries(project, user)
+    attempts = 0
+    begin
+      attempts += 1
+      uninstall_service_class(project).new(project, user).call
+    rescue Cli::CommandFailedError => e
+      if attempts < UNINSTALL_RETRIES
+        Rails.logger.warn("Uninstall attempt #{attempts}/#{UNINSTALL_RETRIES} failed for '#{project.name}': #{e.message}. Retrying in #{attempts * 5}s...")
+        sleep(attempts * UNINSTALL_RETRY_INTERVAL)
+        retry
+      end
+      Rails.logger.error("Uninstall failed after #{UNINSTALL_RETRIES} attempts for '#{project.name}': #{e.message}. Continuing with destroy.")
+    end
+  end
 
   def uninstall_service_class(project)
     deployment_method = project.deployment_configuration&.deployment_method || "legacy"
