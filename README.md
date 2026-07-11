@@ -7,6 +7,8 @@
 
 This Helm chart deploys [Canine](https://github.com/czhu12/canine) - a modern, open source alternative to Heroku. Canine provides an intuitive web interface for managing application deployments on Kubernetes clusters.
 
+> **New to self-hosting Canine?** Follow the [step-by-step cluster mode tutorial](https://docs.canine.sh/docs/self-hosted/cluster-mode) to get up and running.
+
 ## Prerequisites
 
 - Kubernetes 1.19+
