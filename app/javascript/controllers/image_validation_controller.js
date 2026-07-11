@@ -1,15 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
+import { debounce } from "../utils"
 
 export default class extends Controller {
   static targets = ["input", "status"]
   static values = { url: String }
 
   connect() {
-    this.timeout = null
+    this.debouncedCheck = debounce(this.checkImage.bind(this), 500)
   }
 
   validate() {
-    clearTimeout(this.timeout)
     const value = this.inputTarget.value.trim()
 
     if (!value) {
@@ -19,7 +19,7 @@ export default class extends Controller {
 
     if (!this.looksComplete(value)) return
 
-    this.timeout = setTimeout(() => this.checkImage(value), 500)
+    this.debouncedCheck(value)
   }
 
   // Only trigger validation when the URL looks like a complete image reference:
