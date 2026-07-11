@@ -17,7 +17,21 @@ export default class extends Controller {
       return
     }
 
+    if (!this.looksComplete(value)) return
+
     this.timeout = setTimeout(() => this.checkImage(value), 500)
+  }
+
+  // Only trigger validation when the URL looks like a complete image reference:
+  // - Has a registry host (contains a dot) AND a path after it (e.g. docker.io/library/nginx)
+  // - Or is a simple Docker Hub image with no dot (e.g. nginx, library/nginx)
+  looksComplete(value) {
+    const parts = value.split("/")
+    const hasRegistryHost = parts[0]?.includes(".")
+    if (hasRegistryHost) {
+      return parts.length >= 2 && parts[1].length > 0
+    }
+    return true
   }
 
   async checkImage(imageUrl) {
