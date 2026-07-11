@@ -22,16 +22,20 @@
       label: "Admin User",
       description: "Create the first admin user for this account. (You can configure SSO later.)"
     )) do %>
-      <div class="form-group">
+      <div class="form-group" data-controller="email-validation">
         <%= form.label :email, "Email" %>
         <%= form.email_field(
           :email,
-          placeholder: "admin@example.com",
+          placeholder: "admin@yourdomain.com",
           name: "user[email]",
           inputmode: "email",
           class: "input input-bordered w-full",
           required: true,
+          data: { email_validation_target: "input", action: "input->email-validation#validate" },
         ) %>
+        <p class="text-warning text-sm mt-1 hidden" data-email-validation-target="warning">
+          Avoid using example.com — Let's Encrypt will reject certificate requests for this domain.
+        </p>
       </div>
       <div class="form-group" data-controller="toggle-password">
         <%= form.label :password, "Password" %>
