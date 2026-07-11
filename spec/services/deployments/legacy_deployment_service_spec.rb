@@ -65,10 +65,10 @@ RSpec.describe Deployments::LegacyDeploymentService do
       expect(project.reload.status).to eq('deployed')
     end
 
-    it 'marks services as healthy' do
-      expect(web_service.reload.status).to eq('healthy')
-      expect(worker_service.reload.status).to eq('healthy')
-      expect(cron_service.reload.status).to eq('healthy')
+    it 'does not auto-mark services as healthy' do
+      expect(web_service.reload.status).to eq('pending')
+      expect(worker_service.reload.status).to eq('pending')
+      expect(cron_service.reload.status).to eq('pending')
     end
   end
 
