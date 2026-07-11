@@ -15,7 +15,6 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     kill_one_off_containers
     postdeploy
 
-    mark_services_healthy
     complete_deployment!
   rescue StandardError => e
     # Don't overwrite status if it was already set to killed
@@ -72,10 +71,6 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
         @chart_builder << build_resource("Ingress", service)
       end
     end
-  end
-
-  def mark_services_healthy
-    @project.services.each(&:healthy!)
   end
 
   def setup_dns_for_services

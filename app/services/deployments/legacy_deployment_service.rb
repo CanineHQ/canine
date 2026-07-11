@@ -74,7 +74,6 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       restart_deployment(service)
       setup_automatic_dns(service)
     end
-    service.healthy!
   end
 
   def restart_deployment(service)
