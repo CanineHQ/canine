@@ -141,6 +141,20 @@ class Project < ApplicationRecord
     project_credential_provider.nil? || project_credential_provider.provider_id.nil?
   end
 
+  def container_registry_image_url
+    base = repository_base_url.to_s
+    repo = repository_url.to_s
+    if base.include?("docker.io")
+      "https://hub.docker.com/r/#{repo}"
+    else
+      "https://#{base}/#{repo}"
+    end
+  end
+
+  def full_image_name
+    [ repository_base_url, repository_url ].compact_blank.join("/")
+  end
+
   def generate_slug
     self.slug = self.name
     while Project.exists?(slug: self.slug)
@@ -191,7 +205,7 @@ class Project < ApplicationRecord
       if git?
         "https://#{repository_base_url}/#{repository_url}"
       elsif container_registry? && repository_base_url.present?
-        "https://#{repository_base_url}"
+        container_registry_image_url
       else
         "#"
       end
