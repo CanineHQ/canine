@@ -155,6 +155,7 @@ Rails.application.routes.draw do
       post :restart
     end
     collection do
+      post :validate_image
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
     end
     resources :project_forks, only: %i[index edit create], module: :projects
