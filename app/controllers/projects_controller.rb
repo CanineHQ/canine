@@ -27,6 +27,11 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def validate_image
+    result = ContainerRegistry::ImageChecker.check(params[:image_url])
+    render json: { valid: result.valid, error: result.error }
+  end
+
   def show
     @pagy, @events = pagy(@project.events.order(created_at: :desc))
     render "projects/deployments/index"
