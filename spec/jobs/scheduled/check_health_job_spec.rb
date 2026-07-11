@@ -16,7 +16,7 @@ RSpec.describe Scheduled::CheckHealthJob do
 
   describe '#perform' do
     it 'marks service as healthy when all replicas are ready' do
-      service = create(:service, :web_service, project: project, healthcheck_url: "/health", status: :unhealthy)
+      service = create(:service, :web_service, project: project, status: :unhealthy)
       allow(kubectl).to receive(:call).and_return(deployment_json(desired: 2, ready: 2))
 
       job.perform
@@ -26,7 +26,7 @@ RSpec.describe Scheduled::CheckHealthJob do
     end
 
     it 'marks service as unhealthy when ready replicas < desired' do
-      service = create(:service, :web_service, project: project, healthcheck_url: "/health", status: :healthy)
+      service = create(:service, :web_service, project: project, status: :healthy)
       allow(kubectl).to receive(:call).and_return(deployment_json(desired: 2, ready: 1))
 
       job.perform
@@ -35,7 +35,7 @@ RSpec.describe Scheduled::CheckHealthJob do
     end
 
     it 'marks service as unhealthy when kubectl fails' do
-      service = create(:service, :web_service, project: project, healthcheck_url: "/health", status: :healthy)
+      service = create(:service, :web_service, project: project, status: :healthy)
       allow(kubectl).to receive(:call).and_raise(StandardError.new("connection refused"))
 
       job.perform
@@ -43,18 +43,26 @@ RSpec.describe Scheduled::CheckHealthJob do
       expect(service.reload).to be_unhealthy
     end
 
-    it 'skips services without a healthcheck_url' do
-      service = create(:service, :web_service, project: project, healthcheck_url: nil, status: :healthy)
+    it 'checks background services too' do
+      service = create(:service, :background_service, project: project, status: :unhealthy)
+      allow(kubectl).to receive(:call).and_return(deployment_json(desired: 1, ready: 1))
+
+      job.perform
+
+      expect(service.reload).to be_healthy
+    end
+
+    it 'skips cron jobs' do
+      service = create(:service, :cron_job, project: project, status: :healthy)
       allow(kubectl).to receive(:call)
 
       job.perform
 
       expect(kubectl).not_to have_received(:call)
-      expect(service.reload).to be_healthy
     end
 
     it 'skips services with pending status' do
-      service = create(:service, :web_service, project: project, healthcheck_url: "/health", status: :pending)
+      service = create(:service, :web_service, project: project, status: :pending)
       allow(kubectl).to receive(:call)
 
       job.perform

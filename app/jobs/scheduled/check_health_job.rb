@@ -2,7 +2,7 @@ class Scheduled::CheckHealthJob < ApplicationJob
   queue_as :default
 
   def perform
-    Service.where.not(healthcheck_url: nil).where.not(status: :pending).each do |service|
+    Service.where.not(status: :pending).where.not(service_type: :cron_job).each do |service|
       check_service_health(service)
     end
   end
