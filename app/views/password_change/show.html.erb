@@ -24,11 +24,12 @@
           </label>
         </div>
 
-        <div class="form-control">
+        <div class="form-control" data-controller="password-complexity">
           <%= f.label :password, "New Password", class: "label" do %>
             <span class="label-text">New Password</span>
           <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered w-full", required: true %>
+          <%= f.password_field :password, autocomplete: "new-password", class: "input input-bordered w-full", required: true,
+              data: { password_complexity_target: "input", action: "input->password-complexity#validate" } %>
         </div>
 
         <div class="form-control">
