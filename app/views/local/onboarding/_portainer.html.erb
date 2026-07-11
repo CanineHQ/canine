@@ -32,9 +32,6 @@
           required: true,
           data: { email_validation_target: "input", action: "input->email-validation#validate" },
         ) %>
-        <p class="text-warning text-sm mt-1 hidden" data-email-validation-target="warning">
-          Avoid using example.com — Let's Encrypt will reject certificate requests for this domain.
-        </p>
       </div>
       <div class="form-group" data-controller="toggle-password">
         <%= form.label :password, "Password" %>
