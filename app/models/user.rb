@@ -42,6 +42,8 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable,
          :registerable, :rememberable, :validatable, :omniauthable
 
+  validates :password, password_complexity: true, if: :password_required?
+
   has_one_attached :avatar
   has_person_name
 
