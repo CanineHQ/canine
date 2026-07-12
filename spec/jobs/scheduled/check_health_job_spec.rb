@@ -61,14 +61,14 @@ RSpec.describe Scheduled::CheckHealthJob do
       expect(kubectl).not_to have_received(:call)
     end
 
-    it 'skips services with pending status' do
+    it 'checks services with pending status' do
       service = create(:service, :web_service, project: project, status: :pending)
-      allow(kubectl).to receive(:call)
+      allow(kubectl).to receive(:call).and_return('{"spec":{"replicas":1},"status":{"readyReplicas":0}}')
 
       job.perform
 
-      expect(kubectl).not_to have_received(:call)
-      expect(service.reload).to be_pending
+      expect(kubectl).to have_received(:call)
+      expect(service.reload).to be_unhealthy
     end
   end
 end
