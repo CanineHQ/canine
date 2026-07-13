@@ -27,6 +27,18 @@ class Builders::Base
     end
   end
 
+  # Automatic build arguments injected into every build
+  def automatic_build_args
+    self.class.automatic_build_args(build)
+  end
+
+  def self.automatic_build_args(build)
+    {
+      "GIT_SHA" => build.commit_sha,
+      "BUILD_TIMESTAMP" => Time.current.utc.iso8601
+    }
+  end
+
   def setup
   end
 
