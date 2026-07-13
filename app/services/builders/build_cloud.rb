@@ -43,6 +43,11 @@ module Builders
       command += [ "-t", project.container_image_reference ]
       command += [ "-f", File.join(repository_path, project.build_configuration.dockerfile_path) ]
 
+      # Add automatic build arguments
+      automatic_build_args.each do |name, value|
+        command += [ "--build-arg", "#{name}=#{value}" ]
+      end
+
       # Add build arguments
       project.environment_variables.each do |envar|
         command += [ "--build-arg", "#{envar.name}=#{envar.value}" ]

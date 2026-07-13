@@ -55,6 +55,11 @@ class Builders::Frontends::BuildpackBuilder
       command += [ "--buildpack", pack.reference ]
     end
 
+    # Add automatic build arguments
+    Builders::Base.automatic_build_args(build).each do |name, value|
+      command += [ "--env", "#{name}=#{value}" ]
+    end
+
     # Add publish flag if supported by driver
     command << "--publish" if publish_during_build?
 

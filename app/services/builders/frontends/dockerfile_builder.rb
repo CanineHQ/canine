@@ -33,6 +33,11 @@ class Builders::Frontends::DockerfileBuilder
       "-f", File.join(repository_path, project.build_configuration.dockerfile_path)
     ]
 
+    # Add automatic build arguments
+    Builders::Base.automatic_build_args(build).each do |name, value|
+      docker_build_command.push("--build-arg", "#{name}=#{value}")
+    end
+
     # Add environment variables to the build command
     project.environment_variables.each do |envar|
       docker_build_command.push("--build-arg", "#{envar.name}=#{envar.value}")
