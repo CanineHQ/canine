@@ -40,8 +40,9 @@
         <p class="text-sm text-base-content/70">You signed in with <strong>GitHub</strong>. Your password is managed by your authentication provider.</p>
       <% else %>
         <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, data: { turbo: false } }) do |f| %>
-          <div class="mb-3">
-            <%= f.password_field :password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "New password", autocomplete: "new-password" %>
+          <div class="mb-3" data-controller="password-complexity">
+            <%= f.password_field :password, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "New password", autocomplete: "new-password",
+                data: { password_complexity_target: "input", action: "input->password-complexity#validate" } %>
           </div>
           <div class="mb-3">
             <%= f.password_field :password_confirmation, class: 'input input-bordered w-full focus:outline-offset-0', placeholder: "Confirm new password", autocomplete: "new-password" %>
