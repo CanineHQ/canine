@@ -41,5 +41,14 @@ RSpec.describe CheckServiceHealthJob do
 
       expect(service.reload).to be_unhealthy
     end
+
+    it 'marks service as unhealthy when check times out' do
+      service = create(:service, :web_service, project: project, status: :healthy)
+      allow(kubectl).to receive(:call).and_raise(Timeout::Error.new("execution expired"))
+
+      described_class.new.perform(service)
+
+      expect(service.reload).to be_unhealthy
+    end
   end
 end
