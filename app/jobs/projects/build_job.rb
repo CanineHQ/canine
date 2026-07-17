@@ -3,7 +3,7 @@
 require 'shellwords'
 
 class Projects::BuildJob < ApplicationJob
-  queue_as :default
+  queue_as :builds
   class BuildFailure < StandardError; end
 
   def perform(build, user)

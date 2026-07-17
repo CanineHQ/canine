@@ -1,5 +1,5 @@
 class Scheduled::FetchMetricsJob < ApplicationJob
-  queue_as :default
+  queue_as :monitoring
 
   def perform
     Cluster.running.find_each do |cluster|

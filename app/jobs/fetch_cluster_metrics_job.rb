@@ -1,7 +1,7 @@
 class FetchClusterMetricsJob < ApplicationJob
-  queue_as :default
+  queue_as :monitoring
 
-  TIMEOUT = 30.seconds
+  TIMEOUT = 10.seconds
 
   def perform(cluster)
     Timeout.timeout(TIMEOUT) do

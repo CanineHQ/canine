@@ -1,4 +1,6 @@
 class Projects::DeploymentJob < ApplicationJob
+  queue_as :builds
+
   def perform(deployment, user = nil)
     project = deployment.project
     project.intended_deployment = deployment

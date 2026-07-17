@@ -1,5 +1,5 @@
 class Scheduled::CheckHealthJob < ApplicationJob
-  queue_as :default
+  queue_as :monitoring
 
   def perform
     Service.where.not(service_type: :cron_job).find_each do |service|
