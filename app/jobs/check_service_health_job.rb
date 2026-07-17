@@ -1,7 +1,7 @@
 class CheckServiceHealthJob < ApplicationJob
-  queue_as :default
+  queue_as :monitoring
 
-  TIMEOUT = 30.seconds
+  TIMEOUT = 10.seconds
 
   def perform(service)
     Timeout.timeout(TIMEOUT) do
