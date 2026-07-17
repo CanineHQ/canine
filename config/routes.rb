@@ -156,6 +156,7 @@ Rails.application.routes.draw do
     end
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root
+      resource :image_validation, only: :create, module: :projects
     end
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :development_environments, only: %i[index create], module: :projects
