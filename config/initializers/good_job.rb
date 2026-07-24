@@ -4,7 +4,7 @@ Rails.application.configure do
     retry_on_unhandled_error: false,
     on_thread_error: ->(exception) { Rails.logger.error(exception) },
     execution_mode: :external,
-    queues: 'monitoring:5;builds:3;*:5',
+    queues: 'monitoring:10;builds:3;*:10',
     max_threads: 5,
     poll_interval: 15,
     shutdown_timeout: 25,
