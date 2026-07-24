@@ -7,6 +7,11 @@ if [ -z "${LD_PRELOAD+x}" ] && [ -f /usr/lib/*/libjemalloc.so.2 ]; then
   export LD_PRELOAD="$(echo /usr/lib/*/libjemalloc.so.2)"
 fi
 
+# Enable YJIT for improved performance
+if [ -z "${RUBY_YJIT_ENABLE+x}" ]; then
+  export RUBY_YJIT_ENABLE=1
+fi
+
 # If running the rails server, bin/dev, or bin/run then create or migrate existing database
 echo "Checking if database needs to be prepared..."
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ] || [ "${1}" == "./bin/dev" ] || [ "${1}" == "./bin/run" ]; then
