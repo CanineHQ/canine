@@ -21,7 +21,11 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
-    DOCKER_API_VERSION="1.44"
+    DOCKER_API_VERSION="1.44" \
+    RUBY_YJIT_ENABLE=1 \
+    MALLOC_CONF="dirty_decay_ms:1000,narenas:2" \
+    RUBY_GC_HEAP_FREE_SLOTS_MIN_RATIO=0.20 \
+    RUBY_GC_HEAP_FREE_SLOTS_MAX_RATIO=0.40
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build

@@ -9,7 +9,6 @@ gem "pg", "~> 1.6"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
@@ -96,7 +95,6 @@ gem "redcarpet", "~> 3.6"
 gem 'rswag-api', '~> 2.10', '>= 2.10.1'
 gem "responders", github: "heartcombo/responders", branch: "main"
 gem "rubyzip", "~> 3.2"
-gem "sassc-rails", "~> 2.1"
 gem "sentry-rails", "~> 5.27"
 gem "sentry-ruby", "~> 5.28"
 gem "sitemap_generator", "~> 6.1"
