@@ -4,10 +4,12 @@ Rails.application.configure do
     retry_on_unhandled_error: false,
     on_thread_error: ->(exception) { Rails.logger.error(exception) },
     execution_mode: :external,
-    queues: 'monitoring:20;builds:5;*:20',
+    queues: 'monitoring:5;builds:3;*:5',
     max_threads: 5,
-    poll_interval: 30,
+    poll_interval: 15,
     shutdown_timeout: 25,
+    cleanup_preserved_jobs_before_seconds_ago: 14.days.to_i,
+    cleanup_interval_seconds: 300,
     enable_cron: true,
     cron: {
       check_health: {
