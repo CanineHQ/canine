@@ -1,0 +1,221 @@
+# Canine
+
+> A self-hosted Kubernetes deployment platform that brings PaaS simplicity (like Heroku) to your own Kubernetes infrastructure.
+
+Canine provides an intuitive web interface for deploying and managing applications on Kubernetes clusters. Deploy with git push, manage services visually, and leverage Kubernetes without writing YAML.
+
+- Docs: https://docs.canine.sh
+- Website: https://canine.sh
+- GitHub: https://github.com/CanineHQ/canine
+- License: Apache
+
+## Tech Stack
+
+- Ruby on Rails 7.2 with PostgreSQL
+- Hotwire (Turbo + Stimulus) for reactive UI
+- Tailwind CSS with ESBuild
+- GoodJob for background job processing
+- Devise + Pundit for auth/authorization
+- LightService for composable action workflows
+
+## Core Features
+
+- Git-driven deployments: Automatic deployments via GitHub/GitLab/Bitbucket webhooks
+- Built-in image building: Docker image builds using Dockerfile or buildpacks
+- Service management: Web services, background workers, cron jobs
+- Add-ons: Helm chart-based add-on marketplace (PostgreSQL, Redis, etc.)
+- Cluster management: Multi-cluster support with kubeconfig-based connections
+- Domain & SSL: Custom domains with DNS integration and automatic SSL via cert-manager
+- Resource constraints: CPU, memory, and GPU limits per service
+- Environment variables: Secure config management per project
+- Metrics & monitoring: Cluster and project-level resource metrics
+- Teams & RBAC: Team-based access control with SSO (OIDC, SAML, LDAP)
+- MCP server: Model Context Protocol integration for AI tool access
+- API: RESTful API at /api/v1 with OAuth2 (Doorkeeper)
+- Feature flags: Flipper for feature management
+- Admin panel: Avo-based admin interface
+
+## Architecture
+
+### Models (app/models/)
+
+Core domain entities and their relationships:
+
+- `Account` - Multi-tenant organization. Has many users, projects, clusters.
+- `User` - Authenticated user. Belongs to accounts via AccountUser join.
+- `Project` - A deployable application. Belongs to account and cluster. Has services, builds, deployments, environment variables.
+- `Cluster` - A Kubernetes cluster connection. Stores kubeconfig. Has many projects and add-ons.
+- `Service` - A process type within a project (web, worker, cron). Defines replicas, ports, commands.
+- `Deployment` - A single deployment instance. Tracks status, commit, version.
+- `Build` - A Docker image build. Tracks build status and logs.
+- `AddOn` - A Helm chart-based add-on (databases, caches, etc.).
+- `EnvironmentVariable` - Key-value config for projects.
+- `Domain` - Custom domain attached to a service.
+- `Provider` - Git/Docker registry credentials (GitHub, GitLab, Bitbucket, Docker Hub, GHCR).
+- `BuildConfiguration` - Docker build settings for a project (Dockerfile path, build args, registry).
+- `BuildPack` - Auto-detected build configuration (Nixpacks/buildpacks).
+- `ResourceConstraint` - CPU/memory/GPU limits for a service.
+- `Team` - RBAC team with memberships and resource access.
+- `SsoProvider` - SSO configuration (OIDC, SAML, LDAP) for an account.
+- `Volume` - Persistent storage attached to a project.
+- `Notifier` - Deployment notification configuration (Slack, webhooks).
+- `ClusterPackage` - Installable cluster-level packages (ingress, cert-manager, etc.).
+- `BuildCloud` - Remote build infrastructure on a cluster.
+- `Favorite` - User bookmark for projects/add-ons.
+- `ApiToken` - API authentication token.
+- `ProjectFork` - Forked project for preview environments.
+- `DevelopmentEnvironment` - Dev environment configuration.
+
+### Actions (app/actions/)
+
+LightService-based composable workflow steps organized by domain:
+
+- `projects/` - Create, update, deploy, restart projects. Configure git sources, build packs.
+- `clusters/` - Create, install, validate clusters. Manage namespaces and packages.
+- `add_ons/` - Install, update, uninstall Helm chart add-ons.
+- `services/` - Create and update service process types.
+- `providers/` - Create git/registry credential providers.
+- `sso/` - SSO user provisioning and team sync.
+- `environment_variables/` - Bulk update and parse env var files.
+- `domains/` - Auto-managed domain setup and DNS checks.
+- `resource_constraints/` - Create/update resource limits.
+
+### Services (app/services/)
+
+Business logic and external integration clients:
+
+- `k8/client.rb` - Kubernetes API client wrapper (uses kubeclient gem)
+- `k8/connection.rb` - Kubernetes cluster connection management
+- `k8/stateless/` - Kubernetes resource builders (Deployment, Service, Ingress, ConfigMap, Secrets, CronJob, PVC)
+- `k8/helm/` - Helm chart operations (install, upgrade, uninstall)
+- `k8/metrics/` - Cluster metrics collection
+- `builders/` - Docker image build strategies (Dockerfile, buildpack, build cloud)
+- `deployments/` - Deployment orchestration (legacy K8s manifests vs Helm-based)
+- `git/` - Git provider clients (GitHub via Octokit, GitLab, Bitbucket)
+- `dns/` - DNS provider clients (Cloudflare)
+- `ldap/` - LDAP authentication
+- `oidc/` - OpenID Connect authentication
+- `saml/` - SAML authentication
+- `canine_config/` - Project configuration file (canine.yaml) parsing
+
+### Background Jobs (app/jobs/)
+
+GoodJob-based async workers:
+
+- `projects/build_job.rb` - Build Docker images from source
+- `projects/deployment_job.rb` - Deploy applications to Kubernetes
+- `projects/destroy_job.rb` - Clean up project resources
+- `inbound_webhooks/` - Process GitHub/GitLab/Bitbucket webhook payloads
+- `clusters/install_job.rb` - Install cluster components
+- `add_ons/install_job.rb` - Install Helm chart add-ons
+- `fetch_cluster_metrics_job.rb` - Collect cluster resource metrics
+- `scheduled/` - Recurring jobs (health checks, metrics flush, DNS sweep, stale build cleanup)
+
+### Controllers
+
+- `app/controllers/` - Standard Rails controllers for web UI
+- `app/controllers/api/v1/` - RESTful JSON API (projects, builds, clusters, add-ons, processes)
+- `app/controllers/inbound_webhooks/` - Git webhook receivers
+- `app/controllers/mcp_controller.rb` - MCP server endpoint
+- `app/controllers/avo/` - Admin panel controllers
+
+### Frontend (app/javascript/controllers/)
+
+Stimulus controllers for client-side interactivity:
+
+- `terminal_controller.js` - WebSocket-based terminal for pod shell access
+- `logs_controller.js` - Real-time log streaming
+- `yaml_editor_controller.js` - YAML editing with autocomplete
+- `environment_variables_controller.js` - Env var management UI
+- `chart_controller.js` - Metrics charting
+- `global_search_controller.js` - Application-wide search
+
+## API
+
+RESTful API at `/api/v1` with OAuth2 authentication (Doorkeeper):
+
+- `GET /api/v1/me` - Current user info
+- `GET /api/v1/projects` - List projects
+- `GET /api/v1/projects/:id` - Project details
+- `POST /api/v1/projects/:id/deploy` - Trigger deployment
+- `POST /api/v1/projects/:id/restart` - Restart project
+- `GET /api/v1/projects/:id/processes` - List running pods
+- `GET /api/v1/builds` - List builds
+- `PATCH /api/v1/builds/:id/kill` - Cancel a build
+- `GET /api/v1/clusters` - List clusters
+- `GET /api/v1/add_ons` - List add-ons
+- `POST /api/v1/add_ons/:id/restart` - Restart an add-on
+
+API docs available at `/api-docs` and `/swagger`.
+
+## MCP Server
+
+Canine includes a built-in MCP (Model Context Protocol) server at `/mcp` using the `mcp` Ruby gem. Authentication is OAuth2 via Doorkeeper, with support for RFC 9728 (Protected Resource Metadata) and RFC 7591 (Dynamic Client Registration).
+
+Implementation lives in `app/mcp/` with three main components:
+
+### MCP Tools (app/mcp/tools/)
+Actions that AI agents can invoke:
+
+- `CreateCluster` - Create a new Kubernetes cluster connection
+- `GetClusterKubeconfig` - Download kubeconfig for a cluster
+- `CreateProject` - Create a new project from a git repository
+- `CreateService` - Add a service (web, worker, cron) to a project
+- `DeployProject` - Trigger a deployment for a project
+- `RestartProject` - Restart all pods in a project
+- `GetProjectLogs` - Fetch logs from project pods
+- `GetEnvironmentVariableValue` - Read an environment variable's value
+- `UpdateEnvironmentVariable` - Create or update an environment variable
+- `SearchAddOns` - Search the Helm chart add-on marketplace
+- `CreateAddOn` - Install a Helm chart add-on
+- `GetAddOnLogs` - Fetch logs from add-on pods
+
+### MCP Resources (app/mcp/resources/)
+Read-only data accessible via `canine://` URIs:
+
+- `canine://schema` - Discovery: all available resources and templates
+- `canine://accounts` - List user's accounts
+- `canine://providers` - List git/registry providers
+- `canine://accounts/{id}/clusters` - Clusters for an account
+- `canine://accounts/{id}/projects` - Projects for an account
+- `canine://accounts/{id}/projects/{id}` - Full project details (services, domains, volumes, builds)
+- `canine://accounts/{id}/projects/{id}/builds` - Project build history
+- `canine://accounts/{id}/projects/{id}/environment_variables` - Env var names (no values)
+- `canine://accounts/{id}/add_ons` - Add-ons for an account
+- `canine://accounts/{id}/add_ons/{id}` - Full add-on details (endpoints, connection URLs)
+
+### MCP Prompts (app/mcp/prompts/)
+Guided workflows for common tasks:
+
+- `DeployNewProject` - Step-by-step project deployment
+- `AddWorkerOrCron` - Add background worker or cron job to a project
+- `TroubleshootDeployment` - Debug a failing deployment
+- `InstallAddOn` - Install a database or service add-on
+- `DestroyResource` - Safely destroy a project or add-on
+
+The controller (`app/controllers/mcp_controller.rb`) wires everything together, authenticating via `doorkeeper_authorize!` and passing the OAuth token context to all tools/resources.
+
+Well-known metadata endpoints:
+- `/.well-known/oauth-protected-resource` - RFC 9728 protected resource metadata
+- `/.well-known/oauth-authorization-server` - RFC 8414 authorization server metadata
+- `/oauth/register` - RFC 7591 dynamic client registration
+
+## Development
+
+```bash
+bin/setup          # Initial setup
+bin/dev            # Start dev server (web + worker + asset watchers)
+rake spec          # Run all RSpec tests
+bin/rubocop        # Lint Ruby code
+bin/brakeman       # Security scan
+rails db:migrate   # Run migrations
+```
+
+## Key Patterns
+
+- Multi-tenancy via Account model
+- LightService actions for multi-step workflows with error handling
+- All long-running operations run as async GoodJob jobs
+- Kubernetes access always through k8/ service wrappers
+- Helm-based deployment strategy (with legacy manifest support)
+- Hotwire/Turbo for reactive server-rendered UI
