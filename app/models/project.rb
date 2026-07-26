@@ -86,7 +86,7 @@ class Project < ApplicationRecord
   validates :branch, presence: true
   validates :repository_url, presence: true
   validates :repository_url, format: {
-                              with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
+                              with: /\A[a-zA-Z0-9][a-zA-Z0-9._-]*(\/[a-zA-Z0-9._-]+)+\z/,
                               message: "must be in the format 'owner/repository'"
                             }, if: :git?
   validates :repository_url, format: {
