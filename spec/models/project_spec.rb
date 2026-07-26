@@ -71,6 +71,20 @@ RSpec.describe Project, type: :model do
       end
     end
 
+    context 'repository_url format for git projects' do
+      it 'accepts nested group paths' do
+        project.repository_url = 'group/subgroup/deep/project-name'
+        project.valid?
+        expect(project.errors[:repository_url]).to be_empty
+      end
+
+      it 'rejects repository URLs without a slash' do
+        project.repository_url = 'noslash'
+        project.valid?
+        expect(project.errors[:repository_url]).to include("must be in the format 'owner/repository'")
+      end
+    end
+
     context 'when name or namespace is reserved' do
       it 'is not valid when name is reserved' do
         project.name = 'kube-system'
