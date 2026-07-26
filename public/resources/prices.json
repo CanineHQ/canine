@@ -118,26 +118,26 @@
     "canine": true,
     "tiers": [
       {
-        "name": "CX22",
-        "price": 5,
+        "name": "CX23",
+        "price": 6,
         "cpu": 2,
         "memory": 4
       },
       {
-        "name": "CX32",
-        "price": 8,
+        "name": "CX33",
+        "price": 9,
         "cpu": 4,
         "memory": 8
       },
       {
-        "name": "CX42",
-        "price": 18,
+        "name": "CX43",
+        "price": 17,
         "cpu": 8,
         "memory": 16
       },
       {
-        "name": "CX52",
-        "price": 35,
+        "name": "CX53",
+        "price": 32,
         "cpu": 16,
         "memory": 32
       }
