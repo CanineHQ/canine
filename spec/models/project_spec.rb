@@ -72,7 +72,7 @@ RSpec.describe Project, type: :model do
     end
 
     context 'repository_url format for git projects' do
-      it 'accepts nested GitLab group paths' do
+      it 'accepts nested group paths' do
         project.repository_url = 'group/subgroup/deep/project-name'
         project.valid?
         expect(project.errors[:repository_url]).to be_empty
