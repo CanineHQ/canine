@@ -55,7 +55,7 @@ class StaticController < ApplicationController
     },
     {
       name: "Hetzner",
-      price: 4,
+      price: 6,
       style: "bg-green-400"
     }
   ]
