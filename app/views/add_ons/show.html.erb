@@ -1,4 +1,3 @@
-<%= content_for :title, "#{@add_on.name} | Add-On" %>
 <%= add_on_layout(@add_on) do %>
   <% if @add_on.installed? %>
     <%= render "add_ons/service_template", service: @service %>

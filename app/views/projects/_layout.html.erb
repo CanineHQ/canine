@@ -1,3 +1,4 @@
+<%= content_for(:title, "#{project.name} | Project") unless content_for?(:title) %>
 <% if Flipper.enabled?(:demo_mode, project) %>
   <div class="alert alert-info mb-4">
     <iconify-icon icon="lucide:monitor-play"></iconify-icon>
