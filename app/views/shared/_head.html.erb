@@ -1,8 +1,9 @@
 <title>
   <% if content_for?(:title) %>
-    <%= yield :title %> |
+    <%= yield :title %> | Canine
+  <% else %>
+    Canine - A Developer-friendly PaaS for your Kubernetes
   <% end %>
-  Canine - A Developer-friendly PaaS for your Kubernetes
 </title>
 <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : "Canine is an open source deployment platform that makes it easy to deploy and manage your applications." %>">
 <% if content_for?(:robots) %>
