@@ -1,4 +1,4 @@
-<%= content_for :title, "Projects ##{@project.id}" %>
+<%= content_for :title, @project.name %>
 <%= turbo_stream_from @project %>
 
 <%= project_layout(@project) do %>

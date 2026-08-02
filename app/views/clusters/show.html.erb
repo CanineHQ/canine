@@ -1,4 +1,4 @@
-<%= content_for :title, "Clusters ##{@cluster.id}" %>
+<%= content_for :title, @cluster.name %>
 <%= turbo_stream_from @cluster %>
 
 <%= cluster_layout(@cluster) do %>
