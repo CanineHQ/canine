@@ -4,6 +4,8 @@ class CheckServiceHealthJob < ApplicationJob
   TIMEOUT = 10.seconds
 
   def perform(service)
+    previous_status = service.status
+
     Timeout.timeout(TIMEOUT) do
       connection = K8::Connection.new(service.project, nil, allow_anonymous: true)
       kubectl = K8::Kubectl.new(connection)
@@ -18,8 +20,31 @@ class CheckServiceHealthJob < ApplicationJob
       service.last_health_checked_at = DateTime.current
       service.save
     end
+
+    notify_status_change(service, previous_status)
   rescue StandardError, Timeout::Error => e
     Rails.logger.warn("Health check failed for #{service.name}: #{e.class} - #{e.message}")
+    previous_status = service.status
     service.update(status: :unhealthy, last_health_checked_at: DateTime.current)
+    notify_status_change(service, previous_status)
+  end
+
+  private
+
+  def notify_status_change(service, previous_status)
+    return if service.status == previous_status
+
+    went_down = service.unhealthy? && previous_status != "unhealthy"
+    came_back = service.healthy? && previous_status == "unhealthy"
+
+    return unless went_down || came_back
+
+    service.project.users.find_each do |user|
+      if went_down
+        ServiceHealthMailer.service_down(service, user).deliver_later
+      else
+        ServiceHealthMailer.service_restored(service, user).deliver_later
+      end
+    end
   end
 end

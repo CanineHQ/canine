@@ -1,0 +1,11 @@
+<h2>Service Down: <%= @service.name %></h2>
+
+<p>The service <strong><%= @service.name %></strong> in project <strong><%= @project.name %></strong> is unhealthy.</p>
+
+<p>
+  <strong>Service:</strong> <%= @service.name %><br>
+  <strong>Project:</strong> <%= @project.name %><br>
+  <strong>Checked at:</strong> <%= @service.last_health_checked_at&.strftime("%Y-%m-%d %H:%M:%S UTC") %>
+</p>
+
+<p>You will be notified when the service recovers.</p>
