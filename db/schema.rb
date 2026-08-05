@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_21_213014) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_05_011107) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -253,6 +253,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_21_213014) do
     t.boolean "auto_managed", default: false
     t.bigint "service_id", null: false
     t.index ["service_id"], name: "index_domains_on_service_id"
+  end
+
+  create_table "email_preferences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.boolean "service_health", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_email_preferences_on_user_id"
   end
 
   create_table "environment_variables", force: :cascade do |t|
@@ -827,6 +835,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_21_213014) do
   add_foreign_key "development_environments", "projects", column: "parent_project_id"
   add_foreign_key "development_environments", "providers", column: "git_provider_id"
   add_foreign_key "development_environments", "users", column: "created_by_id"
+  add_foreign_key "email_preferences", "users"
   add_foreign_key "environment_variables", "projects"
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
