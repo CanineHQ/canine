@@ -348,7 +348,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    light-service (0.20.0)
+    light-service (0.21.0)
       activesupport (>= 5.0, < 9.0)
     lint_roller (1.1.0)
     llhttp-ffi (0.5.1)
@@ -777,7 +777,7 @@ DEPENDENCIES
   k8s-ruby (~> 0.17.2)
   kubeclient (~> 4.12)
   letter_opener
-  light-service (~> 0.20.0)
+  light-service (~> 0.21.0)
   mcp (~> 0.4.0)
   name_of_person!
   net-ldap (~> 0.20.0)
