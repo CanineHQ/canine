@@ -4,13 +4,13 @@ class ServiceHealthMailer < ApplicationMailer
     @service = service
     @project = service.project
     @user = user
-    mail(to: user.email, subject: "[Canine] #{@service.name} is down (#{@project.name})")
+    mail(to: user.email, subject: "[Canine] #{@project.name}/#{@service.name} is down")
   end
 
   def service_restored(service, user)
     @service = service
     @project = service.project
     @user = user
-    mail(to: user.email, subject: "[Canine] #{@service.name} is back up (#{@project.name})")
+    mail(to: user.email, subject: "[Canine] #{@project.name}/#{@service.name} is back up")
   end
 end
