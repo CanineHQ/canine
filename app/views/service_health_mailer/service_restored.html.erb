@@ -1,14 +1,18 @@
-<h1 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 600; color: #1e2328;"><%= @service.name %> is back up</h1>
+<h1 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 600; color: #1e2328;"><code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @project.name %></code> / <code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @service.name %></code> is back up</h1>
 
 <table cellpadding="0" cellspacing="0" style="margin-bottom: 28px; font-size: 14px; line-height: 1.6;">
   <tr>
-    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;">Project</td>
-    <td style="color: #1e2328; padding-bottom: 4px;"><%= @project.name %></td>
+    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;">Service</td>
+    <td style="color: #1e2328; padding-bottom: 4px;"><code style="background-color: #f0f2f5; padding: 1px 5px; border-radius: 3px;"><%= @service.name %></code></td>
   </tr>
-  <% if @service.healthcheck_url.present? %>
   <tr>
-    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;">URL</td>
-    <td style="padding-bottom: 4px;"><%= @service.healthcheck_url %></td>
+    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;">Project</td>
+    <td style="color: #1e2328; padding-bottom: 4px;"><code style="background-color: #f0f2f5; padding: 1px 5px; border-radius: 3px;"><%= @project.name %></code></td>
+  </tr>
+  <% if @service.healthcheck_url.present? && @service.healthcheck_url != "/" %>
+  <tr>
+    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;">Health URL</td>
+    <td style="padding-bottom: 4px;"><code style="background-color: #f0f2f5; padding: 1px 5px; border-radius: 3px;"><%= @service.healthcheck_url %></code></td>
   </tr>
   <% end %>
   <tr>
