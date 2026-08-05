@@ -111,7 +111,7 @@ gem "jwt", "~> 2.9"
 
 gem "ruby-saml", "~> 1.17"
 
-gem "mcp", "~> 0.4.0"
+gem "mcp", "~> 1.1.0"
 
 gem "doorkeeper", "~> 5.8"
 
