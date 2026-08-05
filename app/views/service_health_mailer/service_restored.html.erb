@@ -7,3 +7,5 @@
   <strong>Project:</strong> <%= @project.name %><br>
   <strong>Checked at:</strong> <%= @service.last_health_checked_at&.strftime("%Y-%m-%d %H:%M:%S UTC") %>
 </p>
+
+<p><%= link_to "View Service", project_service_url(@project, @service) %></p>
