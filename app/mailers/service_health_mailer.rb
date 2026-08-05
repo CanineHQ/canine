@@ -1,4 +1,5 @@
 class ServiceHealthMailer < ApplicationMailer
+  manageable
   def service_down(service, user)
     @service = service
     @project = service.project

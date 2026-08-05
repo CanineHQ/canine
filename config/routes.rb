@@ -147,6 +147,7 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :email_preference, only: %i[show update]
   resources :providers, only: %i[index new create destroy]
   resources :api_tokens, only: %i[index new create destroy]
   resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'

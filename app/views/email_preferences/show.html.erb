@@ -1,0 +1,22 @@
+<%= settings_layout do %>
+  <div>
+    <h2 class="text-2xl font-bold">Email Notifications</h2>
+    <hr class="mt-3 mb-4 border-t border-base-300" />
+
+    <%= form_with(model: @preference, url: email_preference_path, method: :patch) do |f| %>
+      <div class="space-y-4">
+        <label class="flex items-center gap-3 cursor-pointer">
+          <%= f.check_box :service_health, class: "checkbox" %>
+          <div>
+            <div class="font-medium">Service health alerts</div>
+            <div class="text-sm text-base-content/70">Get notified when a service goes down or recovers.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="mt-6">
+        <%= f.submit "Save Preferences", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

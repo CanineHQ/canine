@@ -53,5 +53,14 @@ RSpec.describe CheckServiceHealthJob do
       expect { described_class.new.perform(service) }
         .not_to have_enqueued_mail(ServiceHealthMailer)
     end
+
+    it 'does not send email to users who have disabled service health notifications' do
+      create(:email_preference, user: user, service_health: false)
+      service = create(:service, :web_service, project: project, status: :healthy)
+      allow(kubectl).to receive(:call).and_return(deployment_json(desired: 2, ready: 0))
+
+      expect { described_class.new.perform(service) }
+        .not_to have_enqueued_mail(ServiceHealthMailer, :service_down).with(service, user)
+    end
   end
 end
