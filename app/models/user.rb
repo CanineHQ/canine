@@ -61,6 +61,11 @@ class User < ApplicationRecord
   has_many :services, through: :accounts
   has_many :api_tokens, dependent: :destroy
   has_many :favorites, dependent: :destroy
+  has_one :email_preference, dependent: :destroy
+
+  def email_enabled?(type)
+    email_preference&.public_send(:"#{type}?") != false
+  end
 
   # Doorkeeper
   has_many :access_grants,

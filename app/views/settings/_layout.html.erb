@@ -33,6 +33,12 @@
               Credentials
             <% end %>
           </li>
+          <li class="<%= 'underline' if current_page?(email_preference_path) %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to email_preference_path do %>
+              <iconify-icon icon="lucide:mail" ></iconify-icon>
+              Notifications
+            <% end %>
+          </li>
         </ul>
       </li>
       <li>
