@@ -24,5 +24,6 @@ class Avo::Resources::User < Avo::BaseResource
     field :clusters, as: :has_many, through: :accounts, only_on: :show
     field :projects, as: :has_many, through: :accounts, only_on: :show
     field :add_ons, as: :has_many, through: :accounts, only_on: :show
+    field :email_preference, as: :has_one, only_on: :show
   end
 end

@@ -1,13 +1,8 @@
 class Avo::Resources::EmailPreference < Avo::BaseResource
-  # self.includes = []
-  # self.attachments = []
-  # self.search = {
-  #   query: -> { query.ransack(id_eq: q, m: "or").result(distinct: false) }
-  # }
+  self.visible_on_sidebar = false
 
   def fields
     field :id, as: :id
-    field :user, as: :belongs_to
     field :service_health, as: :boolean
   end
 end
