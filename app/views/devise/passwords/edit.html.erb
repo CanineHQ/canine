@@ -6,11 +6,9 @@
       <%= render "devise/shared/error_messages", resource: resource %>
       <%= f.hidden_field :reset_password_token %>
 
-      <div class="mb-3">
-        <%= f.password_field :password, autofocus: true, autocomplete: "off", class: 'form-control', placeholder: "Password" %>
-        <% if @minimum_password_length %>
-          <p class="text-muted"><small><%= @minimum_password_length %> characters minimum</small></p>
-        <% end %>
+      <div class="mb-3" data-controller="password-complexity">
+        <%= f.password_field :password, autofocus: true, autocomplete: "off", class: 'form-control', placeholder: "Password",
+            data: { password_complexity_target: "input", action: "input->password-complexity#validate" } %>
       </div>
 
       <div class="mb-3">
