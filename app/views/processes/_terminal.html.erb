@@ -17,6 +17,9 @@
     </div>
     <div class="flex items-center gap-2">
       <div class="badge badge-sm" data-terminal-target="status">Connecting...</div>
+      <% if local_assigns[:show_sessions] %>
+        <%= render "projects/workbenches/active_sessions" %>
+      <% end %>
       <%= link_to "Back", back_path, class: "btn btn-sm btn-outline" %>
     </div>
   </div>

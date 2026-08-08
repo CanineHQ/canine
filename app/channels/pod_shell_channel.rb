@@ -20,6 +20,7 @@ class PodShellChannel < ApplicationCable::Channel
     @shell_token = token
     @shell_token.mark_connected!
     @last_input_at = Time.current
+    broadcast_session_update
 
     stream_from stream_name
   end
@@ -119,6 +120,7 @@ class PodShellChannel < ApplicationCable::Channel
     @kubeconfig_file = nil
 
     @shell_token&.destroy
+    broadcast_session_update
   end
 
   def start_idle_timer
@@ -142,6 +144,24 @@ class PodShellChannel < ApplicationCable::Channel
       @idle_timer.kill
     end
     @idle_timer = nil
+  end
+
+  def broadcast_session_update
+    user = @shell_token&.user || current_user
+    Turbo::StreamsChannel.broadcast_replace_to(
+      [ user, :shell_sessions ],
+      target: "shell_sessions_list",
+      partial: "projects/workbenches/session_list",
+      locals: { current_user: user }
+    )
+    Turbo::StreamsChannel.broadcast_replace_to(
+      [ user, :shell_sessions ],
+      target: "session_count",
+      partial: "projects/workbenches/session_count",
+      locals: { current_user: user }
+    )
+  rescue => e
+    Rails.logger.error("PodShellChannel broadcast error: #{e.message}")
   end
 
   def resize_pty(cols, rows)

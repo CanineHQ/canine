@@ -1,0 +1,24 @@
+<% sessions = ShellToken.where(user: current_user).connected.order(connected_at: :desc) %>
+<% if sessions.any? %>
+  <div class="flex flex-col gap-2">
+    <% sessions.each do |session| %>
+      <div id="shell_session_<%= session.id %>" class="flex items-center justify-between bg-base-200 rounded-lg px-4 py-3">
+        <div class="flex items-center gap-3">
+          <span class="w-2 h-2 rounded-full bg-success flex-shrink-0"></span>
+          <div>
+            <p class="font-mono text-sm"><%= session.pod_name.truncate(40) %></p>
+            <p class="text-xs text-base-content/40"><%= session.namespace %> &middot; <%= time_ago_in_words(session.connected_at) %> ago</p>
+          </div>
+        </div>
+        <%= button_to destroy_session_project_workbench_path(@project, session_id: session.id),
+          method: :delete,
+          class: "btn btn-ghost btn-sm text-error",
+          data: { turbo_confirm: "Kill this session?" } do %>
+          <iconify-icon icon="lucide:trash-2" height="14"></iconify-icon>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-sm text-base-content/50 text-center py-4">No active sessions</p>
+<% end %>
