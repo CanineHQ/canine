@@ -27,7 +27,7 @@
 #
 class ShellToken < ApplicationRecord
   TOKEN_TTL = 5.minutes
-  IDLE_TIMEOUT = 30.minutes
+  IDLE_TIMEOUT = 4.hours
   MAX_SESSIONS_PER_USER = 5
 
   # Kubernetes resource names: lowercase alphanumeric, hyphens, dots; max 253 chars

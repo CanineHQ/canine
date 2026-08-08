@@ -1,7 +1,11 @@
 <div
   data-controller="terminal"
   data-terminal-token-value="<%= shell_token.token %>"
-  class="flex flex-col h-[calc(100vh-12rem)]"
+  <% if local_assigns[:upload_url] %>
+    data-terminal-upload-url-value="<%= upload_url %>"
+    data-terminal-pod-name-value="<%= pod_name %>"
+  <% end %>
+  class="flex flex-col h-[calc(100vh-12rem)] relative"
 >
   <div class="flex items-center justify-between mb-4">
     <div>
@@ -17,10 +21,27 @@
     </div>
   </div>
 
+  <% if local_assigns[:upload_url] %>
+    <div
+      data-terminal-target="dropOverlay"
+      class="hidden absolute inset-0 z-10 flex items-center justify-center bg-base-300/90 rounded-lg border-2 border-dashed border-primary pointer-events-none backdrop-blur-sm"
+    >
+      <div class="flex flex-col items-center gap-3">
+        <iconify-icon icon="lucide:upload-cloud" height="48" class="text-primary"></iconify-icon>
+        <p class="text-base-content text-lg font-semibold">Drop files to upload to pod</p>
+        <p class="text-base-content/50 text-sm">Files will be available at /tmp/uploads/</p>
+      </div>
+    </div>
+  <% end %>
+
   <div
     data-terminal-target="container"
     class="flex-1 rounded-lg overflow-hidden border border-base-300 bg-gray-800"
   ></div>
+
+  <% if local_assigns[:upload_url] %>
+    <div data-terminal-target="statusMessage" class="hidden absolute bottom-4 right-4 z-10"></div>
+  <% end %>
 
   <% terminal_modal_id = "id_#{SecureRandom.hex(8)}" %>
   <div class="mt-4 flex justify-end">

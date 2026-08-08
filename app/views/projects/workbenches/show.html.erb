@@ -1,6 +1,7 @@
 <%= content_for :title, "Workbench - #{@project.name}" %>
 
 <%= project_layout(@project) do %>
+  <%= render "projects/workbenches/active_sessions", active_sessions: @active_sessions %>
   <% if @pod %>
     <%= render "processes/terminal",
       shell_token: @shell_token,
@@ -8,7 +9,8 @@
       namespace: @namespace,
       back_path: project_path(@project.child_development_environment.parent_project),
       project_name: @project.name,
-      cluster: @project.cluster %>
+      cluster: @project.cluster,
+      upload_url: upload_project_workbench_path(@project) %>
   <% else %>
     <% unless @project.deployments.any? %>
       <%= render "shared/partials/wizard_animation" %>

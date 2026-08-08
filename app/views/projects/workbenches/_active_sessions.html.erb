@@ -1,0 +1,22 @@
+<% if active_sessions.any? %>
+  <div class="mb-4">
+    <div class="flex items-center justify-between mb-2">
+      <%= render "projects/workbenches/session_count", active_sessions: active_sessions %>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <% active_sessions.each do |session| %>
+        <div id="shell_session_<%= session.id %>" class="flex items-center gap-2 bg-base-200 rounded px-3 py-1.5 text-sm">
+          <span class="w-2 h-2 rounded-full bg-success"></span>
+          <span class="font-mono text-base-content/80"><%= session.pod_name.truncate(30) %></span>
+          <span class="text-base-content/40"><%= time_ago_in_words(session.connected_at) %> ago</span>
+          <%= button_to destroy_session_project_workbench_path(@project, session_id: session.id),
+            method: :delete,
+            class: "btn btn-ghost btn-xs text-error",
+            data: { turbo_confirm: "Kill this session?" } do %>
+            <iconify-icon icon="lucide:x" height="14"></iconify-icon>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
