@@ -2,9 +2,6 @@
   data-controller="terminal"
   data-terminal-token-value="<%= shell_token.token %>"
   data-terminal-upload-url-value="<%= upload_shell_session_path(shell_token) %>"
-  <% if local_assigns[:bracket_paste] %>
-    data-terminal-bracket-paste-value="true"
-  <% end %>
   class="flex flex-col h-[calc(100vh-12rem)] relative"
 >
   <div class="flex items-center justify-between mb-4">

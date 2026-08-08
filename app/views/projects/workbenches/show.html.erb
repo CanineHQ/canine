@@ -9,7 +9,6 @@
       back_path: project_path(@project.child_development_environment.parent_project),
       project_name: @project.name,
       cluster: @project.cluster,
-      bracket_paste: true,
       show_sessions: true %>
   <% else %>
     <% unless @project.deployments.any? %>
