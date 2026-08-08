@@ -8,7 +8,8 @@
       namespace: @namespace,
       back_path: project_path(@project.child_development_environment.parent_project),
       project_name: @project.name,
-      cluster: @project.cluster %>
+      cluster: @project.cluster,
+      show_sessions: true %>
   <% else %>
     <% unless @project.deployments.any? %>
       <%= render "shared/partials/wizard_animation" %>

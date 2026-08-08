@@ -5,7 +5,6 @@ class Projects::WorkbenchesController < Projects::BaseController
     all_pods = fetch_pods
     @pods = all_pods.select { |pod| pod.status.phase == "Running" }
     @pod = @pods.first
-
     if @pod
       @pod_name = @pod.metadata.name
       @namespace = @project.namespace

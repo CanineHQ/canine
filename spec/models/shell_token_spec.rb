@@ -168,7 +168,7 @@ RSpec.describe ShellToken, type: :model do
       recent.mark_connected!
 
       stale = create(:shell_token)
-      stale.update!(connected_at: 31.minutes.ago)
+      stale.update!(connected_at: 5.hours.ago)
 
       expect { described_class.cleanup_stale_sessions! }.to change(described_class, :count).by(-1)
       expect(described_class.exists?(recent.id)).to be true

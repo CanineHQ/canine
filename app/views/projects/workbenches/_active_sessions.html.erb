@@ -1,0 +1,27 @@
+<%= turbo_stream_from current_user, :shell_sessions %>
+
+<div class="flex items-center gap-2">
+  <button onclick="shell_sessions_modal.showModal()" class="btn btn-ghost btn-sm gap-2">
+    <iconify-icon icon="lucide:terminal" height="16"></iconify-icon>
+    <%= turbo_frame_tag "session_count" do %>
+      <%= render "projects/workbenches/session_count" %>
+    <% end %>
+  </button>
+</div>
+
+<dialog id="shell_sessions_modal" class="modal">
+  <div class="modal-box bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <h3 class="text-lg font-bold mb-4">Active Sessions</h3>
+    <div id="shell_sessions_list">
+      <%= render "projects/workbenches/session_list" %>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
