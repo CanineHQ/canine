@@ -24,22 +24,6 @@ class Projects::WorkbenchesController < Projects::BaseController
     end
   end
 
-  def destroy_session
-    session = ShellToken.where(user: current_user).connected.find_by(id: params[:session_id])
-    session&.destroy
-    broadcast_session_update
-
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: [
-          turbo_stream.replace("shell_sessions_list", partial: "projects/workbenches/session_list"),
-          turbo_stream.replace("session_count", partial: "projects/workbenches/session_count")
-        ]
-      end
-      format.html { redirect_to project_workbench_path(@project), notice: "Session terminated." }
-    end
-  end
-
   def upload
     file = params[:file]
 
@@ -68,21 +52,6 @@ class Projects::WorkbenchesController < Projects::BaseController
   end
 
   private
-
-  def broadcast_session_update
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ current_user, :shell_sessions ],
-      target: "shell_sessions_list",
-      partial: "projects/workbenches/session_list",
-      locals: { current_user: current_user }
-    )
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ current_user, :shell_sessions ],
-      target: "session_count",
-      partial: "projects/workbenches/session_count",
-      locals: { current_user: current_user }
-    )
-  end
 
   def require_development_environment
     redirect_to project_path(@project), alert: "Workbench is only available for development environments." unless @project.development_environment?

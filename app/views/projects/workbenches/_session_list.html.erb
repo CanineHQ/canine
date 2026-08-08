@@ -6,11 +6,11 @@
         <div class="flex items-center gap-3">
           <span class="w-2 h-2 rounded-full bg-success flex-shrink-0"></span>
           <div>
-            <p class="font-mono text-sm"><%= session.pod_name.truncate(40) %></p>
-            <p class="text-xs text-base-content/40"><%= session.namespace %> &middot; <%= time_ago_in_words(session.connected_at) %> ago</p>
+            <p class="font-mono text-sm">Session #<%= session.token.last(6) %></p>
+            <p class="text-xs text-base-content/40"><%= session.pod_name.truncate(30) %> &middot; <%= time_ago_in_words(session.connected_at) %> ago</p>
           </div>
         </div>
-        <%= button_to destroy_session_project_workbench_path(@project, session_id: session.id),
+        <%= button_to shell_session_path(session),
           method: :delete,
           class: "btn btn-ghost btn-sm text-error",
           data: { turbo_confirm: "Kill this session?" } do %>
