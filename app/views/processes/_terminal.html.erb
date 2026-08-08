@@ -9,7 +9,7 @@
 >
   <div class="flex items-center justify-between mb-4">
     <div>
-      <h3 class="text-lg font-medium">Shell</h3>
+      <h3 class="text-lg font-medium font-mono">Session #<%= shell_token.token.last(6) %></h3>
       <p class="text-sm text-base-content/60">
         Connected to <span class="font-mono font-semibold"><%= pod_name %></span>
         in namespace <span class="font-mono font-semibold"><%= namespace %></span>

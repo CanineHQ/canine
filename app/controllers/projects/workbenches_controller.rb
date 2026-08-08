@@ -37,6 +37,13 @@ class Projects::WorkbenchesController < Projects::BaseController
 
     pod_name = params[:pod_name]
     namespace = @project.namespace
+    running_pods = fetch_pods.select { |pod| pod.status.phase == "Running" }
+    valid_pod = running_pods.any? { |pod| pod.metadata.name == pod_name }
+
+    unless valid_pod
+      return render json: { error: "Invalid pod" }, status: :unprocessable_entity
+    end
+
     filename = sanitize_filename(file.original_filename)
     remote_path = "#{UPLOAD_DIR}/#{filename}"
 
