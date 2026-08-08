@@ -5,7 +5,8 @@ class AddOns::HelmChartValuesSchema
 
   executed do |context|
     response = HTTParty.get(
-      "https://artifacthub.io/api/v1/packages/#{context.package_id}/#{context.version}/values-schema"
+      "https://artifacthub.io/api/v1/packages/#{context.package_id}/#{context.version}/values-schema",
+      timeout: 10
     )
 
     if response.success?

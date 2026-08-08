@@ -14,7 +14,7 @@ class AddOns::FetchChartDetailsFromArtifactHub
       "https://artifacthub.io/api/v1/packages/#{context.artifact_hub_package_id}"
     end
 
-    response = HTTParty.get(url)
+    response = HTTParty.get(url, timeout: 10)
     if response.success?
       context.response = response.parsed_response
     else
