@@ -150,7 +150,9 @@ Rails.application.routes.draw do
   resource :email_preference, only: %i[show update]
   resources :providers, only: %i[index new create destroy]
   resources :api_tokens, only: %i[index new create destroy]
-  resources :shell_sessions, only: %i[destroy], controller: "shell_sessions"
+  resources :shell_sessions, only: %i[destroy], controller: "shell_sessions" do
+    post :upload, on: :member
+  end
   resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
   resources :projects do
     member do
@@ -161,9 +163,7 @@ Rails.application.routes.draw do
     end
     resources :project_forks, only: %i[index edit create], module: :projects
     resources :development_environments, only: %i[index create], module: :projects
-    resource :workbench, only: %i[show], module: :projects do
-      post :upload, on: :member
-    end
+    resource :workbench, only: %i[show], module: :projects
     resource :cluster_migration, only: %i[create], module: :projects
     resource :development_environment_configuration, only: %i[create update destroy], module: :projects
     resources :volumes, only: %i[index new create destroy], module: :projects

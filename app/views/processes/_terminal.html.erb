@@ -1,10 +1,9 @@
 <div
   data-controller="terminal"
   data-terminal-token-value="<%= shell_token.token %>"
-  <% if local_assigns[:upload_url] %>
-    data-terminal-upload-url-value="<%= upload_url %>"
-    data-terminal-pod-name-value="<%= pod_name %>"
-    data-terminal-bracket-paste-value="<%= local_assigns[:bracket_paste] ? "true" : "false" %>"
+  data-terminal-upload-url-value="<%= upload_shell_session_path(shell_token) %>"
+  <% if local_assigns[:bracket_paste] %>
+    data-terminal-bracket-paste-value="true"
   <% end %>
   class="flex flex-col h-[calc(100vh-12rem)] relative"
 >
@@ -25,38 +24,30 @@
     </div>
   </div>
 
-  <% if local_assigns[:upload_url] %>
-    <div
-      data-terminal-target="dropOverlay"
-      class="hidden absolute inset-0 z-10 flex items-center justify-center bg-base-300/90 rounded-lg border-2 border-dashed border-primary pointer-events-none backdrop-blur-sm"
-    >
-      <div class="flex flex-col items-center gap-3">
-        <iconify-icon icon="lucide:upload-cloud" height="48" class="text-primary"></iconify-icon>
-        <p class="text-base-content text-lg font-semibold">Drop files to upload to pod</p>
-        <p class="text-base-content/50 text-sm">Files will be available at /tmp/uploads/</p>
-      </div>
+  <div
+    data-terminal-target="dropOverlay"
+    class="hidden absolute inset-0 z-10 flex items-center justify-center bg-base-300/90 rounded-lg border-2 border-dashed border-primary pointer-events-none backdrop-blur-sm"
+  >
+    <div class="flex flex-col items-center gap-3">
+      <iconify-icon icon="lucide:upload-cloud" height="48" class="text-primary"></iconify-icon>
+      <p class="text-base-content text-lg font-semibold">Drop files to upload to pod</p>
+      <p class="text-base-content/50 text-sm">Files will be available at /tmp/uploads/</p>
     </div>
-  <% end %>
+  </div>
 
   <div
     data-terminal-target="container"
     class="flex-1 rounded-lg overflow-hidden border border-base-300 bg-gray-800"
   ></div>
 
-  <% if local_assigns[:upload_url] %>
-    <div data-terminal-target="statusMessage" class="hidden absolute bottom-4 right-4 z-10"></div>
-  <% end %>
+  <div data-terminal-target="statusMessage" class="hidden absolute bottom-4 right-4 z-10"></div>
 
   <% terminal_modal_id = "id_#{SecureRandom.hex(8)}" %>
   <div class="mt-4 flex items-center justify-between">
-    <% if local_assigns[:upload_url] %>
-      <p class="text-sm text-base-content/40">
-        <iconify-icon icon="lucide:info" height="14" class="align-middle mr-1"></iconify-icon>
-        Drag & drop or paste images to upload files to the pod
-      </p>
-    <% else %>
-      <div></div>
-    <% end %>
+    <p class="text-sm text-base-content/40">
+      <iconify-icon icon="lucide:info" height="14" class="align-middle mr-1"></iconify-icon>
+      Drag & drop or paste images to upload files to the pod
+    </p>
     <a
       class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer"
       onclick="<%= terminal_modal_id %>.showModal()">

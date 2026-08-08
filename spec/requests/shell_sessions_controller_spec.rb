@@ -6,6 +6,7 @@ RSpec.describe ShellSessionsController, type: :request do
   let(:account) { create(:account) }
   let(:user) { account.owner }
   let(:cluster) { create(:cluster, account: account) }
+  let(:file) { fixture_file_upload("spec/fixtures/files/test_upload.txt", "text/plain") }
 
   before { sign_in user }
 
@@ -25,6 +26,39 @@ RSpec.describe ShellSessionsController, type: :request do
 
       expect { delete shell_session_path(other_session) }.not_to change(ShellToken, :count)
       expect { delete shell_session_path(pending_session) }.not_to change(ShellToken, :count)
+    end
+  end
+
+  describe "POST #upload" do
+    let!(:session) { create(:shell_token, user: user, cluster: cluster, connected_at: Time.current) }
+
+    it "rejects upload when no file is provided" do
+      post upload_shell_session_path(session)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["error"]).to eq("No file provided")
+    end
+
+    it "uploads file to the session's pod" do
+      kubectl = instance_double(K8::Kubectl)
+      allow(K8::Kubectl).to receive(:new).and_return(kubectl)
+      allow(kubectl).to receive(:call).and_return("")
+
+      post upload_shell_session_path(session), params: { file: file }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["path"]).to start_with("/tmp/uploads/")
+      expect(response.parsed_body["path"]).to end_with("_test_upload.txt")
+      expect(kubectl).to have_received(:call).twice
+    end
+
+    it "cannot upload to another user's session" do
+      other_user = create(:user)
+      other_session = create(:shell_token, user: other_user, cluster: cluster, connected_at: Time.current)
+
+      post upload_shell_session_path(other_session), params: { file: file }
+
+      expect(response).not_to have_http_status(:ok)
     end
   end
 end

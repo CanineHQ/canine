@@ -5,7 +5,7 @@ import { createConsumer } from "@rails/actioncable"
 
 export default class extends Controller {
   static targets = ["container", "status", "dropOverlay", "statusMessage"]
-  static values = { token: String, uploadUrl: String, podName: String, bracketPaste: Boolean }
+  static values = { token: String, uploadUrl: String, bracketPaste: Boolean }
 
   connect() {
     this.setupTerminal()
@@ -217,7 +217,6 @@ export default class extends Controller {
 
       const formData = new FormData()
       formData.append("file", file)
-      formData.append("pod_name", this.podNameValue)
 
       try {
         const response = await fetch(this.uploadUrlValue, {
