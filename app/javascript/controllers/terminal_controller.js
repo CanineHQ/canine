@@ -5,7 +5,7 @@ import { createConsumer } from "@rails/actioncable"
 
 export default class extends Controller {
   static targets = ["container", "status", "dropOverlay", "statusMessage"]
-  static values = { token: String, uploadUrl: String, podName: String }
+  static values = { token: String, uploadUrl: String, podName: String, bracketPaste: Boolean }
 
   connect() {
     this.setupTerminal()
@@ -231,10 +231,12 @@ export default class extends Controller {
         if (response.ok) {
           this.showStatusMessage(`Uploaded to ${result.path}`, "success")
           setTimeout(() => this.hideStatusMessage(), 3000)
-          this.channel?.send({
-            type: "input",
-            data: `\x1b[200~${result.path}\x1b[201~`,
-          })
+          if (this.bracketPasteValue) {
+            this.channel?.send({
+              type: "input",
+              data: `\x1b[200~${result.path}\x1b[201~`,
+            })
+          }
         } else {
           this.showStatusMessage(result.error, "error")
           setTimeout(() => this.hideStatusMessage(), 5000)

@@ -4,6 +4,7 @@
   <% if local_assigns[:upload_url] %>
     data-terminal-upload-url-value="<%= upload_url %>"
     data-terminal-pod-name-value="<%= pod_name %>"
+    data-terminal-bracket-paste-value="<%= local_assigns[:bracket_paste] ? "true" : "false" %>"
   <% end %>
   class="flex flex-col h-[calc(100vh-12rem)] relative"
 >
@@ -47,7 +48,15 @@
   <% end %>
 
   <% terminal_modal_id = "id_#{SecureRandom.hex(8)}" %>
-  <div class="mt-4 flex justify-end">
+  <div class="mt-4 flex items-center justify-between">
+    <% if local_assigns[:upload_url] %>
+      <p class="text-sm text-base-content/40">
+        <iconify-icon icon="lucide:info" height="14" class="align-middle mr-1"></iconify-icon>
+        Drag & drop or paste images to upload files to the pod
+      </p>
+    <% else %>
+      <div></div>
+    <% end %>
     <a
       class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer"
       onclick="<%= terminal_modal_id %>.showModal()">

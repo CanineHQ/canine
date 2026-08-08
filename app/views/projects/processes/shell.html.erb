@@ -5,6 +5,7 @@
     namespace: @namespace,
     back_path: project_processes_path(@project),
     project_name: @project.name,
-    cluster: @project.cluster
+    cluster: @project.cluster,
+    upload_url: upload_project_workbench_path(@project)
   %>
 <% end %>
