@@ -55,7 +55,7 @@
             Your dev environment, in the cloud
           </h1>
           <p class="mt-6 text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
-            Spin up a full development environment on your Kubernetes cluster. Browser-based terminal, your repo cloned and ready, files at your fingertips.
+            Spin up a full development environment on your Kubernetes cluster. Perfect for AI-assisted coding, live debugging, and sharing preview URLs with your team.
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
             <a href="<%= new_user_registration_path %>" class="rounded-md bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 transition">
@@ -130,18 +130,26 @@
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-aos="fade-up">
         <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
           <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 mb-4">
-            <iconify-icon icon="lucide:terminal" class="text-violet-400 text-lg"></iconify-icon>
+            <iconify-icon icon="lucide:sparkles" class="text-violet-400 text-lg"></iconify-icon>
           </div>
-          <h3 class="text-base font-semibold text-white mb-2">Browser-based terminal</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Full xterm.js terminal in your browser. No SSH keys, no VPN, no local setup required.</p>
+          <h3 class="text-base font-semibold text-white mb-2">Built for AI coding</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Give Claude Code, Cursor, or any AI agent a cloud environment to build and test in. No local setup, no "works on my machine."</p>
         </div>
 
         <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
           <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 mb-4">
-            <iconify-icon icon="lucide:upload-cloud" class="text-violet-400 text-lg"></iconify-icon>
+            <iconify-icon icon="lucide:globe" class="text-violet-400 text-lg"></iconify-icon>
           </div>
-          <h3 class="text-base font-semibold text-white mb-2">Drag &amp; drop file uploads</h3>
-          <p class="text-gray-400 text-sm leading-relaxed">Drop files directly into the terminal. They land in your pod instantly, ready to use.</p>
+          <h3 class="text-base font-semibold text-white mb-2">Shareable preview URLs</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Every dev environment gets a public URL. Share it with teammates, designers, or stakeholders to preview changes live.</p>
+        </div>
+
+        <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 mb-4">
+            <iconify-icon icon="lucide:terminal" class="text-violet-400 text-lg"></iconify-icon>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-2">Browser-based terminal</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Full xterm.js terminal in your browser. No SSH keys, no VPN, no local setup required.</p>
         </div>
 
         <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
@@ -158,6 +166,14 @@
           </div>
           <h3 class="text-base font-semibold text-white mb-2">Your own Dockerfile</h3>
           <p class="text-gray-400 text-sm leading-relaxed">Bring your own Dockerfile so every tool, runtime, and dependency is exactly how you want it.</p>
+        </div>
+
+        <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 mb-4">
+            <iconify-icon icon="lucide:upload-cloud" class="text-violet-400 text-lg"></iconify-icon>
+          </div>
+          <h3 class="text-base font-semibold text-white mb-2">Drag &amp; drop file uploads</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Drop files directly into the terminal. They land in your pod instantly, ready to use.</p>
         </div>
 
         <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8">
