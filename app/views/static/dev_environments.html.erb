@@ -1,6 +1,6 @@
-<% content_for :title, "Workbench — Cloud Development Environments on Kubernetes | Canine" %>
+<% content_for :title, "Dev Environments — Cloud Development Environments on Kubernetes | Canine" %>
 <% content_for :meta_description, "Spin up instant cloud dev environments on your Kubernetes cluster. Get a browser-based terminal, file uploads, and your full repo — ready in seconds." %>
-<% content_for :og_title, "Canine Workbench — Cloud Development Environments on Kubernetes" %>
+<% content_for :og_title, "Canine Dev Environments — Cloud Development Environments on Kubernetes" %>
 <% content_for :og_description, "Spin up instant cloud dev environments on your Kubernetes cluster. Get a browser-based terminal, file uploads, and your full repo — ready in seconds." %>
 <% content_for :schema_json do %>
 {
@@ -8,20 +8,20 @@
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://canine.sh/workbench#webpage",
-      "url": "https://canine.sh/workbench",
-      "name": "Canine Workbench",
+      "@id": "https://canine.sh/dev-environments#webpage",
+      "url": "https://canine.sh/dev-environments",
+      "name": "Canine Dev Environments",
       "description": "Cloud development environments on Kubernetes. Browser-based terminal, file uploads, and your full repo — ready in seconds.",
       "isPartOf": { "@id": "https://canine.sh/#website" }
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://canine.sh/workbench#software",
-      "name": "Canine Workbench",
+      "@id": "https://canine.sh/dev-environments#software",
+      "name": "Canine Dev Environments",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Any",
       "description": "Instant cloud development environments with browser-based terminal access to Kubernetes pods.",
-      "url": "https://canine.sh/workbench",
+      "url": "https://canine.sh/dev-environments",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     }
   ]
@@ -76,7 +76,7 @@
           <span class="w-3 h-3 rounded-full bg-red-500"></span>
           <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
           <span class="w-3 h-3 rounded-full bg-green-500"></span>
-          <span class="ml-4 text-xs text-gray-500 font-mono">workbench &mdash; api-service</span>
+          <span class="ml-4 text-xs text-gray-500 font-mono">dev environment &mdash; api-service</span>
           <span class="ml-auto text-xs text-violet-400 font-mono flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span>
             connected
@@ -104,7 +104,7 @@
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="0">
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400 text-xl font-bold mb-6">1</div>
-          <h3 class="text-lg font-semibold text-white mb-2">Enable the workbench</h3>
+          <h3 class="text-lg font-semibold text-white mb-2">Enable dev environments</h3>
           <p class="text-gray-400 text-sm leading-relaxed">Point Canine at your Dockerfile and choose a cluster. Your dev environment configuration is saved to the project.</p>
         </div>
         <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="100">
@@ -182,7 +182,7 @@
     <div class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
       <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 px-8 py-16 sm:px-16 text-center" data-aos="fade-up">
         <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Start developing in the cloud</h2>
-        <p class="mt-4 text-gray-400 max-w-xl mx-auto">Sign up for Canine Cloud and launch your first workbench in under 5 minutes. No credit card required.</p>
+        <p class="mt-4 text-gray-400 max-w-xl mx-auto">Sign up for Canine Cloud and launch your first dev environment in under 5 minutes. No credit card required.</p>
         <div class="mt-8 flex items-center justify-center gap-x-6">
           <a href="<%= new_user_registration_path %>" class="rounded-md bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 transition">
             Get Started Free

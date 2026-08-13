@@ -83,7 +83,7 @@ class StaticController < ApplicationController
     redirect_to root_path if user_signed_in?
   end
 
-  def workbench
+  def dev_environments
     redirect_to root_path if user_signed_in?
   end
 
