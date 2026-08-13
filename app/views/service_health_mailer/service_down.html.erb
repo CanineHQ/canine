@@ -1,4 +1,4 @@
-<h1 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 600; color: #1e2328;"><code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @project.name %></code> / <code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @service.name %></code> is down</h1>
+<h1 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 600; color: #1e2328;"><% if @favicon_url.present? %><img src="<%= @favicon_url %>" alt="" width="20" height="20" style="width: 20px; height: 20px; vertical-align: text-bottom; margin-right: 4px; border-radius: 3px;"><% end %><code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @project.name %></code> / <code style="background-color: #f0f2f5; padding: 2px 6px; border-radius: 3px; font-size: 20px;"><%= @service.name %></code> is down</h1>
 
 <table cellpadding="0" cellspacing="0" style="margin-bottom: 28px; font-size: 14px; line-height: 1.6;">
   <tr>
