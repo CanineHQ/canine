@@ -4,8 +4,12 @@ class BulkDeliveryMethods::ProjectWebhook < ApplicationBulkDeliveryMethod
     return unless project
 
     project.notifiers.enabled.for_type(notification_type).find_each do |notifier|
-      payload = event.build_payload(notifier.provider_type)
-      send_webhook(notifier.webhook_url, payload)
+      if notifier.email?
+        send_email(project)
+      else
+        payload = event.build_payload(notifier.provider_type)
+        send_webhook(notifier.webhook_url, payload)
+      end
     end
   end
 
@@ -17,6 +21,12 @@ class BulkDeliveryMethods::ProjectWebhook < ApplicationBulkDeliveryMethod
     when DeploymentNotifier then "deployment"
     when ServiceHealthNotifier then "health"
     else "build"
+    end
+  end
+
+  def send_email(project)
+    project.users.each do |user|
+      NotifierMailer.notify(user, event).deliver_later
     end
   end
 

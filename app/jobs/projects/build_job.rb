@@ -107,8 +107,6 @@ class Projects::BuildJob < ApplicationJob
   end
 
   def notify_build(project, build)
-    return unless project.notifiers.enabled.any?
-
     BuildNotifier.with(project: project, build: build).deliver_later
   end
 end

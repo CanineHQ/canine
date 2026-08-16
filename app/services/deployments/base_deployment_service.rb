@@ -81,8 +81,6 @@ class Deployments::BaseDeploymentService
   end
 
   def notify_deployment
-    return unless @project.notifiers.enabled.any?
-
     DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
   end
 

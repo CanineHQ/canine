@@ -1,0 +1,12 @@
+<h1 style="margin: 0 0 24px 0; font-size: 22px; font-weight: 600; color: #1e2328;"><%= @title %></h1>
+
+<table cellpadding="0" cellspacing="0" style="margin-bottom: 28px; font-size: 14px; line-height: 1.6;">
+  <% @fields.each do |field| %>
+  <tr>
+    <td style="color: #8b949e; padding-right: 12px; padding-bottom: 4px;"><%= field[:label] %></td>
+    <td style="color: #1e2328; padding-bottom: 4px;"><code style="background-color: #f0f2f5; padding: 1px 5px; border-radius: 3px;"><%= field[:value] %></code></td>
+  </tr>
+  <% end %>
+</table>
+
+<a href="<%= @url %>" style="display: inline-block; background-color: #3e5eff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 4px; font-size: 14px; font-weight: 500;"><%= @url_label %></a>

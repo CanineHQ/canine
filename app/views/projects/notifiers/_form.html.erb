@@ -62,6 +62,16 @@
           description: "Send notifications to a Google Chat space",
           partial: "projects/notifiers/google_chat_instructions",
           locals: {}
+        },
+        {
+          name: "notifier[provider_type]",
+          value: "email",
+          href: nil,
+          icon: "lucide:mail",
+          label: "Email",
+          description: "Send notifications to all project members",
+          partial: "projects/notifiers/email_instructions",
+          locals: {}
         }
       ] %>
   </div>

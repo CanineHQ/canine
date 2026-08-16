@@ -23,12 +23,12 @@
 class Notifier < ApplicationRecord
   belongs_to :project
 
-  enum :provider_type, { slack: 0, discord: 1, microsoft_teams: 2, google_chat: 3 }
+  enum :provider_type, { slack: 0, discord: 1, microsoft_teams: 2, google_chat: 3, email: 4 }
 
   validates :name, presence: true
-  validates :webhook_url, presence: true,
-                          format: { with: URI::DEFAULT_PARSER.make_regexp(%w[https]), message: "must be a valid HTTPS URL" }
-  validate :webhook_url_matches_provider
+  validates :webhook_url, presence: true, unless: :email?
+  validates :webhook_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[https]), message: "must be a valid HTTPS URL" }, if: -> { webhook_url.present? }
+  validate :webhook_url_matches_provider, unless: :email?
 
   NOTIFICATION_TYPES = %w[build deployment health].freeze
 
