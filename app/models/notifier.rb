@@ -2,14 +2,15 @@
 #
 # Table name: notifiers
 #
-#  id            :bigint           not null, primary key
-#  enabled       :boolean          default(TRUE), not null
-#  name          :string           not null
-#  provider_type :integer          default("slack"), not null
-#  webhook_url   :string           not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  project_id    :bigint           not null
+#  id                 :bigint           not null, primary key
+#  enabled            :boolean          default(TRUE), not null
+#  name               :string           not null
+#  notification_types :text             default(["\"build\"", "\"deployment\"", "\"health\""]), not null, is an Array
+#  provider_type      :integer          default("slack"), not null
+#  webhook_url        :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  project_id         :bigint           not null
 #
 # Indexes
 #
@@ -29,7 +30,12 @@ class Notifier < ApplicationRecord
                           format: { with: URI::DEFAULT_PARSER.make_regexp(%w[https]), message: "must be a valid HTTPS URL" }
   validate :webhook_url_matches_provider
 
+  NOTIFICATION_TYPES = %w[build deployment health].freeze
+
   scope :enabled, -> { where(enabled: true) }
+  scope :for_type, ->(type) { where("? = ANY(notification_types)", type.to_s) }
+
+  validates :notification_types, presence: true
 
   private
 

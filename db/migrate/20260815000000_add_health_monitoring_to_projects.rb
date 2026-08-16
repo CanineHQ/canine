@@ -1,5 +1,5 @@
 class AddHealthMonitoringToProjects < ActiveRecord::Migration[7.2]
   def change
-    add_column :projects, :health_monitoring, :boolean, default: false, null: false
+    add_column :notifiers, :notification_types, :text, array: true, default: %w[build deployment health], null: false
   end
 end

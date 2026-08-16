@@ -500,6 +500,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_15_000000) do
     t.boolean "enabled", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notification_types", default: ["build", "deployment", "health"], null: false, array: true
     t.index ["project_id"], name: "index_notifiers_on_project_id"
   end
 
@@ -619,7 +620,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_15_000000) do
     t.bigint "current_deployment_id"
     t.string "repository_base_url"
     t.integer "provider_type", default: 0, null: false
-    t.boolean "health_monitoring", default: false, null: false
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
     t.index ["name"], name: "index_projects_on_name"

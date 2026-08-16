@@ -9,7 +9,6 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
-#  health_monitoring              :boolean          default(FALSE), not null
 #  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
 #  namespace                      :string           not null
@@ -309,7 +308,7 @@ class Project < ApplicationRecord
         { "name" => v.name, "size" => v.size, "mount_path" => v.mount_path, "access_mode" => v.access_mode }
       },
       "notifiers" => notifiers.map { |n|
-        { "name" => n.name, "provider_type" => n.provider_type, "webhook_url" => n.webhook_url, "enabled" => n.enabled }
+        { "name" => n.name, "provider_type" => n.provider_type, "webhook_url" => n.webhook_url, "enabled" => n.enabled, "notification_types" => n.notification_types }
       }
     }
     config.delete("scripts") if config["scripts"].empty?

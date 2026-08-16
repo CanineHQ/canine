@@ -38,19 +38,6 @@
       <%= render "projects/volumes/index", project: @project %>
     </div>
 
-    <div id="health-monitoring">
-      <h2 class="text-2xl font-bold">Health Monitoring</h2>
-      <hr class="mt-3 mb-4 border-t border-base-300" />
-      <%= form_with(model: @project, class: "space-y-4") do |form| %>
-        <%= render(FormFieldComponent.new(label: "Enable health monitoring emails", description: "Receive email notifications when services go down or recover.")) do %>
-          <%= form.check_box :health_monitoring, class: "checkbox" %>
-        <% end %>
-        <div class="form-footer">
-          <%= form.button "Save", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
-        </div>
-      <% end %>
-    </div>
-
     <div id="notifications">
       <h2 class="text-2xl font-bold">Notifications</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />

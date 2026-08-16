@@ -24,8 +24,7 @@ class Projects::Create
       :predeploy_command,
       :project_fork_status,
       :project_fork_cluster_id,
-      :public_image_url,
-      :health_monitoring
+      :public_image_url
     )
   end
 
