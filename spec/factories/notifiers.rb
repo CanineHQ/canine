@@ -7,7 +7,7 @@
 #  name               :string           not null
 #  notification_types :text             default(["\"build\"", "\"deployment\"", "\"health\""]), not null, is an Array
 #  provider_type      :integer          default("slack"), not null
-#  webhook_url        :string           not null
+#  webhook_url        :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  project_id         :bigint           not null
