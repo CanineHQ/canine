@@ -2,14 +2,15 @@
 #
 # Table name: notifiers
 #
-#  id            :bigint           not null, primary key
-#  enabled       :boolean          default(TRUE), not null
-#  name          :string           not null
-#  provider_type :integer          default("slack"), not null
-#  webhook_url   :string           not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  project_id    :bigint           not null
+#  id                 :bigint           not null, primary key
+#  enabled            :boolean          default(TRUE), not null
+#  name               :string           not null
+#  notification_types :text             default(["\"build\"", "\"deployment\"", "\"health\""]), not null, is an Array
+#  provider_type      :integer          default("slack"), not null
+#  webhook_url        :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  project_id         :bigint           not null
 #
 # Indexes
 #

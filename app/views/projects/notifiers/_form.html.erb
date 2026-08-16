@@ -73,6 +73,20 @@
     <%= f.text_field :webhook_url, inputmode: "url", class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
   </div>
 
+  <div class="form-control w-full mt-4">
+    <label class="label">
+      <span class="label-text">Notification types</span>
+    </label>
+    <div class="space-y-2">
+      <% Notifier::NOTIFICATION_TYPES.each do |type| %>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <%= check_box_tag "notifier[notification_types][]", type, notifier.notification_types.include?(type), class: "checkbox checkbox-sm" %>
+          <span class="label-text"><%= type.titleize %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
   <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">
     <label class="label mt-1">
       <span class="label-text cursor-pointer">Enabled</span>

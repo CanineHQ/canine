@@ -5,7 +5,7 @@ class ServiceHealthMailer < ApplicationMailer
     @project = service.project
     @user = user
     @favicon_url = project_favicon_url
-    attachments.inline["logo.webp"] = File.read(Rails.root.join("public/images/dark.webp"))
+    attachments.inline["logo.png"] = File.read(Rails.root.join("public/images/dark.png"))
     mail(to: user.email, subject: "[Canine] #{@project.name}/#{@service.name} is down")
   end
 
@@ -14,7 +14,7 @@ class ServiceHealthMailer < ApplicationMailer
     @project = service.project
     @user = user
     @favicon_url = project_favicon_url
-    attachments.inline["logo.webp"] = File.read(Rails.root.join("public/images/dark.webp"))
+    attachments.inline["logo.png"] = File.read(Rails.root.join("public/images/dark.png"))
     mail(to: user.email, subject: "[Canine] #{@project.name}/#{@service.name} is back up")
   end
 

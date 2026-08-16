@@ -39,7 +39,16 @@ class CheckServiceHealthJob < ApplicationJob
 
     return unless went_down || came_back
 
-    service.project.users.includes(:email_preference).each do |user|
+    project = service.project
+    status_change = went_down ? :down : :restored
+
+    # Send webhook notifications via notifier system
+    if project.notifiers.enabled.for_type("health").any?
+      ServiceHealthNotifier.with(project: project, service: service, status_change: status_change).deliver_later
+    end
+
+    # Send email notifications
+    project.users.includes(:email_preference).each do |user|
       next unless user.email_enabled?(:service_health)
 
       if went_down
