@@ -1,3 +1,9 @@
-<div class="text-sm text-base-content/60">
+<p class="text-sm text-base-content/60 mb-3">
   Get your webhook URL from Teams: <strong>Channel → Connectors → Incoming Webhook → Configure</strong>
+</p>
+<div class="form-control w-full">
+  <label class="label">
+    <span class="label-text">Webhook URL</span>
+  </label>
+  <input type="url" name="notifier[webhook_url]" value="<%= notifier&.webhook_url %>" class="input input-bordered w-full font-mono text-sm" placeholder="https://outlook.office.com/webhook/..." />
 </div>

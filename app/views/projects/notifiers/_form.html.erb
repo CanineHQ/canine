@@ -1,4 +1,4 @@
-<%= form_with model: notifier, url: notifier.persisted? ? project_notifier_path(@project, notifier) : project_notifiers_path(@project), data: { controller: "notifier-form" } do |f| %>
+<%= form_with model: notifier, url: notifier.persisted? ? project_notifier_path(@project, notifier) : project_notifiers_path(@project) do |f| %>
   <% if notifier.errors.any? %>
     <div class="alert alert-error mb-4">
       <ul>
@@ -31,7 +31,7 @@
           label: "Slack",
           description: "Send notifications to a Slack channel",
           partial: "projects/notifiers/slack_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -41,7 +41,7 @@
           label: "Discord",
           description: "Send notifications to a Discord channel",
           partial: "projects/notifiers/discord_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -51,7 +51,7 @@
           label: "Microsoft Teams",
           description: "Send notifications to a Teams channel",
           partial: "projects/notifiers/microsoft_teams_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -61,7 +61,7 @@
           label: "Google Chat",
           description: "Send notifications to a Google Chat space",
           partial: "projects/notifiers/google_chat_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -71,16 +71,9 @@
           label: "Email",
           description: "Send notifications to all project members",
           partial: "projects/notifiers/email_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         }
       ] %>
-  </div>
-
-  <div class="form-control w-full mt-4" data-notifier-form-target="webhookUrl">
-    <label class="label">
-      <span class="label-text">Webhook URL</span>
-    </label>
-    <%= f.text_field :webhook_url, inputmode: "url", class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
   </div>
 
   <% notification_type_descriptions = {
