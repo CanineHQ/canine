@@ -1,6 +1,8 @@
 class ServiceHealthNotifier < ApplicationNotifier
   required_params :project, :service, :status_change
 
+  def notification_type = "health"
+
   def message
     service = params[:service]
     case params[:status_change]

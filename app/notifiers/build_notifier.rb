@@ -1,6 +1,8 @@
 class BuildNotifier < ApplicationNotifier
   required_params :project, :build
 
+  def notification_type = "build"
+
   def message
     build = params[:build]
     commit_info = build.commit_message.present? ? "\"#{build.commit_message.truncate(50)}\"" : build.commit_sha[0..7]

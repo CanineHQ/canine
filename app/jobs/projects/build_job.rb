@@ -107,6 +107,6 @@ class Projects::BuildJob < ApplicationJob
   end
 
   def notify_build(project, build)
-    BuildNotifier.with(project: project, build: build).deliver_later
+    BuildNotifier.with(project: project, build: build).deliver_later(project.users)
   end
 end

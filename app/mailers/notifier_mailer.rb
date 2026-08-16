@@ -1,13 +1,14 @@
 class NotifierMailer < ApplicationMailer
-  def notify(user, event)
-    @user = user
-    @project = event.params[:project]
-    @title = event.message
-    @url = event.url
-    @url_label = url_label_for(event)
-    @fields = build_fields(event)
+  def notify
+    @recipient = params[:recipient]
+    @notification = params[:notification]
+    @project = params[:project]
+    @title = @notification.event.message
+    @url = @notification.event.url
+    @url_label = url_label_for(@notification.event)
+    @fields = build_fields(@notification.event)
     attachments.inline["logo.png"] = File.read(Rails.root.join("public/images/dark.png"))
-    mail(to: user.email, subject: "[Canine] #{@project.name}: #{@title}")
+    mail(to: @recipient.email, subject: "[Canine] #{@project.name}: #{@title}")
   end
 
   private

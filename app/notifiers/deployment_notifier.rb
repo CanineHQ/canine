@@ -1,10 +1,7 @@
-class DeploymentNotifier < Noticed::Event
+class DeploymentNotifier < ApplicationNotifier
   required_params :project, :deployment
-  bulk_deliver_by :project_webhook, class: "BulkDeliveryMethods::ProjectWebhook"
 
-  def project
-    params[:project]
-  end
+  def notification_type = "deployment"
 
   def message
     deployment = params[:deployment]

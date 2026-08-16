@@ -81,7 +81,7 @@ class Deployments::BaseDeploymentService
   end
 
   def notify_deployment
-    DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later
+    DeploymentNotifier.with(project: @project, deployment: @deployment).deliver_later(@project.users)
   end
 
   def setup_automatic_dns(service)

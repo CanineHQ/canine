@@ -42,6 +42,6 @@ class CheckServiceHealthJob < ApplicationJob
     project = service.project
     status_change = went_down ? :down : :restored
 
-    ServiceHealthNotifier.with(project: project, service: service, status_change: status_change).deliver_later
+    ServiceHealthNotifier.with(project: project, service: service, status_change: status_change).deliver_later(project.users)
   end
 end
