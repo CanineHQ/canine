@@ -6,6 +6,13 @@
     </span>
   </td>
   <td>
+    <div class="flex gap-1 flex-wrap">
+      <% notifier.notification_types.each do |type| %>
+        <span class="badge badge-ghost badge-sm"><%= type.titleize %></span>
+      <% end %>
+    </div>
+  </td>
+  <td>
     <% if notifier.enabled? %>
       <span class="badge badge-success">Enabled</span>
     <% else %>

@@ -308,7 +308,7 @@ class Project < ApplicationRecord
         { "name" => v.name, "size" => v.size, "mount_path" => v.mount_path, "access_mode" => v.access_mode }
       },
       "notifiers" => notifiers.map { |n|
-        { "name" => n.name, "provider_type" => n.provider_type, "webhook_url" => n.webhook_url, "enabled" => n.enabled }
+        { "name" => n.name, "provider_type" => n.provider_type, "webhook_url" => n.webhook_url, "enabled" => n.enabled, "notification_types" => n.notification_types }
       }
     }
     config.delete("scripts") if config["scripts"].empty?
