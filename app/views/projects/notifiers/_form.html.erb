@@ -77,32 +77,29 @@
   </div>
 
   <% notification_type_descriptions = {
-    "build" => "Notify when builds start, succeed, or fail",
-    "deployment" => "Notify when deployments start, complete, or fail",
-    "health" => "Notify when services go down or recover"
+    "build" => "Build started, succeeded, or failed",
+    "deployment" => "Deployment started, completed, or failed",
+    "health" => "Service went down or recovered"
   } %>
-  <div class="form-control w-full mt-4">
+  <div class="mt-4">
     <label class="label">
-      <span class="label-text">Notification types</span>
+      <span class="label-text">Events</span>
     </label>
-    <div class="space-y-3">
+    <div class="rounded-lg bg-base-200 max-w-sm divide-y divide-base-300">
       <% Notifier::NOTIFICATION_TYPES.each do |type| %>
-        <label class="flex items-start gap-2 cursor-pointer">
-          <%= check_box_tag "notifier[notification_types][]", type, notifier.notification_types.include?(type), class: "checkbox checkbox-sm mt-0.5" %>
+        <label class="flex items-center justify-between p-3 px-4 cursor-pointer">
           <div>
-            <span class="label-text font-medium"><%= type.titleize %></span>
-            <p class="text-xs text-gray-500"><%= notification_type_descriptions[type] %></p>
+            <span class="text-sm font-medium"><%= type.titleize %></span>
+            <p class="text-xs text-base-content/50"><%= notification_type_descriptions[type] %></p>
           </div>
+          <%= check_box_tag "notifier[notification_types][]", type, notifier.notification_types.include?(type), class: "toggle toggle-primary toggle-sm" %>
         </label>
       <% end %>
+      <label class="flex items-center justify-between p-3 px-4 cursor-pointer">
+        <span class="text-sm font-medium">Enabled</span>
+        <%= f.check_box :enabled, class: "toggle toggle-primary toggle-sm" %>
+      </label>
     </div>
-  </div>
-
-  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">
-    <label class="label mt-1">
-      <span class="label-text cursor-pointer">Enabled</span>
-      <%= f.check_box :enabled, class: "checkbox" %>
-    </label>
   </div>
 
   <div class="form-footer">
