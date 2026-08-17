@@ -2,14 +2,15 @@
 #
 # Table name: notifiers
 #
-#  id            :bigint           not null, primary key
-#  enabled       :boolean          default(TRUE), not null
-#  name          :string           not null
-#  provider_type :integer          default("slack"), not null
-#  webhook_url   :string           not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  project_id    :bigint           not null
+#  id                 :bigint           not null, primary key
+#  enabled            :boolean          default(TRUE), not null
+#  name               :string           not null
+#  notification_types :text             default(["\"build\"", "\"deployment\"", "\"health\""]), not null, is an Array
+#  provider_type      :integer          default("slack"), not null
+#  webhook_url        :string
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  project_id         :bigint           not null
 #
 # Indexes
 #
@@ -40,6 +41,11 @@ FactoryBot.define do
     trait :google_chat do
       provider_type { :google_chat }
       webhook_url { "https://chat.googleapis.com/v1/spaces/test/messages" }
+    end
+
+    trait :email do
+      provider_type { :email }
+      webhook_url { nil }
     end
 
     trait :disabled do

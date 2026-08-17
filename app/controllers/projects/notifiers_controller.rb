@@ -1,5 +1,5 @@
 class Projects::NotifiersController < Projects::BaseController
-  before_action :set_notifier, only: [ :edit, :update, :destroy ]
+  before_action :set_notifier, only: [ :edit, :update, :destroy, :test ]
 
   def index
     render partial: "index", locals: { project: @project }
@@ -34,6 +34,11 @@ class Projects::NotifiersController < Projects::BaseController
     render partial: "index", locals: { project: @project }
   end
 
+  def test
+    Notifiers::SendTest.execute(notifier: @notifier, project: @project, user: current_user)
+    render partial: "index", locals: { project: @project }
+  end
+
   private
 
   def set_notifier
@@ -41,6 +46,6 @@ class Projects::NotifiersController < Projects::BaseController
   end
 
   def notifier_params
-    params.require(:notifier).permit(:name, :provider_type, :webhook_url, :enabled)
+    params.require(:notifier).permit(:name, :provider_type, :webhook_url, :enabled, notification_types: [])
   end
 end
