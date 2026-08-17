@@ -43,7 +43,7 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'faker', '~> 3.5.2'
+  gem 'faker', '~> 3.8.0'
 end
 
 group :development do
@@ -72,13 +72,13 @@ gem "devise_invitable", "~> 2.0"
 gem "dotenv", "~> 3.1"
 gem "friendly_id", "~> 5.4"
 gem "good_job", "~> 4.19"
-gem "httparty", "~> 0.23.2"
+gem "httparty", "~> 0.24.2"
 gem "image_processing", "~> 1.13"
 gem "jsbundling-rails"
 gem "json-schema", "~> 5.1"
 gem "k8s-ruby", "~> 0.17.2"
 gem "kubeclient", "~> 4.12"
-gem "light-service", "~> 0.20.0"
+gem "light-service", "~> 0.21.0"
 gem "name_of_person", github: "basecamp/name_of_person"
 gem "noticed", "~> 2.9"
 gem "octokit", "~> 10.0"
@@ -89,7 +89,7 @@ gem "omniauth_openid_connect", "~> 0.8"
 gem "omniauth-gitlab", "~> 4.1"
 gem "omniauth-rails_csrf_protection", "~> 1.0"
 gem "pagy", "~> 9.4"
-gem "pretender", "~> 0.6.0"
+gem "pretender", "~> 1.0.0"
 gem "pundit", "~> 2.5"
 gem "rack", "~> 3.1"
 gem "redcarpet", "~> 3.6"

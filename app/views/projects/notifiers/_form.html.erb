@@ -9,12 +9,9 @@
     </div>
   <% end %>
 
-  <div class="form-control w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Name</span>
-    </label>
+  <%= render(FormFieldComponent.new(label: "Name")) do %>
     <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts", required: true %>
-  </div>
+  <% end %>
 
   <div class="form-control w-full mt-4">
     <label class="label">
@@ -31,7 +28,7 @@
           label: "Slack",
           description: "Send notifications to a Slack channel",
           partial: "projects/notifiers/slack_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -41,7 +38,7 @@
           label: "Discord",
           description: "Send notifications to a Discord channel",
           partial: "projects/notifiers/discord_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -51,7 +48,7 @@
           label: "Microsoft Teams",
           description: "Send notifications to a Teams channel",
           partial: "projects/notifiers/microsoft_teams_instructions",
-          locals: {}
+          locals: { notifier: notifier }
         },
         {
           name: "notifier[provider_type]",
@@ -61,24 +58,39 @@
           label: "Google Chat",
           description: "Send notifications to a Google Chat space",
           partial: "projects/notifiers/google_chat_instructions",
-          locals: {}
+          locals: { notifier: notifier }
+        },
+        {
+          name: "notifier[provider_type]",
+          value: "email",
+          href: nil,
+          icon: "lucide:mail",
+          label: "Email",
+          description: "Send notifications to all project members",
+          partial: "projects/notifiers/email_instructions",
+          locals: { notifier: notifier }
         }
       ] %>
   </div>
 
-  <div class="form-control w-full mt-4">
-    <label class="label">
-      <span class="label-text">Webhook URL</span>
-    </label>
-    <%= f.text_field :webhook_url, inputmode: "url", class: "input input-bordered w-full font-mono text-sm", placeholder: "https://hooks.slack.com/services/..." %>
-  </div>
+  <hr class="border-t border-base-300 my-6" />
 
-  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">
-    <label class="label mt-1">
-      <span class="label-text cursor-pointer">Enabled</span>
-      <%= f.check_box :enabled, class: "checkbox" %>
-    </label>
-  </div>
+  <% notification_type_descriptions = {
+    "build" => "Notify when builds start, succeed, or fail",
+    "deployment" => "Notify when deployments start, complete, or fail",
+    "health" => "Notify when services go down or recover"
+  } %>
+  <% Notifier::NOTIFICATION_TYPES.each do |type| %>
+    <%= render(FormFieldComponent.new(label: type.titleize, description: notification_type_descriptions[type])) do %>
+      <%= check_box_tag "notifier[notification_types][]", type, notifier.notification_types.include?(type), class: "checkbox" %>
+    <% end %>
+  <% end %>
+
+  <hr class="border-t border-base-300 my-6" />
+
+  <%= render(FormFieldComponent.new(label: "Enabled", description: "Disable to pause all notifications from this notifier")) do %>
+    <%= f.check_box :enabled, class: "checkbox" %>
+  <% end %>
 
   <div class="form-footer">
     <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary" %>

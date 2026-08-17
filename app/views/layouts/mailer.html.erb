@@ -13,7 +13,11 @@
             <!-- Logo -->
             <tr>
               <td style="padding: 0 0 32px 0;">
-                <span style="font-size: 20px; font-weight: 700; color: #1e2328; letter-spacing: -0.5px;">Canine</span>
+                <% if attachments["logo.webp"].present? %>
+                  <img src="<%= attachments["logo.webp"].url %>" alt="Canine" height="48" style="height: 48px; width: auto; display: block;">
+                <% else %>
+                  <span style="font-size: 20px; font-weight: 700; color: #1e2328; letter-spacing: -0.5px;">Canine</span>
+                <% end %>
               </td>
             </tr>
             <!-- Content card -->

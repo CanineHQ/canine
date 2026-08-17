@@ -4,7 +4,7 @@ class AddOns::HelmChartSearch
   promises :response
 
   executed do |context|
-    response = HTTParty.get("https://artifacthub.io/api/v1/packages/search?ts_query_web=#{context.query}")
+    response = HTTParty.get("https://artifacthub.io/api/v1/packages/search?ts_query_web=#{context.query}", timeout: 10)
     context.response = response.parsed_response
   end
 end
