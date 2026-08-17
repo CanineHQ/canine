@@ -55,7 +55,7 @@
             Your dev environment, in the cloud
           </h1>
           <p class="mt-6 text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
-            Spin up a full development environment on your Kubernetes cluster. Perfect for AI-assisted coding, live debugging, and sharing preview URLs with your team.
+            Spin up a cloud dev environment and let AI agents build for you. Bring your own Claude Code, Cursor, or Codex API key &mdash; Canine gives them a full environment to code, test, and preview in.
           </p>
           <div class="mt-10 flex items-center justify-center gap-x-6">
             <a href="<%= new_user_registration_path %>" class="rounded-md bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 transition">
@@ -69,33 +69,12 @@
       </div>
     </div>
 
-    <!-- Terminal Preview -->
-    <div class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-      <div class="relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl" data-aos="fade-up">
-        <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
-          <span class="w-3 h-3 rounded-full bg-red-500"></span>
-          <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-          <span class="w-3 h-3 rounded-full bg-green-500"></span>
-          <span class="ml-4 text-xs text-gray-500 font-mono">dev environment &mdash; api-service</span>
-          <span class="ml-auto text-xs text-violet-400 font-mono flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span>
-            connected
-          </span>
-        </div>
-        <div class="bg-gray-950 p-6 font-mono text-sm leading-relaxed">
-          <p class="text-green-400">$ <span class="text-gray-100">ls</span></p>
-          <p class="text-gray-400 mt-1">Dockerfile  Gemfile  Gemfile.lock  README.md  app/  config/  db/  lib/  spec/</p>
-          <p class="text-green-400 mt-3">$ <span class="text-gray-100">bundle exec rails console</span></p>
-          <p class="text-gray-400 mt-1">Loading production environment (Rails 7.2.2)</p>
-          <p class="text-violet-400 mt-1">irb(main):001&gt; <span class="text-gray-100">User.count</span></p>
-          <p class="text-gray-400 mt-1">=&gt; 1247</p>
-          <p class="text-violet-400 mt-1">irb(main):002&gt; <span class="text-gray-100 animate-pulse">_</span></p>
-        </div>
-      </div>
-    </div>
+    <!-- Workbench Preview -->
+    <%= render "static/dev_environments/workbench_preview" %>
 
     <!-- How it works -->
-    <div id="how-it-works" class="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+    <div id="how-it-works" class="bg-gray-800/30 py-24">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-4xl text-center mb-16" data-aos="fade-up">
         <h2 class="text-base font-semibold leading-7 text-violet-400"><a href="#how-it-works" class="hover:underline underline-offset-4">How it works</a></h2>
         <p class="mt-2 text-2xl font-bold tracking-tight text-white sm:text-4xl">From zero to terminal in seconds</p>
@@ -118,6 +97,7 @@
           <p class="text-gray-400 text-sm leading-relaxed">Open the browser terminal and you're in. Run commands, debug live, drag and drop files &mdash; all from the Canine UI.</p>
         </div>
       </div>
+    </div>
     </div>
 
     <!-- Features -->
@@ -203,12 +183,28 @@
     </div>
 
     <!-- CTA -->
-    <div class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-      <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 px-8 py-16 sm:px-16 text-center" data-aos="fade-up">
-        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Start developing in the cloud</h2>
-        <p class="mt-4 text-gray-400 max-w-xl mx-auto">Sign up for Canine Cloud and launch your first dev environment in under 5 minutes. No credit card required.</p>
-        <div class="mt-8 flex items-center justify-center gap-x-6">
-          <a href="<%= new_user_registration_path %>" class="rounded-md bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 transition">
+    <div class="relative isolate mt-16 px-6 py-32 sm:mt-32 sm:py-40 lg:px-8">
+      <svg class="absolute inset-0 -z-10 h-full w-full stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]" aria-hidden="true">
+        <defs>
+          <pattern id="dev-env-cta-grid" width="200" height="200" x="50%" y="0" patternUnits="userSpaceOnUse">
+            <path d="M.5 200V.5H200" fill="none"></path>
+          </pattern>
+        </defs>
+        <svg x="50%" y="0" class="overflow-visible fill-gray-800/20">
+          <path d="M-200 0h201v201h-201Z M600 0h201v201h-201Z M-400 600h201v201h-201Z M200 800h201v201h-201Z" stroke-width="0"></path>
+        </svg>
+        <rect width="100%" height="100%" stroke-width="0" fill="url(#dev-env-cta-grid)"></rect>
+      </svg>
+      <div class="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl" aria-hidden="true">
+        <div class="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#8b5cf6] to-[#6366f1] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
+      </div>
+      <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Start developing in the cloud</h2>
+        <p class="mx-auto mt-6 text-lg leading-8 text-gray-300">
+          Sign up for Canine Cloud and launch your first dev environment in under 5 minutes. No credit card required.
+        </p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+          <a href="<%= new_user_registration_path %>" class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition">
             Get Started Free
           </a>
         </div>

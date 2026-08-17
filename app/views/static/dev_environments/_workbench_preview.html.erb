@@ -1,0 +1,97 @@
+<div class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
+  <div class="relative rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl" data-aos="fade-up">
+    <!-- URL bar -->
+    <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
+      <span class="w-3 h-3 rounded-full bg-red-500"></span>
+      <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+      <span class="w-3 h-3 rounded-full bg-green-500"></span>
+      <span class="ml-4 text-xs text-gray-500 font-mono">Canine &mdash; Dev Environment</span>
+      <span class="ml-auto text-xs text-violet-400 font-mono flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block"></span>
+        Running
+      </span>
+    </div>
+
+    <div class="flex bg-gray-950" style="min-height: 380px;">
+      <!-- Sidebar -->
+      <div class="hidden sm:flex flex-col w-52 border-r border-white/10 bg-gray-900/50 text-xs font-mono">
+        <!-- Project info -->
+        <div class="px-4 py-3 border-b border-white/10">
+          <p class="text-violet-400 font-semibold text-sm">api-service</p>
+          <p class="text-gray-500 mt-0.5 flex items-center gap-1">
+            <iconify-icon icon="lucide:git-branch" class="text-[10px]"></iconify-icon>
+            main
+          </p>
+        </div>
+
+        <!-- Preview URL -->
+        <div class="px-4 py-2.5 border-b border-white/10">
+          <p class="text-gray-500 uppercase tracking-wider text-[10px] mb-1.5">Preview</p>
+          <div class="flex items-center gap-1.5 text-violet-400">
+            <iconify-icon icon="lucide:external-link" class="text-[10px]"></iconify-icon>
+            <span class="truncate">pr-73.oncanine.run</span>
+          </div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="px-4 py-2.5 flex-1">
+          <p class="text-gray-500 uppercase tracking-wider text-[10px] mb-2">Sessions</p>
+          <div class="space-y-1.5 text-gray-400">
+            <div class="flex items-center gap-1.5 text-white">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Claude Code
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Rails server
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom actions -->
+        <div class="px-3 py-3 border-t border-white/10 space-y-2 text-gray-400">
+          <div class="flex items-center gap-2 cursor-default">
+            <iconify-icon icon="lucide:upload-cloud" class="text-sm"></iconify-icon>
+            <span>Upload files</span>
+          </div>
+          <div class="flex items-center gap-2 cursor-default">
+            <iconify-icon icon="lucide:refresh-cw" class="text-sm"></iconify-icon>
+            <span>Sync from local</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal area -->
+      <div class="flex-1 flex flex-col">
+        <!-- Tab bar -->
+        <div class="flex items-center gap-0 border-b border-white/10 text-xs">
+          <div class="px-4 py-2 bg-gray-950 text-white border-r border-white/10 flex items-center gap-2">
+            <iconify-icon icon="lucide:terminal" class="text-violet-400 text-xs"></iconify-icon>
+            Claude Code
+          </div>
+          <div class="px-4 py-2 text-gray-500 border-r border-white/10 flex items-center gap-2 bg-gray-900/50">
+            <iconify-icon icon="lucide:terminal" class="text-xs"></iconify-icon>
+            Rails server
+          </div>
+          <div class="px-3 py-2 text-gray-600 cursor-default">+</div>
+        </div>
+
+        <!-- Terminal content -->
+        <div class="p-5 font-mono text-sm leading-relaxed flex-1">
+          <p class="text-gray-500">$ claude</p>
+          <p class="text-gray-500 mt-2 text-xs">&gt; <span class="text-white text-sm">Add Stripe webhook endpoint for handling payment_intent.succeeded events</span></p>
+          <p class="text-emerald-400 mt-2">I'll create the webhook endpoint and handler. Let me look at the existing payment setup first.</p>
+          <p class="text-gray-600 mt-2">Read app/controllers/payments_controller.rb</p>
+          <p class="text-gray-600">Read config/routes.rb</p>
+          <p class="text-emerald-400 mt-2">I've added the webhook endpoint. Here's what I did:</p>
+          <p class="text-gray-400 mt-1 pl-3">Created <span class="text-violet-400">app/controllers/webhooks/stripe_controller.rb</span></p>
+          <p class="text-gray-400 pl-3">Added route <span class="text-violet-400">POST /webhooks/stripe</span></p>
+          <p class="text-gray-400 pl-3">Added test <span class="text-violet-400">spec/controllers/webhooks/stripe_controller_spec.rb</span></p>
+          <p class="text-emerald-400 mt-2">Running your tests to make sure everything passes...</p>
+          <p class="text-emerald-400 mt-1">&#10003; 12 tests, 24 assertions, 0 failures</p>
+          <p class="text-emerald-400 mt-2">All done. The webhook verifies Stripe signatures and handles payment_intent.succeeded by updating the order status. Want me to deploy this to your preview URL?<span class="animate-pulse">_</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
