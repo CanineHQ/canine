@@ -35,10 +35,11 @@ class Projects::NotifiersController < Projects::BaseController
   end
 
   def test
+    test_event = TestNotifier.new(project: @project, notifier: @notifier)
     if @notifier.email?
-      NotifierMailer.test(current_user, @project).deliver_later
+      NotifierMailer.test_notification(current_user, test_event).deliver_now
     else
-      payload = test_payload(@notifier)
+      payload = test_event.build_payload(@notifier.provider_type)
       HTTParty.post(
         @notifier.webhook_url,
         headers: { "Content-Type" => "application/json" },
@@ -61,14 +62,4 @@ class Projects::NotifiersController < Projects::BaseController
     params.require(:notifier).permit(:name, :provider_type, :webhook_url, :enabled, notification_types: [])
   end
 
-  def test_payload(notifier)
-    WebhookBuilder.new
-      .title(@project.name)
-      .description("This is a test notification from Canine")
-      .url(project_notifiers_url(@project), label: "View Notifiers")
-      .status(emoji: "🔔", text: "Test", state: :success)
-      .widget(label: "Notifier", value: notifier.name)
-      .widget(label: "Project", value: @project.name)
-      .build(notifier.provider_type)
-  end
 end

@@ -1,16 +1,13 @@
 class NotifierMailer < ApplicationMailer
-  def test(recipient, project)
+  def test_notification(recipient, test_event)
     @recipient = recipient
-    @project = project
-    @title = "This is a test notification from Canine"
-    @url = project_notifiers_url(project)
-    @url_label = "View Notifiers"
-    @fields = [
-      { label: "Project", value: project.name },
-      { label: "Status", value: "Test" }
-    ]
+    @project = test_event.project
+    @title = test_event.message
+    @url = test_event.url
+    @url_label = test_event.url_label
+    @fields = test_event.fields
     attachments.inline["logo.png"] = File.read(Rails.root.join("public/images/dark.png"))
-    mail(to: recipient.email, subject: "[Canine] #{project.name}: Test Notification", template_name: "notify")
+    mail(to: recipient.email, subject: "[Canine] #{@project.name}: #{@title}", template_name: "notify")
   end
 
   def notify
