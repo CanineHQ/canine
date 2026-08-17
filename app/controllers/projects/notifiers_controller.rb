@@ -35,20 +35,7 @@ class Projects::NotifiersController < Projects::BaseController
   end
 
   def test
-    test_event = TestNotifier.new(project: @project, notifier: @notifier)
-    if @notifier.email?
-      NotifierMailer.test_notification(current_user, test_event).deliver_now
-    else
-      payload = test_event.build_payload(@notifier.provider_type)
-      HTTParty.post(
-        @notifier.webhook_url,
-        headers: { "Content-Type" => "application/json" },
-        body: payload.to_json
-      )
-    end
-  rescue StandardError => e
-    Rails.logger.error "Failed to send test notification: #{e.message}"
-  ensure
+    Notifiers::SendTest.execute(notifier: @notifier, project: @project, user: current_user)
     render partial: "index", locals: { project: @project }
   end
 
