@@ -9,12 +9,9 @@
     </div>
   <% end %>
 
-  <div class="form-control w-full max-w-sm">
-    <label class="label">
-      <span class="label-text">Name</span>
-    </label>
+  <%= render(FormFieldComponent.new(label: "Name")) do %>
     <%= f.text_field :name, class: "input input-bordered w-full", placeholder: "e.g. Deploy Alerts", required: true %>
-  </div>
+  <% end %>
 
   <div class="form-control w-full mt-4">
     <label class="label">
