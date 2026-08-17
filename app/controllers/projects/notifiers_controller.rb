@@ -48,5 +48,4 @@ class Projects::NotifiersController < Projects::BaseController
   def notifier_params
     params.require(:notifier).permit(:name, :provider_type, :webhook_url, :enabled, notification_types: [])
   end
-
 end
