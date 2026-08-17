@@ -87,12 +87,9 @@
     <% end %>
   <% end %>
 
-  <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-4">
-    <label class="label mt-1">
-      <span class="label-text cursor-pointer">Enabled</span>
-      <%= f.check_box :enabled, class: "checkbox" %>
-    </label>
-  </div>
+  <%= render(FormFieldComponent.new(label: "Enabled")) do %>
+    <%= f.check_box :enabled, class: "checkbox" %>
+  <% end %>
 
   <div class="form-footer">
     <%= f.submit notifier.persisted? ? "Update Notifier" : "Create Notifier", class: "btn btn-primary" %>
