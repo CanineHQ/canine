@@ -1,9 +1,3 @@
-<p class="text-sm text-base-content/60 mb-3">
-  Get your webhook URL from Discord: <strong>Server Settings → Integrations → Webhooks → New Webhook</strong>
-</p>
-<div class="form-control w-full">
-  <label class="label">
-    <span class="label-text">Webhook URL</span>
-  </label>
+<%= render(FormFieldComponent.new(label: "Webhook URL", description: "Server Settings → Integrations → Webhooks → New Webhook")) do %>
   <input type="url" name="notifier[webhook_url]" value="<%= notifier&.webhook_url %>" class="input input-bordered w-full font-mono text-sm" placeholder="https://discord.com/api/webhooks/..." />
-</div>
+<% end %>
