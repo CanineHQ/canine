@@ -87,7 +87,7 @@
     <% end %>
   <% end %>
 
-  <%= render(FormFieldComponent.new(label: "Enabled")) do %>
+  <%= render(FormFieldComponent.new(label: "Enabled", description: "Disable to pause all notifications from this notifier")) do %>
     <%= f.check_box :enabled, class: "checkbox" %>
   <% end %>
 
