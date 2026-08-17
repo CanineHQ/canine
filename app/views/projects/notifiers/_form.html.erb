@@ -76,7 +76,7 @@
       ] %>
   </div>
 
-  <hr class="border-t border-base-300 my-2" />
+  <hr class="border-t border-base-300 my-6" />
 
   <% notification_type_descriptions = {
     "build" => "Notify when builds start, succeed, or fail",
@@ -89,7 +89,7 @@
     <% end %>
   <% end %>
 
-  <hr class="border-t border-base-300 my-2" />
+  <hr class="border-t border-base-300 my-6" />
 
   <%= render(FormFieldComponent.new(label: "Enabled", description: "Disable to pause all notifications from this notifier")) do %>
     <%= f.check_box :enabled, class: "checkbox" %>
