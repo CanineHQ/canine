@@ -20,6 +20,13 @@
     <% end %>
   </td>
   <td class="flex gap-2 justify-end">
+    <%= button_to(
+      "Send Test Notification",
+      test_project_notifier_path(notifier.project, notifier),
+      method: :post,
+      class: "btn btn-sm btn-ghost",
+      data: { turbo_frame: "notifiers" }
+    ) %>
     <%= link_to "Edit", edit_project_notifier_path(notifier.project, notifier), class: "btn btn-sm btn-ghost", data: { turbo_frame: "notifiers" } %>
     <%= button_to(
       "Delete",
