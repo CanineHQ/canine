@@ -83,6 +83,10 @@ class StaticController < ApplicationController
     redirect_to root_path if user_signed_in?
   end
 
+  def dev_environments
+    redirect_to root_path if user_signed_in?
+  end
+
   def install
     GoogleAnalytics.track("install_script_download", client_id: request.remote_ip, params: { user_agent: request.user_agent.to_s })
     send_file Rails.root.join("install", "install.sh"), type: "text/plain", disposition: "inline"

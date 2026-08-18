@@ -266,6 +266,7 @@ Rails.application.routes.draw do
   get "/calculator", to: "static#calculator"
   get "/model-context-protocol", to: "static#mcp_tools"
   get "/self-hosted", to: "static#self_hosted"
+  get "/dev-environments", to: "static#dev_environments"
   # Public marketing homepage
   if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do
