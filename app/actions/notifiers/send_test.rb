@@ -5,15 +5,19 @@ class Notifiers::SendTest
   executed do |context|
     test_event = TestNotifier.new(project: context.project, notifier: context.notifier)
 
-    if context.notifier.email?
-      NotifierMailer.test_notification(context.user, test_event).deliver_now
-    else
-      payload = test_event.build_payload(context.notifier.provider_type)
-      HTTParty.post(
-        context.notifier.webhook_url,
-        headers: { "Content-Type" => "application/json" },
-        body: payload.to_json
-      )
+    begin
+      if context.notifier.email?
+        NotifierMailer.test_notification(context.user, test_event).deliver_now
+      else
+        payload = test_event.build_payload(context.notifier.provider_type)
+        HTTParty.post(
+          context.notifier.webhook_url,
+          headers: { "Content-Type" => "application/json" },
+          body: payload.to_json
+        )
+      end
+    rescue StandardError => e
+      context.fail_and_return!("#{e.message}")
     end
   end
 end

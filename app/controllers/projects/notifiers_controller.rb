@@ -35,8 +35,12 @@ class Projects::NotifiersController < Projects::BaseController
   end
 
   def test
-    Notifiers::SendTest.execute(notifier: @notifier, project: @project, user: current_user)
-    render partial: "index", locals: { project: @project }
+    result = Notifiers::SendTest.execute(notifier: @notifier, project: @project, user: current_user)
+    if result.success?
+      render partial: "index", locals: { project: @project, notice: "Test notification sent successfully." }
+    else
+      render partial: "index", locals: { project: @project, alert: "Failed to send test notification: #{result.message}" }
+    end
   end
 
   private
