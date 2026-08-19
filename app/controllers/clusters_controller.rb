@@ -1,4 +1,6 @@
 class ClustersController < ApplicationController
+  include BillableEnforcement
+
   before_action :set_cluster, only: [
     :show, :edit, :update, :destroy,
     :test_connection, :download_kubeconfig, :logs, :download_yaml,
@@ -83,6 +85,9 @@ class ClustersController < ApplicationController
   end
 
   def create
+    enforce_plan_limit!(:clusters)
+    return if performed?
+
     result = Clusters::Create.call(params, current_account_user)
     @cluster = result.cluster
 

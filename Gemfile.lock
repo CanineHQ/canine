@@ -669,6 +669,9 @@ GEM
       sprockets (>= 3.0.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
+    stripe (19.5.0)
+      bigdecimal
+      logger
     swd (2.0.3)
       activesupport (>= 3)
       attr_required (>= 0.0.5)
@@ -815,6 +818,7 @@ DEPENDENCIES
   sitemap_generator (~> 6.1)
   sprockets-rails
   stimulus-rails
+  stripe (~> 19.5)
   sys-proctable (~> 1.3)
   tailwindcss-rails (~> 2.7)
   turbo-rails

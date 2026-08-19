@@ -1,5 +1,6 @@
 class Accounts::AccountUsersController < ApplicationController
   include SettingsHelper
+
   def create
     email = user_params[:email].downcase
     existing_member = current_account.users.find_by(email: email)
