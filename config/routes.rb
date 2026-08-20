@@ -9,6 +9,7 @@ Rails.application.routes.draw do
           post :restart
         end
         resources :processes, only: %i[index show create destroy], module: :projects
+        resource :workbench, only: %i[show], module: :projects
       end
       resources :builds, only: %i[index show] do
         member do
