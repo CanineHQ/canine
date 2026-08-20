@@ -76,6 +76,10 @@ Rails.application.routes.draw do
   resources :accounts, only: [ :create, :update, :edit ] do
     collection do
       resources :account_users, only: %i[create index update destroy], module: :accounts
+      resource :billing, only: %i[show], module: :accounts, controller: :billing do
+        post :checkout
+        post :portal
+      end
       resource :sso_provider, only: %i[show new create edit update destroy], module: :accounts do
         post :test_connection
       end
@@ -103,6 +107,9 @@ Rails.application.routes.draw do
     resources :github, controller: :github, only: [ :create ]
     resources :gitlab, controller: :gitlab, only: [ :create ]
     resources :bitbucket, controller: :bitbucket, only: [ :create ]
+  end
+  namespace :webhooks do
+    resource :stripe, only: [ :create ], controller: :stripe
   end
   get "/privacy", to: "static#privacy"
   get "/terms", to: "static#terms"

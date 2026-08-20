@@ -62,6 +62,12 @@
               Authentication
             <% end %>
           </li>
+          <li class="<%= 'underline' if controller_name == 'billing' %>" style="text-underline-offset: 0.25rem;">
+            <%= link_to billing_path do %>
+              <iconify-icon icon="lucide:credit-card" ></iconify-icon>
+              Billing
+            <% end %>
+          </li>
           <li class="<%= 'underline' if controller_name == 'stack_managers' %>" style="text-underline-offset: 0.25rem;">
             <%= link_to stack_manager_path do %>
               <iconify-icon icon="lucide:layers" ></iconify-icon>
