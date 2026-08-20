@@ -164,7 +164,7 @@ class Provider < ApplicationRecord
     if github?
       "ghcr.io"
     elsif gitlab?
-      "registry.gitlab.com"
+      enterprise? ? "registry.#{URI.parse(registry_url).host}" : "registry.gitlab.com"
     elsif container_registry?
       registry_url
     else
