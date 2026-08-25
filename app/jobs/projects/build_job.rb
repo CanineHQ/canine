@@ -63,7 +63,7 @@ class Projects::BuildJob < ApplicationJob
   def project_git(project)
     project_credential_provider = project.project_credential_provider
     provider = project_credential_provider.provider
-    base_url = if provider.github?
+    base_url = project.repository_base_url.presence || if provider.github?
       "github.com"
     elsif provider.gitlab?
       "gitlab.com"

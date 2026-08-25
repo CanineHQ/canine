@@ -162,9 +162,9 @@ class Provider < ApplicationRecord
 
   def registry_base_url
     if github?
-      "ghcr.io"
+      enterprise? ? "containers.#{URI.parse(registry_url).host}" : "ghcr.io"
     elsif gitlab?
-      "registry.gitlab.com"
+      enterprise? ? "registry.#{URI.parse(registry_url).host}" : "registry.gitlab.com"
     elsif container_registry?
       registry_url
     else
