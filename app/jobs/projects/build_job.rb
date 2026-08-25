@@ -63,13 +63,7 @@ class Projects::BuildJob < ApplicationJob
   def project_git(project)
     project_credential_provider = project.project_credential_provider
     provider = project_credential_provider.provider
-    base_url = project.repository_base_url.presence || if provider.github?
-      "github.com"
-                                                       elsif provider.gitlab?
-      "gitlab.com"
-                                                       elsif provider.bitbucket?
-      "bitbucket.org"
-    end
+    base_url = project.repository_base_url.presence || provider.source_base_url
     # Bitbucket git clone uses username (not email) with the API token
     git_username = provider.bitbucket? ? provider.username : project_credential_provider.username
     "https://#{git_username}:#{project_credential_provider.access_token}@#{base_url}/#{project.repository_url}.git"
