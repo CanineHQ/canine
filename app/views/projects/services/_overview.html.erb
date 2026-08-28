@@ -51,8 +51,9 @@
         <%= render "shared/partials/markdown_editor", form: form %>
       </div>
     </div>
-    <div class="form-footer">
+    <div class="form-footer flex items-center gap-3">
       <%= form.submit class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+      <span id="service-save-feedback"></span>
     </div>
   <% end %>
 </div>
