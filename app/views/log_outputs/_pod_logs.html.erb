@@ -5,14 +5,7 @@
   <div class="flex space-x-2 items-center mb-2">
     <h4 class="text-md font-medium"><%= params[:id] %></h4>
     <div class="badge badge-success">• LIVE</div>
-    <div class="ml-auto">
-      <button class="btn btn-ghost btn-sm gap-1" onclick="add_mcp_modal.showModal()">
-        <iconify-icon icon="lucide:cpu" height="14"></iconify-icon>
-        Debug with AI
-      </button>
-    </div>
   </div>
-  <%= render "shared/add_mcp_modal" %>
   <% if defined?(error) && error.present? %>
     <div class="alert alert-warning my-5">
       <iconify-icon icon="lucide:alert-triangle" height="20"></iconify-icon>
@@ -39,4 +32,12 @@
         %><%= ansi_to_tailwind(event_logs.force_encoding("UTF-8")).html_safe %></pre>
     </div>
   </div>
+
+  <div class="flex justify-end mt-4">
+    <button class="btn btn-ghost btn-sm gap-1" onclick="add_mcp_modal.showModal()">
+      <iconify-icon icon="lucide:cpu" height="14"></iconify-icon>
+      Debug with AI
+    </button>
+  </div>
+  <%= render "shared/add_mcp_modal" %>
 </div>
