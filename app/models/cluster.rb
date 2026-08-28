@@ -41,8 +41,8 @@ class Cluster < ApplicationRecord
   has_many :users, through: :account
   has_one :build_cloud, dependent: :destroy
 
-  after_create_commit :sync_billing
-  after_destroy_commit :sync_billing
+  after_create_commit -> { account.touch }
+  after_destroy_commit -> { account.touch }
 
   validates :name, presence: true,
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" },
@@ -80,10 +80,6 @@ class Cluster < ApplicationRecord
 
   private
 
-  def sync_billing
-    return unless Rails.configuration.cloud_mode
-    StripeSyncUsageJob.perform_later(account) if account.pro?
-  end
 
   def create_build_cloud_record!(attributes)
     build_cloud = BuildCloud.new(attributes.merge(cluster: self))

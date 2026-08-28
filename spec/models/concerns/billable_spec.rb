@@ -73,9 +73,9 @@ RSpec.describe Billable, type: :model do
       expect(account.active_subscription?).to be true
     end
 
-    it 'returns true for trialing status' do
-      account.update!(subscription_status: "trialing")
-      expect(account.active_subscription?).to be true
+    it 'returns false for past_due status' do
+      account.update!(subscription_status: :past_due)
+      expect(account.active_subscription?).to be false
     end
 
     it 'returns false for canceled status' do

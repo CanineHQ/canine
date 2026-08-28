@@ -44,8 +44,7 @@ module Webhooks
       account.update!(
         stripe_subscription_id: subscription.id,
         subscription_status: subscription.status,
-        plan: :pro,
-        trial_ends_at: subscription.trial_end ? Time.at(subscription.trial_end) : nil
+        plan: :pro
       )
     end
 
@@ -62,7 +61,7 @@ module Webhooks
 
       account.update!(
         plan: :free,
-        subscription_status: "canceled",
+        subscription_status: :canceled,
         stripe_subscription_id: nil
       )
     end

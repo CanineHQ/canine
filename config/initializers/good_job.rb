@@ -62,6 +62,11 @@ Rails.application.configure do
         cron: "*/5 * * * *",
         class: "Scheduled::ResetDemoAddOnsJob",
         description: "Reset demo mode add-ons every 5 minutes"
+      },
+      sync_stripe_usage: {
+        cron: "*/30 * * * *",
+        class: "StripeSyncUsageJob",
+        description: "Sync cluster usage to Stripe every 30 minutes"
       }
     }
   }

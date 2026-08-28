@@ -26,7 +26,7 @@ RSpec.describe Webhooks::StripeController, type: :request do
 
   describe "checkout.session.completed" do
     it "upgrades account to pro with subscription details" do
-      subscription = OpenStruct.new(id: "sub_123", status: "active", trial_end: nil)
+      subscription = OpenStruct.new(id: "sub_123", status: "active")
       allow(Stripe::Subscription).to receive(:retrieve).with("sub_123").and_return(subscription)
 
       post_webhook("checkout.session.completed",
@@ -41,7 +41,7 @@ RSpec.describe Webhooks::StripeController, type: :request do
     end
 
     it "ignores unknown account" do
-      subscription = OpenStruct.new(id: "sub_123", status: "active", trial_end: nil)
+      subscription = OpenStruct.new(id: "sub_123", status: "active")
       allow(Stripe::Subscription).to receive(:retrieve).with("sub_123").and_return(subscription)
 
       post_webhook("checkout.session.completed",
