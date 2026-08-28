@@ -11,6 +11,7 @@ class ClustersController < ApplicationController
     sortable_column = params[:sort] || "created_at"
     clusters = Clusters::List.call(account_user: current_account_user, params: params).clusters
     @pagy, @clusters = pagy(clusters.order(sortable_column => "asc"))
+    @plan_usage = current_account.plan_usage(:clusters) if Rails.configuration.cloud_mode
 
     respond_to do |format|
       format.html
