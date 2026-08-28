@@ -6,7 +6,7 @@ class StripeSyncUsageJob < ApplicationJob
 
     Account.where(plan: :pro)
            .where(subscription_status: :active)
-           .where("updated_at >= ?", 1.hour.ago)
+           .where("updated_at <= ?", 3.hour.ago)
            .find_each do |account|
       sync_account(account)
     end
