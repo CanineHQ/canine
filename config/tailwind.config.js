@@ -31,6 +31,15 @@ module.exports = {
       fontFamily: {
         body: ["DM Sans", "sans-serif"],
       },
+      keyframes: {
+        'fade-out': {
+          '0%, 70%': { opacity: '1' },
+          '100%': { opacity: '0' },
+        },
+      },
+      animation: {
+        'fade-out': 'fade-out 3s ease-out forwards',
+      },
     },
     container: {
       center: true,
