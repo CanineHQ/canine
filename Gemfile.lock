@@ -323,7 +323,7 @@ GEM
     json_rpc_handler (0.1.1)
     jsonpath (1.1.5)
       multi_json
-    jwt (2.10.3)
+    jwt (3.2.0)
       base64
     k8s-ruby (0.17.2)
       base64
@@ -776,7 +776,7 @@ DEPENDENCIES
   jbuilder
   jsbundling-rails
   json-schema (~> 5.1)
-  jwt (~> 2.9)
+  jwt (~> 3.2)
   k8s-ruby (~> 0.17.2)
   kubeclient (~> 4.12)
   letter_opener
