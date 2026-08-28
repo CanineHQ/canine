@@ -1,5 +1,10 @@
 <%= turbo_frame_tag "notifiers" do %>
 <div class="space-y-4">
+  <% if local_assigns[:notice] %>
+    <div class="alert alert-success" role="alert"><%= notice %></div>
+  <% elsif local_assigns[:alert] %>
+    <div class="alert alert-error" role="alert"><%= alert %></div>
+  <% end %>
   <div class="text-base-content/50">
     Set up webhook notifications to receive real-time alerts about builds, deployments, and service health. Supports Slack, Discord, Microsoft Teams, Google Chat, and email.
   </div>

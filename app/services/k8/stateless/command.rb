@@ -12,7 +12,7 @@ class K8::Stateless::Command < K8::Base
   end
 
   def namespace
-    project.name
+    project.namespace
   end
 
   def delete_if_exists!
@@ -49,7 +49,7 @@ class K8::Stateless::Command < K8::Base
       conditions.map { |condition| condition.strip }
     rescue => e
       Rails.logger.error("Error checking job completion: #{e.message}")
-      false
+      []
     end
   end
 end
