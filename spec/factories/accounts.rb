@@ -7,8 +7,7 @@
 #  name                   :string           not null
 #  plan                   :integer          default("free"), not null
 #  slug                   :string           not null
-#  subscription_status    :string
-#  trial_ends_at          :datetime
+#  subscription_status    :integer
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  owner_id               :bigint

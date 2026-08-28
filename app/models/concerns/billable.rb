@@ -11,6 +11,7 @@ module Billable
 
   included do
     enum :plan, { free: 0, pro: 1 }
+    enum :subscription_status, { active: 0, past_due: 1, unpaid: 2, canceled: 3, incomplete: 4, paused: 5 }
   end
 
   def plan_limit(resource)
@@ -41,7 +42,7 @@ module Billable
   end
 
   def active_subscription?
-    subscription_status.in?(%w[active trialing])
+    active?
   end
 
   def needs_subscription?
