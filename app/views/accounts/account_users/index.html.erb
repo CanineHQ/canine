@@ -27,12 +27,15 @@
       <% end %>
     </div>
 
+    <%= render "shared/plan_limit_notice", resource: "team member", plan_usage: @plan_usage %>
+
+    <% plan_limit_reached = @plan_usage && @plan_usage[:current] >= @plan_usage[:limit] %>
     <div class="mt-5">
       <div aria-label="Card" class="card card-bordered bg-base-100">
         <div class="card-body">
           <div class="text-right px-5 pt-5">
               <!--  Start: User Action -->
-               <button class="btn btn-primary btn-sm" onclick="team_member_modal.showModal()">
+               <button class="btn btn-primary btn-sm" onclick="team_member_modal.showModal()" <%= 'disabled' if plan_limit_reached %>>
                   <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
                   <span class="hidden sm:inline">Add Team Member</span>
                 </button>
