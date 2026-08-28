@@ -18,10 +18,7 @@
     </div>
   </div>
   <div class="flex justify-end mt-2">
-    <button class="btn btn-ghost btn-sm gap-1" onclick="add_mcp_modal.showModal()">
-      <iconify-icon icon="lucide:cpu" height="14"></iconify-icon>
-      Debug with AI
-    </button>
+    <span class="text-sm text-base-content/50">Need help debugging? <a class="underline cursor-pointer hover:text-base-content/70" onclick="add_mcp_modal.showModal()">Add our MCP server</a></span>
   </div>
   <%= render "shared/add_mcp_modal" %>
 
