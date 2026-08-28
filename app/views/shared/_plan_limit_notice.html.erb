@@ -1,0 +1,20 @@
+<% if plan_usage.present? %>
+  <% current = plan_usage[:current] %>
+  <% limit = plan_usage[:limit] %>
+  <% reached = current >= limit %>
+  <% percentage = limit.infinite? ? 0 : (current.to_f / limit * 100).clamp(0, 100) %>
+
+  <div class="rounded-lg border p-4 my-4 <%= reached ? 'border-warning bg-warning/10' : 'border-info bg-info/10' %>">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold capitalize"><%= resource %> limit</span>
+      <span class="font-mono text-sm"><%= current %>/<%= limit.infinite? ? '∞' : limit %></span>
+    </div>
+    <progress class="progress <%= reached ? 'progress-warning' : 'progress-primary' %> w-full" value="<%= percentage %>" max="100"></progress>
+    <% if reached %>
+      <div class="flex justify-between items-center text-sm mt-2">
+        <span class="opacity-70">You've reached your plan limit.</span>
+        <%= link_to "Upgrade to Pro", billing_path, class: "underline font-semibold" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -5,6 +5,8 @@ module Webhooks
     skip_before_action :check_password_change_required
 
     def create
+      return head :not_found unless Rails.configuration.cloud_mode
+
       payload = request.body.read
       sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
 

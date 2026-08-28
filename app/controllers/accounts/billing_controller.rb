@@ -1,4 +1,6 @@
 class Accounts::BillingController < ApplicationController
+  before_action { redirect_to root_path unless Rails.configuration.cloud_mode }
+
   def show
   end
 

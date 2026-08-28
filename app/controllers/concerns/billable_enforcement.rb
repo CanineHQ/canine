@@ -4,6 +4,7 @@ module BillableEnforcement
   private
 
   def enforce_plan_limit!(resource)
+    return unless Rails.configuration.cloud_mode
     return if current_account.within_plan_limit?(resource)
 
     redirect_to billing_path,

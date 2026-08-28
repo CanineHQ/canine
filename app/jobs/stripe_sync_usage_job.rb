@@ -2,6 +2,7 @@ class StripeSyncUsageJob < ApplicationJob
   queue_as :default
 
   def perform(account)
+    return unless Rails.configuration.cloud_mode
     return unless account.stripe_subscription_id.present?
     return unless account.active_subscription?
 

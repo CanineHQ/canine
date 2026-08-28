@@ -81,6 +81,7 @@ class Cluster < ApplicationRecord
   private
 
   def sync_billing
+    return unless Rails.configuration.cloud_mode
     StripeSyncUsageJob.perform_later(account) if account.pro?
   end
 

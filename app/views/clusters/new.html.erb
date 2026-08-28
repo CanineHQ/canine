@@ -9,7 +9,9 @@
     </h1>
   </div>
 
-  <div class="card card-bordered bg-base-100">
+  <%= render "shared/plan_limit_notice", resource: "cluster", plan_usage: @plan_usage %>
+
+  <div class="card card-bordered bg-base-100 <%= 'opacity-50 pointer-events-none select-none' if @plan_usage && @plan_usage[:current] >= @plan_usage[:limit] %>">
     <div class="card-body">
       <%= render "form", cluster: @cluster %>
     </div>

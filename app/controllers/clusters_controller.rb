@@ -23,6 +23,9 @@ class ClustersController < ApplicationController
 
   def new
     @cluster = Cluster.new
+    if Rails.configuration.cloud_mode
+      @plan_usage = current_account.plan_usage(:clusters)
+    end
   end
 
   def edit

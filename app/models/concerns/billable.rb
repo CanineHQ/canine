@@ -22,6 +22,13 @@ module Billable
     end
   end
 
+  def plan_usage(resource)
+    counter = PLAN_COUNTERS[resource]
+    return nil unless counter
+
+    { current: counter.call(self), limit: plan_limit(resource) }
+  end
+
   def within_plan_limit?(resource)
     counter = PLAN_COUNTERS[resource]
     return true unless counter
