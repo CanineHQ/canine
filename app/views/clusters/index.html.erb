@@ -6,6 +6,8 @@
     <h3 class="text-lg font-medium">Clusters</h3>
   </div>
 
+  <%= render "shared/plan_limit_notice", resource: "cluster", plan_usage: @plan_usage %>
+
   <div class="mt-5">
     <div aria-label="Card" class="card card-bordered bg-base-100">
       <div class="card-body">

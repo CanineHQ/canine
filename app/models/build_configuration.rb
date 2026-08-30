@@ -50,8 +50,8 @@ class BuildConfiguration < ApplicationRecord
   validates_presence_of :project, :provider, :driver
   validates_presence_of :image_repository
   validates :image_repository, format: {
-    with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+\z/,
-    message: "must be in the format 'namespace/repo'"
+    with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+(\/[a-zA-Z0-9._-]+)*\z/,
+    message: "must be in the format 'namespace/repo' or 'namespace/repo/subpath'"
   }
 
   def self.permit_params(params)

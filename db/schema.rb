@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_16_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_19_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -31,8 +31,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_000000) do
     t.datetime "updated_at", null: false
     t.string "slug", null: false
     t.boolean "allow_mcp", default: true, null: false
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
+    t.integer "plan", default: 0, null: false
+    t.integer "subscription_status"
     t.index ["owner_id"], name: "index_accounts_on_owner_id"
     t.index ["slug"], name: "index_accounts_on_slug", unique: true
+    t.index ["stripe_customer_id"], name: "index_accounts_on_stripe_customer_id", unique: true
+    t.index ["stripe_subscription_id"], name: "index_accounts_on_stripe_subscription_id", unique: true
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|

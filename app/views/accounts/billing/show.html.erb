@@ -1,0 +1,71 @@
+<%= settings_layout do %>
+  <div class="space-y-8">
+    <div>
+      <h2 class="text-2xl font-bold">Billing</h2>
+      <p class="text-sm text-gray-500 mt-1">Manage your subscription and billing details.</p>
+      <hr class="mt-3 mb-6 border-t border-base-300" />
+    </div>
+
+    <div class="rounded-lg bg-base-200 p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500">Current Plan</p>
+          <p class="text-2xl font-bold mt-1 capitalize"><%= current_account.plan %></p>
+          <% if current_account.subscription_status == "trialing" && current_account.trial_ends_at&.future? %>
+            <p class="text-sm text-warning mt-1">Trial ends <%= time_ago(current_account.trial_ends_at) %></p>
+          <% elsif current_account.subscription_status.present? %>
+            <p class="text-sm text-gray-500 mt-1 capitalize">Status: <%= current_account.subscription_status %></p>
+          <% end %>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">Clusters</p>
+          <p class="text-sm mt-1">
+            <span class="font-semibold"><%= current_account.clusters.count %></span> total
+          </p>
+          <% if current_account.billable_clusters_count > 0 %>
+            <p class="text-sm text-gray-400">
+              1 free + <%= current_account.billable_clusters_count %> paid ($<%= current_account.billable_clusters_count * 20 %>/mo)
+            </p>
+          <% else %>
+            <p class="text-sm text-gray-400">1 free cluster included</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if current_account.stripe_customer_id.present? && current_account.pro? %>
+      <div>
+        <%= button_to "Manage Billing", portal_billing_path, method: :post, class: "btn btn-primary", data: { turbo: false, disable_with: "Redirecting..." } %>
+        <p class="text-xs text-gray-500 mt-2">Update payment method, view invoices, or cancel your subscription.</p>
+      </div>
+    <% end %>
+
+    <% if current_account.free? %>
+      <div class="rounded-lg border border-base-300 p-6 max-w-lg">
+        <h3 class="text-lg font-semibold mb-2">Upgrade to Pro</h3>
+        <p class="text-sm text-gray-400 mb-4">
+          Add unlimited clusters at $20/month each. Your first cluster is always free.
+        </p>
+        <ul class="space-y-2 text-sm text-gray-400 mb-6">
+          <li class="flex items-center gap-2">
+            <iconify-icon icon="lucide:check" class="text-primary"></iconify-icon>
+            Unlimited clusters ($20/mo per additional)
+          </li>
+          <li class="flex items-center gap-2">
+            <iconify-icon icon="lucide:check" class="text-primary"></iconify-icon>
+            Unlimited team members
+          </li>
+          <li class="flex items-center gap-2">
+            <iconify-icon icon="lucide:check" class="text-primary"></iconify-icon>
+            Priority support
+          </li>
+          <li class="flex items-center gap-2">
+            <iconify-icon icon="lucide:check" class="text-primary"></iconify-icon>
+            SSO / SAML authentication
+          </li>
+        </ul>
+        <%= button_to "Upgrade to Pro", checkout_billing_path, method: :post, class: "btn btn-primary w-full", data: { turbo: false, disable_with: "Redirecting..." } %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
