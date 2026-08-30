@@ -44,6 +44,8 @@ class MCPController < ActionController::API
       Tools::DeployProject,
       Tools::RestartProject,
 
+      Tools::UpdateProject,
+
       # Project Logs & Monitoring
       Tools::GetProjectLogs,
       # Environment Variables
