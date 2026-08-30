@@ -41,6 +41,28 @@ RSpec.describe BuildConfiguration, type: :model do
     it { is_expected.to validate_presence_of(:image_repository) }
   end
 
+  describe 'image_repository format' do
+    it 'accepts namespace/repo format' do
+      config = build(:build_configuration, project:, provider:, image_repository: 'owner/repo')
+      expect(config).to be_valid
+    end
+
+    it 'accepts namespace/repo/subpath format' do
+      config = build(:build_configuration, project:, provider:, image_repository: 'owner/repo/my-project')
+      expect(config).to be_valid
+    end
+
+    it 'accepts deeply nested subpaths' do
+      config = build(:build_configuration, project:, provider:, image_repository: 'owner/repo/sub/path')
+      expect(config).to be_valid
+    end
+
+    it 'rejects single segment' do
+      config = build(:build_configuration, project:, provider:, image_repository: 'invalid')
+      expect(config).not_to be_valid
+    end
+  end
+
   describe '#container_image_reference' do
     let(:build_configuration) { create(:build_configuration, project:, provider:, image_repository: 'CanineHQ/canine') }
 

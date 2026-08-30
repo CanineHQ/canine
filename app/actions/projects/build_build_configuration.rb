@@ -26,7 +26,7 @@ module Projects
         provider: git_provider.has_native_container_registry? ? git_provider : nil,
         driver: BuildConfiguration::DEFAULT_BUILDER,
         build_type: :dockerfile,
-        image_repository: project.repository_url,
+        image_repository: "#{project.repository_url}/#{project.name}",
         context_directory: ".",
         dockerfile_path: "./Dockerfile"
       }.compact
