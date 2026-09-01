@@ -9,6 +9,7 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  doctor_checks                  :jsonb
 #  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
 #  namespace                      :string           not null
