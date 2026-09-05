@@ -3,7 +3,10 @@
   <div class="flex items-center gap-2">
     <% if failed_count > 0 %>
       <iconify-icon icon="lucide:triangle-alert" height="20" class="text-warning"></iconify-icon>
-      <span class="font-medium"><%= failed_count %> of <%= total_count %> check<%= total_count == 1 ? "" : "s" %> failed</span>
+      <div>
+        <span class="font-medium"><%= failed_count %> of <%= total_count %> check<%= total_count == 1 ? "" : "s" %> failed</span>
+        <p class="text-sm text-base-content/60 mt-0.5">Builds and deploys may not work until these issues are resolved.</p>
+      </div>
     <% else %>
       <iconify-icon icon="lucide:circle-check" height="20" class="text-success"></iconify-icon>
       <span class="font-medium">All checks passed</span>
