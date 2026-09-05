@@ -12,11 +12,20 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
 
   let(:deploy_result) { double('deploy_result', success?: true, build: build) }
   let(:restart_result) { double('restart_result', success?: true) }
+  let(:doctor_checks) do
+    {
+      cluster: { status: "ok", message: "Cluster is reachable" },
+      source: { status: "ok", message: "Repository is accessible" },
+      registry: { status: "skipped", message: "No registry provider configured" }
+    }
+  end
+  let(:doctor_result) { double('doctor_result', success?: true, checks: doctor_checks) }
 
   before do
     api_token.user.accounts << account
     allow(Projects::DeployLatestCommit).to receive(:execute).and_return(deploy_result)
     allow(Projects::Restart).to receive(:execute).and_return(restart_result)
+    allow(Projects::Doctor).to receive(:execute).and_return(doctor_result)
   end
 
   path '/api/v1/projects' do
@@ -75,6 +84,56 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
                  build_id: { type: :integer, example: 1 }
                },
                required: %w[message build_id]
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/projects/{id}/doctor' do
+    let(:id) { project.name }
+
+    get('Project Doctor') do
+      tags 'Projects'
+      operationId 'projectDoctor'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
+
+      response(200, 'successful') do
+        schema type: :object,
+               properties: {
+                 checks: {
+                   type: :object,
+                   properties: {
+                     cluster: {
+                       type: :object,
+                       properties: {
+                         status: { type: :string, example: 'ok' },
+                         message: { type: :string, example: 'Cluster is reachable' }
+                       },
+                       required: %w[status message]
+                     },
+                     source: {
+                       type: :object,
+                       properties: {
+                         status: { type: :string, example: 'ok' },
+                         message: { type: :string, example: 'Repository is accessible' }
+                       },
+                       required: %w[status message]
+                     },
+                     registry: {
+                       type: :object,
+                       properties: {
+                         status: { type: :string, example: 'ok' },
+                         message: { type: :string, example: 'Registry is reachable and authenticated' }
+                       },
+                       required: %w[status message]
+                     }
+                   },
+                   required: %w[cluster source registry]
+                 }
+               },
+               required: %w[checks]
         run_test!
       end
     end

@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   include ProjectsHelper
-  before_action :set_project, only: %i[show edit update destroy restart]
+  before_action :set_project, only: %i[show edit update destroy restart doctor]
   before_action :set_provider_type, only: %i[new create]
 
   def index
@@ -25,6 +25,11 @@ class ProjectsController < ApplicationController
         format.json { render json: { message: "Failed to restart all services" }, status: :unprocessable_entity }
       end
     end
+  end
+
+  def doctor
+    Projects::DoctorJob.perform_later(@project, current_user)
+    head :no_content
   end
 
   def show

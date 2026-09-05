@@ -1,7 +1,7 @@
 module Api
   module V1
     class ProjectsController < BaseController
-      before_action :set_project, only: %i[show deploy restart]
+      before_action :set_project, only: %i[show deploy restart doctor]
 
       def index
         @projects = ::Projects::VisibleToUser.execute(account_user: current_account_user).projects.includes(:cluster).order(:name).limit(50)
@@ -21,6 +21,16 @@ module Api
           render json: { message: "Deploying project #{@project.name}.", build_id: result.build.id }, status: :ok
         else
           render json: { error: "Failed to deploy project" }, status: :unprocessable_entity
+        end
+      end
+
+      def doctor
+        result = ::Projects::Doctor.execute(project: @project, user: current_user)
+
+        if result.success?
+          render json: { checks: result.checks }, status: :ok
+        else
+          render json: { error: "Failed to run doctor checks" }, status: :unprocessable_entity
         end
       end
 
