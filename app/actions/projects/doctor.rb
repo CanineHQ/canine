@@ -106,28 +106,38 @@ class Projects::Doctor
     if client.can_connect?
       { status: "ok", message: "Cluster is reachable" }
     else
-      { status: "error", message: "Cannot connect to cluster" }
+      { status: "error", message: "Cannot connect to cluster",
+        hint: "Verify the cluster is running and the kubeconfig is correct. Check the cluster settings page for connection details." }
     end
   rescue StandardError => e
-    { status: "error", message: "Cluster check failed: #{e.message}" }
+    { status: "error", message: "Cluster check failed: #{e.message}",
+      hint: "Ensure the cluster endpoint is reachable and credentials haven't expired. Try reconnecting the cluster." }
   end
 
   def self.check_source(project, _user)
-    return { status: "error", message: "No credential provider configured" } if project.project_credential_provider.blank?
+    if project.project_credential_provider.blank?
+      return { status: "error", message: "No credential provider configured",
+               hint: "Add a Git credential provider (GitHub, GitLab, or Bitbucket) in your project settings." }
+    end
 
     client = Git::Client.from_project(project)
     if client.repository_exists?
       { status: "ok", message: "Repository is accessible" }
     else
-      { status: "error", message: "Repository not found or inaccessible" }
+      { status: "error", message: "Repository not found or inaccessible",
+        hint: "Check the repository URL is correct and the credential provider has access to it. The token may have expired or been revoked." }
     end
   rescue StandardError => e
-    { status: "error", message: "Source check failed: #{e.message}" }
+    { status: "error", message: "Source check failed: #{e.message}",
+      hint: "Verify your Git provider credentials are still valid and the repository URL is correct." }
   end
 
   def self.check_registry(project, _user)
     provider = project.build_provider
-    return { status: "error", message: "No registry credentials" } if provider.access_token.blank?
+    if provider.access_token.blank?
+      return { status: "error", message: "No registry credentials",
+               hint: "Add registry credentials to your build configuration or credential provider." }
+    end
 
     DockerCli.with_registry_auth(
       registry_url: provider.registry_base_url,
@@ -137,23 +147,30 @@ class Projects::Doctor
 
     { status: "ok", message: "Registry is reachable and authenticated" }
   rescue DockerCli::AuthenticationError => e
-    { status: "error", message: "Registry authentication failed: #{e.message}" }
+    { status: "error", message: "Registry authentication failed: #{e.message}",
+      hint: "The registry credentials are invalid. Regenerate your access token and update it in your provider settings." }
   rescue StandardError => e
-    { status: "error", message: "Registry check failed: #{e.message}" }
+    { status: "error", message: "Registry check failed: #{e.message}",
+      hint: "Ensure the registry URL is correct and the registry service is available." }
   end
 
   def self.check_build_cloud(project, user)
     build_cloud = project.build_configuration.build_cloud
-    return { status: "error", message: "Build cloud is #{build_cloud.status}" } unless build_cloud.active?
+    unless build_cloud.active?
+      return { status: "error", message: "Build cloud is #{build_cloud.status}",
+               hint: "The build cloud needs to be in active status. Try reinstalling it from the cluster settings page." }
+    end
 
     connection = K8::Connection.new(project, user)
     manager = K8::BuildCloudManager.new(connection, build_cloud)
     if manager.remote_builder_active?
       { status: "ok", message: "Build cloud is active and pods are running" }
     else
-      { status: "error", message: "Build cloud pods are not running" }
+      { status: "error", message: "Build cloud pods are not running",
+        hint: "The builder pods may have been evicted or crashed. Try reinstalling the build cloud from the cluster settings." }
     end
   rescue StandardError => e
-    { status: "error", message: "Build cloud check failed: #{e.message}" }
+    { status: "error", message: "Build cloud check failed: #{e.message}",
+      hint: "Check that the cluster is reachable and the build cloud namespace still exists." }
   end
 end
