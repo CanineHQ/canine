@@ -12,27 +12,20 @@ class Projects::Doctor
     # Determine which checks are applicable
     applicable = applicable_checks(project)
 
-    # Phase 1: Open modal with discovering state
-    broadcast_discovering(project)
-    sleep 1
-
-    # Phase 2: Reveal each check item one by one
+    # Show all check items immediately
     applicable.each do |name|
       broadcast_append_check(project, name)
-      sleep 0.3
     end
 
-    # Clear the discovering spinner
-    broadcast_clear_discovering(project)
-    sleep 0.3
-
-    # Phase 3: Run and resolve each check
+    # Run and resolve each check
     checks = {}
     applicable.each do |name|
       checks[name] = run_check(project, name) { send(:"check_#{name}", project, user) }
     end
 
     context.checks = checks
+
+    broadcast_summary(project, checks)
   end
 
   private
@@ -45,19 +38,6 @@ class Projects::Doctor
     checks
   end
 
-  def self.broadcast_discovering(project)
-    html = '<div id="doctor-discovering" class="flex items-center gap-2 text-sm text-base-content/60">' \
-           '<iconify-icon icon="lucide:loader-circle" height="16" class="text-primary animate-spin"></iconify-icon>' \
-           'Analyzing project configuration...' \
-           '</div>'
-
-    Turbo::StreamsChannel.broadcast_update_to(
-      project,
-      target: "doctor-checks",
-      html: html
-    )
-  end
-
   def self.broadcast_append_check(project, name)
     Turbo::StreamsChannel.broadcast_append_to(
       project,
@@ -67,10 +47,15 @@ class Projects::Doctor
     )
   end
 
-  def self.broadcast_clear_discovering(project)
-    Turbo::StreamsChannel.broadcast_remove_to(
+  def self.broadcast_summary(project, checks)
+    total_count = checks.values.size
+    failed_count = checks.values.count { |c| c[:status] == "error" }
+
+    Turbo::StreamsChannel.broadcast_append_to(
       project,
-      target: "doctor-discovering"
+      target: "doctor-checks",
+      partial: "shared/doctor_summary",
+      locals: { total_count: total_count, failed_count: failed_count }
     )
   end
 
