@@ -22,6 +22,13 @@
             confirm: "Are you sure you want to kill this deployment? This action cannot be undone.",
             data: { turbo_method: :patch } %>
       <% end %>
+      <% if @build.failed? || @build.deployment&.failed? %>
+        <%= button_to doctor_project_path(@project),
+            class: "btn btn-sm btn-ghost" do %>
+          <iconify-icon icon="lucide:stethoscope" height="16"></iconify-icon>
+          Run Diagnostics
+        <% end %>
+      <% end %>
     </div>
     <div>
       <!-- link to github -->

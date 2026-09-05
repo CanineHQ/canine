@@ -55,6 +55,19 @@
   </div>
   <div class="flex flex-col self-stretch mt-4 lg:mt-0">
     <div class="flex lg:justify-end flex-row">
+      <div class="dropdown dropdown-end m-1">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-square">
+          <iconify-icon icon="lucide:ellipsis-vertical"></iconify-icon>
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-200 rounded-box z-[1] w-48 p-2 shadow">
+          <li>
+            <%= button_to doctor_project_url(project), data: { disable_with: "Running..." } do %>
+              <iconify-icon icon="lucide:stethoscope"></iconify-icon>
+              Diagnostics
+            <% end %>
+          </li>
+        </ul>
+      </div>
       <%= button_to restart_project_url(project), class: "btn btn-ghost m-1", data: { turbo: false, disable_with: "Loading..." } do %>
         Restart
       <% end %>
@@ -104,3 +117,5 @@
     </div>
   </div>
 </div>
+
+<%= render "shared/doctor_checks", project: project %>

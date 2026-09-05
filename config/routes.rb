@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         member do
           post :deploy
           post :restart
+          get :doctor
         end
         resources :processes, only: %i[index show create destroy], module: :projects
       end
@@ -164,6 +165,7 @@ Rails.application.routes.draw do
   resources :projects do
     member do
       post :restart
+      post :doctor
     end
     collection do
       get "/:project_id/deployments", to: "projects/deployments#index", as: :root

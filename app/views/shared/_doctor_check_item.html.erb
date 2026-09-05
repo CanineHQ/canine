@@ -1,0 +1,22 @@
+<div id="doctor-check-<%= name %>" class="flex gap-3 p-3 rounded-lg border border-base-300 bg-base-100 animate-fade-in">
+  <div class="pt-0.5">
+    <% case check["status"] %>
+    <% when "checking" %>
+      <iconify-icon icon="lucide:loader-circle" height="20" class="text-primary animate-spin"></iconify-icon>
+    <% when "ok" %>
+      <iconify-icon icon="lucide:circle-check" height="20" class="text-success"></iconify-icon>
+    <% when "error" %>
+      <iconify-icon icon="lucide:circle-x" height="20" class="text-error"></iconify-icon>
+    <% end %>
+  </div>
+  <div>
+    <div class="font-medium"><%= name.to_s.titleize %></div>
+    <div class="text-sm text-base-content/60"><%= check["message"] %></div>
+    <% if check["status"] == "error" && check["hint"].present? %>
+      <div class="mt-2 text-sm text-warning/80 bg-warning/10 rounded px-2 py-1.5">
+        <iconify-icon icon="lucide:lightbulb" height="14" class="mr-1 align-text-bottom"></iconify-icon>
+        <%= check["hint"] %>
+      </div>
+    <% end %>
+  </div>
+</div>

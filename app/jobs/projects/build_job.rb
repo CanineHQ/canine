@@ -54,6 +54,7 @@ class Projects::BuildJob < ApplicationJob
       build.error(e.message)
       build.failed!
       notify_build(project, build)
+      Projects::DoctorJob.perform_later(project, user)
     end
     raise e
   end

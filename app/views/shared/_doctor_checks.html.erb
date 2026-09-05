@@ -1,0 +1,22 @@
+<%= turbo_stream_from project %>
+
+<dialog id="doctor_modal" class="modal" data-controller="doctor-modal" data-doctor-modal-project-id-value="<%= project.id %>">
+  <div class="modal-box w-11/12 max-w-lg bg-base-300">
+    <form method="dialog">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+        <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+      </button>
+    </form>
+    <div class="flex items-center gap-2 mb-2">
+      <iconify-icon icon="lucide:stethoscope" height="20"></iconify-icon>
+      <h3 class="text-lg font-bold">Diagnostics</h3>
+    </div>
+    <p class="text-sm text-base-content/60 mb-4">Running health checks on your project configuration...</p>
+
+    <div id="doctor-checks" class="space-y-3">
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>

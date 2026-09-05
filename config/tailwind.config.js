@@ -36,9 +36,14 @@ module.exports = {
           '0%, 70%': { opacity: '1' },
           '100%': { opacity: '0' },
         },
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'fade-out': 'fade-out 3s ease-out forwards',
+        'fade-in': 'fade-in 0.3s ease-out forwards',
       },
     },
     container: {
