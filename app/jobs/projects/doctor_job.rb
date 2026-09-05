@@ -1,4 +1,6 @@
 class Projects::DoctorJob < ApplicationJob
+  include GoodJob::ActiveJobExtensions::Concurrency
+
   queue_as :default
 
   good_job_control_concurrency_with(

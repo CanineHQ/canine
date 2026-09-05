@@ -38,7 +38,7 @@ class Projects::Doctor
   private
 
   def self.applicable_checks(project)
-    checks = [:cluster]
+    checks = [ :cluster ]
     checks << :source if project.git?
     checks << :registry if project.build_provider.present?
     checks << :build_cloud if project.build_configuration&.build_cloud.present?
