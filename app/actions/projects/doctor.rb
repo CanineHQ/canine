@@ -18,7 +18,6 @@ class Projects::Doctor
     checks[:source] = run_check(project, :source) { check_source(project) }
     checks[:registry] = run_check(project, :registry) { check_registry(project) }
 
-    project.update_column(:doctor_checks, checks.merge(ran_at: Time.current))
     context.checks = checks
   end
 
