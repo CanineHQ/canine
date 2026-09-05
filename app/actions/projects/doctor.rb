@@ -32,9 +32,13 @@ class Projects::Doctor
 
   def self.applicable_checks(project)
     checks = [ :cluster ]
-    checks << :source if project.git?
-    checks << :registry if project.build_provider.present?
-    checks << :build_cloud if project.build_configuration&.build_cloud.present?
+    if project.git?
+      checks << :source
+      checks << :registry if project.build_provider.present?
+      checks << :build_cloud if project.build_configuration&.build_cloud.present?
+    else
+      checks << :image
+    end
     checks
   end
 
@@ -137,6 +141,43 @@ class Projects::Doctor
   rescue StandardError => e
     { status: "error", message: "Registry check failed: #{e.message}",
       hint: "Ensure the registry URL is correct and the registry service is available." }
+  end
+
+  def self.check_image(project, _user)
+    image = project.full_image_name
+    tag = project.branch.presence || "latest"
+    full_ref = "#{image}:#{tag}"
+
+    if project.public_image?
+      _, _, status = Open3.capture3("docker", "manifest", "inspect", full_ref)
+    else
+      provider = project.project_credential_provider&.provider
+      if provider.blank?
+        return { status: "error", message: "No credential provider configured",
+                 hint: "Add a container registry credential provider to pull private images." }
+      end
+
+      DockerCli.with_registry_auth(
+        registry_url: provider.registry_base_url,
+        username: provider.username,
+        password: provider.access_token
+      ) do
+        _, _, status = Open3.capture3("docker", "manifest", "inspect", full_ref)
+      end
+    end
+
+    if status.success?
+      { status: "ok", message: "Image #{full_ref} is accessible" }
+    else
+      { status: "error", message: "Image #{full_ref} not found",
+        hint: "Verify the image name and tag exist in the registry. Check that credentials have pull access." }
+    end
+  rescue DockerCli::AuthenticationError => e
+    { status: "error", message: "Registry authentication failed: #{e.message}",
+      hint: "The registry credentials are invalid. Update them in your provider settings." }
+  rescue StandardError => e
+    { status: "error", message: "Image check failed: #{e.message}",
+      hint: "Ensure Docker is available and the registry is reachable." }
   end
 
   def self.check_build_cloud(project, user)
