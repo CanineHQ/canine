@@ -14,9 +14,6 @@
     <p class="text-sm text-base-content/60 mb-4">Running health checks on your project configuration...</p>
 
     <div id="doctor-checks" class="space-y-3">
-      <%= render "shared/doctor_check_item", name: :cluster, check: { "status" => "checking", "message" => "Checking cluster connectivity..." } %>
-      <%= render "shared/doctor_check_item", name: :source, check: { "status" => "checking", "message" => "Waiting..." } %>
-      <%= render "shared/doctor_check_item", name: :registry, check: { "status" => "checking", "message" => "Waiting..." } %>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
