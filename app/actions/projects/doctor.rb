@@ -12,50 +12,34 @@ class Projects::Doctor
     # Determine which checks are applicable
     applicable = applicable_checks(project)
 
-    # Phase 1: Open modal with discovering state
-    broadcast_discovering(project)
-    sleep 1
-
-    # Phase 2: Reveal each check item one by one
+    # Show all check items immediately
     applicable.each do |name|
       broadcast_append_check(project, name)
-      sleep 0.3
     end
 
-    # Clear the discovering spinner
-    broadcast_clear_discovering(project)
-    sleep 0.3
-
-    # Phase 3: Run and resolve each check
+    # Run and resolve each check
     checks = {}
     applicable.each do |name|
       checks[name] = run_check(project, name) { send(:"check_#{name}", project, user) }
     end
 
     context.checks = checks
+
+    broadcast_summary(project, checks)
   end
 
   private
 
   def self.applicable_checks(project)
     checks = [ :cluster ]
-    checks << :source if project.git?
-    checks << :registry if project.build_provider.present?
-    checks << :build_cloud if project.build_configuration&.build_cloud.present?
+    if project.git?
+      checks << :source
+      checks << :registry if project.build_provider.present?
+      checks << :build_cloud if project.build_configuration&.build_cloud.present?
+    else
+      checks << :image
+    end
     checks
-  end
-
-  def self.broadcast_discovering(project)
-    html = '<div id="doctor-discovering" class="flex items-center gap-2 text-sm text-base-content/60">' \
-           '<iconify-icon icon="lucide:loader-circle" height="16" class="text-primary animate-spin"></iconify-icon>' \
-           'Analyzing project configuration...' \
-           '</div>'
-
-    Turbo::StreamsChannel.broadcast_update_to(
-      project,
-      target: "doctor-checks",
-      html: html
-    )
   end
 
   def self.broadcast_append_check(project, name)
@@ -67,10 +51,15 @@ class Projects::Doctor
     )
   end
 
-  def self.broadcast_clear_discovering(project)
-    Turbo::StreamsChannel.broadcast_remove_to(
+  def self.broadcast_summary(project, checks)
+    total_count = checks.values.size
+    failed_count = checks.values.count { |c| c[:status] == "error" }
+
+    Turbo::StreamsChannel.broadcast_append_to(
       project,
-      target: "doctor-discovering"
+      target: "doctor-checks",
+      partial: "shared/doctor_summary",
+      locals: { total_count: total_count, failed_count: failed_count }
     )
   end
 
@@ -152,6 +141,43 @@ class Projects::Doctor
   rescue StandardError => e
     { status: "error", message: "Registry check failed: #{e.message}",
       hint: "Ensure the registry URL is correct and the registry service is available." }
+  end
+
+  def self.check_image(project, _user)
+    image = project.full_image_name
+    tag = project.branch.presence || "latest"
+    full_ref = "#{image}:#{tag}"
+
+    if project.public_image?
+      _, _, status = Open3.capture3("docker", "manifest", "inspect", full_ref)
+    else
+      provider = project.project_credential_provider&.provider
+      if provider.blank?
+        return { status: "error", message: "No credential provider configured",
+                 hint: "Add a container registry credential provider to pull private images." }
+      end
+
+      DockerCli.with_registry_auth(
+        registry_url: provider.registry_base_url,
+        username: provider.username,
+        password: provider.access_token
+      ) do
+        _, _, status = Open3.capture3("docker", "manifest", "inspect", full_ref)
+      end
+    end
+
+    if status.success?
+      { status: "ok", message: "Image #{full_ref} is accessible" }
+    else
+      { status: "error", message: "Image #{full_ref} not found",
+        hint: "Verify the image name and tag exist in the registry. Check that credentials have pull access." }
+    end
+  rescue DockerCli::AuthenticationError => e
+    { status: "error", message: "Registry authentication failed: #{e.message}",
+      hint: "The registry credentials are invalid. Update them in your provider settings." }
+  rescue StandardError => e
+    { status: "error", message: "Image check failed: #{e.message}",
+      hint: "Ensure Docker is available and the registry is reachable." }
   end
 
   def self.check_build_cloud(project, user)
