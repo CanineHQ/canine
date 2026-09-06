@@ -12,7 +12,7 @@ RSpec.describe AddOns::UninstallHelmChart do
     allow(K8::Kubectl).to receive(:new).and_return(kubectl)
     allow(kubectl).to receive(:apply_yaml)
     allow(K8::Helm::Client).to receive(:connect).and_return(helm_client)
-    allow(helm_client).to receive(:ls).and_return([])
+    allow(helm_client).to receive(:uninstall)
     allow(K8::Client).to receive(:new).and_return(client)
     allow(client).to receive(:get_namespaces).and_return([])
   end
