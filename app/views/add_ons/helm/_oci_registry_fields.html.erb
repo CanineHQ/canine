@@ -1,0 +1,25 @@
+<div class="space-y-4" data-controller="add-ons--oci-registry">
+  <div class="form-group">
+    <%= form.label "OCI Registry URL" %>
+    <input type="text"
+        name="oci_url_display"
+        class="input input-bordered w-full max-w-md font-mono text-sm"
+        placeholder="e.g., oci://ghcr.io/danny-avila/librechat-chart/librechat"
+        data-add-ons--oci-registry-target="ociUrl"
+        data-action="input->add-ons--oci-registry#onInput">
+    <label class="label">
+      <span class="label-text-alt">Enter an OCI Helm chart URL</span>
+    </label>
+    <div data-add-ons--oci-registry-target="loading" class="hidden">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mt-2">
+        <span class="loading loading-spinner loading-sm"></span>
+        Fetching available versions...
+      </div>
+    </div>
+    <div data-add-ons--oci-registry-target="error" class="hidden">
+      <div class="alert alert-error text-sm mt-2">
+        <span data-add-ons--oci-registry-target="errorMessage"></span>
+      </div>
+    </div>
+  </div>
+</div>

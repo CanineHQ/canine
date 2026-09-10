@@ -52,7 +52,7 @@ class AddOn < ApplicationRecord
   }
 
   validates :name, presence: true, format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
-  validates :chart_url, presence: true, format: { with: %r{\A[^/]+/[^/]+\z}, message: "must be in format 'repository/chart'" }
+  validates :chart_url, presence: true, format: { with: %r{\A[^/]+/[^/]+\z}, message: "must be in format 'repository/chart'" }, unless: :oci_repository?
   validates :version, presence: true
   validates :repository_url, presence: true
   after_update_commit do
@@ -71,6 +71,10 @@ class AddOn < ApplicationRecord
   def chart_definition
     charts = K8::Helm::Client::CHARTS["helm"]["charts"]
     charts.find { |chart| chart["chart_url"] == chart_url } || {}
+  end
+
+  def oci_repository?
+    repository_url&.start_with?("oci://")
   end
 
   def repository_name
