@@ -31,6 +31,26 @@
       </div>
     <% end %>
 
+    <div id="authentication">
+      <h2 class="text-2xl font-bold">Authentication</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <p class="text-sm text-gray-500 mb-4">
+        Require users to authenticate through Canine before accessing any web service in this project.
+      </p>
+      <%= form_with(model: @project, class: "space-y-4") do |form| %>
+        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
+          <label class="label mt-1">
+            <span class="label-text cursor-pointer">Require authentication (internal project)</span>
+            <%= form.check_box :internal, class: "checkbox" %>
+          </label>
+        </div>
+        <span class="label-text-alt">All web services will require login through Canine before access</span>
+        <div class="form-footer">
+          <%= form.submit "Save", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Saving..." } %>
+        </div>
+      <% end %>
+    </div>
+
     <div id="volumes">
       <h2 class="text-2xl font-bold">Volumes</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />

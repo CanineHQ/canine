@@ -9,6 +9,24 @@
       <% end %>
     </div>
     <div>
+      <h2 class="text-lg font-bold">Authentication</h2>
+      <p class="text-sm text-gray-500 mb-2">
+        Require users to authenticate through Canine before accessing this add-on's endpoints.
+      </p>
+      <%= form_with(model: @add_on) do |form| %>
+        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
+          <label class="label mt-1">
+            <span class="label-text cursor-pointer">Require authentication (internal add-on)</span>
+            <%= form.check_box :internal, class: "checkbox" %>
+          </label>
+        </div>
+        <span class="label-text-alt">Endpoints with ingresses will require login through Canine before access</span>
+        <div class="form-footer">
+          <%= form.submit "Save", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Saving..." } %>
+        </div>
+      <% end %>
+    </div>
+    <div>
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-lg font-bold">Configuration</h2>
         <% if @add_on.installed? %>

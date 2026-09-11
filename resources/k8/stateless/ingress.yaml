@@ -27,7 +27,11 @@ spec:
         path: "/"
         backend:
           service:
+            <% if service.requires_auth? %>
+            name: <%= service.name %>-auth-proxy
+            <% else %>
             name: <%= service.name %>-service
+            <% end %>
             port:
               number: 80
   <% end %>

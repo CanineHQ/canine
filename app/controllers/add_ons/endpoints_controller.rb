@@ -20,13 +20,19 @@ class AddOns::EndpointsController < AddOns::BaseController
     @errors << 'Invalid domain format' unless domains.all? { |domain| valid_domain?(domain) }
     @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
     kubectl = K8::Kubectl.new(active_connection)
+    port = params[:port].to_i
+
+    if @add_on.internal? && @add_on.oauth_application.present?
+      # Update OAuth redirect URI with the first domain
+      @add_on.oauth_application.update(redirect_uri: "https://#{domains.first}/oauth2/callback")
+
+      kubectl.apply_yaml(
+        K8::AddOns::AuthProxy.new(@add_on, @endpoint, port, domains).to_yaml
+      )
+    end
+
     kubectl.apply_yaml(
-      K8::AddOns::Ingress.new(
-        @add_on,
-        @endpoint,
-        params[:port].to_i,
-        domains,
-      ).to_yaml
+      K8::AddOns::Ingress.new(@add_on, @endpoint, port, domains).to_yaml
     )
     if @errors.empty?
       @ingresses = @service.get_ingresses

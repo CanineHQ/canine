@@ -14,6 +14,7 @@ class AddOns::Create
       :version,
       :repository_url,
       :artifact_hub_package_id,
+      :internal,
       metadata: {},
       values: {}
     )

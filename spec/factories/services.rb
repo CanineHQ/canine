@@ -8,6 +8,7 @@
 #  container_port          :integer          default(3000)
 #  description             :text
 #  healthcheck_url         :string
+#  internal                :boolean          default(FALSE)
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
 #  pod_yaml                :jsonb
