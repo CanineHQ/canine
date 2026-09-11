@@ -5,6 +5,7 @@
 #  id                      :bigint           not null, primary key
 #  chart_type              :string
 #  chart_url               :string
+#  internal                :boolean          default(FALSE)
 #  managed_namespace       :boolean          default(TRUE)
 #  metadata                :jsonb
 #  name                    :string           not null

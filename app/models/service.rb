@@ -8,6 +8,7 @@
 #  container_port          :integer          default(3000)
 #  description             :text
 #  healthcheck_url         :string
+#  internal                :boolean          default(FALSE)
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
 #  pod_yaml                :jsonb
@@ -44,6 +45,7 @@ class Service < ApplicationRecord
 
   has_one :cron_schedule, dependent: :destroy
   has_one :resource_constraint, dependent: :destroy
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
@@ -53,6 +55,8 @@ class Service < ApplicationRecord
                    uniqueness: { scope: :project_id }
 
   accepts_nested_attributes_for :domains, allow_destroy: true
+
+  after_save :manage_oauth_application, if: :saved_change_to_internal?
 
   def internal_url
     # Kubernetes internal URL
@@ -77,6 +81,18 @@ class Service < ApplicationRecord
     end
   end
 
+  def requires_auth?
+    internal? || project.internal?
+  end
+
+  def effective_oauth_application
+    oauth_application || project.oauth_application
+  end
+
+  def auth_proxy_cookie_secret
+    effective_oauth_application&.secret&.first(32)
+  end
+
   def self.permitted_params(params)
     permitted = params.require(:service).permit(
       :service_type,
@@ -87,6 +103,7 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
+      :internal,
       :pod_yaml
     )
 
@@ -101,5 +118,28 @@ class Service < ApplicationRecord
     end
 
     permitted
+  end
+
+  private
+
+  def manage_oauth_application
+    if internal?
+      return if oauth_application.present?
+
+      redirect_uri = if auto_domain.present?
+        "https://#{auto_domain}/oauth2/callback"
+      else
+        "https://placeholder.canine.sh/oauth2/callback"
+      end
+
+      create_oauth_application!(
+        name: "Auth Proxy: #{name} (#{project.name})",
+        redirect_uri: redirect_uri,
+        scopes: "openid profile",
+        confidential: true
+      )
+    else
+      oauth_application&.destroy
+    end
   end
 end

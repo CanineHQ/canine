@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <%= endpoint.metadata.name %>-auth-proxy
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'auth-proxy'
+    app: <%= endpoint.metadata.name %>-auth-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <%= endpoint.metadata.name %>-auth-proxy
+  template:
+    metadata:
+      labels:
+        app: <%= endpoint.metadata.name %>-auth-proxy
+    spec:
+      containers:
+      - name: oauth2-proxy
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.7.1
+        args:
+        - --provider=oidc
+        - --oidc-issuer-url=<%= issuer_url %>
+        - --client-id=<%= client_id %>
+        - --client-secret=<%= client_secret %>
+        - --cookie-secret=<%= cookie_secret %>
+        - --cookie-secure=true
+        - --upstream=http://<%= endpoint.metadata.name %>.<%= add_on.name %>.svc.cluster.local:<%= port %>
+        - --http-address=0.0.0.0:4180
+        - --redirect-url=https://<%= domains.first %>/oauth2/callback
+        - --email-domain=*
+        - --scope=openid profile
+        - --skip-provider-button=true
+        ports:
+        - containerPort: 4180
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <%= endpoint.metadata.name %>-auth-proxy
+  namespace: <%= add_on.name %>
+  labels:
+    caninemanaged: 'auth-proxy'
+spec:
+  selector:
+    app: <%= endpoint.metadata.name %>-auth-proxy
+  ports:
+  - port: 80
+    targetPort: 4180
+    protocol: TCP

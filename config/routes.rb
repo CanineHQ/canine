@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   end
 
   use_doorkeeper
+  use_doorkeeper_openid_connect
 
   # RFC 7591: Dynamic Client Registration Protocol
   post "/oauth/register", to: "oauth_client_registration#create", as: :oauth_register

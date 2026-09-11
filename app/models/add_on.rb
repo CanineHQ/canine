@@ -5,6 +5,7 @@
 #  id                      :bigint           not null, primary key
 #  chart_type              :string
 #  chart_url               :string
+#  internal                :boolean          default(FALSE)
 #  managed_namespace       :boolean          default(TRUE)
 #  metadata                :jsonb
 #  name                    :string           not null
@@ -41,6 +42,9 @@ class AddOn < ApplicationRecord
   end
 
   has_one :account, through: :cluster
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
+
+  after_save :manage_oauth_application, if: :saved_change_to_internal?
 
   enum :status, {
     installing: 0,
@@ -77,6 +81,10 @@ class AddOn < ApplicationRecord
     chart_url&.split('/')&.first
   end
 
+  def auth_proxy_cookie_secret
+    oauth_application&.secret&.first(32)
+  end
+
   protected
 
   def validate_keys(required_keys)
@@ -84,6 +92,24 @@ class AddOn < ApplicationRecord
 
     if missing_keys.any?
       errors.add(:metadata, "is missing required keys: #{missing_keys.join(', ')}")
+    end
+  end
+
+  private
+
+  def manage_oauth_application
+    if internal?
+      return if oauth_application.present?
+
+      create_oauth_application!(
+        name: "Auth Proxy: #{name}",
+        redirect_uri: "https://#{name}.canine.sh/oauth2/callback",
+        scopes: "openid profile",
+        confidential: true
+      )
+    else
+      oauth_application&.destroy
+      AddOns::CleanupAuthProxyJob.perform_later(self) if installed?
     end
   end
 end

@@ -9,6 +9,7 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  internal                       :boolean          default(FALSE)
 #  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
 #  namespace                      :string           not null
@@ -71,6 +72,9 @@ class Project < ApplicationRecord
   has_one :build_configuration, dependent: :destroy
   has_one :deployment_configuration, dependent: :destroy
   has_one :development_environment_configuration, dependent: :destroy
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
+
+  after_save :manage_oauth_application, if: :saved_change_to_internal?
 
   has_one :child_fork, class_name: "ProjectFork", foreign_key: :child_project_id, dependent: :destroy
   has_many :forks, class_name: "ProjectFork", foreign_key: :parent_project_id, dependent: :destroy
@@ -371,5 +375,31 @@ class Project < ApplicationRecord
     end
 
     hash
+  end
+
+  def manage_oauth_application
+    if internal?
+      return if oauth_application.present?
+
+      first_domain = domains.first&.domain_name
+      redirect_uri = if first_domain.present?
+        "https://#{first_domain}/oauth2/callback"
+      else
+        "https://#{name}.canine.sh/oauth2/callback"
+      end
+
+      create_oauth_application!(
+        name: "Auth Proxy: #{name}",
+        redirect_uri: redirect_uri,
+        scopes: "openid profile",
+        confidential: true
+      )
+    else
+      oauth_application&.destroy
+      # Clean up auth proxy K8s resources for all web services
+      services.web_service.each do |service|
+        Services::CleanupAuthProxyJob.perform_later(service) unless service.internal?
+      end
+    end
   end
 end
