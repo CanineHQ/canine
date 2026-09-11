@@ -19,6 +19,9 @@ class Accounts::AccountUsersController < ApplicationController
 
     if user
       AccountUser.create!(account: current_account, user: user)
+      if smtp_configured?
+        AccountInviteMailer.added(user, current_account, new_user_session_url).deliver_later
+      end
       redirect_to account_users_path, notice: "User was successfully added."
     else
       temp_password = generate_temp_password
@@ -38,6 +41,11 @@ class Accounts::AccountUsersController < ApplicationController
         password: temp_password,
         login_url: new_user_session_url
       }
+
+      @email_sent = smtp_configured?
+      if @email_sent
+        AccountInviteMailer.invite(user, temp_password, current_account, new_user_session_url).deliver_later
+      end
 
       respond_to do |format|
         format.turbo_stream
@@ -82,5 +90,9 @@ class Accounts::AccountUsersController < ApplicationController
 
   def generate_temp_password
     "#{SecureRandom.alphanumeric(8)}!#{SecureRandom.alphanumeric(4)}"
+  end
+
+  def smtp_configured?
+    ENV["SMTP_ADDRESS"].present?
   end
 end

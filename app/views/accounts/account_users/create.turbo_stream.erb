@@ -10,8 +10,18 @@
         <iconify-icon icon="lucide:check-circle" class="text-success" height="24"></iconify-icon>
         Invitation Created
       </div>
+      <% if @email_sent %>
+        <div class="alert alert-success mb-4">
+          <iconify-icon icon="lucide:mail-check" height="16"></iconify-icon>
+          <span class="text-sm">An invitation email has been sent to <strong><%= @invite_credentials[:email] %></strong>.</span>
+        </div>
+      <% end %>
       <p class="text-sm text-base-content/70 mb-4">
-        Share these credentials with the new team member. They will be prompted to change their password on first login.
+        <% if @email_sent %>
+          The credentials below have been emailed to the new team member. You can also share them manually.
+        <% else %>
+          Share these credentials with the new team member. They will be prompted to change their password on first login.
+        <% end %>
       </p>
       <div class="space-y-3">
         <div class="form-control">
