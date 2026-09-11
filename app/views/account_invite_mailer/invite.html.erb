@@ -1,0 +1,32 @@
+<h1 style="font-size: 20px; font-weight: 700; margin: 0 0 16px 0; color: #1e2328;">You've been invited!</h1>
+
+<p style="font-size: 14px; line-height: 1.6; color: #4a5568; margin: 0 0 24px 0;">
+  You've been invited to join <strong><%= @account.name %></strong> on Canine. You can sign in with GitHub, or use the temporary credentials below. If you use the temporary password, you'll be prompted to change it on first login.
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f7f8fa; border-radius: 4px; padding: 20px; margin: 0 0 24px 0;">
+  <tr>
+    <td style="padding: 8px 20px;">
+      <span style="font-size: 12px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px;">Email</span><br>
+      <span style="font-size: 14px; color: #1e2328;"><%= @user.email %></span>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 8px 20px;">
+      <span style="font-size: 12px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px;">Temporary Password</span><br>
+      <code style="font-size: 14px; color: #1e2328; background-color: #e8ecf0; padding: 2px 6px; border-radius: 3px;"><%= @temp_password %></code>
+    </td>
+  </tr>
+</table>
+
+<table cellpadding="0" cellspacing="0" style="margin: 0 0 24px 0;">
+  <tr>
+    <td style="background-color: #1e2328; border-radius: 4px; padding: 12px 24px;">
+      <a href="<%= @login_url %>" style="font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none;">Log In</a>
+    </td>
+  </tr>
+</table>
+
+<p style="font-size: 12px; line-height: 1.5; color: #8b949e; margin: 0;">
+  If you didn't expect this invitation, you can safely ignore this email.
+</p>
