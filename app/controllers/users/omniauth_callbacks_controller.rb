@@ -22,6 +22,8 @@ module Users
         user.providers.create(provider_attrs)
       end
 
+      user.update!(password_change_required: false) if user.password_change_required?
+
       if user_signed_in?
         flash[:notice] = "Your #{kind} account was connected."
         redirect_to edit_user_registration_path

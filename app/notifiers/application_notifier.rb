@@ -4,7 +4,7 @@ class ApplicationNotifier < Noticed::Event
   deliver_by :email do |config|
     config.mailer = "NotifierMailer"
     config.method = :notify
-    config.if = -> { params[:project].notifiers.enabled.for_type(notification_type).exists?(provider_type: :email) }
+    config.if = -> { SmtpUtilities.smtp_configured? && params[:project].notifiers.enabled.for_type(notification_type).exists?(provider_type: :email) }
   end
 
   def project
