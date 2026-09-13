@@ -84,19 +84,12 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # SMTP configuration via environment variables
-  if ENV["SMTP_ADDRESS"].present?
+  smtp = Rails.configuration.smtp
+  if smtp.configured?
     config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: ENV["SMTP_ADDRESS"],
-      port: ENV.fetch("SMTP_PORT", 587).to_i,
-      user_name: ENV["SMTP_USERNAME"],
-      password: ENV["SMTP_PASSWORD"],
-      authentication: ENV.fetch("SMTP_AUTHENTICATION", "plain").to_sym,
-      enable_starttls_auto: ENV.fetch("SMTP_ENABLE_STARTTLS", "true") == "true",
-      domain: ENV["SMTP_DOMAIN"]
-    }
+    config.action_mailer.smtp_settings = smtp.settings
     config.action_mailer.raise_delivery_errors = true
-    config.action_mailer.default_url_options = { host: ENV["SMTP_DOMAIN"] } if ENV["SMTP_DOMAIN"].present?
+    config.action_mailer.default_url_options = { host: smtp.domain } if smtp.domain.present?
   end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
