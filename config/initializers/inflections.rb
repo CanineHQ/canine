@@ -17,5 +17,4 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "OIDC"
   inflect.acronym "SAML"
   inflect.acronym "MCP"
-  inflect.acronym "SMTP"
 end

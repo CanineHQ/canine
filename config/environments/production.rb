@@ -84,12 +84,11 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # SMTP configuration via environment variables
-  smtp = Rails.configuration.smtp
-  if smtp.configured?
+  if SmtpUtilities.smtp_configured?
     config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = smtp.settings
+    config.action_mailer.smtp_settings = SmtpUtilities.smtp_settings
     config.action_mailer.raise_delivery_errors = true
-    config.action_mailer.default_url_options = { host: smtp.domain } if smtp.domain.present?
+    config.action_mailer.default_url_options = { host: SmtpUtilities.smtp_domain } if SmtpUtilities.smtp_domain.present?
   end
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to

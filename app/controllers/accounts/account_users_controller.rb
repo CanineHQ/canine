@@ -1,5 +1,7 @@
 class Accounts::AccountUsersController < ApplicationController
   include SettingsHelper
+  include SmtpUtilities
+
   include BillableEnforcement
 
   def create
@@ -18,7 +20,7 @@ class Accounts::AccountUsersController < ApplicationController
 
     if user
       AccountUser.create!(account: current_account, user: user)
-      if Rails.configuration.smtp.configured?
+      if smtp_configured?
         AccountInviteMailer.added(user, current_account, new_user_session_url).deliver_later
       end
       redirect_to account_users_path, notice: "User was successfully added."
@@ -41,7 +43,7 @@ class Accounts::AccountUsersController < ApplicationController
         login_url: new_user_session_url
       }
 
-      @email_sent = Rails.configuration.smtp.configured?
+      @email_sent = smtp_configured?
       if @email_sent
         AccountInviteMailer.invite(user, temp_password, current_account, new_user_session_url).deliver_later
       end

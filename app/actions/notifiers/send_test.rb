@@ -7,7 +7,7 @@ class Notifiers::SendTest
 
     begin
       if context.notifier.email?
-        context.fail_and_return!("SMTP is not configured. Please set SMTP environment variables to send emails.") unless Rails.configuration.smtp.configured?
+        context.fail_and_return!("SMTP is not configured. Please set SMTP environment variables to send emails.") unless SmtpUtilities.smtp_configured?
         NotifierMailer.test_notification(context.user, test_event).deliver_now
       else
         payload = test_event.build_payload(context.notifier.provider_type)
