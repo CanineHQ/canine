@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SmtpUtilities
   extend self
 
@@ -19,5 +21,14 @@ module SmtpUtilities
 
   def smtp_domain
     ENV["SMTP_DOMAIN"]
+  end
+end
+
+Rails.application.configure do
+  if SmtpUtilities.smtp_configured?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = SmtpUtilities.smtp_settings
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.default_url_options = { host: SmtpUtilities.smtp_domain } if SmtpUtilities.smtp_domain.present?
   end
 end
