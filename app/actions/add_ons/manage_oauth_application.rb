@@ -5,7 +5,7 @@ class AddOns::ManageOAuthApplication
   executed do |context|
     add_on = context.add_on
 
-    if add_on.internal? && !context.was_internal
+    if add_on.internal?
       unless add_on.oauth_application.present?
         add_on.create_oauth_application!(
           name: "Auth Proxy: #{add_on.name}",
@@ -14,7 +14,7 @@ class AddOns::ManageOAuthApplication
           confidential: true
         )
       end
-    elsif context.was_internal && !add_on.internal?
+    elsif context.was_internal
       add_on.oauth_application&.destroy
     end
   end

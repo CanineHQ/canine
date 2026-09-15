@@ -19,7 +19,7 @@ class Services::Update
     end
 
     # Manage OAuth application for internal auth proxy
-    if context.service.internal? && !was_internal
+    if context.service.internal?
       unless context.service.oauth_application.present?
         context.service.create_oauth_application!(
           name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
@@ -28,10 +28,11 @@ class Services::Update
           confidential: true
         )
       end
-    elsif was_internal && !context.service.internal?
+      if context.service.oauth_application.present? && context.service.auto_domain.present?
+        context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
+      end
+    elsif was_internal
       context.service.oauth_application&.destroy
-    elsif context.service.internal? && context.service.oauth_application.present? && context.service.auto_domain.present?
-      context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
     end
 
     context.service.updated!

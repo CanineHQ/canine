@@ -5,16 +5,14 @@ class AddOns::DeployAuthProxy
   executed do |context|
     add_on = context.add_on
 
-    # Skip if internal status didn't change
-    next context if context.was_internal == add_on.internal?
-
     # Clean up auth proxy resources if internal was toggled off
     if context.was_internal && !add_on.internal?
       AddOns::CleanupAuthProxyJob.perform_later(add_on) if add_on.installed?
+      next context
     end
 
-    # Skip K8s operations if add-on isn't installed yet
-    next context unless add_on.installed?
+    # Skip if not internal or add-on isn't installed yet
+    next context unless add_on.internal? && add_on.installed?
 
     kubectl = K8::Kubectl.new(context.connection)
     service = K8::Helm::Service.create_from_add_on(context.connection)

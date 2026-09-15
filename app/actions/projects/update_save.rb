@@ -24,7 +24,7 @@ module Projects
       end
 
       # Manage OAuth application for internal auth proxy
-      if context.project.internal? && !was_internal
+      if context.project.internal?
         unless context.project.oauth_application.present?
           context.project.create_oauth_application!(
             name: "Auth Proxy: #{context.project.name}",
@@ -33,7 +33,7 @@ module Projects
             confidential: true
           )
         end
-      elsif was_internal && !context.project.internal?
+      elsif was_internal
         context.project.oauth_application&.destroy
       end
     rescue => e
