@@ -9,7 +9,7 @@ class K8::AddOns::AuthProxy < K8::Base
   end
 
   def issuer_url
-    Rails.application.credentials.dig(:app, :host) || "https://canine.sh"
+    ENV.fetch("APP_HOST")
   end
 
   def client_id

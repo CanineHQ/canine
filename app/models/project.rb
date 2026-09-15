@@ -385,7 +385,7 @@ class Project < ApplicationRecord
       redirect_uri = if first_domain.present?
         "https://#{first_domain}/oauth2/callback"
       else
-        "https://#{name}.canine.sh/oauth2/callback"
+        "#{ENV.fetch('APP_HOST')}/oauth2/callback"
       end
 
       create_oauth_application!(

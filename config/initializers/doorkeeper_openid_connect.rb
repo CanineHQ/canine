@@ -2,7 +2,7 @@
 
 Doorkeeper::OpenidConnect.configure do
   issuer do |_resource_owner, _application, request|
-    request&.base_url || Rails.application.credentials.dig(:app, :host) || "https://canine.sh"
+    request&.base_url || ENV.fetch("APP_HOST")
   end
 
   signing_key Rails.application.credentials.dig(:oidc, :signing_key) || OpenSSL::PKey::RSA.generate(2048).to_pem

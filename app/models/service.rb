@@ -129,7 +129,7 @@ class Service < ApplicationRecord
       redirect_uri = if auto_domain.present?
         "https://#{auto_domain}/oauth2/callback"
       else
-        "https://placeholder.canine.sh/oauth2/callback"
+        "#{ENV.fetch('APP_HOST')}/oauth2/callback"
       end
 
       create_oauth_application!(

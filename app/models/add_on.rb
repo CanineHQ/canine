@@ -103,7 +103,7 @@ class AddOn < ApplicationRecord
 
       create_oauth_application!(
         name: "Auth Proxy: #{name}",
-        redirect_uri: "https://#{name}.canine.sh/oauth2/callback",
+        redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
         scopes: "openid profile",
         confidential: true
       )
