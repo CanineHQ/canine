@@ -18,14 +18,21 @@ class Services::Update
       Domains::AttachAutoManagedDomain.execute(service: context.service)
     end
 
-    # Update OAuth application redirect URI when domain changes
-    if context.service.internal? && context.service.oauth_application.present? && context.service.auto_domain.present?
-      context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
-    end
-
-    # Schedule cleanup of auth proxy K8s resources when internal is toggled off
-    if was_internal && !context.service.internal?
+    # Manage OAuth application for internal auth proxy
+    if context.service.internal? && !was_internal
+      unless context.service.oauth_application.present?
+        context.service.create_oauth_application!(
+          name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
+          redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
+          scopes: "openid profile",
+          confidential: true
+        )
+      end
+    elsif was_internal && !context.service.internal?
+      context.service.oauth_application&.destroy
       Services::CleanupAuthProxyJob.perform_later(context.service)
+    elsif context.service.internal? && context.service.oauth_application.present? && context.service.auto_domain.present?
+      context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
     end
 
     context.service.updated!

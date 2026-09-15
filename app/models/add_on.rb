@@ -44,8 +44,6 @@ class AddOn < ApplicationRecord
   has_one :account, through: :cluster
   has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
-  after_save :manage_oauth_application, if: :saved_change_to_internal?
-
   enum :status, {
     installing: 0,
     installed: 1,
@@ -95,21 +93,4 @@ class AddOn < ApplicationRecord
     end
   end
 
-  private
-
-  def manage_oauth_application
-    if internal?
-      return if oauth_application.present?
-
-      create_oauth_application!(
-        name: "Auth Proxy: #{name}",
-        redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
-        scopes: "openid profile",
-        confidential: true
-      )
-    else
-      oauth_application&.destroy
-      AddOns::CleanupAuthProxyJob.perform_later(self) if installed?
-    end
-  end
 end

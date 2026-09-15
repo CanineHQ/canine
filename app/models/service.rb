@@ -56,8 +56,6 @@ class Service < ApplicationRecord
 
   accepts_nested_attributes_for :domains, allow_destroy: true
 
-  after_save :manage_oauth_application, if: :saved_change_to_internal?
-
   def internal_url
     # Kubernetes internal URL
     K8::Stateless::Service.new(self).internal_url
@@ -120,26 +118,4 @@ class Service < ApplicationRecord
     permitted
   end
 
-  private
-
-  def manage_oauth_application
-    if internal?
-      return if oauth_application.present?
-
-      redirect_uri = if auto_domain.present?
-        "https://#{auto_domain}/oauth2/callback"
-      else
-        "#{ENV.fetch('APP_HOST')}/oauth2/callback"
-      end
-
-      create_oauth_application!(
-        name: "Auth Proxy: #{name} (#{project.name})",
-        redirect_uri: redirect_uri,
-        scopes: "openid profile",
-        confidential: true
-      )
-    else
-      oauth_application&.destroy
-    end
-  end
 end
