@@ -117,5 +117,4 @@ class Service < ApplicationRecord
 
     permitted
   end
-
 end

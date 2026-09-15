@@ -92,5 +92,4 @@ class AddOn < ApplicationRecord
       errors.add(:metadata, "is missing required keys: #{missing_keys.join(', ')}")
     end
   end
-
 end

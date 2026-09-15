@@ -374,5 +374,4 @@ class Project < ApplicationRecord
 
     hash
   end
-
 end
