@@ -30,7 +30,6 @@ class Services::Update
       end
     elsif was_internal && !context.service.internal?
       context.service.oauth_application&.destroy
-      Services::CleanupAuthProxyJob.perform_later(context.service)
     elsif context.service.internal? && context.service.oauth_application.present? && context.service.auto_domain.present?
       context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
     end

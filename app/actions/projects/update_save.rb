@@ -35,9 +35,6 @@ module Projects
         end
       elsif was_internal && !context.project.internal?
         context.project.oauth_application&.destroy
-        context.project.services.web_service.each do |service|
-          Services::CleanupAuthProxyJob.perform_later(service) unless service.internal?
-        end
       end
     rescue => e
       context.fail_and_return!(e.message)

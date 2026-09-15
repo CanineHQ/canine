@@ -4,7 +4,7 @@ metadata:
   name: <%= service.name %>-auth-proxy
   namespace: <%= project.namespace %>
   labels:
-    caninemanaged: 'auth-proxy'
+    caninemanaged: 'true'
     app: <%= service.name %>-auth-proxy
 spec:
   replicas: 1
@@ -61,7 +61,7 @@ metadata:
   name: <%= service.name %>-auth-proxy
   namespace: <%= project.namespace %>
   labels:
-    caninemanaged: 'auth-proxy'
+    caninemanaged: 'true'
 spec:
   selector:
     app: <%= service.name %>-auth-proxy

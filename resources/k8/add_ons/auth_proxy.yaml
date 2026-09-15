@@ -4,7 +4,7 @@ metadata:
   name: <%= endpoint.metadata.name %>-auth-proxy
   namespace: <%= add_on.name %>
   labels:
-    caninemanaged: 'auth-proxy'
+    caninemanaged: 'true'
     app: <%= endpoint.metadata.name %>-auth-proxy
 spec:
   replicas: 1
@@ -61,7 +61,7 @@ metadata:
   name: <%= endpoint.metadata.name %>-auth-proxy
   namespace: <%= add_on.name %>
   labels:
-    caninemanaged: 'auth-proxy'
+    caninemanaged: 'true'
 spec:
   selector:
     app: <%= endpoint.metadata.name %>-auth-proxy
