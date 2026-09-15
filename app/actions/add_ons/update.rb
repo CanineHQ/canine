@@ -20,6 +20,7 @@ class AddOns::Update
       end
     elsif was_internal && !add_on.internal?
       add_on.oauth_application&.destroy
+      AddOns::CleanupAuthProxyJob.perform_later(add_on) if add_on.installed?
     end
   end
 end
