@@ -58,11 +58,13 @@ class AddOnsController < ApplicationController
 
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
+    was_internal = @add_on.internal?
     @add_on.assign_attributes(AddOns::Create.parse_params(params))
     result = AddOns::Update.execute(add_on: @add_on)
 
     respond_to do |format|
       if result.success?
+        deploy_or_remove_auth_proxies(was_internal)
         force = params[:force].present?
         AddOns::InstallJob.perform_later(@add_on, current_user, force:)
         format.html { redirect_to @add_on, notice: "Add on #{@add_on.name} is updating..." }
@@ -166,6 +168,32 @@ class AddOnsController < ApplicationController
 
     values = YAML.safe_load(values_yaml, permitted_classes: [ Symbol ], aliases: true)
     { schema: InferJsonSchemaService.new(values).infer, schema_source: "inferred" }
+  end
+
+  def deploy_or_remove_auth_proxies(was_internal)
+    return unless was_internal != @add_on.internal?
+
+    kubectl = K8::Kubectl.new(K8::Connection.new(@add_on, current_user, allow_anonymous: true))
+    ingresses = @service.get_ingresses
+    endpoints = @service.get_endpoints
+
+    ingresses.each do |ingress|
+      endpoint = endpoints.find { |e| e.metadata.name == ingress.metadata.name }
+      next unless endpoint
+
+      domains = ingress.spec.rules.map(&:host).compact
+      next if domains.empty?
+
+      port = endpoint.spec.ports.first&.port
+      next unless port
+
+      if @add_on.internal? && @add_on.oauth_application.present?
+        @add_on.oauth_application.update(redirect_uri: "https://#{domains.first}/oauth2/callback")
+        kubectl.apply_yaml(K8::AddOns::AuthProxy.new(@add_on, endpoint, port, domains).to_yaml)
+      end
+
+      kubectl.apply_yaml(K8::AddOns::Ingress.new(@add_on, endpoint, port, domains).to_yaml)
+    end
   end
 
   # Use callbacks to share common setup or constraints between actions.
