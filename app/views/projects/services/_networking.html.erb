@@ -9,16 +9,6 @@
 
     <%= render "projects/services/telepresence_guide", cluster: @project.cluster, url: "http://#{service.internal_url}" %>
   </div>
-  <% if service.requires_auth? %>
-    <div class="mb-6">
-      <h2 class="text-xl font-bold">Authentication</h2>
-      <hr class="mt-3 mb-4 border-t border-base-300" />
-      <div class="alert alert-info">
-        <iconify-icon icon="lucide:shield-check"></iconify-icon>
-        <span>This service requires Canine authentication. Users must log in before accessing it.</span>
-      </div>
-    </div>
-  <% end %>
   <% if service.allow_public_networking? %>
     <div>
       <h2 class="text-xl font-bold">Public Networking</h2>
@@ -26,6 +16,28 @@
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>
       </div>
+    </div>
+    <div class="mt-6">
+      <h2 class="text-xl font-bold">Authentication</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+      <% if service.requires_auth? %>
+        <div class="alert alert-info mb-4">
+          <iconify-icon icon="lucide:shield-check"></iconify-icon>
+          <span>This service requires Canine authentication. Users must log in before accessing it.</span>
+        </div>
+      <% end %>
+      <%= form_with(model: [service.project, service], class: "space-y-2") do |form| %>
+        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm">
+          <label class="label mt-1">
+            <span class="label-text cursor-pointer">Require authentication (internal service)</span>
+            <%= form.check_box :internal, class: "checkbox" %>
+          </label>
+        </div>
+        <span class="label-text-alt">Requires users to login through Canine before accessing this service</span>
+        <div class="form-footer">
+          <%= form.submit "Save", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Saving..." } %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 </div>
