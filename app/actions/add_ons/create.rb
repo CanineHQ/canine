@@ -31,13 +31,14 @@ class AddOns::Create
   extend LightService::Organizer
 
   def self.call(add_on, user)
-    with(add_on:, user:).reduce(
+    with(add_on:, user:, was_internal: false).reduce(
       AddOns::Create::ToNamespaced,
       Namespaced::SetUpNamespace,
       Namespaced::ValidateNamespace,
       AddOns::ApplyTemplateToValues,
       AddOns::SetPackageDetails,
-      AddOns::Save
+      AddOns::Save,
+      AddOns::ManageOAuthApplication
     )
   end
 end

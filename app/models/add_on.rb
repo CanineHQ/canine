@@ -5,6 +5,7 @@
 #  id                      :bigint           not null, primary key
 #  chart_type              :string
 #  chart_url               :string
+#  internal                :boolean          default(FALSE)
 #  managed_namespace       :boolean          default(TRUE)
 #  metadata                :jsonb
 #  name                    :string           not null
@@ -41,6 +42,7 @@ class AddOn < ApplicationRecord
   end
 
   has_one :account, through: :cluster
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
   enum :status, {
     installing: 0,
@@ -75,6 +77,10 @@ class AddOn < ApplicationRecord
 
   def repository_name
     chart_url&.split('/')&.first
+  end
+
+  def auth_proxy_cookie_secret
+    oauth_application&.secret&.first(32)
   end
 
   protected

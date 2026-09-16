@@ -1,0 +1,24 @@
+class K8::Stateless::AuthProxy < K8::Base
+  attr_accessor :service, :project
+
+  def initialize(service)
+    @service = service
+    @project = service.project
+  end
+
+  def issuer_url
+    ENV.fetch("APP_HOST")
+  end
+
+  def client_id
+    service.effective_oauth_application&.uid
+  end
+
+  def client_secret
+    service.effective_oauth_application&.secret
+  end
+
+  def cookie_secret
+    service.auth_proxy_cookie_secret
+  end
+end

@@ -99,6 +99,13 @@
             </label>
           </div>
           <span class="label-text-alt">Checking this allows your service to be accessible from the public internet</span>
+          <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-sm mt-2">
+            <label class="label mt-1">
+              <span class="label-text cursor-pointer">Require authentication (internal service)</span>
+              <%= form.check_box :internal, class: "checkbox" %>
+            </label>
+          </div>
+          <span class="label-text-alt">Requires users to login through Canine before accessing this service</span>
         </div>
 
         <div class="card-form hidden card-web_service card-background_service">
