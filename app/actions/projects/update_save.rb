@@ -8,8 +8,6 @@ module Projects
     promises :project
 
     executed do |context|
-      was_internal = context.project.internal?
-
       ActiveRecord::Base.transaction do
         # Update project with permitted params
         context.project.assign_attributes(Projects::Create.create_params(context.params))
@@ -21,20 +19,6 @@ module Projects
 
         # Save build configuration if present
         context.build_configuration&.save!
-      end
-
-      # Manage OAuth application for internal auth proxy
-      if context.project.internal?
-        unless context.project.oauth_application.present?
-          context.project.create_oauth_application!(
-            name: "Auth Proxy: #{context.project.name}",
-            redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
-            scopes: "openid profile",
-            confidential: true
-          )
-        end
-      elsif was_internal
-        context.project.oauth_application&.destroy
       end
     rescue => e
       context.fail_and_return!(e.message)

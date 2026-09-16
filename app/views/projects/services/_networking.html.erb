@@ -15,12 +15,7 @@
       <hr class="mt-3 mb-4 border-t border-base-300" />
       <div class="alert alert-info">
         <iconify-icon icon="lucide:shield-check"></iconify-icon>
-        <span>
-          This service requires Canine authentication. Users must log in before accessing it.
-          <% if service.project.internal? && !service.internal? %>
-            <br/><span class="text-xs opacity-75">(Inherited from project settings)</span>
-          <% end %>
-        </span>
+        <span>This service requires Canine authentication. Users must log in before accessing it.</span>
       </div>
     </div>
   <% end %>

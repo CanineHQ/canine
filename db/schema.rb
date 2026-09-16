@@ -551,10 +551,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_170610) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "service_id"
-    t.bigint "project_id"
     t.bigint "add_on_id"
     t.index ["add_on_id"], name: "index_oauth_applications_on_add_on_id", unique: true
-    t.index ["project_id"], name: "index_oauth_applications_on_project_id", unique: true
     t.index ["service_id"], name: "index_oauth_applications_on_service_id", unique: true
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
@@ -639,7 +637,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_170610) do
     t.bigint "current_deployment_id"
     t.string "repository_base_url"
     t.integer "provider_type", default: 0, null: false
-    t.boolean "internal", default: false
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
     t.index ["name"], name: "index_projects_on_name"
@@ -867,7 +864,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_11_170610) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
   add_foreign_key "oauth_applications", "add_ons"
-  add_foreign_key "oauth_applications", "projects"
   add_foreign_key "oauth_applications", "services"
   add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
   add_foreign_key "project_add_ons", "add_ons"

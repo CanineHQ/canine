@@ -80,11 +80,11 @@ class Service < ApplicationRecord
   end
 
   def requires_auth?
-    internal? || project.internal?
+    internal?
   end
 
   def effective_oauth_application
-    oauth_application || project.oauth_application
+    oauth_application
   end
 
   def auth_proxy_cookie_secret
