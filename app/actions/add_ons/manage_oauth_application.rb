@@ -10,7 +10,7 @@ class AddOns::ManageOauthApplication
         add_on.create_oauth_application!(
           name: "Auth Proxy: #{add_on.name}",
           redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
-          scopes: "openid profile",
+          scopes: "openid profile email",
           confidential: true
         )
       end

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 Doorkeeper::OpenidConnect.configure do
-  issuer do |_resource_owner, _application, request|
-    request&.base_url || ENV.fetch("APP_HOST")
+  issuer do |_resource_owner, _application, _request|
+    ENV.fetch("APP_HOST")
   end
 
-  signing_key Rails.application.credentials.dig(:oidc, :signing_key) || OpenSSL::PKey::RSA.generate(2048).to_pem
+  signing_key OpenSSL::PKey::RSA.generate(2048).to_pem
 
   subject_types_supported [ :public ]
 
@@ -30,7 +30,7 @@ Doorkeeper::OpenidConnect.configure do
   expiration 3600
 
   claims do
-    normal_claim :email, scope: :openid do |resource_owner|
+    normal_claim :email, scope: :email do |resource_owner|
       resource_owner.email
     end
 

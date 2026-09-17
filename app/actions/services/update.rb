@@ -24,12 +24,12 @@ class Services::Update
         context.service.create_oauth_application!(
           name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
           redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
-          scopes: "openid profile",
+          scopes: "openid profile email",
           confidential: true
         )
       end
-      if context.service.oauth_application.present? && context.service.auto_domain.present?
-        context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
+      if context.service.oauth_application.present? && context.service.primary_domain.present?
+        context.service.oauth_application.update(redirect_uri: "https://#{context.service.primary_domain}/oauth2/callback")
       end
     elsif was_internal
       context.service.oauth_application&.destroy

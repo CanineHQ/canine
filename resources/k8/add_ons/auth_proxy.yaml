@@ -5,6 +5,7 @@ metadata:
   namespace: <%= add_on.namespace %>
   labels:
     caninemanaged: 'true'
+    caninecomponent: auth-proxy
     app: <%= endpoint.metadata.name %>-auth-proxy
 spec:
   replicas: 1
@@ -30,7 +31,7 @@ spec:
         - --http-address=0.0.0.0:4180
         - --redirect-url=https://<%= domains.first %>/oauth2/callback
         - --email-domain=*
-        - --scope=openid profile
+        - --scope=openid profile email
         - --skip-provider-button=true
         ports:
         - containerPort: 4180
@@ -62,6 +63,7 @@ metadata:
   namespace: <%= add_on.namespace %>
   labels:
     caninemanaged: 'true'
+    caninecomponent: auth-proxy
 spec:
   selector:
     app: <%= endpoint.metadata.name %>-auth-proxy

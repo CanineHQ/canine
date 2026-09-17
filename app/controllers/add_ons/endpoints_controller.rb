@@ -16,46 +16,25 @@ class AddOns::EndpointsController < AddOns::BaseController
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
     domains = params[:domains].split(",").map(&:strip)
-    @errors = []
-    @errors << 'Invalid domain format' unless domains.all? { |domain| valid_domain?(domain) }
-    @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
-    kubectl = K8::Kubectl.new(active_connection)
     port = params[:port].to_i
+    @errors = []
+    @errors << "Invalid domain format" unless domains.all? { |domain| valid_domain?(domain) }
+    @errors << "Invalid port" unless @endpoint.spec.ports.map(&:port).include?(port)
 
-    # Update internal status if changed
-    was_internal = @add_on.internal?
-    @add_on.update(internal: params[:internal] == "1")
-
-    if @add_on.internal?
-      unless @add_on.oauth_application.present?
-        @add_on.create_oauth_application!(
-          name: "Auth Proxy: #{@add_on.name}",
-          redirect_uri: "https://#{domains.first}/oauth2/callback",
-          scopes: "openid profile",
-          confidential: true
-        )
-      end
-      @add_on.oauth_application.update(redirect_uri: "https://#{domains.first}/oauth2/callback")
-      kubectl.apply_yaml(
-        K8::AddOns::AuthProxy.new(@add_on, @endpoint, port, domains).to_yaml
-      )
-    elsif was_internal
-      @add_on.oauth_application&.destroy
-      AddOns::CleanupAuthProxyJob.perform_later(@add_on) if @add_on.installed?
-    end
-
-    kubectl.apply_yaml(
-      K8::AddOns::Ingress.new(@add_on, @endpoint, port, domains).to_yaml
-    )
-    if @errors.empty?
-      @ingresses = @service.get_ingresses
-      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
-    else
+    if @errors.any?
       set_dns_record
-      render "add_ons/endpoints/edit"
+      return render "add_ons/endpoints/edit"
     end
+
+    AddOns::UpdateEndpoint.call(
+      @add_on, active_connection,
+      endpoint: @endpoint, domains:, port:, internal: params[:internal] == "1"
+    )
+
+    @ingresses = @service.get_ingresses
+    render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
   rescue StandardError => e
-    @errors << e.message
+    @errors = [ e.message ]
     set_dns_record
     render "add_ons/endpoints/edit"
   end

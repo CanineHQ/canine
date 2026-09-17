@@ -7,7 +7,7 @@ Doorkeeper.configure do
   access_token_expires_in nil
 
   default_scopes :public
-  optional_scopes :write, :read, :openid, :profile
+  optional_scopes :write, :read, :openid, :profile, :email
 
   # This sometimes breaks the devise login screen,
   # but in theory should be set due to McpController inheriting from ActionController::API
