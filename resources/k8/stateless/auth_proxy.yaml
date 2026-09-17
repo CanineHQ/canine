@@ -29,9 +29,9 @@ spec:
         - --cookie-secure=true
         - --upstream=http://<%= service.name %>-service.<%= project.namespace %>.svc.cluster.local:80
         - --http-address=0.0.0.0:4180
-        - --redirect-url=https://<%= service.auto_domain %>/oauth2/callback
+        - --redirect-url=https://<%= service.primary_domain %>/oauth2/callback
         - --email-domain=*
-        - --scope=openid profile
+        - --scope=openid profile email
         - --skip-provider-button=true
         ports:
         - containerPort: 4180

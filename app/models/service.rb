@@ -62,13 +62,17 @@ class Service < ApplicationRecord
   end
 
   def auto_subdomain
-    "#{name}-#{project.namespace}"
+    "#{name}-#{project.name}"
   end
 
   def auto_domain
     return nil unless allow_public_networking?
 
     "#{auto_subdomain}.#{Dns::Client.default.domain}"
+  end
+
+  def primary_domain
+    domains.first&.domain_name
   end
 
   def friendly_status

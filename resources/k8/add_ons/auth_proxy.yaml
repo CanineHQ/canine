@@ -31,7 +31,7 @@ spec:
         - --http-address=0.0.0.0:4180
         - --redirect-url=https://<%= domains.first %>/oauth2/callback
         - --email-domain=*
-        - --scope=openid profile
+        - --scope=openid profile email
         - --skip-provider-button=true
         ports:
         - containerPort: 4180
