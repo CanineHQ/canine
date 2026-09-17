@@ -4,7 +4,7 @@ class AddOns::CleanupAuthProxyJob < ApplicationJob
     kubectl = K8::Kubectl.new(connection)
 
     %w[deployment service].each do |resource_type|
-      result = kubectl.call(%w[-n] + [ add_on.namespace, "get", resource_type, "-l", "canine-component=auth-proxy", "-o", "name" ])
+      result = kubectl.call(%w[-n] + [ add_on.namespace, "get", resource_type, "-l", "caninecomponent=auth-proxy", "-o", "name" ])
       result.to_s.split("\n").each do |resource_name|
         kubectl.call(%w[-n] + [ add_on.namespace, "delete", resource_name, "--ignore-not-found" ]) if resource_name.present?
       end
