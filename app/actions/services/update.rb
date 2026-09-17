@@ -6,6 +6,7 @@ class Services::Update
 
   executed do |context|
     was_public = context.service.allow_public_networking?
+    was_internal = context.service.internal?
 
     context.service.update(Service.permitted_params(context.params))
     if context.service.cron_job? && context.params[:service][:cron_schedule].present?
@@ -15,6 +16,23 @@ class Services::Update
 
     if !was_public && context.service.allow_public_networking?
       Domains::AttachAutoManagedDomain.execute(service: context.service)
+    end
+
+    # Manage OAuth application for internal auth proxy
+    if context.service.internal?
+      unless context.service.oauth_application.present?
+        context.service.create_oauth_application!(
+          name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
+          redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
+          scopes: "openid profile",
+          confidential: true
+        )
+      end
+      if context.service.oauth_application.present? && context.service.auto_domain.present?
+        context.service.oauth_application.update(redirect_uri: "https://#{context.service.auto_domain}/oauth2/callback")
+      end
+    elsif was_internal
+      context.service.oauth_application&.destroy
     end
 
     context.service.updated!
