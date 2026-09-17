@@ -103,6 +103,54 @@ packages:
     chart_url: datawire/telepresence
     check_command: get deployment traffic-manager
 
+  - name: fluent-bit
+    display_name: Log Drain (AWS)
+    description: Ship container logs to AWS CloudWatch using Fluent Bit
+    icon: simple-icons:amazonaws
+    default: false
+    recommended: false
+    install_type: helm
+    repo_name: fluent
+    repo_url: https://fluent.github.io/helm-charts
+    chart_name: fluent-bit
+    chart_url: fluent/fluent-bit
+    check_command: get daemonset fluent-bit
+    help_text: 'Deploys Fluent Bit as a DaemonSet to collect container logs and ship them to AWS CloudWatch Logs. Requires an IAM user with <code>logs:CreateLogGroup</code>, <code>logs:CreateLogStream</code>, <code>logs:PutLogEvents</code>, and <code>logs:DescribeLogStreams</code> permissions.'
+    template:
+      - name: AWS Region
+        key: aws_region
+        type: enum
+        required: true
+        options:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - eu-west-1
+          - eu-west-2
+          - eu-west-3
+          - eu-central-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ca-central-1
+          - sa-east-1
+      - name: Log Group Name
+        key: log_group
+        type: string
+        required: true
+        default: /canine/cluster-logs
+      - name: AWS Access Key ID
+        key: aws_access_key_id
+        type: string
+        required: true
+      - name: AWS Secret Access Key
+        key: aws_secret_access_key
+        type: password
+        required: true
+
   - name: cloudflared
     display_name: Cloudflare Tunnel
     description: Secure tunnel to expose cluster services through Cloudflare
