@@ -14,7 +14,6 @@ class AddOns::DeployAuthProxy
     # Skip if not internal or add-on isn't installed yet
     next context unless add_on.internal? && add_on.installed?
 
-    kubectl = K8::Kubectl.new(context.connection)
     service = K8::Helm::Service.create_from_add_on(context.connection)
     ingresses = service.get_ingresses
     endpoints = service.get_endpoints
@@ -29,12 +28,10 @@ class AddOns::DeployAuthProxy
       port = endpoint.spec.ports.first&.port
       next unless port
 
-      if add_on.internal? && add_on.oauth_application.present?
-        add_on.oauth_application.update(redirect_uri: "https://#{domains.first}/oauth2/callback")
-        kubectl.apply_yaml(K8::AddOns::AuthProxy.new(add_on, endpoint, port, domains).to_yaml)
-      end
-
-      kubectl.apply_yaml(K8::AddOns::Ingress.new(add_on, endpoint, port, domains).to_yaml)
+      AddOns::ApplyEndpointIngress.execute(
+        add_on:, was_internal: context.was_internal, connection: context.connection,
+        endpoint:, domains:, port:
+      )
     end
   end
 end
