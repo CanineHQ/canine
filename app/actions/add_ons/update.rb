@@ -4,7 +4,7 @@ class AddOns::Update
   def self.call(add_on, connection, was_internal: false)
     with(add_on:, was_internal:, connection:).reduce(
       AddOns::Save,
-      AddOns::ManageOAuthApplication,
+      AddOns::ManageOauthApplication,
       AddOns::DeployAuthProxy
     )
   end

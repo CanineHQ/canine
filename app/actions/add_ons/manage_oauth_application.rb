@@ -1,4 +1,4 @@
-class AddOns::ManageOAuthApplication
+class AddOns::ManageOauthApplication
   extend LightService::Action
   expects :add_on, :was_internal
 
