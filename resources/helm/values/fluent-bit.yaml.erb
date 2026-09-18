@@ -29,9 +29,11 @@ config:
 
   outputs: |
     [OUTPUT]
-        Name                cloudwatch_logs
+        Name                s3
         Match               kube.*
         region              <%= aws_region %>
-        log_group_name      <%= log_group %>
-        log_stream_prefix   fluentbit-
-        auto_create_group   true
+        bucket              <%= s3_bucket %>
+        total_file_size     50M
+        upload_timeout      10m
+        s3_key_format       /fluent-bit/%Y/%m/%d/$TAG/%H_%M_%S
+        use_put_object      On

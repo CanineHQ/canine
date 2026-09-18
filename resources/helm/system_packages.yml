@@ -105,7 +105,7 @@ packages:
 
   - name: fluent-bit
     display_name: Log Drain (AWS)
-    description: Ship container logs to AWS CloudWatch using Fluent Bit
+    description: Ship container logs to AWS S3 using Fluent Bit
     icon: simple-icons:amazonaws
     default: false
     recommended: false
@@ -115,7 +115,7 @@ packages:
     chart_name: fluent-bit
     chart_url: fluent/fluent-bit
     check_command: get daemonset fluent-bit
-    help_text: 'Deploys Fluent Bit as a DaemonSet to collect container logs and ship them to AWS CloudWatch Logs. Requires an IAM user with <code>logs:CreateLogGroup</code>, <code>logs:CreateLogStream</code>, <code>logs:PutLogEvents</code>, and <code>logs:DescribeLogStreams</code> permissions.'
+    help_text: 'Deploys Fluent Bit as a DaemonSet to collect container logs and ship them to an S3 bucket. Requires an IAM user with <code>s3:PutObject</code> and <code>s3:GetBucketLocation</code> permissions on the target bucket.'
     template:
       - name: AWS Region
         key: aws_region
@@ -137,11 +137,10 @@ packages:
           - ap-south-1
           - ca-central-1
           - sa-east-1
-      - name: Log Group Name
-        key: log_group
+      - name: S3 Bucket Name
+        key: s3_bucket
         type: string
         required: true
-        default: /canine/cluster-logs
       - name: AWS Access Key ID
         key: aws_access_key_id
         type: string
