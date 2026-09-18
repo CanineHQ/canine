@@ -69,7 +69,7 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
     elsif service.web_service?
       apply_resource("Deployment", service)
       apply_resource("Service", service)
-      if service.requires_auth? && service.effective_oauth_application.present?
+      if service.requires_auth?
         apply_resource("AuthProxy", service)
       end
       if service.domains.any? && service.allow_public_networking?

@@ -6,7 +6,7 @@ class Services::Update
 
   executed do |context|
     was_public = context.service.allow_public_networking?
-    was_internal = context.service.internal?
+    wants_internal = context.params[:service][:internal] == "1"
 
     context.service.update(Service.permitted_params(context.params))
     if context.service.cron_job? && context.params[:service][:cron_schedule].present?
@@ -19,20 +19,18 @@ class Services::Update
     end
 
     # Manage OAuth application for internal auth proxy
-    if context.service.internal?
-      unless context.service.oauth_application.present?
-        context.service.create_oauth_application!(
-          name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
-          redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
-          scopes: "openid profile email",
-          confidential: true
-        )
-      end
-      if context.service.oauth_application.present? && context.service.primary_domain.present?
+    if wants_internal && !context.service.oauth_application.present?
+      context.service.create_oauth_application!(
+        name: "Auth Proxy: #{context.service.name} (#{context.service.project.name})",
+        redirect_uri: "#{ENV.fetch('APP_HOST')}/oauth2/callback",
+        scopes: "openid profile email",
+        confidential: true
+      )
+      if context.service.primary_domain.present?
         context.service.oauth_application.update(redirect_uri: "https://#{context.service.primary_domain}/oauth2/callback")
       end
-    elsif was_internal
-      context.service.oauth_application&.destroy
+    elsif !wants_internal && context.service.oauth_application.present?
+      context.service.oauth_application.destroy
     end
 
     context.service.updated!

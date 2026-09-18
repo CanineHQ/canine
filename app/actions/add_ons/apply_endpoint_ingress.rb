@@ -8,7 +8,7 @@ class AddOns::ApplyEndpointIngress
 
     if context.was_internal && !add_on.internal?
       AddOns::CleanupAuthProxyJob.perform_later(add_on) if add_on.installed?
-    elsif add_on.internal? && add_on.oauth_application.present?
+    elsif add_on.internal?
       add_on.oauth_application.update!(redirect_uri: "https://#{context.domains.first}/oauth2/callback")
       kubectl.apply_yaml(
         K8::AddOns::AuthProxy.new(add_on, context.endpoint, context.port, context.domains).to_yaml
