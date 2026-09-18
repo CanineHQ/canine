@@ -90,12 +90,8 @@ class Service < ApplicationRecord
     internal?
   end
 
-  def effective_oauth_application
-    oauth_application
-  end
-
   def auth_proxy_cookie_secret
-    effective_oauth_application&.secret&.first(32)
+    oauth_application&.secret&.first(32)
   end
 
   def self.permitted_params(params)

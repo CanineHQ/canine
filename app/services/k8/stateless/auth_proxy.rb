@@ -11,11 +11,11 @@ class K8::Stateless::AuthProxy < K8::Base
   end
 
   def client_id
-    service.effective_oauth_application&.uid
+    service.oauth_application&.uid
   end
 
   def client_secret
-    service.effective_oauth_application&.secret
+    service.oauth_application&.secret
   end
 
   def cookie_secret
