@@ -21,6 +21,15 @@
         description: "Provide your own Helm chart repository URL.",
         partial: "add_ons/helm/custom_url_fields",
         locals: { form: form }
+      },
+      {
+        icon: "carbon:container-registry",
+        name: "helm_source_type",
+        label: "OCI Registry",
+        value: "oci_registry",
+        description: "Install from an OCI-compatible container registry.",
+        partial: "add_ons/helm/oci_registry_fields",
+        locals: { form: form }
       }
     ] %>
   </div>

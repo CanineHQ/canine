@@ -10,7 +10,7 @@ class Async::AddOns::VersionSelectorViewModel < Async::BaseViewModel
   end
 
   def async_render
-    result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repo_url: add_on.repository_url)
+    result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repository_url: add_on.repository_url)
 
     if result.success?
       chart_name = add_on.chart_url.split('/').pop
