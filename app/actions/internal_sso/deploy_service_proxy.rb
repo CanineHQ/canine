@@ -1,4 +1,4 @@
-class InternalSso::DeployServiceProxy
+class InternalSSO::DeployServiceProxy
   extend LightService::Action
 
   expects :service

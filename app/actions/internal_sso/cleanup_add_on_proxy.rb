@@ -1,4 +1,4 @@
-class InternalSso::CleanupAddOnProxy
+class InternalSSO::CleanupAddOnProxy
   extend LightService::Action
 
   expects :add_on

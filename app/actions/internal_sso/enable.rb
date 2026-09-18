@@ -1,4 +1,4 @@
-class InternalSso::Enable
+class InternalSSO::Enable
   extend LightService::Action
 
   expects :protectable

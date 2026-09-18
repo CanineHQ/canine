@@ -1,4 +1,4 @@
-class InternalSso::DeployAddOnProxy
+class InternalSSO::DeployAddOnProxy
   extend LightService::Action
 
   expects :add_on, :connection
