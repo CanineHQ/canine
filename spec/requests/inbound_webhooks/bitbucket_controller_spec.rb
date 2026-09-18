@@ -4,7 +4,7 @@ require "rails_helper"
 
 RSpec.describe InboundWebhooks::BitbucketController, type: :request do
   let(:webhook_secret) { "test_bitbucket_secret" }
-  let(:payload) { { push: { changes: [{ new: { name: "main" } }] } }.to_json }
+  let(:payload) { { push: { changes: [ { new: { name: "main" } } ] } }.to_json }
 
   before do
     stub_const("Git::Bitbucket::Client::BITBUCKET_WEBHOOK_SECRET", webhook_secret)
