@@ -141,6 +141,7 @@ packages:
         key: s3_bucket
         type: string
         required: true
+        placeholder: my-cluster-logs
       - name: AWS Access Key ID
         key: aws_access_key_id
         type: string
