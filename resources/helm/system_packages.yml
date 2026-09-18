@@ -142,6 +142,8 @@ packages:
         type: string
         required: true
         placeholder: my-cluster-logs
+        pattern: ^[a-z0-9][a-z0-9.\-]{1,61}[a-z0-9]$
+        pattern_hint: "Bucket name only (e.g. my-cluster-logs). Do not include s3:// or paths."
       - name: AWS Access Key ID
         key: aws_access_key_id
         type: string

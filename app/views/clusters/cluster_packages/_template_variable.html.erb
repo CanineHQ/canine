@@ -7,6 +7,7 @@
            class="input input-bordered w-full max-w-md"
            value="<%= variable['default'] %>"
            placeholder="<%= variable['placeholder'] %>"
+           <% if variable['pattern'] %>pattern="<%= variable['pattern'] %>" title="<%= variable['pattern_hint'] %>"<% end %>
            <%= 'required' if variable['required'] && !local_assigns[:definition] %> />
   <% elsif variable['type'] == 'boolean' %>
     <label class="label cursor-pointer mt-1">
