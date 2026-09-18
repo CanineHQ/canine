@@ -58,10 +58,8 @@ class AddOnsController < ApplicationController
 
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
-    was_internal = @add_on.internal?
     @add_on.assign_attributes(AddOns::Create.parse_params(params))
-    connection = K8::Connection.new(@add_on, current_user, allow_anonymous: true)
-    result = AddOns::Update.call(@add_on, connection, was_internal:)
+    result = AddOns::Update.call(@add_on)
 
     respond_to do |format|
       if result.success?
