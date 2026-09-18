@@ -83,7 +83,7 @@ class AddOnsController < ApplicationController
     cache_key = "helm_repository_index:#{Digest::SHA256.hexdigest(params[:repo_url])}"
 
     cached_result = Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-      result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repo_url: params[:repo_url])
+      result = AddOns::FetchChartDetailsFromRepositoryUrl.execute(repository_url: params[:repo_url])
 
       if result.success?
         { success: true, charts: result.charts }
