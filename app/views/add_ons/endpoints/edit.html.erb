@@ -40,17 +40,25 @@
       <% end %>
     </div>
 
-    <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-md">
-      <label class="label mt-1">
-        <span class="label-text cursor-pointer">Protect with Canine SSO</span>
-        <%= check_box_tag :internal, "1", @add_on.internal?, class: "checkbox" %>
-      </label>
-    </div>
-    <span class="label-text-alt">Requires login through Canine before accessing this endpoint</span>
-
     <div class="form-footer">
       <%= link_to "Cancel", edit_add_on_path(@add_on), class: "btn btn-secondary" %>
       <%= f.submit "Update", class: "btn btn-primary" %>
     </div>
   <% end %>
+
+  <div class="mt-4">
+    <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-md">
+      <label class="label mt-1">
+        <span class="label-text">Protect with Canine SSO</span>
+      </label>
+    </div>
+    <span class="label-text-alt">Requires login through Canine before accessing this endpoint</span>
+    <div class="form-footer">
+      <% if @add_on.internal? %>
+        <%= button_to "Disable SSO", add_on_oauth_application_path(@add_on), method: :delete, class: "btn btn-error btn-sm", data: { turbo_submits_with: "Disabling..." } %>
+      <% else %>
+        <%= button_to "Enable SSO", add_on_oauth_application_path(@add_on), method: :post, class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Enabling..." } %>
+      <% end %>
+    </div>
+  </div>
 <% end %>

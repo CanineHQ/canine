@@ -16,18 +16,21 @@
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>
       </div>
-<%= form_with(model: [service.project, service], class: "space-y-2 mt-4") do |form| %>
+      <div class="space-y-2 mt-4">
         <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-md">
           <label class="label mt-1">
-            <span class="label-text cursor-pointer">Protect with Canine SSO</span>
-            <%= check_box_tag "service[internal]", "1", service.internal?, class: "checkbox" %>
+            <span class="label-text">Protect with Canine SSO</span>
           </label>
         </div>
         <span class="label-text-alt">Requires users to login through Canine before accessing this service</span>
         <div class="form-footer">
-          <%= form.submit "Save", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Saving..." } %>
+          <% if service.internal? %>
+            <%= button_to "Disable SSO", project_service_oauth_application_path(service.project, service), method: :delete, class: "btn btn-error btn-sm", data: { turbo_submits_with: "Disabling..." } %>
+          <% else %>
+            <%= button_to "Enable SSO", project_service_oauth_application_path(service.project, service), method: :post, class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Enabling..." } %>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     </div>
   <% end %>
 </div>

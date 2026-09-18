@@ -148,6 +148,7 @@ Rails.application.routes.draw do
     end
     resource :cluster_migration, only: %i[create], module: :add_ons
     resource :metrics, only: [ :show ], module: :add_ons
+    resource :oauth_application, only: %i[create destroy], module: :add_ons
     resources :endpoints, only: %i[edit update], module: :add_ons
     resources :processes, only: %i[index show], module: :add_ons do
       member do
@@ -189,6 +190,7 @@ Rails.application.routes.draw do
     end
     resources :services, only: %i[index new create destroy update show], module: :projects do
       resource :resource_constraint, only: %i[show new create update destroy], module: :services
+      resource :oauth_application, only: %i[create destroy], module: :services
       resources :jobs, only: %i[show create destroy], module: :services
       resources :domains, only: %i[create destroy], module: :services do
         collection do
