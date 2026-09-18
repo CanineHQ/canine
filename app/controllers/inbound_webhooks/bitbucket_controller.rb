@@ -17,13 +17,12 @@ module InboundWebhooks
 
     def verify_event
       secret = Git::Bitbucket::Client::BITBUCKET_WEBHOOK_SECRET
-      return if secret.blank?
+      return head(:bad_request) if secret.blank?
 
-      payload_body = request.body.read
       signature = request.headers["X-Hub-Signature"]
-      return head :bad_request if signature.blank?
+      return head(:bad_request) if signature.blank?
 
-      expected_signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, payload_body)
+      expected_signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, payload)
       unless Rack::Utils.secure_compare(expected_signature, signature)
         head :bad_request
       end

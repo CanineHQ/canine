@@ -16,12 +16,11 @@ module InboundWebhooks
     private
 
     def verify_event
-      payload = request.body.read
-      # TODO: Verify the event was sent from the service
-      # Render `head :bad_request` if verification fails
       secret = ENV["OMNIAUTH_GITHUB_WEBHOOK_SECRET"]
+      return head(:bad_request) if secret.blank?
+
       signature = "sha256=" + OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, payload)
-      unless Rack::Utils.secure_compare(signature, request.headers["HTTP_X_HUB_SIGNATURE_256"])
+      unless Rack::Utils.secure_compare(signature, request.headers["HTTP_X_HUB_SIGNATURE_256"].to_s)
         head :bad_request
       end
     end

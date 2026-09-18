@@ -17,6 +17,11 @@ module InboundWebhooks
 
     def verify_event
       secret = Git::Gitlab::Client::GITLAB_WEBHOOK_SECRET
+      return head(:bad_request) if secret.blank?
+
+      unless Rack::Utils.secure_compare(secret, request.headers["X-Gitlab-Token"].to_s)
+        head :bad_request
+      end
     end
   end
 end
