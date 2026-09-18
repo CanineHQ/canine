@@ -8,6 +8,7 @@
 #  container_port          :integer          default(3000)
 #  description             :text
 #  healthcheck_url         :string
+#  internal                :boolean          default(FALSE)
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
 #  pod_yaml                :jsonb
@@ -44,6 +45,7 @@ class Service < ApplicationRecord
 
   has_one :cron_schedule, dependent: :destroy
   has_one :resource_constraint, dependent: :destroy
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
@@ -60,7 +62,7 @@ class Service < ApplicationRecord
   end
 
   def auto_subdomain
-    "#{name}-#{project.namespace}"
+    "#{name}-#{project.name}"
   end
 
   def auto_domain
@@ -69,12 +71,28 @@ class Service < ApplicationRecord
     "#{auto_subdomain}.#{Dns::Client.default.domain}"
   end
 
+  def primary_domain
+    domains.first&.domain_name
+  end
+
   def friendly_status
     if !web_service? && healthy?
       "deployed"
     else
       status.humanize
     end
+  end
+
+  def requires_auth?
+    internal?
+  end
+
+  def effective_oauth_application
+    oauth_application
+  end
+
+  def auth_proxy_cookie_secret
+    effective_oauth_application&.secret&.first(32)
   end
 
   def self.permitted_params(params)
@@ -87,6 +105,7 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
+      :internal,
       :pod_yaml
     )
 

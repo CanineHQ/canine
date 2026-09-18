@@ -1,10 +1,11 @@
 class AddOns::Update
-  extend LightService::Action
-  expects :add_on
-  promises :add_on
+  extend LightService::Organizer
 
-  executed do |context|
-    add_on = context.add_on
-    add_on.save
+  def self.call(add_on, connection, was_internal: false)
+    with(add_on:, was_internal:, connection:).reduce(
+      AddOns::Save,
+      AddOns::ManageOauthApplication,
+      AddOns::DeployAuthProxy
+    )
   end
 end
