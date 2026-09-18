@@ -16,21 +16,19 @@
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>
       </div>
-      <div class="space-y-2 mt-4">
-        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-md">
-          <label class="label mt-1">
-            <span class="label-text">Protect with Canine SSO</span>
-          </label>
+    </div>
+
+    <div class="mt-6">
+      <h4 class="text-lg font-bold mb-2">Canine SSO</h4>
+      <p class="text-sm text-gray-500 mb-4">Protect this service with Canine Single Sign-On. When enabled, users must authenticate through Canine before they can access this service. An OAuth2 proxy is deployed alongside your service to handle authentication automatically.</p>
+      <% if service.internal? %>
+        <div class="flex items-center gap-3">
+          <span class="badge badge-success gap-1"><iconify-icon icon="lucide:shield-check" height="12"></iconify-icon> SSO Enabled</span>
+          <%= button_to "Disable SSO", project_service_oauth_application_path(service.project, service), method: :delete, class: "btn btn-error btn-sm", data: { turbo_submits_with: "Disabling...", turbo_confirm: "Are you sure you want to disable SSO protection?" } %>
         </div>
-        <span class="label-text-alt">Requires users to login through Canine before accessing this service</span>
-        <div class="form-footer">
-          <% if service.internal? %>
-            <%= button_to "Disable SSO", project_service_oauth_application_path(service.project, service), method: :delete, class: "btn btn-error btn-sm", data: { turbo_submits_with: "Disabling..." } %>
-          <% else %>
-            <%= button_to "Enable SSO", project_service_oauth_application_path(service.project, service), method: :post, class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Enabling..." } %>
-          <% end %>
-        </div>
-      </div>
+      <% else %>
+        <%= button_to "Enable SSO", project_service_oauth_application_path(service.project, service), method: :post, class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Enabling..." } %>
+      <% end %>
     </div>
   <% end %>
 </div>
