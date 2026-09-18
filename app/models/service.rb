@@ -108,8 +108,12 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
+      :internal,
       :pod_yaml
     )
+
+    # internal is handled via oauth_application, not a column
+    permitted.delete(:internal)
 
     # Convert YAML text to JSON if pod_yaml is a string
     if permitted[:pod_yaml].present? && permitted[:pod_yaml].is_a?(String)
