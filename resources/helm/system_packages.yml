@@ -148,10 +148,15 @@ packages:
         key: aws_access_key_id
         type: string
         required: true
+        placeholder: AKIAIOSFODNN7EXAMPLE
+        pattern: ^AKIA[0-9A-Z]{16}$
+        pattern_hint: "Must be a valid AWS access key ID starting with AKIA followed by 16 uppercase alphanumeric characters."
       - name: AWS Secret Access Key
         key: aws_secret_access_key
         type: password
         required: true
+        pattern: ^[A-Za-z0-9/+=]{40}$
+        pattern_hint: "Must be a valid 40-character AWS secret access key."
 
   - name: cloudflared
     display_name: Cloudflare Tunnel
