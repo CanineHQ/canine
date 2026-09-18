@@ -2,22 +2,22 @@ module AddOns
   class FetchChartDetailsFromRepositoryUrl
     extend LightService::Action
 
-    expects :repo_url
+    expects :repository_url
     promises :charts
 
     executed do |context|
-      repo_url = context.repo_url
+      repository_url = context.repository_url
 
-      if repo_url.start_with?("oci://")
-        fetch_oci_tags(context, repo_url)
+      if repository_url.start_with?("oci://")
+        fetch_oci_tags(context, repository_url)
       else
-        fetch_http_index(context, repo_url)
+        fetch_http_index(context, repository_url)
       end
     end
 
-    def self.fetch_oci_tags(context, repo_url)
+    def self.fetch_oci_tags(context, repository_url)
       # Parse OCI URL: oci://registry/path/to/chart -> registry, path/to/chart
-      uri_part = repo_url.sub("oci://", "")
+      uri_part = repository_url.sub("oci://", "")
       parts = uri_part.split("/")
       registry = parts.first
       image_path = parts[1..].join("/")
@@ -75,8 +75,8 @@ module AddOns
       nil
     end
 
-    def self.fetch_http_index(context, repo_url)
-      index_url = "#{repo_url.chomp('/')}/index.yaml"
+    def self.fetch_http_index(context, repository_url)
+      index_url = "#{repository_url.chomp('/')}/index.yaml"
 
       begin
         response = HTTParty.get(index_url, timeout: 10)
