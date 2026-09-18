@@ -9,6 +9,7 @@ class Clusters::BaseController < ApplicationController
   private
 
   def set_cluster
-    @cluster = Cluster.find(params[:cluster_id])
+    clusters = Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
+    @cluster = clusters.find(params[:cluster_id])
   end
 end
