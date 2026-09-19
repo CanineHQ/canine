@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_19_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -549,7 +549,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_19_000000) do
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "service_id"
+    t.bigint "add_on_id"
+    t.index ["add_on_id"], name: "index_oauth_applications_on_add_on_id", unique: true
+    t.index ["service_id"], name: "index_oauth_applications_on_service_id", unique: true
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "oauth_openid_requests", force: :cascade do |t|
+    t.bigint "access_grant_id", null: false
+    t.string "nonce", null: false
+    t.index ["access_grant_id"], name: "index_oauth_openid_requests_on_access_grant_id"
   end
 
   create_table "oidc_configurations", force: :cascade do |t|
@@ -797,6 +807,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_19_000000) do
     t.boolean "otp_required_for_login"
     t.integer "consumed_timestep"
     t.string "otp_backup_codes", array: true
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -851,6 +866,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_19_000000) do
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
+  add_foreign_key "oauth_applications", "add_ons"
+  add_foreign_key "oauth_applications", "services"
+  add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
   add_foreign_key "project_add_ons", "add_ons"
   add_foreign_key "project_add_ons", "projects"
   add_foreign_key "project_credential_providers", "projects"

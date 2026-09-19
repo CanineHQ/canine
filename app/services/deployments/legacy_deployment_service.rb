@@ -26,7 +26,6 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       @logger.error("Deployment failed: #{e.message}")
       puts e.full_message
       @deployment.failed!
-      Projects::DoctorJob.perform_later(@project, @user)
     end
   end
 
@@ -69,6 +68,9 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
     elsif service.web_service?
       apply_resource("Deployment", service)
       apply_resource("Service", service)
+      if service.protected?
+        apply_resource("AuthProxy", service)
+      end
       if service.domains.any? && service.allow_public_networking?
         apply_resource("Ingress", service)
       end

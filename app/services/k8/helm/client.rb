@@ -111,15 +111,12 @@ class K8::Helm::Client
     skip_tls = skip_tls_verify.nil? ? connection.cluster.skip_tls_verify : skip_tls_verify
 
     K8::Kubeconfig.with_kube_config(connection.kubeconfig, skip_tls_verify: skip_tls) do |kubeconfig_file|
-      Tempfile.create([ 'values', '.yaml' ]) do |values_file|
-        values_file.write(deep_stringify_keys(values).to_yaml)
-        values_file.flush
-
+      with_values_file(values) do |values_file_path|
         command = build_install_command(
           name,
           chart_url,
           version,
-          values_file_path: values_file.path,
+          values_file_path: values_file_path,
           namespace: namespace,
           timeout: timeout,
           dry_run: dry_run,
@@ -168,6 +165,15 @@ class K8::Helm::Client
   end
 
   private
+
+    def with_values_file(values)
+      Tempfile.create([ "values", ".yaml" ]) do |f|
+        f.write(values.present? ? deep_stringify_keys(values).to_yaml : "")
+        f.flush
+        yield f.path
+      end
+    end
+
     def deep_stringify_keys(obj)
       case obj
       when Hash

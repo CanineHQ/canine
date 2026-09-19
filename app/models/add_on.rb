@@ -41,6 +41,7 @@ class AddOn < ApplicationRecord
   end
 
   has_one :account, through: :cluster
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
   enum :status, {
     installing: 0,
@@ -79,6 +80,14 @@ class AddOn < ApplicationRecord
 
   def repository_name
     chart_url&.split('/')&.first
+  end
+
+  def protected?
+    oauth_application.present?
+  end
+
+  def auth_proxy_cookie_secret
+    oauth_application&.secret&.first(32)
   end
 
   protected

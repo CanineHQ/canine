@@ -17,5 +17,53 @@
         <%= render "projects/services/domains/index", service: service %>
       </div>
     </div>
+
+    <div class="mt-6">
+      <% if service.protected? %>
+        <div class="card bg-base-200 border border-base-300 shadow-sm">
+          <div class="card-body">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-3">
+                <iconify-icon icon="mdi:shield-link-variant-outline" height="24" class="text-success"></iconify-icon>
+                <h3 class="card-title text-lg">SSO Protection</h3>
+              </div>
+              <span class="badge badge-success gap-1">Enabled</span>
+            </div>
+            <p class="text-sm text-base-content/70 mb-4">
+              This service is protected by Canine Single Sign-On. Users must authenticate through Canine before accessing it.
+              An OAuth2 proxy is deployed alongside your service to handle authentication automatically.
+            </p>
+            <%= button_to project_service_oauth_application_path(service.project, service),
+                          method: :delete,
+                          class: "btn btn-error btn-sm",
+                          data: { turbo_submits_with: "Disabling...", turbo_confirm: "Are you sure you want to disable SSO protection?" } do %>
+              <iconify-icon icon="mdi:shield-link-variant-outline" height="16"></iconify-icon>
+              Disable SSO
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="card bg-base-200">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-2">
+              <iconify-icon icon="mdi:shield-link-variant-outline" height="24" class="text-base-content/40"></iconify-icon>
+              <h3 class="card-title text-lg">SSO Protection</h3>
+            </div>
+            <p class="text-sm text-base-content/70 mb-4">
+              Protect this service with Canine Single Sign-On. When enabled, users must authenticate through Canine
+              before they can access this service. An OAuth2 proxy is deployed alongside your service to handle
+              authentication automatically.
+            </p>
+            <%= button_to project_service_oauth_application_path(service.project, service),
+                          method: :post,
+                          class: "btn btn-primary btn-sm",
+                          data: { turbo_submits_with: "Enabling..." } do %>
+              <iconify-icon icon="mdi:shield-link-variant-outline" height="16"></iconify-icon>
+              Enable SSO
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 </div>

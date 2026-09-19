@@ -44,6 +44,7 @@ class Service < ApplicationRecord
 
   has_one :cron_schedule, dependent: :destroy
   has_one :resource_constraint, dependent: :destroy
+  has_one :oauth_application, class_name: "Doorkeeper::Application", dependent: :destroy
 
   validates :cron_schedule, presence: true, if: :cron_job?
   validates :command, presence: true, if: :cron_job?
@@ -60,7 +61,7 @@ class Service < ApplicationRecord
   end
 
   def auto_subdomain
-    "#{name}-#{project.namespace}"
+    "#{name}-#{project.name}"
   end
 
   def auto_domain
@@ -69,12 +70,24 @@ class Service < ApplicationRecord
     "#{auto_subdomain}.#{Dns::Client.default.domain}"
   end
 
+  def primary_domain
+    domains.first&.domain_name
+  end
+
   def friendly_status
     if !web_service? && healthy?
       "deployed"
     else
       status.humanize
     end
+  end
+
+  def protected?
+    oauth_application.present?
+  end
+
+  def auth_proxy_cookie_secret
+    oauth_application&.secret&.first(32)
   end
 
   def self.permitted_params(params)

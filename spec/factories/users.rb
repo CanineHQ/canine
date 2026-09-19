@@ -6,6 +6,8 @@
 #  admin                      :boolean          default(FALSE)
 #  announcements_last_read_at :datetime
 #  consumed_timestep          :integer
+#  current_sign_in_at         :datetime
+#  current_sign_in_ip         :string
 #  email                      :string           default(""), not null
 #  encrypted_password         :string           default(""), not null
 #  first_name                 :string
@@ -17,6 +19,8 @@
 #  invitations_count          :integer          default(0)
 #  invited_by_type            :string
 #  last_name                  :string
+#  last_sign_in_at            :datetime
+#  last_sign_in_ip            :string
 #  otp_backup_codes           :string           is an Array
 #  otp_required_for_login     :boolean
 #  otp_secret                 :string
@@ -24,6 +28,7 @@
 #  remember_created_at        :datetime
 #  reset_password_sent_at     :datetime
 #  reset_password_token       :string
+#  sign_in_count              :integer          default(0), not null
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
 #  invited_by_id              :bigint
