@@ -3,12 +3,23 @@ class Projects::Services::OauthApplicationsController < Projects::Services::Base
     InternalSSO::Enable.execute(protectable: @service)
     InternalSSO::DeployServiceProxy.execute(service: @service)
 
-    redirect_to project_services_path(@project), notice: "SSO protection enabled for #{@service.name}."
+    render_networking_tab
   end
 
   def destroy
     InternalSSO::Disable.execute(protectable: @service)
 
-    redirect_to project_services_path(@project), notice: "SSO protection removed from #{@service.name}."
+    render_networking_tab
+  end
+
+  private
+
+  def render_networking_tab
+    @service.reload
+    render turbo_stream: turbo_stream.replace(
+      "service_#{@service.id}",
+      partial: "projects/services/show",
+      locals: { service: @service, tab: "networking" }
+    )
   end
 end
