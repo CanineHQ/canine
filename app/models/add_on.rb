@@ -82,7 +82,7 @@ class AddOn < ApplicationRecord
     chart_url&.split('/')&.first
   end
 
-  def internal?
+  def protected?
     oauth_application.present?
   end
 

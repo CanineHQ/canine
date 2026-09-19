@@ -82,7 +82,7 @@ class Service < ApplicationRecord
     end
   end
 
-  def internal?
+  def protected?
     oauth_application.present?
   end
 

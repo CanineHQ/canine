@@ -6,7 +6,7 @@ class InternalSSO::DeployServiceProxy
   executed do |context|
     service = context.service
 
-    next context unless service.internal? && service.primary_domain.present?
+    next context unless service.protected? && service.primary_domain.present?
 
     service.oauth_application.update!(
       redirect_uri: "https://#{service.primary_domain}/oauth2/callback"

@@ -6,13 +6,13 @@ class AddOns::DeployAuthProxy
     add_on = context.add_on
 
     # Clean up auth proxy resources if internal was toggled off
-    if context.was_internal && !add_on.internal?
+    if context.was_internal && !add_on.protected?
       AddOns::CleanupAuthProxyJob.perform_later(add_on) if add_on.installed?
       next context
     end
 
     # Skip if not internal or add-on isn't installed yet
-    next context unless add_on.internal? && add_on.installed?
+    next context unless add_on.protected? && add_on.installed?
 
     service = K8::Helm::Service.create_from_add_on(context.connection)
     ingresses = service.get_ingresses

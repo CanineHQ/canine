@@ -54,7 +54,7 @@
     </div>
     <span class="label-text-alt">Requires login through Canine before accessing this endpoint</span>
     <div class="form-footer">
-      <% if @add_on.internal? %>
+      <% if @add_on.protected? %>
         <%= button_to "Disable SSO", add_on_oauth_application_path(@add_on), method: :delete, class: "btn btn-error btn-sm", data: { turbo_submits_with: "Disabling..." } %>
       <% else %>
         <%= button_to "Enable SSO", add_on_oauth_application_path(@add_on), method: :post, class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Enabling..." } %>

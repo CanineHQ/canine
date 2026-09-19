@@ -6,7 +6,7 @@ class AddOns::ApplyEndpointIngress
     add_on = context.add_on
     kubectl = K8::Kubectl.new(context.connection)
 
-    if add_on.internal?
+    if add_on.protected?
       add_on.oauth_application.update!(redirect_uri: "https://#{context.domains.first}/oauth2/callback")
       kubectl.apply_yaml(
         K8::AddOns::AuthProxy.new(add_on, context.endpoint, context.port, context.domains).to_yaml

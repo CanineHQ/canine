@@ -6,7 +6,7 @@ class InternalSSO::DeployAddOnProxy
   executed do |context|
     add_on = context.add_on
 
-    next context unless add_on.internal? && add_on.installed?
+    next context unless add_on.protected? && add_on.installed?
 
     service = K8::Helm::Service.create_from_add_on(context.connection)
     ingresses = service.get_ingresses

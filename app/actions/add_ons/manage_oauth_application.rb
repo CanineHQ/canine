@@ -5,7 +5,7 @@ class AddOns::ManageOauthApplication
   executed do |context|
     add_on = context.add_on
 
-    if add_on.internal?
+    if add_on.protected?
       unless add_on.oauth_application.present?
         add_on.create_oauth_application!(
           name: "Auth Proxy: #{add_on.name}",
