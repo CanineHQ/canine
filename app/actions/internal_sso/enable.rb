@@ -10,7 +10,7 @@ class InternalSSO::Enable
 
     protectable.create_oauth_application!(
       name: "Auth Proxy: #{protectable.name}",
-      redirect_uri: "https://#{ENV.fetch('APP_HOST')}/oauth2/callback",
+      redirect_uri: "#{AppHost.url}/oauth2/callback",
       scopes: "openid profile email",
       confidential: true
     )
