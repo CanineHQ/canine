@@ -26,7 +26,6 @@ class Deployments::LegacyDeploymentService < Deployments::BaseDeploymentService
       @logger.error("Deployment failed: #{e.message}")
       puts e.full_message
       @deployment.failed!
-      Projects::DoctorJob.perform_later(@project, @user)
     end
   end
 
