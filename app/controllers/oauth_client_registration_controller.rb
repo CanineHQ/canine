@@ -30,27 +30,34 @@ class OauthClientRegistrationController < ApplicationController
   def registration_params
     params.require(:redirect_uris)
 
+    confidential = params[:token_endpoint_auth_method] != "none"
+
     {
       name: params[:client_name] || "MCP Client",
       redirect_uri: params[:redirect_uris].join("\n"),
       scopes: Doorkeeper.config.scopes.all.map(&:to_s),
-      confidential: true
+      confidential: confidential
     }
   end
 
   def registration_response(application)
-    {
+    response = {
       client_id: application.uid,
       client_id_issued_at: application.created_at.to_i,
       client_name: application.name,
-      client_secret: application.plaintext_secret,
-      client_secret_expires_at: 0,
       grant_types: [ "authorization_code" ],
       redirect_uris: application.redirect_uri.split("\n"),
       response_types: [ "code" ],
       scope: application.scopes.to_a.join(" "),
-      token_endpoint_auth_method: "client_secret_post"
+      token_endpoint_auth_method: application.confidential? ? "client_secret_post" : "none"
     }
+
+    if application.confidential?
+      response[:client_secret] = application.plaintext_secret
+      response[:client_secret_expires_at] = 0
+    end
+
+    response
   end
 
   def render_validation_errors(errors)

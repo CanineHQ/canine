@@ -37,7 +37,7 @@ class OauthAuthorizationServerMetadataController < ApplicationController
       response_types_supported: Doorkeeper.config.authorization_response_types,
       response_modes_supported: Doorkeeper.config.authorization_response_flows.flat_map(&:response_mode_matches).uniq,
       grant_types_supported: %w[authorization_code client_credentials],
-      token_endpoint_auth_methods_supported: %w[client_secret_basic client_secret_post],
+      token_endpoint_auth_methods_supported: %w[none client_secret_basic client_secret_post],
       code_challenge_methods_supported: %w[S256],
 
       subject_types_supported: openid_connect.subject_types_supported,
@@ -66,7 +66,7 @@ class OauthAuthorizationServerMetadataController < ApplicationController
       response_types_supported: [ "code" ],
 
       # Token endpoint authentication methods
-      token_endpoint_auth_methods_supported: %w[client_secret_basic client_secret_post],
+      token_endpoint_auth_methods_supported: %w[none client_secret_basic client_secret_post],
 
       # PKCE support (required by MCP spec)
       code_challenge_methods_supported: [ "S256" ],
