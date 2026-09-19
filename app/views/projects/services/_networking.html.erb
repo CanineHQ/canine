@@ -16,16 +16,52 @@
       <div class="form-control form-group">
         <%= render "projects/services/domains/index", service: service %>
       </div>
-<%= form_with(model: [service.project, service], class: "space-y-2 mt-4") do |form| %>
-        <div class="form-control rounded-lg bg-base-200 p-2 px-4 max-w-md">
-          <label class="label mt-1">
-            <span class="label-text cursor-pointer">Protect with Canine SSO</span>
-            <%= form.check_box :internal, class: "checkbox" %>
-          </label>
+    </div>
+
+    <div class="mt-6">
+      <% if service.protected? %>
+        <div class="card bg-base-200 border border-base-300 shadow-sm">
+          <div class="card-body">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-3">
+                <iconify-icon icon="lucide:shield-check" height="24" class="text-success"></iconify-icon>
+                <h3 class="card-title text-lg">SSO Protection</h3>
+              </div>
+              <span class="badge badge-success gap-1">Enabled</span>
+            </div>
+            <p class="text-sm text-base-content/70 mb-4">
+              This service is protected by Canine Single Sign-On. Users must authenticate through Canine before accessing it.
+              An OAuth2 proxy is deployed alongside your service to handle authentication automatically.
+            </p>
+            <%= button_to project_service_oauth_application_path(service.project, service),
+                          method: :delete,
+                          class: "btn btn-error btn-sm",
+                          data: { turbo_submits_with: "Disabling...", turbo_confirm: "Are you sure you want to disable SSO protection?" } do %>
+              <iconify-icon icon="lucide:shield-off" height="16"></iconify-icon>
+              Disable SSO
+            <% end %>
+          </div>
         </div>
-        <span class="label-text-alt">Requires users to login through Canine before accessing this service</span>
-        <div class="form-footer">
-          <%= form.submit "Save", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Saving..." } %>
+      <% else %>
+        <div class="card bg-base-200">
+          <div class="card-body">
+            <div class="flex items-center gap-3 mb-2">
+              <iconify-icon icon="lucide:shield" height="24" class="text-base-content/40"></iconify-icon>
+              <h3 class="card-title text-lg">SSO Protection</h3>
+            </div>
+            <p class="text-sm text-base-content/70 mb-4">
+              Protect this service with Canine Single Sign-On. When enabled, users must authenticate through Canine
+              before they can access this service. An OAuth2 proxy is deployed alongside your service to handle
+              authentication automatically.
+            </p>
+            <%= button_to project_service_oauth_application_path(service.project, service),
+                          method: :post,
+                          class: "btn btn-primary btn-sm",
+                          data: { turbo_submits_with: "Enabling..." } do %>
+              <iconify-icon icon="lucide:shield-check" height="16"></iconify-icon>
+              Enable SSO
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>

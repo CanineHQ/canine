@@ -37,7 +37,7 @@
         <h1 class="text-lg font-medium flex items-center gap-2 my-2">
           <img src="<%= get_logo_image_url(add_on.metadata.dig('package_details', 'logo_image_id')) %>" class="h-8 w-8">
           <%= add_on.name %>
-          <% if add_on.internal? %>
+          <% if add_on.protected? %>
             <span class="badge badge-sm badge-outline gap-1"><iconify-icon icon="lucide:shield-check" height="12"></iconify-icon> Internal</span>
           <% end %>
           <%= render "favorites/button", favoriteable: add_on %>

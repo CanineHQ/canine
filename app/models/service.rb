@@ -8,7 +8,6 @@
 #  container_port          :integer          default(3000)
 #  description             :text
 #  healthcheck_url         :string
-#  internal                :boolean          default(FALSE)
 #  last_health_checked_at  :datetime
 #  name                    :string           not null
 #  pod_yaml                :jsonb
@@ -83,16 +82,12 @@ class Service < ApplicationRecord
     end
   end
 
-  def requires_auth?
-    internal?
-  end
-
-  def effective_oauth_application
-    oauth_application
+  def protected?
+    oauth_application.present?
   end
 
   def auth_proxy_cookie_secret
-    effective_oauth_application&.secret&.first(32)
+    oauth_application&.secret&.first(32)
   end
 
   def self.permitted_params(params)
@@ -105,7 +100,6 @@ class Service < ApplicationRecord
       :replicas,
       :description,
       :allow_public_networking,
-      :internal,
       :pod_yaml
     )
 

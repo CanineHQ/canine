@@ -28,7 +28,7 @@ class AddOns::EndpointsController < AddOns::BaseController
 
     AddOns::UpdateEndpoint.call(
       @add_on, active_connection,
-      endpoint: @endpoint, domains:, port:, internal: params[:internal] == "1"
+      endpoint: @endpoint, domains:, port:
     )
 
     @ingresses = @service.get_ingresses

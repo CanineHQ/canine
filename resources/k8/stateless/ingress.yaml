@@ -27,7 +27,7 @@ spec:
         path: "/"
         backend:
           service:
-            <% if service.requires_auth? %>
+            <% if service.protected? %>
             name: <%= service.name %>-auth-proxy
             <% else %>
             name: <%= service.name %>-service

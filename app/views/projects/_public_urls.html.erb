@@ -1,4 +1,4 @@
-<% service_domains = project.services.flat_map { |s| s.domains.map { |d| [d.domain_name, s.internal?] } } %>
+<% service_domains = project.services.flat_map { |s| s.domains.map { |d| [d.domain_name, s.protected?] } } %>
 <% if service_domains.any? %>
   <div class="my-3 flex items-center gap-3 flex-wrap">
     <% service_domains.each do |url, internal| %>
