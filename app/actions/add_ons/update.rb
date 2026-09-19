@@ -1,9 +1,10 @@
 class AddOns::Update
-  extend LightService::Organizer
+  extend LightService::Action
+  expects :add_on
+  promises :add_on
 
-  def self.call(add_on)
-    with(add_on:).reduce(
-      AddOns::Save
-    )
+  executed do |context|
+    add_on = context.add_on
+    add_on.save
   end
 end
