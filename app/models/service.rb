@@ -86,10 +86,6 @@ class Service < ApplicationRecord
     oauth_application.present?
   end
 
-  def requires_auth?
-    internal?
-  end
-
   def auth_proxy_cookie_secret
     oauth_application&.secret&.first(32)
   end

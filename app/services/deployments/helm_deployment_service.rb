@@ -68,7 +68,7 @@ class Deployments::HelmDeploymentService < Deployments::BaseDeploymentService
     elsif service.web_service?
       @chart_builder << build_resource("Deployment", service)
       @chart_builder << build_resource("Service", service)
-      if service.requires_auth?
+      if service.internal?
         @chart_builder << build_resource("AuthProxy", service)
       end
       if service.domains.any? && service.allow_public_networking?
