@@ -16,27 +16,25 @@ class AddOns::EndpointsController < AddOns::BaseController
     endpoints = @service.get_endpoints
     @endpoint = endpoints.find { |endpoint| endpoint.metadata.name == params[:id] }
     domains = params[:domains].split(",").map(&:strip)
+    port = params[:port].to_i
     @errors = []
-    @errors << 'Invalid domain format' unless domains.all? { |domain| valid_domain?(domain) }
-    @errors << 'Invalid port' unless @endpoint.spec.ports.map(&:port).include?(params[:port].to_i)
-    kubectl = K8::Kubectl.new(active_connection)
-    kubectl.apply_yaml(
-      K8::AddOns::Ingress.new(
-        @add_on,
-        @endpoint,
-        params[:port].to_i,
-        domains,
-      ).to_yaml
-    )
-    if @errors.empty?
-      @ingresses = @service.get_ingresses
-      render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
-    else
+    @errors << "Invalid domain format" unless domains.all? { |domain| valid_domain?(domain) }
+    @errors << "Invalid port" unless @endpoint.spec.ports.map(&:port).include?(port)
+
+    if @errors.any?
       set_dns_record
-      render "add_ons/endpoints/edit"
+      return render "add_ons/endpoints/edit"
     end
+
+    AddOns::ApplyEndpointIngress.execute(
+      add_on: @add_on, connection: active_connection,
+      endpoint: @endpoint, domains:, port:
+    )
+
+    @ingresses = @service.get_ingresses
+    render partial: "add_ons/endpoints/endpoint", locals: { add_on: @add_on, endpoint: @endpoint, ingresses: @ingresses }
   rescue StandardError => e
-    @errors << e.message
+    @errors = [ e.message ]
     set_dns_record
     render "add_ons/endpoints/edit"
   end
