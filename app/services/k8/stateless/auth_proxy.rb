@@ -7,7 +7,7 @@ class K8::Stateless::AuthProxy < K8::Base
   end
 
   def issuer_url
-    "https://#{ENV.fetch('APP_HOST')}"
+    AppHost.url
   end
 
   def client_id
