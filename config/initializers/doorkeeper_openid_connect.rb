@@ -2,7 +2,7 @@
 
 Doorkeeper::OpenidConnect.configure do
   issuer do |_resource_owner, _application, _request|
-    ENV.fetch("APP_HOST")
+    "https://#{ENV.fetch('APP_HOST')}"
   end
 
   signing_key OpenSSL::PKey::RSA.generate(2048).to_pem
