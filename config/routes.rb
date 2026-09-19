@@ -29,8 +29,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # RFC 8414: Authorization Server Metadata (OAuth server endpoints)
   # Must be defined before use_doorkeeper_openid_connect to take precedence
+  get "/.well-known/openid-configuration",           to: "oauth_authorization_server_metadata#openid_configuration"
   get "/.well-known/oauth-authorization-server",     to: "oauth_authorization_server_metadata#authorization_server"
   get "/.well-known/oauth-authorization-server/mcp", to: "oauth_authorization_server_metadata#authorization_server"
 
