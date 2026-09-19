@@ -59,7 +59,7 @@ class AddOnsController < ApplicationController
   # PATCH/PUT /add_ons/1 or /add_ons/1.json
   def update
     @add_on.assign_attributes(AddOns::Create.parse_params(params))
-    result = AddOns::Update.call(@add_on)
+    result = AddOns::Update.execute(add_on: @add_on)
 
     respond_to do |format|
       if result.success?
