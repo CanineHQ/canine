@@ -78,8 +78,7 @@ class K8::Helm::Client
   end
 
   def build_install_command(name, chart_url, version, values_file_path:, namespace:, timeout:, dry_run:, atomic:, wait:, history_max:, create_namespace:, skip_tls_verify:, skip_schema_validation: false)
-    command_parts = %w[helm upgrade --install] + [ name, chart_url, "--namespace", namespace, "--timeout=#{timeout}" ]
-    command_parts += [ "-f", values_file_path ] if values_file_path
+    command_parts = %w[helm upgrade --install] + [ name, chart_url, "-f", values_file_path, "--namespace", namespace, "--timeout=#{timeout}" ]
     command_parts += [ "--version", version ] if version.present?
     command_parts << "--dry-run" if dry_run
     command_parts << "--atomic" if atomic
@@ -168,14 +167,10 @@ class K8::Helm::Client
   private
 
     def with_values_file(values)
-      if values.present?
-        Tempfile.create([ "values", ".yaml" ]) do |f|
-          f.write(deep_stringify_keys(values).to_yaml)
-          f.flush
-          yield f.path
-        end
-      else
-        yield nil
+      Tempfile.create([ "values", ".yaml" ]) do |f|
+        f.write(values.present? ? deep_stringify_keys(values).to_yaml : "")
+        f.flush
+        yield f.path
       end
     end
 
