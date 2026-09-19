@@ -9,7 +9,7 @@ class K8::AddOns::AuthProxy < K8::Base
   end
 
   def issuer_url
-    ENV.fetch("APP_HOST")
+    "https://#{ENV.fetch('APP_HOST')}"
   end
 
   def client_id
