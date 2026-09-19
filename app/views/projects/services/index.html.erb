@@ -29,6 +29,9 @@
                   <iconify-icon icon="lucide:clock" height="16"></iconify-icon>
                 <% end %>
                 <%= service.name %>
+                <% if service.internal? %>
+                  <span class="badge badge-sm badge-outline gap-1"><iconify-icon icon="lucide:shield-check" height="12"></iconify-icon> Internal</span>
+                <% end %>
               </div>
               <div class="my-1">
                 <%= render "projects/services/status", service: service %>

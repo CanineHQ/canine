@@ -24,7 +24,13 @@ spec:
         path: "/"
         backend:
           service:
+            <% if add_on.internal? %>
+            name: <%= endpoint.metadata.name %>-auth-proxy
+            port:
+              number: 80
+            <% else %>
             name: <%= endpoint.metadata.name %>
             port:
               number: <%= port %>
+            <% end %>
   <% end %>
