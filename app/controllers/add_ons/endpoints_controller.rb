@@ -26,8 +26,8 @@ class AddOns::EndpointsController < AddOns::BaseController
       return render "add_ons/endpoints/edit"
     end
 
-    AddOns::UpdateEndpoint.call(
-      @add_on, active_connection,
+    AddOns::ApplyEndpointIngress.execute(
+      add_on: @add_on, connection: active_connection,
       endpoint: @endpoint, domains:, port:
     )
 
