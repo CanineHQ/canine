@@ -21,6 +21,8 @@ A developer-friendly PaaS for your Kubernetes
 [![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://opensource.org/licenses/Apache)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/canine)](https://artifacthub.io/packages/search?repo=canine)
 
+<a href="https://trendshift.io/repositories/16703?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-16703" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/16703" alt="CanineHQ%2Fcanine | Trendshift" width="250" height="55"/></a>
+
 
 ![Deployment Screenshot](https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/public/images/deployment_styled.webp)
 
