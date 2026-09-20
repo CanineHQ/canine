@@ -1,27 +1,33 @@
-<br/>
 <div align="center">
-<a href="https://github.com/CanineHQ/canine">
-<img src="https://github.com/CanineHQ/canine/blob/main/public/images/logo-full.webp?raw=true" alt="Logo" height="100">
-</a>
-<h3 align="center">Canine</h3>
-<p align="center">
-A developer-friendly PaaS for your Kubernetes
-<br/>
-<br/>
-<a href="https://docs.canine.sh"><strong>Explore the docs »</strong></a>
-<br/>
-<br/>
-<a href="https://canine.sh">View Demo .</a>  
-<a href="https://github.com/CanineHQ/canine/issues/new?labels=bug">Report Bug .</a>
-<a href="https://github.com/CanineHQ/canine/issues/new?labels=enhancement">Request Feature</a>
-</p>
+  <a href="https://github.com/CanineHQ/canine">
+    <img src="https://github.com/CanineHQ/canine/blob/main/public/images/logo-full.webp?raw=true" alt="Logo" height="100">
+  </a>
+
+  <h1>Canine</h1>
+
+  <p>A developer-friendly PaaS for your Kubernetes</p>
+
+  <p align="center">
+    <a href="https://trendshift.io/repositories/16703?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-16703" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/16703" alt="CanineHQ%2Fcanine | Trendshift" width="250" height="55"/></a>
+  </p>
+
+  <p align="center">
+    <a href="https://github.com/CanineHQ/canine/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/CanineHQ/canine/ci.yml?branch=main&label=CI&style=flat-square&logo=github&logoColor=white" alt="Build Status" /></a>
+    <a href="https://opensource.org/licenses/Apache"><img src="https://img.shields.io/badge/license-Apache-blue.svg?style=flat-square" alt="License" /></a>
+    <a href="https://artifacthub.io/packages/search?repo=canine"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/canine&style=flat-square" alt="Artifact Hub" /></a>
+  </p>
+
+  <p align="center">
+    <a href="https://docs.canine.sh"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://canine.sh">View Demo</a> ·
+    <a href="https://github.com/CanineHQ/canine/issues/new?labels=bug">Report Bug</a> ·
+    <a href="https://github.com/CanineHQ/canine/issues/new?labels=enhancement">Request Feature</a>
+  </p>
+
+  <hr />
 </div>
-
-[![Build Status](https://github.com/CanineHQ/canine/actions/workflows/ci.yml/badge.svg)](https://github.com/CanineHQ/canine/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache-blue.svg)](https://opensource.org/licenses/Apache)
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/canine)](https://artifacthub.io/packages/search?repo=canine)
-
-<a href="https://trendshift.io/repositories/16703?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-16703" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/16703" alt="CanineHQ%2Fcanine | Trendshift" width="250" height="55"/></a>
 
 
 ![Deployment Screenshot](https://raw.githubusercontent.com/CanineHQ/canine/refs/heads/main/public/images/deployment_styled.webp)
