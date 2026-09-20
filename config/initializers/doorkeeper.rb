@@ -14,7 +14,25 @@ Doorkeeper.configure do
   base_controller "ApplicationController"
 
   resource_owner_authenticator do
-    current_user || warden.authenticate!(scope: :user)
+    user = current_user || warden.authenticate!(scope: :user)
+
+    # For internal auth proxy apps, verify the user belongs to the owning account
+    if params[:client_id].present?
+      app = Doorkeeper::Application.find_by(uid: params[:client_id])
+      if app
+        account = if app.service_id.present?
+          Service.find(app.service_id).project.account
+        elsif app.add_on_id.present?
+          AddOn.find(app.add_on_id).account
+        end
+
+        if account && !user.accounts.exists?(id: account.id)
+          raise ActionController::RoutingError, "Not Found"
+        end
+      end
+    end
+
+    user
   end
 
   # Require non-confidential clients to use PKCE when using an authorization code
