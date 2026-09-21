@@ -1,11 +1,23 @@
-<%= content_for :title, "#{@agent_sandbox.name} | Connect" %>
+<%= content_for :title, "#{@agent_sandbox.name} | Desktop" %>
 
-<%= agent_sandbox_layout(@agent_sandbox) do %>
-  <div class="w-full" style="height: 75vh;">
-    <iframe
-      src="<%= "/agent_sandboxes/#{@agent_sandbox.id}/proxy/" %>"
-      class="w-full h-full border-0 rounded-lg"
-      allow="clipboard-read; clipboard-write"
-    ></iframe>
+<div class="h-screen w-screen flex flex-col bg-base-300">
+  <div class="flex items-center justify-between px-3 py-1.5 bg-base-200 border-b border-base-300 shrink-0">
+    <div class="flex items-center gap-3">
+      <%= link_to agent_sandbox_path(@agent_sandbox), class: "btn btn-ghost btn-xs gap-1" do %>
+        <iconify-icon icon="lucide:arrow-left" height="14"></iconify-icon>
+        Back
+      <% end %>
+      <div class="flex items-center gap-2 text-sm">
+        <iconify-icon icon="lucide:box" height="14"></iconify-icon>
+        <span class="font-medium"><%= @agent_sandbox.name %></span>
+        <%= agent_sandbox_status_badge(@agent_sandbox) %>
+      </div>
+    </div>
   </div>
-<% end %>
+
+  <iframe
+    src="<%= "/agent_sandboxes/#{@agent_sandbox.id}/proxy/" %>"
+    class="flex-1 w-full border-0"
+    allow="clipboard-read; clipboard-write"
+  ></iframe>
+</div>

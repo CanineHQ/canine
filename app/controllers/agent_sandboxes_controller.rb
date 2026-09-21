@@ -55,6 +55,8 @@ class AgentSandboxesController < ApplicationController
       redirect_to @agent_sandbox, alert: "Sandbox must be running to connect."
       return
     end
+
+    render layout: "fullscreen"
   end
 
   private
