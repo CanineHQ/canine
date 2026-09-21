@@ -78,6 +78,12 @@ class Cluster < ApplicationRecord
     options&.dig("in_cluster") == true
   end
 
+  def agent_sandbox_enabled?
+    cluster_packages.exists?(name: "agent-sandbox", status: :installed)
+  end
+
+  scope :with_agent_sandbox, -> { where(id: ClusterPackage.where(name: "agent-sandbox", status: :installed).select(:cluster_id)) }
+
   private
 
 

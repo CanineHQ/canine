@@ -1,0 +1,88 @@
+<%= content_for :title, "Agent Sandboxes" %>
+
+<div>
+  <div class="flex items-center justify-between">
+    <h3 class="text-lg font-medium">Agent Sandboxes</h3>
+    <%= link_to new_agent_sandbox_path, class: "btn btn-primary btn-sm" do %>
+      <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+      New Sandbox
+    <% end %>
+  </div>
+
+  <div class="mt-5">
+    <div aria-label="Card" class="card card-bordered bg-base-100">
+      <div class="card-body">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <%= form_with url: agent_sandboxes_path, method: :get, data: { turbo_frame: "_top" }, class: "flex flex-wrap items-center gap-3 w-full" do |f| %>
+            <div class="form-control flex-1 min-w-[200px]">
+              <input type="text" name="search" value="<%= params[:search] %>" placeholder="Search by name or user email..." class="input input-bordered input-sm w-full" />
+            </div>
+            <div class="form-control">
+              <select name="status" class="select select-bordered select-sm">
+                <option value="">All Statuses</option>
+                <% AgentSandbox.statuses.each_key do |status| %>
+                  <option value="<%= status %>" <%= 'selected' if params[:status] == status %>>
+                    <%= status.titleize %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+            <div class="form-control">
+              <select name="created_by_id" class="select select-bordered select-sm">
+                <option value="">All Users</option>
+                <% current_account.users.joins(:account_users).where(account_users: { id: current_account.agent_sandboxes.select(:account_user_id) }).distinct.order(:email).each do |user| %>
+                  <option value="<%= user.id %>" <%= 'selected' if params[:created_by_id].to_s == user.id.to_s %>>
+                    <%= user.first_name.present? ? "#{user.first_name} #{user.last_name}".strip : user.email %>
+                  </option>
+                <% end %>
+              </select>
+            </div>
+            <%= f.submit "Filter", class: "btn btn-sm btn-primary" %>
+            <% if params[:search].present? || params[:status].present? || params[:created_by_id].present? %>
+              <%= link_to "Clear", agent_sandboxes_path, class: "btn btn-sm btn-ghost" %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @agent_sandboxes.any? %>
+          <div class="space-y-3">
+            <% @agent_sandboxes.each do |sandbox| %>
+              <div class="card border border-base-300 bg-base-100">
+                <div class="card-body flex-row items-center justify-between py-4">
+                  <div class="flex items-center gap-4">
+                    <div>
+                      <h4 class="font-medium">
+                        <%= link_to sandbox.name, agent_sandbox_path(sandbox), class: "link link-hover" %>
+                      </h4>
+                      <p class="text-sm text-base-content/60">
+                        <%= sandbox.cluster.name %>
+                        &middot; Created <%= time_ago_in_words(sandbox.created_at) %> ago
+                        by <%= sandbox.user.first_name.present? ? "#{sandbox.user.first_name} #{sandbox.user.last_name}".strip : sandbox.user.email %>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <%= agent_sandbox_status_badge(sandbox) %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-12">
+            <iconify-icon icon="lucide:box" class="text-4xl text-base-content/30 mb-2"></iconify-icon>
+            <p class="text-base-content/60">
+              <% if params[:search].present? || params[:status].present? || params[:created_by_id].present? %>
+                No sandboxes match your filters.
+              <% else %>
+                No agent sandboxes yet. Create one to get started.
+              <% end %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%= render 'shared/pagination', pagy: @pagy %>
+</div>

@@ -1,0 +1,53 @@
+<%= content_for :title, "New Agent Sandbox" %>
+
+<div>
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-medium">
+      <%= link_to "Agent Sandboxes", agent_sandboxes_path, class: "text-black dark:text-white" %>
+      <span class="text-gray-400 font-light mx-2">\</span>
+      New Sandbox
+    </h1>
+  </div>
+
+  <div class="card card-bordered bg-base-100">
+    <div class="card-body">
+      <%= form_with(model: @agent_sandbox) do |form| %>
+        <%= render "shared/error_messages", resource: form.object %>
+        <div class="space-y-8">
+          <%= render(FormFieldComponent.new(
+            label: "Name",
+            description: "A unique name for your sandbox, only lowercase letters, numbers, and hyphens are allowed."
+          )) do %>
+            <%= form.text_field :name, class: "input input-bordered w-full focus:outline-offset-0", autofocus: true, required: true %>
+            <label class="label">
+              <span class="label-text-alt">* Required</span>
+            </label>
+          <% end %>
+
+          <%= render(FormFieldComponent.new(
+            label: "Cluster",
+            description: "The cluster to deploy your sandbox to. Only clusters with the Agent Sandbox package installed are shown."
+          )) do %>
+            <%= render(RichSelectComponent.new(
+              name: "agent_sandbox[cluster_id]",
+              id: "agent_sandbox_cluster_id",
+              collection: @clusters,
+              selected: form.object.cluster_id,
+              partial: "clusters/selector_item",
+              placeholder: "Select a cluster",
+              required: true
+            )) %>
+            <label class="label">
+              <span class="label-text-alt">* Required</span>
+            </label>
+          <% end %>
+        </div>
+
+        <div class="form-footer">
+          <%= form.button "Create Sandbox", class: "btn btn-primary", data: { turbo_submits_with: "Creating..." } %>
+          <%= link_to "Cancel", agent_sandboxes_path, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

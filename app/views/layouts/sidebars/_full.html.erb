@@ -82,6 +82,37 @@
     </details>
   </li>
   <li class="mb-0.5">
+    <details <%= 'open' if in_namespace?('agent_sandboxes') || open_section == "agent_sandboxes" %>>
+      <summary>
+        <%= link_to agent_sandboxes_path do %>
+          <div class="flex items-center gap-2">
+            <iconify-icon icon="lucide:box" height="18"></iconify-icon>
+            Agent Sandboxes
+          </div>
+        <% end %>
+      </summary>
+      <ul>
+        <% current_account.agent_sandboxes.includes(account_user: :user).order(created_at: :desc).limit(10).each do |sandbox| %>
+          <li>
+            <%= link_to agent_sandbox_path(sandbox), class: "hover:bg-base-content/15 #{'active' if active_path?(agent_sandbox_path(sandbox))}" do %>
+              <div class="flex items-center gap-2">
+                <%= sandbox.name %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+        <li>
+          <%= link_to new_agent_sandbox_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_agent_sandbox_path)}" do %>
+            <div class="flex items-center gap-2">
+              <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
+              New Sandbox
+            </div>
+          <% end %>
+        </li>
+      </ul>
+    </details>
+  </li>
+  <li class="mb-0.5">
     <details <%= 'open' if in_namespace?('add_ons') || open_section == "add_ons" %>>
       <summary>
         <%= link_to add_ons_path do %>
