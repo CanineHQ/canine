@@ -1,0 +1,7 @@
+fastapi==0.141.1
+uvicorn==0.53.0
+websockets==17.1
+mss==10.2.0
+pillow==12.3.0
+# Only the client library: it drives the user's own Chrome over CDP, so no bundled browsers are installed
+playwright==1.63.0

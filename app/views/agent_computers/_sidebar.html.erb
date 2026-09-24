@@ -1,0 +1,22 @@
+<div class="tabs tabs-bordered mb-3" role="tablist">
+  <%= link_to agent_computer_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(agent_computer_path(agent_computer))}" do %>
+    <div class="flex items-center gap-2">
+      Overview
+      <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
+    </div>
+  <% end %>
+  <% if agent_computer.running? %>
+    <%= link_to connect_agent_computer_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(connect_agent_computer_path(agent_computer))}" do %>
+      <div class="flex items-center gap-2">
+        Desktop
+        <iconify-icon icon="lucide:monitor"></iconify-icon>
+      </div>
+    <% end %>
+    <%= link_to control_agent_computer_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if current_page?(control_agent_computer_path(agent_computer))}" do %>
+      <div class="flex items-center gap-2">
+        Control
+        <iconify-icon icon="lucide:mouse-pointer-click"></iconify-icon>
+      </div>
+    <% end %>
+  <% end %>
+</div>

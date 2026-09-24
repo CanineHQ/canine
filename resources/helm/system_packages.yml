@@ -158,15 +158,14 @@ packages:
         pattern: ^[A-Za-z0-9/+=]{40}$
         pattern_hint: "Must be a valid 40-character AWS secret access key."
 
-  - name: agent-sandbox
-    display_name: Agent Sandbox
-    description: Kubernetes orchestrator for isolated, stateful sandbox environments for AI agents
-    icon: lucide:box
+  - name: kubevirt
+    display_name: KubeVirt
+    description: Runs agent computers as isolated VMs. Requires nodes with KVM (bare metal or nested virtualization).
+    icon: lucide:monitor
     default: false
     recommended: false
     install_type: manifest
-    manifest_url: https://github.com/kubernetes-sigs/agent-sandbox/releases/latest/download/sandbox-with-extensions.yaml
-    check_command: get crd sandboxes.agents.x-k8s.io
+    check_command: get crd virtualmachines.kubevirt.io
 
   - name: cloudflared
     display_name: Cloudflare Tunnel

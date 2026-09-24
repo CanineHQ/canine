@@ -1,0 +1,54 @@
+<%= content_for :title, "#{@agent_computer.name} | Desktop" %>
+<% proxy_url = "/agent_computers/#{@agent_computer.id}/proxy/" %>
+
+<div class="relative h-screen w-screen bg-base-300">
+  <iframe
+    id="computer-frame"
+    src="<%= proxy_url %>"
+    class="absolute inset-0 w-full h-full border-0"
+    allow="clipboard-read; clipboard-write; autoplay; fullscreen; keyboard-map"
+  ></iframe>
+
+  <%# Only shown while the connection is down, so the desktop gets the whole window %>
+  <div id="computer-status" class="hidden absolute top-3 left-1/2 -translate-x-1/2 z-10 alert alert-warning shadow-lg w-auto py-2 text-sm">
+    <span class="loading loading-spinner loading-xs"></span>
+    <span id="computer-status-text">Reconnecting...</span>
+    <button onclick="reconnectComputer()" class="btn btn-ghost btn-xs">Retry now</button>
+    <%= link_to "Back to #{@agent_computer.name}", agent_computer_path(@agent_computer), class: "btn btn-ghost btn-xs" %>
+  </div>
+</div>
+
+<script>
+  const PROXY_URL = "<%= proxy_url %>";
+  let healthCheck;
+
+  function reconnectComputer() {
+    const frame = document.getElementById("computer-frame");
+    const status = document.getElementById("computer-status");
+    status.classList.remove("hidden");
+    frame.src = PROXY_URL;
+    // Hide status once iframe loads successfully
+    frame.onload = () => status.classList.add("hidden");
+  }
+
+  // Periodically check if the proxy is still reachable; auto-reconnect if not
+  function startHealthCheck() {
+    let wasDown = false;
+    healthCheck = setInterval(() => {
+      fetch(PROXY_URL, { method: "HEAD", mode: "no-cors" })
+        .then(() => {
+          if (wasDown) {
+            wasDown = false;
+            reconnectComputer();
+          }
+        })
+        .catch(() => {
+          wasDown = true;
+          document.getElementById("computer-status").classList.remove("hidden");
+          document.getElementById("computer-status-text").textContent = "Connection lost — waiting to reconnect...";
+        });
+    }, 5000);
+  }
+
+  startHealthCheck();
+</script>

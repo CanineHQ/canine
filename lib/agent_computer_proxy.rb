@@ -9,16 +9,20 @@ require "net/http"
 # via kubectl port-forward. Authenticates via Rails session.
 #
 # Paths:
-#   /agent_sandboxes/:id/proxy/*  — HTTP reverse proxy
-#   /agent_sandboxes/:id/proxy/websockify — WebSocket proxy
-class SandboxVncProxy
-  VNC_PORT = 8080
+#   /agent_computers/:id/proxy/*  — Selkies desktop (HTTP + /websockets WebSocket)
+#   /agent_computers/:id/api/*    — computer server (HTTP + /ws WebSocket)
+class AgentComputerProxy
+  # Mirrors AgentComputer::DESKTOP_PORT / COMPUTER_SERVER_PORT; app models aren't autoloadable when middleware loads
+  TARGET_PORTS = { "proxy" => 8080, "api" => 8000 }.freeze
   FORWARD_PORT_RANGE = (18000..19000)
-  PATH_PATTERN = %r{\A/agent_sandboxes/(\d+)/proxy(?:/(.*))?}
+  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|api)(?:/(.*))?}
+
+  AUTH_CACHE_TTL = 60 # seconds
 
   def initialize(app)
     @app = app
-    @port_forwards = {} # sandbox_id => { pid:, port:, kubeconfig:, last_used: }
+    @port_forwards = {} # "sandbox_id:remote_port" => { pid:, port:, kubeconfig:, last_used: }
+    @auth_cache = {}    # "user_id:sandbox_id" => { sandbox:, expires_at: }
     @mutex = Mutex.new
   end
 
@@ -28,12 +32,13 @@ class SandboxVncProxy
 
     if match
       sandbox_id = match[1].to_i
-      subpath = match[2] || ""
+      remote_port = TARGET_PORTS.fetch(match[2])
+      subpath = match[3] || ""
 
       if websocket?(env)
-        handle_websocket(env, request, sandbox_id, subpath)
+        handle_websocket(env, request, sandbox_id, remote_port, subpath)
       else
-        handle_http(env, request, sandbox_id, subpath)
+        handle_http(env, request, sandbox_id, remote_port, subpath)
       end
     else
       @app.call(env)
@@ -43,11 +48,11 @@ class SandboxVncProxy
   private
 
   def log(msg)
-    Rails.logger.info("[SandboxVncProxy] #{msg}")
+    Rails.logger.info("[AgentComputerProxy] #{msg}")
   end
 
   def log_error(msg)
-    Rails.logger.error("[SandboxVncProxy] #{msg}")
+    Rails.logger.error("[AgentComputerProxy] #{msg}")
   end
 
   def websocket?(env)
@@ -55,32 +60,38 @@ class SandboxVncProxy
   end
 
   def authenticate_sandbox(sandbox_id, env)
-    # Use warden (Devise) to authenticate from the Rack env
     user = env["warden"]&.user
     unless user
       log_error "No authenticated user"
       return nil
     end
 
-    sandbox = AgentSandbox.find_by(id: sandbox_id)
+    cache_key = "#{user.id}:#{sandbox_id}"
+    cached = @auth_cache[cache_key]
+    if cached && cached[:expires_at] > Time.current
+      return cached[:sandbox]
+    end
+
+    sandbox = AgentComputer.find_by(id: sandbox_id)
     unless sandbox&.running?
       log_error "Sandbox #{sandbox_id} not found or not running"
       return nil
     end
 
-    # Verify user has access to this sandbox's account
     account_user = AccountUser.find_by(user: user, account: sandbox.account)
     unless account_user
       log_error "User #{user.id} does not have access to sandbox #{sandbox_id}"
       return nil
     end
 
+    @auth_cache[cache_key] = { sandbox: sandbox, expires_at: Time.current + AUTH_CACHE_TTL }
     sandbox
   end
 
-  def get_local_port(sandbox)
+  def get_local_port(sandbox, remote_port)
+    key = "#{sandbox.id}:#{remote_port}"
     @mutex.synchronize do
-      entry = @port_forwards[sandbox.id]
+      entry = @port_forwards[key]
       if entry && port_alive?(entry[:port])
         entry[:last_used] = Time.current
         return entry[:port]
@@ -90,9 +101,9 @@ class SandboxVncProxy
       cleanup_entry(entry) if entry
 
       # Start new port-forward
-      port = start_port_forward(sandbox)
+      port = start_port_forward(sandbox, remote_port)
       if port
-        @port_forwards[sandbox.id] = {
+        @port_forwards[key] = {
           pid: Thread.current[:pf_pid],
           port: port,
           kubeconfig: Thread.current[:pf_kubeconfig],
@@ -111,6 +122,13 @@ class SandboxVncProxy
     false
   end
 
+  def invalidate_port_forward(sandbox_id, remote_port)
+    @mutex.synchronize do
+      entry = @port_forwards.delete("#{sandbox_id}:#{remote_port}")
+      cleanup_entry(entry) if entry
+    end
+  end
+
   def cleanup_entry(entry)
     Process.kill("TERM", entry[:pid]) rescue nil
     entry[:kubeconfig]&.close
@@ -119,20 +137,21 @@ class SandboxVncProxy
     log_error "Cleanup error: #{e.message}"
   end
 
-  def start_port_forward(sandbox)
+  def start_port_forward(sandbox, remote_port)
     user = sandbox.user
     cluster = sandbox.cluster
     connection = K8::Connection.new(cluster, user)
     kubeconfig_hash = connection.kubeconfig
     kubeconfig_hash = K8::Kubeconfig.apply_tls_settings(kubeconfig_hash, cluster.skip_tls_verify)
 
-    kubeconfig_file = Tempfile.new(["kubeconfig", ".yaml"])
+    kubeconfig_file = Tempfile.new([ "kubeconfig", ".yaml" ])
     kubeconfig_file.write(kubeconfig_hash.to_yaml)
     kubeconfig_file.flush
 
     # Find the pod name
     kubectl = K8::Kubectl.new(connection)
-    pod_name = kubectl.(%W[get pods -n default -l sandbox=#{sandbox.name} -o jsonpath={.items[0].metadata.name}]).strip
+    # KubeVirt's launcher pod runs the VM; port-forwarding to it reaches ports inside the guest (masquerade networking)
+    pod_name = kubectl.(%W[get pods -n #{sandbox.namespace} -l vm.kubevirt.io/name=#{sandbox.name} --field-selector=status.phase=Running -o jsonpath={.items[0].metadata.name}]).strip
     if pod_name.empty?
       log_error "No pod found for sandbox #{sandbox.name}"
       kubeconfig_file.close
@@ -141,7 +160,7 @@ class SandboxVncProxy
     end
 
     local_port = rand(FORWARD_PORT_RANGE)
-    cmd = "KUBECONFIG=#{Shellwords.shellescape(kubeconfig_file.path)} kubectl port-forward -n default #{Shellwords.shellescape(pod_name)} #{local_port}:#{VNC_PORT}"
+    cmd = "KUBECONFIG=#{Shellwords.shellescape(kubeconfig_file.path)} kubectl port-forward -n #{Shellwords.shellescape(sandbox.namespace)} #{Shellwords.shellescape(pod_name)} #{local_port}:#{remote_port}"
     log "Spawning: #{cmd}"
 
     pid = spawn(cmd, out: "/dev/null", err: "/dev/null")
@@ -168,12 +187,12 @@ class SandboxVncProxy
     nil
   end
 
-  def handle_http(env, request, sandbox_id, subpath)
+  def handle_http(env, request, sandbox_id, remote_port, subpath)
     sandbox = authenticate_sandbox(sandbox_id, env)
-    return [401, {}, ["Unauthorized"]] unless sandbox
+    return [ 401, {}, [ "Unauthorized" ] ] unless sandbox
 
-    local_port = get_local_port(sandbox)
-    return [502, {}, ["Failed to connect to sandbox"]] unless local_port
+    local_port = get_local_port(sandbox, remote_port)
+    return [ 502, {}, [ "Failed to connect to sandbox" ] ] unless local_port
 
     # Proxy the HTTP request
     uri = URI("http://127.0.0.1:#{local_port}/#{subpath}")
@@ -208,18 +227,22 @@ class SandboxVncProxy
     headers = {}
     response.each_header { |k, v| headers[k] = v unless %w[transfer-encoding connection].include?(k.downcase) }
 
-    [response.code.to_i, headers, [response.body || ""]]
+    [ response.code.to_i, headers, [ response.body || "" ] ]
+  rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EPIPE, Net::OpenTimeout => e
+    log_error "HTTP proxy error: #{e.class} #{e.message} — clearing stale port-forward"
+    invalidate_port_forward(sandbox_id, remote_port)
+    [ 502, {}, [ "Proxy error — reconnecting" ] ]
   rescue StandardError => e
     log_error "HTTP proxy error: #{e.class} #{e.message}"
-    [502, {}, ["Proxy error"]]
+    [ 502, {}, [ "Proxy error" ] ]
   end
 
-  def handle_websocket(env, request, sandbox_id, subpath)
+  def handle_websocket(env, request, sandbox_id, remote_port, subpath)
     sandbox = authenticate_sandbox(sandbox_id, env)
-    return [401, {}, ["Unauthorized"]] unless sandbox
+    return [ 401, {}, [ "Unauthorized" ] ] unless sandbox
 
-    local_port = get_local_port(sandbox)
-    return [502, {}, ["Failed to connect to sandbox"]] unless local_port
+    local_port = get_local_port(sandbox, remote_port)
+    return [ 502, {}, [ "Failed to connect to sandbox" ] ] unless local_port
 
     log "WebSocket proxy to localhost:#{local_port}/#{subpath}"
 
@@ -249,7 +272,7 @@ class SandboxVncProxy
     # Read the upstream's handshake response and forward it to the client as-is
     upstream_response = +""
     loop do
-      readable, = IO.select([upstream], nil, nil, 5)
+      readable, = IO.select([ upstream ], nil, nil, 5)
       break unless readable
       upstream_response << upstream.read_nonblock(4096)
       break if upstream_response.include?("\r\n\r\n")
@@ -268,7 +291,7 @@ class SandboxVncProxy
       log_error "Upstream WebSocket handshake failed"
       client_socket.close rescue nil
       upstream.close rescue nil
-      return [-1, {}, []]
+      return [ -1, {}, [] ]
     end
 
     log "WebSocket passthrough established"
@@ -281,12 +304,12 @@ class SandboxVncProxy
       upstream.close rescue nil
     end
 
-    [-1, {}, []]
+    [ -1, {}, [] ]
   end
 
   def proxy_bidirectional(client, upstream)
     loop do
-      readable, = IO.select([client, upstream], nil, nil, 60)
+      readable, = IO.select([ client, upstream ], nil, nil, 60)
       break if readable.nil?
 
       readable.each do |socket|

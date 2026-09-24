@@ -1,0 +1,95 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div data-controller="computer-control"
+       data-computer-control-url-value="<%= "/agent_computers/#{@agent_computer.id}/api" %>">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div class="flex items-center gap-2 text-sm">
+        <span class="font-semibold">Computer API</span>
+        <span data-computer-control-target="status" class="badge badge-sm badge-ghost">Idle</span>
+        <span class="text-xs text-base-content/50">port <%= AgentComputer::COMPUTER_SERVER_PORT %> · click the screen to click the desktop, right-click to right-click</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="label cursor-pointer gap-2 text-xs">
+          Click mode
+          <select data-computer-control-target="clickMode" class="select select-bordered select-xs">
+            <option value="left_click">Left click</option>
+            <option value="double_click">Double click</option>
+            <option value="right_click">Right click</option>
+          </select>
+        </label>
+        <label class="label cursor-pointer gap-2 text-xs">
+          <input type="checkbox" class="toggle toggle-xs" data-computer-control-target="autoRefresh" data-action="computer-control#toggleAutoRefresh">
+          Live (2s)
+        </label>
+        <button class="btn btn-sm gap-1" data-action="computer-control#refresh">
+          <iconify-icon icon="lucide:camera" height="14"></iconify-icon>
+          Screenshot
+        </button>
+      </div>
+    </div>
+
+    <div class="grid gap-4 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        <div class="bg-base-300 rounded-lg overflow-hidden aspect-video flex items-center justify-center">
+          <img data-computer-control-target="screen" hidden alt="Computer screen"
+               class="w-full h-full object-contain cursor-crosshair select-none" draggable="false"
+               data-action="click->computer-control#clickScreen contextmenu->computer-control#clickScreen">
+          <span data-computer-control-target="placeholder" class="text-sm text-base-content/50 flex items-center gap-2">
+            <span class="loading loading-spinner loading-sm"></span>
+            Connecting to the computer API...
+          </span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Keyboard</div>
+          <form class="join w-full" data-action="submit->computer-control#typeText">
+            <input type="text" data-computer-control-target="text" placeholder="Type into the focused window"
+                   class="input input-bordered input-sm join-item flex-1 min-w-0">
+            <button class="btn btn-sm join-item">Type</button>
+          </form>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <% [["Enter", "enter"], ["Tab", "tab"], ["Esc", "esc"], ["⌫", "backspace"], ["↑", "up"], ["↓", "down"]].each do |label, key| %>
+              <button class="btn btn-xs" data-action="computer-control#pressKey" data-computer-control-key-param="<%= key %>"><%= label %></button>
+            <% end %>
+            <% %w[ctrl+c ctrl+v ctrl+a ctrl+l alt+tab].each do |keys| %>
+              <button class="btn btn-xs btn-outline" data-action="computer-control#hotkey" data-computer-control-keys-param="<%= keys %>"><%= keys %></button>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Mouse</div>
+          <div class="flex flex-wrap gap-1">
+            <button class="btn btn-xs" data-action="computer-control#scroll" data-computer-control-direction-param="up">Scroll up</button>
+            <button class="btn btn-xs" data-action="computer-control#scroll" data-computer-control-direction-param="down">Scroll down</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Launch</div>
+          <div class="flex flex-wrap gap-1">
+            <% [["Terminal", "xfce4-terminal", "lucide:terminal"], ["Chrome", "google-chrome", "lucide:globe"], ["Files", "thunar", "lucide:folder"]].each do |label, app, icon| %>
+              <button class="btn btn-xs gap-1" data-action="computer-control#launch" data-computer-control-app-param="<%= app %>">
+                <iconify-icon icon="<%= icon %>" height="12"></iconify-icon><%= label %>
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Shell (runs as <%= AgentComputer::DESKTOP_USER %>)</div>
+          <form class="join w-full" data-action="submit->computer-control#runShell">
+            <input type="text" data-computer-control-target="shell" placeholder="uname -a && free -h"
+                   class="input input-bordered input-sm join-item flex-1 min-w-0 font-mono">
+            <button class="btn btn-sm join-item">Run</button>
+          </form>
+          <pre data-computer-control-target="shellOutput" class="mt-2 bg-base-300 rounded p-2 text-xs max-h-40 overflow-auto whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-xs uppercase tracking-wide text-base-content/50 mt-4 mb-1">Command log</div>
+    <div data-computer-control-target="log" class="font-mono text-xs max-h-64 overflow-auto bg-base-200 rounded p-2"></div>
+  </div>
+<% end %>

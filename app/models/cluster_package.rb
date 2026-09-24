@@ -48,7 +48,7 @@ class ClusterPackage < ApplicationRecord
     "telepresence" => "ClusterPackage::Installer::Telepresence",
     "cloudflared" => "ClusterPackage::Installer::Cloudflared",
     "fluent-bit" => "ClusterPackage::Installer::FluentBit",
-    "agent-sandbox" => "ClusterPackage::Installer::AgentSandbox"
+    "kubevirt" => "ClusterPackage::Installer::KubeVirt"
   }.freeze
 
   def definition

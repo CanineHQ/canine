@@ -43,8 +43,8 @@ module Canine
     config.autoload_paths << Rails.root.join("lib")
     config.eager_load_paths << Rails.root.join("lib")
 
-    require_relative "../lib/sandbox_vnc_proxy"
-    config.middleware.insert_after Warden::Manager, SandboxVncProxy
+    require_relative "../lib/agent_computer_proxy"
+    config.middleware.insert_after Warden::Manager, AgentComputerProxy
 
     # Configuration for the application, engines, and railties goes here.
     #

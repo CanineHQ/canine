@@ -82,30 +82,30 @@
     </details>
   </li>
   <li class="mb-0.5">
-    <details <%= 'open' if in_namespace?('agent_sandboxes') || open_section == "agent_sandboxes" %>>
+    <details <%= 'open' if in_namespace?('agent_computers') || open_section == "agent_computers" %>>
       <summary>
-        <%= link_to agent_sandboxes_path do %>
+        <%= link_to agent_computers_path do %>
           <div class="flex items-center gap-2">
             <iconify-icon icon="lucide:box" height="18"></iconify-icon>
-            Agent Sandboxes
+            Agent Computers
           </div>
         <% end %>
       </summary>
       <ul>
-        <% current_account.agent_sandboxes.includes(account_user: :user).order(created_at: :desc).limit(10).each do |sandbox| %>
+        <% current_account.agent_computers.includes(account_user: :user).order(created_at: :desc).limit(10).each do |computer| %>
           <li>
-            <%= link_to agent_sandbox_path(sandbox), class: "hover:bg-base-content/15 #{'active' if active_path?(agent_sandbox_path(sandbox))}" do %>
+            <%= link_to agent_computer_path(computer), class: "hover:bg-base-content/15 #{'active' if active_path?(agent_computer_path(computer))}" do %>
               <div class="flex items-center gap-2">
-                <%= sandbox.name %>
+                <%= computer.name %>
               </div>
             <% end %>
           </li>
         <% end %>
         <li>
-          <%= link_to new_agent_sandbox_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_agent_sandbox_path)}" do %>
+          <%= link_to new_agent_computer_path, class: "hover:bg-base-content/15 #{'active' if current_page?(new_agent_computer_path)}" do %>
             <div class="flex items-center gap-2">
               <iconify-icon icon="lucide:plus" height="18"></iconify-icon>
-              New Sandbox
+              New Computer
             </div>
           <% end %>
         </li>

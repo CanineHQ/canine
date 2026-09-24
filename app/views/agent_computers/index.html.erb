@@ -1,11 +1,11 @@
-<%= content_for :title, "Agent Sandboxes" %>
+<%= content_for :title, "Agent Computers" %>
 
 <div>
   <div class="flex items-center justify-between">
-    <h3 class="text-lg font-medium">Agent Sandboxes</h3>
-    <%= link_to new_agent_sandbox_path, class: "btn btn-primary btn-sm" do %>
+    <h3 class="text-lg font-medium">Agent Computers</h3>
+    <%= link_to new_agent_computer_path, class: "btn btn-primary btn-sm" do %>
       <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-      New Sandbox
+      New Computer
     <% end %>
   </div>
 
@@ -13,14 +13,14 @@
     <div aria-label="Card" class="card card-bordered bg-base-100">
       <div class="card-body">
         <div class="flex flex-wrap items-center gap-3 mb-4">
-          <%= form_with url: agent_sandboxes_path, method: :get, data: { turbo_frame: "_top" }, class: "flex flex-wrap items-center gap-3 w-full" do |f| %>
+          <%= form_with url: agent_computers_path, method: :get, data: { turbo_frame: "_top" }, class: "flex flex-wrap items-center gap-3 w-full" do |f| %>
             <div class="form-control flex-1 min-w-[200px]">
               <input type="text" name="search" value="<%= params[:search] %>" placeholder="Search by name or user email..." class="input input-bordered input-sm w-full" />
             </div>
             <div class="form-control">
               <select name="status" class="select select-bordered select-sm">
                 <option value="">All Statuses</option>
-                <% AgentSandbox.statuses.each_key do |status| %>
+                <% AgentComputer.statuses.each_key do |status| %>
                   <option value="<%= status %>" <%= 'selected' if params[:status] == status %>>
                     <%= status.titleize %>
                   </option>
@@ -30,7 +30,7 @@
             <div class="form-control">
               <select name="created_by_id" class="select select-bordered select-sm">
                 <option value="">All Users</option>
-                <% current_account.users.joins(:account_users).where(account_users: { id: current_account.agent_sandboxes.select(:account_user_id) }).distinct.order(:email).each do |user| %>
+                <% current_account.users.joins(:account_users).where(account_users: { id: current_account.agent_computers.select(:account_user_id) }).distinct.order(:email).each do |user| %>
                   <option value="<%= user.id %>" <%= 'selected' if params[:created_by_id].to_s == user.id.to_s %>>
                     <%= user.first_name.present? ? "#{user.first_name} #{user.last_name}".strip : user.email %>
                   </option>
@@ -39,30 +39,30 @@
             </div>
             <%= f.submit "Filter", class: "btn btn-sm btn-primary" %>
             <% if params[:search].present? || params[:status].present? || params[:created_by_id].present? %>
-              <%= link_to "Clear", agent_sandboxes_path, class: "btn btn-sm btn-ghost" %>
+              <%= link_to "Clear", agent_computers_path, class: "btn btn-sm btn-ghost" %>
             <% end %>
           <% end %>
         </div>
 
-        <% if @agent_sandboxes.any? %>
+        <% if @agent_computers.any? %>
           <div class="space-y-3">
-            <% @agent_sandboxes.each do |sandbox| %>
+            <% @agent_computers.each do |computer| %>
               <div class="card border border-base-300 bg-base-100">
                 <div class="card-body flex-row items-center justify-between py-4">
                   <div class="flex items-center gap-4">
                     <div>
                       <h4 class="font-medium">
-                        <%= link_to sandbox.name, agent_sandbox_path(sandbox), class: "link link-hover" %>
+                        <%= link_to computer.name, agent_computer_path(computer), class: "link link-hover" %>
                       </h4>
                       <p class="text-sm text-base-content/60">
-                        <%= sandbox.cluster.name %>
-                        &middot; Created <%= time_ago_in_words(sandbox.created_at) %> ago
-                        by <%= sandbox.user.first_name.present? ? "#{sandbox.user.first_name} #{sandbox.user.last_name}".strip : sandbox.user.email %>
+                        <%= computer.cluster.name %>
+                        &middot; Created <%= time_ago_in_words(computer.created_at) %> ago
+                        by <%= computer.user.first_name.present? ? "#{computer.user.first_name} #{computer.user.last_name}".strip : computer.user.email %>
                       </p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <%= agent_sandbox_status_badge(sandbox) %>
+                    <%= agent_computer_status_badge(computer) %>
                   </div>
                 </div>
               </div>
@@ -73,9 +73,9 @@
             <iconify-icon icon="lucide:box" class="text-4xl text-base-content/30 mb-2"></iconify-icon>
             <p class="text-base-content/60">
               <% if params[:search].present? || params[:status].present? || params[:created_by_id].present? %>
-                No sandboxes match your filters.
+                No computers match your filters.
               <% else %>
-                No agent sandboxes yet. Create one to get started.
+                No agent computers yet. Create one to get started.
               <% end %>
             </p>
           </div>

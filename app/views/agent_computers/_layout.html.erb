@@ -1,39 +1,39 @@
-<%= content_for(:title, "#{agent_sandbox.name} | Sandbox") unless content_for?(:title) %>
+<%= content_for(:title, "#{agent_computer.name} | Computer") unless content_for?(:title) %>
 
 <div class="flex flex-col md:flex-row items-center justify-between mb-4">
   <div class="self-stretch">
     <div>
-      <%= agent_sandbox_status_badge(agent_sandbox) %>
+      <%= agent_computer_status_badge(agent_computer) %>
     </div>
     <h3 class="text-lg font-medium flex items-center gap-2 mt-2 mb-0">
       <iconify-icon icon="lucide:box" height="20"></iconify-icon>
-      <%= agent_sandbox.name %>
+      <%= agent_computer.name %>
     </h3>
     <div class="text-sm flex flex-col md:flex-row gap-2 md:gap-0 mt-1">
       <div class="flex items-center gap-1 text-base-content/60">
         <iconify-icon icon="lucide:user"></iconify-icon>
-        <%= agent_sandbox.user.first_name.present? ? "#{agent_sandbox.user.first_name} #{agent_sandbox.user.last_name}".strip : agent_sandbox.user.email %>
+        <%= agent_computer.user.first_name.present? ? "#{agent_computer.user.first_name} #{agent_computer.user.last_name}".strip : agent_computer.user.email %>
       </div>
       <div class="md:ml-6 flex items-center gap-1 text-base-content/60">
         <iconify-icon icon="devicon:kubernetes"></iconify-icon>
-        <%= agent_sandbox.cluster.name %>
+        <%= agent_computer.cluster.name %>
       </div>
       <div class="md:ml-6 flex items-center gap-1 text-base-content/60">
         <iconify-icon icon="lucide:clock"></iconify-icon>
-        Created <%= time_ago_in_words(agent_sandbox.created_at) %> ago
+        Created <%= time_ago_in_words(agent_computer.created_at) %> ago
       </div>
     </div>
   </div>
   <div class="flex flex-col self-stretch mt-4 lg:mt-0">
     <div class="flex lg:justify-end flex-row gap-2">
-      <% if agent_sandbox.running? %>
+      <% if agent_computer.running? %>
         <button class="btn btn-ghost btn-sm">Stop</button>
-      <% elsif agent_sandbox.stopped? %>
+      <% elsif agent_computer.stopped? %>
         <button class="btn btn-primary btn-sm">Start</button>
       <% end %>
-      <% unless agent_sandbox.destroying? %>
-        <%= button_to agent_sandbox_path(agent_sandbox), method: :delete, class: "btn btn-error btn-sm",
-          data: { turbo_confirm: "Are you sure you want to destroy this sandbox? This cannot be undone." } do %>
+      <% unless agent_computer.destroying? %>
+        <%= button_to agent_computer_path(agent_computer), method: :delete, class: "btn btn-error btn-sm",
+          data: { turbo_confirm: "Are you sure you want to destroy this computer? This cannot be undone." } do %>
           <iconify-icon icon="lucide:trash-2" height="14"></iconify-icon>
           Destroy
         <% end %>
@@ -44,7 +44,7 @@
 
 <div class="md:card md:card-bordered md:bg-base-100">
   <div class="md:card-body overflow-x-auto">
-    <%= render "agent_sandboxes/sidebar", agent_sandbox: agent_sandbox %>
+    <%= render "agent_computers/sidebar", agent_computer: agent_computer %>
 
     <div class="pt-4 pb-4">
       <%= yield %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_20_210227) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_24_050000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,15 +89,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_20_210227) do
     t.index ["name"], name: "index_add_ons_on_name"
   end
 
-  create_table "agent_sandboxes", force: :cascade do |t|
+  create_table "agent_computers", force: :cascade do |t|
     t.string "name", null: false
     t.integer "status", default: 0, null: false
     t.bigint "account_user_id", null: false
     t.bigint "cluster_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_user_id"], name: "index_agent_sandboxes_on_account_user_id"
-    t.index ["cluster_id"], name: "index_agent_sandboxes_on_cluster_id"
+    t.string "namespace", null: false
+    t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
+    t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -703,21 +704,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_20_210227) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "sandbox_proxy_tokens", force: :cascade do |t|
-    t.string "token", null: false
-    t.string "pod_name", null: false
-    t.string "namespace", null: false
-    t.datetime "expires_at", null: false
-    t.datetime "connected_at"
-    t.bigint "agent_sandbox_id", null: false
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["agent_sandbox_id"], name: "index_sandbox_proxy_tokens_on_agent_sandbox_id"
-    t.index ["token"], name: "index_sandbox_proxy_tokens_on_token", unique: true
-    t.index ["user_id"], name: "index_sandbox_proxy_tokens_on_user_id"
-  end
-
   create_table "services", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.integer "service_type", null: false
@@ -865,8 +851,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_20_210227) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
-  add_foreign_key "agent_sandboxes", "account_users"
-  add_foreign_key "agent_sandboxes", "clusters"
+  add_foreign_key "agent_computers", "account_users"
+  add_foreign_key "agent_computers", "clusters"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
@@ -908,8 +894,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_20_210227) do
   add_foreign_key "projects", "deployments", column: "current_deployment_id", on_delete: :nullify
   add_foreign_key "providers", "sso_providers"
   add_foreign_key "providers", "users"
-  add_foreign_key "sandbox_proxy_tokens", "agent_sandboxes"
-  add_foreign_key "sandbox_proxy_tokens", "users"
   add_foreign_key "services", "projects"
   add_foreign_key "shell_tokens", "clusters"
   add_foreign_key "shell_tokens", "users"

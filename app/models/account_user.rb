@@ -23,7 +23,7 @@ class AccountUser < ApplicationRecord
   belongs_to :user
   belongs_to :account
 
-  has_many :agent_sandboxes, dependent: :destroy
+  has_many :agent_computers, dependent: :destroy
 
   enum :role, { owner: 0, admin: 1, member: 2 }
 
