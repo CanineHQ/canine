@@ -47,7 +47,8 @@ class ClusterPackage < ApplicationRecord
     "metrics-server" => "ClusterPackage::Installer::MetricsServer",
     "telepresence" => "ClusterPackage::Installer::Telepresence",
     "cloudflared" => "ClusterPackage::Installer::Cloudflared",
-    "fluent-bit" => "ClusterPackage::Installer::FluentBit"
+    "fluent-bit" => "ClusterPackage::Installer::FluentBit",
+    "kubevirt" => "ClusterPackage::Installer::KubeVirt"
   }.freeze
 
   def definition

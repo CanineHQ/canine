@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_24_050000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
     t.index ["name"], name: "index_add_ons_on_name"
+  end
+
+  create_table "agent_computers", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "account_user_id", null: false
+    t.bigint "cluster_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "namespace", null: false
+    t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
+    t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -839,6 +851,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "agent_computers", "account_users"
+  add_foreign_key "agent_computers", "clusters"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"

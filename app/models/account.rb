@@ -47,6 +47,7 @@ class Account < ApplicationRecord
   has_many :projects, through: :clusters
   has_many :add_ons, through: :clusters
   has_many :services, through: :projects
+  has_many :agent_computers, through: :account_users
   has_many :providers, through: :users
   has_many :favorites, dependent: :destroy
 

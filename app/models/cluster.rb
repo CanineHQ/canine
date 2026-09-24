@@ -35,6 +35,7 @@ class Cluster < ApplicationRecord
 
   has_many :projects, dependent: :destroy
   has_many :add_ons, dependent: :destroy
+  has_many :agent_computers, dependent: :destroy
   has_many :cluster_packages, dependent: :destroy
   has_many :domains, through: :projects
   has_many :metrics, dependent: :destroy
@@ -62,7 +63,7 @@ class Cluster < ApplicationRecord
     local_k3s: 2
   }
   def namespaces
-    projects.pluck(:namespace) + add_ons.pluck(:namespace)
+    projects.pluck(:namespace) + add_ons.pluck(:namespace) + agent_computers.pluck(:namespace)
   end
 
   def create_build_cloud!(attributes = {})
@@ -77,6 +78,12 @@ class Cluster < ApplicationRecord
   def in_cluster?
     options&.dig("in_cluster") == true
   end
+
+  def agent_computer_enabled?
+    cluster_packages.exists?(name: "kubevirt", status: :installed)
+  end
+
+  scope :with_agent_computer, -> { where(id: ClusterPackage.where(name: "kubevirt", status: :installed).select(:cluster_id)) }
 
   private
 

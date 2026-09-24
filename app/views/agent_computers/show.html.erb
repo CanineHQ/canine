@@ -1,0 +1,65 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div class="grid gap-4 md:grid-cols-3">
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Status</div>
+      <div class="mt-1"><%= agent_computer_status_badge(@agent_computer) %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Cluster</div>
+      <div class="mt-1 font-medium"><%= @agent_computer.cluster.name %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Created</div>
+      <div class="mt-1"><%= @agent_computer.created_at.strftime("%b %d, %Y at %I:%M %p") %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Created By</div>
+      <div class="mt-1 font-medium">
+        <%= @agent_computer.user.first_name.present? ? "#{@agent_computer.user.first_name} #{@agent_computer.user.last_name}".strip : @agent_computer.user.email %>
+      </div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Image</div>
+      <div class="mt-1 font-mono text-xs break-all">Ubuntu 24.04 desktop · image <%= AgentComputer::Image.version %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Last Updated</div>
+      <div class="mt-1"><%= time_ago_in_words(@agent_computer.updated_at) %> ago</div>
+    </div>
+  </div>
+
+  <% if @agent_computer.running? %>
+    <div class="divider"></div>
+    <%= turbo_frame_tag "computer_stats", src: stats_agent_computer_path(@agent_computer), loading: :lazy do %>
+      <div class="flex items-center gap-2 text-sm text-base-content/50">
+        <span class="loading loading-spinner loading-sm"></span>
+        Loading live stats from the cluster...
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="divider"></div>
+  <div class="flex items-center justify-between mb-3">
+    <h6 class="text-sm font-semibold">Commands</h6>
+    <%= link_to download_kubeconfig_cluster_path(@agent_computer.cluster), class: "link link-primary text-xs", target: "_blank" do %>
+      Download the <%= @agent_computer.cluster.name %> kubeconfig and install virtctl first
+    <% end %>
+  </div>
+  <% agent_computer_commands(@agent_computer).group_by { |c| c[:group] }.each do |group, commands| %>
+    <div class="text-xs uppercase tracking-wide text-base-content/50 mt-4 mb-2"><%= group %></div>
+    <div class="flex flex-col gap-2">
+      <% commands.each do |command| %>
+        <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+          <div class="text-sm md:w-64 shrink-0"><%= command[:title] %></div>
+          <div class="flex-1 min-w-0 flex items-center gap-2 bg-base-200 rounded px-3 py-1.5">
+            <code class="flex-1 min-w-0 text-xs overflow-x-auto whitespace-nowrap"><%= command[:command] %></code>
+            <button type="button" class="btn btn-ghost btn-xs shrink-0" title="Copy"
+              data-controller="clipboard" data-clipboard-text="<%= command[:command] %>">
+              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+            </button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
