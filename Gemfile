@@ -100,7 +100,7 @@ gem "sentry-rails", "~> 5.27"
 gem "sentry-ruby", "~> 5.28"
 gem "sitemap_generator", "~> 6.1"
 gem "sys-proctable", "~> 1.3"
-gem "tailwindcss-rails", "~> 2.7"
+gem "tailwindcss-rails", "~> 4.6"
 gem 'flipper', '~> 1.2.2'
 gem 'flipper-active_record', '~> 1.2.2'
 gem 'flipper-ui', '~> 1.2.2'
