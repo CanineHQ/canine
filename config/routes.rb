@@ -169,6 +169,8 @@ Rails.application.routes.draw do
     member do
       get :connect
       get :stats
+      post :stop
+      post :start
     end
   end
 

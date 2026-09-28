@@ -47,7 +47,7 @@ class AgentComputer < ApplicationRecord
   has_one :user, through: :account_user
   has_one :account, through: :account_user
 
-  enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5 }
+  enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
 
   # Namespace names are capped at 63 characters, including the prefix
   validates :name, presence: true,

@@ -32,7 +32,9 @@ module AgentComputersHelper
       "running" => "badge-success",
       "stopped" => "badge-neutral",
       "failed" => "badge-error",
-      "destroying" => "badge-warning"
+      "destroying" => "badge-warning",
+      "starting" => "badge-info",
+      "stopping" => "badge-warning"
     }
     badge_class = colors[agent_computer.status] || "badge-neutral"
     tag.span(agent_computer.status.titleize, class: "badge #{badge_class} badge-sm")

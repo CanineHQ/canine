@@ -1,5 +1,5 @@
 class AgentComputersController < ApplicationController
-  before_action :set_agent_computer, only: %i[show destroy connect stats]
+  before_action :set_agent_computer, only: %i[show destroy connect stats stop start]
   before_action :require_running, only: %i[connect]
 
   def index
@@ -49,6 +49,22 @@ class AgentComputersController < ApplicationController
   def destroy
     AgentComputers::DestroyJob.perform_later(@agent_computer)
     redirect_to agent_computers_path, status: :see_other, notice: "Computer is being destroyed."
+  end
+
+  def stop
+    return redirect_to(@agent_computer, alert: "Computer must be running to stop it.") unless @agent_computer.running?
+
+    @agent_computer.stopping!
+    AgentComputers::StopJob.perform_later(@agent_computer)
+    redirect_to @agent_computer, notice: "Computer is shutting down. Its files are kept."
+  end
+
+  def start
+    return redirect_to(@agent_computer, alert: "Computer must be stopped to start it.") unless @agent_computer.stopped?
+
+    @agent_computer.starting!
+    AgentComputers::StartJob.perform_later(@agent_computer)
+    redirect_to @agent_computer, notice: "Computer is starting."
   end
 
   def connect
