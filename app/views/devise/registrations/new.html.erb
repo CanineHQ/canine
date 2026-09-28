@@ -37,11 +37,12 @@
           <%= f.email_field :email, autocomplete: "username", placeholder: true, inputmode: "email", class: "input input-bordered w-full" %>
         </div>
 
-        <div class="form-control">
+        <div class="form-control" data-controller="password-complexity">
           <%= f.label :password, class: "label" do %>
             <span class="label-text">Password</span>
           <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", placeholder: true, class: "input input-bordered w-full" %>
+          <%= f.password_field :password, autocomplete: "new-password", placeholder: true, class: "input input-bordered w-full",
+              data: { password_complexity_target: "input", action: "input->password-complexity#validate" } %>
         </div>
 
         <div class="form-control mt-6">
