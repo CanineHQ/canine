@@ -93,8 +93,19 @@ polkit.addRule(function(action, subject) {
 RULES
 sudo install -m 644 /tmp/49-canine-nopasswd.rules /etc/polkit-1/rules.d/49-canine-nopasswd.rules
 rm /tmp/49-canine-nopasswd.rules
+# Idle locking off. Omarchy's "stay awake" flag does this, but omarchy-update deletes it when it finishes, so also set
+# the idle timeouts as long as Omarchy's timers allow (~23 days; 0 would mean "immediately").
 mkdir -p ~/.local/state/omarchy/indicators
 touch ~/.local/state/omarchy/indicators/stay-awake
+mkdir -p ~/.config/omarchy
+[ -f ~/.config/omarchy/shell.json ] || cp /usr/share/omarchy/config/omarchy/shell.json ~/.config/omarchy/shell.json
+python3 - <<'PY'
+import json, os
+path = os.path.expanduser("~/.config/omarchy/shell.json")
+config = json.load(open(path))
+config["idle"] = {"screensaver": 2000000, "lock": 2000000}
+json.dump(config, open(path, "w"), indent=2)
+PY
 sudo passwd -d "$USER" >/dev/null
 
 # Restarting the display manager applies the autologin, which starts Hyprland and with it Selkies
