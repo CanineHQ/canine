@@ -27,6 +27,11 @@
   <div class="flex flex-col self-stretch mt-4 lg:mt-0">
     <div class="flex lg:justify-end flex-row gap-2">
       <% if agent_computer.running? %>
+        <%= link_to connect_agent_computer_path(agent_computer, watch: 1), target: "_blank", class: "btn btn-ghost btn-sm",
+          title: "Open a view-only copy of the desktop in a new tab" do %>
+          <iconify-icon icon="lucide:eye" height="14"></iconify-icon>
+          Watch
+        <% end %>
         <%= button_to stop_agent_computer_path(agent_computer), class: "btn btn-ghost btn-sm",
           data: { turbo_confirm: "Shut down this computer? Open windows close, but its files and installed apps are kept." } do %>
           <iconify-icon icon="lucide:square" height="14"></iconify-icon>
