@@ -32,6 +32,8 @@ PartOf=graphical-session.target
 [Service]
 Environment=SELKIES_WAYLAND=true
 Environment=SELKIES_USE_CSS_SCALING=true
+# On a Mac, Selkies sends Cmd+key as Ctrl+key by default; Omarchy's shortcuts are Super+key, so send Cmd as Super
+Environment=SELKIES_MAC_CMD_AS_CTRL=false
 Environment=SELKIES_MANUAL_WIDTH=1920
 Environment=SELKIES_MANUAL_HEIGHT=1080
 ExecStart=/bin/sh -c 'exec /usr/bin/selkies --public --port=${DESKTOP_PORT} --enable-basic-auth=false --enable-https=false --wayland-host-display="\$WAYLAND_DISPLAY"'
