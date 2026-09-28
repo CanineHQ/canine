@@ -23,20 +23,6 @@
       <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputer::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
     </div>
     <div>
-      <div class="text-xs uppercase tracking-wide text-base-content/50">Login</div>
-      <div class="mt-1 flex items-center gap-2 text-sm">
-        <span class="font-mono"><%= AgentComputer::DESKTOP_USER %></span>
-        <% if @agent_computer.password.present? %>
-          <span class="text-base-content/40">/</span>
-          <button type="button" class="btn btn-ghost btn-xs gap-1" title="Copy password (lock screen and sudo)"
-            data-controller="clipboard" data-clipboard-text="<%= @agent_computer.password %>">
-            <span class="font-mono tracking-widest">••••••••</span>
-            <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
-          </button>
-        <% end %>
-      </div>
-    </div>
-    <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Last Updated</div>
       <div class="mt-1"><%= time_ago_in_words(@agent_computer.updated_at) %> ago</div>
     </div>

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Turns a fresh Omarchy install into an agent computer: streams the Hyprland session to the browser with Selkies.
 # AgentComputers::ProvisionJob runs it over SSH as the desktop user once the unattended install has finished, with
-# SETUP_PASSWORD (for sudo), DESKTOP_PORT, SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
+# SETUP_PASSWORD (the generated password, for sudo until it's removed below), DESKTOP_PORT, SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
 set -euo pipefail
 : "${SETUP_PASSWORD:?}" "${DESKTOP_PORT:?}" "${SELKIES_PACKAGE_URL:?}" "${SELKIES_PACKAGE_SHA256:?}"
 as_root() { printf '%s\n' "$SETUP_PASSWORD" | sudo -S -p '' "$@"; }
@@ -74,6 +74,26 @@ fi
 mkdir -p ~/.local/state/omarchy/toggles
 touch ~/.local/state/omarchy/toggles/screensaver-off
 
+# --- No desktop password: Canine already decides who can reach this desktop ---------------------------------------
+# sudo and graphical admin prompts stop asking, idle locking is off, and the account's password is deleted. Omarchy's
+# lock screen allows empty passwords (nullok), so if someone locks it by hand, typing anything and Enter unlocks it.
+# (The installer requires a password, so Canine generated one; it's only needed until this point.)
+echo "$USER ALL=(ALL) NOPASSWD: ALL" > /tmp/90-canine-nopasswd
+as_root visudo -cqf /tmp/90-canine-nopasswd
+as_root install -m 440 /tmp/90-canine-nopasswd /etc/sudoers.d/90-canine-nopasswd
+rm /tmp/90-canine-nopasswd
+cat > /tmp/49-canine-nopasswd.rules <<'RULES'
+// Canine: the desktop is only reachable through Canine's authenticated proxy, so admin prompts don't ask for a password
+polkit.addRule(function(action, subject) {
+  if (subject.isInGroup("wheel")) return polkit.Result.YES;
+});
+RULES
+sudo install -m 644 /tmp/49-canine-nopasswd.rules /etc/polkit-1/rules.d/49-canine-nopasswd.rules
+rm /tmp/49-canine-nopasswd.rules
+mkdir -p ~/.local/state/omarchy/indicators
+touch ~/.local/state/omarchy/indicators/stay-awake
+sudo passwd -d "$USER" >/dev/null
+
 # Restarting the display manager applies the autologin, which starts Hyprland and with it Selkies
-as_root systemctl restart sddm
+sudo systemctl restart sddm
 echo "OMARCHY_SETUP_OK"

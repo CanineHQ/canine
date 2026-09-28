@@ -65,6 +65,8 @@ class AgentComputer < ApplicationRecord
 
   private
 
+  # The Omarchy installer needs a password for the desktop user; omarchy-setup.sh uses it once for sudo, then deletes
+  # it (Canine is the only way in). The key is how Canine logs in to run that setup.
   def generate_guest_credentials
     self.password ||= SecureRandom.alphanumeric(16)
     self.ssh_private_key ||= OpenSSL::PKey::EC.generate("prime256v1").to_pem
