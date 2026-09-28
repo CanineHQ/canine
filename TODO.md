@@ -25,6 +25,8 @@
 
 - [x] Lifecycle: stop/start from the UI
 - [ ] Lifecycle: stop idle computers automatically (nobody connected for a while); start on connect
+- [ ] Keep memory across Stop: hibernate inside the VM (`systemctl hibernate`; Omarchy already sets up a swapfile
+      and `resume=`), with a forced shutdown as the fallback. Saved memory can't be restored at a different size.
 - [ ] Agent control: a way for agents to see and drive the Omarchy (Wayland/Hyprland) desktop, e.g. hyprctl IPC,
       a screen-capture protocol, and virtual keyboard/pointer input; then accept Canine API tokens for it in
       `lib/agent_computer_proxy.rb` and add `/api/v1/agent_computers` (update the swagger specs)
