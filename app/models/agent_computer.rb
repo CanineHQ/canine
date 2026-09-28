@@ -36,7 +36,9 @@ class AgentComputer < ApplicationRecord
   DESKTOP_PORT = 8080
   SSH_PORT = 22
   CPU_CORES = 4
-  MEMORY = "8Gi"
+  # Measured: the desktop idles at ~2GiB and handled 12 heavy browser tabs with video in 4GiB (spilling ~270MiB into
+  # Omarchy's compressed zram swap, no OOM kills). Memory, not CPU, decides how many computers fit on a node.
+  MEMORY = "4Gi"
   DISK_SIZE = "60Gi"
 
   belongs_to :account_user
