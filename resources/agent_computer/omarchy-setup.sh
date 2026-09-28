@@ -69,6 +69,11 @@ hl.config({
 LUA
 fi
 
+# Omarchy's screensaver hides the cursor while it runs and turns it back on when it exits, undoing the setting above
+# (a second, lagging pointer in the stream). Nobody watches an idle stream, so turn it off; that also saves CPU.
+mkdir -p ~/.local/state/omarchy/toggles
+touch ~/.local/state/omarchy/toggles/screensaver-off
+
 # Restarting the display manager applies the autologin, which starts Hyprland and with it Selkies
 as_root systemctl restart sddm
 echo "OMARCHY_SETUP_OK"
