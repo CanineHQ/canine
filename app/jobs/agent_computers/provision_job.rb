@@ -1,31 +1,39 @@
 module AgentComputers
-  # Creates an agent computer: a KubeVirt VM whose disk is cloned from the cluster's golden image.
+  # Creates an agent computer: a KubeVirt VM that installs Omarchy unattended from its ISO (AgentComputer::Omarchy),
+  # then, once the installed system is up, logs in over SSH and runs omarchy-setup.sh to stream it with Selkies.
   class ProvisionJob < ApplicationJob
     queue_as :default
 
-    READY_TIMEOUT = 15.minutes
-    POLL_INTERVAL = 5.seconds
+    BOOT_TIMEOUT = 15.minutes    # importing the ISO and starting the VM
+    INSTALL_TIMEOUT = 40.minutes # the unattended install, from the VM starting to the installed system answering SSH
+    DESKTOP_TIMEOUT = 5.minutes  # after setup, until Selkies is streaming
+    POLL_INTERVAL = 15.seconds
     FAILURE_GRACE = 3.minutes
 
     def perform(agent_computer)
       agent_computer.provisioning!
 
       cluster = agent_computer.cluster
-      user = agent_computer.user
-      connection = K8::Connection.new(cluster, user)
+      connection = K8::Connection.new(cluster, agent_computer.user)
       kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
-
-      # No-op when this cluster already has the current image version
-      BuildImageJob.perform_now(cluster, user)
+      omarchy = AgentComputer::Omarchy.new(agent_computer)
 
       kubectl.apply_yaml(K8::Namespace.new(agent_computer).to_yaml)
       kubectl.apply_yaml(build_network_policy_yaml(agent_computer))
-      kubectl.apply_yaml(AgentComputer::Image.clone_role_yaml)
-      kubectl.apply_yaml(AgentComputer::Image.clone_role_binding_yaml(agent_computer))
-      kubectl.apply_yaml(build_virtual_machine_yaml(agent_computer))
+      kubectl.apply_yaml(omarchy.cidata_config_map_yaml)
+      kubectl.apply_yaml(omarchy.virtual_machine_yaml(labels(agent_computer)))
 
       wait_until_running(agent_computer, K8::Kubectl.new(connection))
+      cluster.info("Installing Omarchy on #{agent_computer.name} (usually 5-10 minutes)...", color: :yellow)
+      wait_until_installed(agent_computer, connection)
+      cluster.info("Setting up the desktop stream on #{agent_computer.name}...", color: :yellow)
+      GuestShell.open(agent_computer, connection) do |shell|
+        shell.run("bash -s", stdin: AgentComputer::Omarchy::SETUP_SCRIPT.read, env: omarchy.setup_environment)
+      end
+      wait_until_streaming(agent_computer, connection)
+
       agent_computer.running!
+      cluster.success("Agent computer #{agent_computer.name} is ready")
     rescue StandardError => e
       agent_computer.failed!
       Rails.logger.error("Failed to provision agent computer #{agent_computer.id}: #{e.message}")
@@ -34,22 +42,50 @@ module AgentComputers
 
     private
 
-    # Covers cloning the disk and booting; KubeVirt reports problems like a failed clone as a Failure condition
+    # Covers importing the ISO and booting; KubeVirt reports problems like a failed import as a Failure condition
     def wait_until_running(agent_computer, kubectl)
       started = Time.current
-      deadline = started + READY_TIMEOUT
-      while Time.current < deadline
+      until Time.current > started + BOOT_TIMEOUT
         vm = JSON.parse(kubectl.(%W[get vm #{agent_computer.name} -n #{agent_computer.namespace} -o json]))
         return if vm.dig("status", "printableStatus") == "Running"
 
-        # A failure can be stale from an earlier attempt (e.g. before the clone permission existed), so give
-        # KubeVirt's backoff time to retry before trusting it
+        # A failure can be stale from an earlier attempt, so give KubeVirt's backoff time to retry before trusting it
         failure = vm.dig("status", "conditions")&.find { |c| c["type"] == "Failure" && c["status"] == "True" }
         raise "Agent computer VM failed to start: #{failure["message"]}" if failure && Time.current > started + FAILURE_GRACE
 
         sleep POLL_INTERVAL
       end
-      raise "Agent computer VM wasn't running after #{READY_TIMEOUT.inspect}"
+      raise "Agent computer VM wasn't running after #{BOOT_TIMEOUT.inspect}"
+    end
+
+    # The live ISO also runs sshd, so SSH answering isn't enough: the install is done when our key logs in as the
+    # desktop user on a machine with the computer's hostname
+    def wait_until_installed(agent_computer, connection)
+      deadline = INSTALL_TIMEOUT.from_now
+      last_error = nil
+      until Time.current > deadline
+        begin
+          hostname = GuestShell.open(agent_computer, connection) { |shell| shell.run("hostname").strip }
+          return if hostname == agent_computer.name
+
+          last_error = "hostname is #{hostname.inspect}"
+        rescue GuestShell::Error => e
+          last_error = e.message
+        end
+        sleep POLL_INTERVAL
+      end
+      raise "Omarchy install didn't finish within #{INSTALL_TIMEOUT.inspect} (last SSH attempt: #{last_error})"
+    end
+
+    def wait_until_streaming(agent_computer, connection)
+      deadline = DESKTOP_TIMEOUT.from_now
+      until Time.current > deadline
+        listening = GuestShell.open(agent_computer, connection) { |shell| shell.run("ss -Hltn 'sport = :#{AgentComputer::DESKTOP_PORT}'") }
+        return if listening.present?
+
+        sleep 5
+      end
+      raise "Selkies wasn't listening on port #{AgentComputer::DESKTOP_PORT} within #{DESKTOP_TIMEOUT.inspect} of setup"
     end
 
     def labels(agent_computer)
@@ -59,73 +95,14 @@ module AgentComputers
       }
     end
 
-    # Selkies and computer-server are unauthenticated, so block every in-cluster connection. Canine reaches the VM
-    # through kubectl port-forward, which isn't subject to NetworkPolicy. The image namespace is allowed because CDI
-    # clones the golden disk over the network, from a pod there to a pod here.
+    # Selkies is unauthenticated, so block every in-cluster connection. Canine reaches the VM (Selkies, and SSH for
+    # setup) through kubectl port-forward, which isn't subject to NetworkPolicy.
     def build_network_policy_yaml(agent_computer)
       {
         "apiVersion" => "networking.k8s.io/v1",
         "kind" => "NetworkPolicy",
-        "metadata" => { "name" => "deny-ingress-except-image-clone", "namespace" => agent_computer.namespace },
-        "spec" => {
-          "podSelector" => {},
-          "policyTypes" => [ "Ingress" ],
-          "ingress" => [
-            { "from" => [ { "namespaceSelector" => { "matchLabels" => { "kubernetes.io/metadata.name" => AgentComputer::Image::NAMESPACE } } } ] }
-          ]
-        }
-      }.to_yaml
-    end
-
-    def build_virtual_machine_yaml(agent_computer)
-      {
-        "apiVersion" => "kubevirt.io/v1",
-        "kind" => "VirtualMachine",
-        "metadata" => {
-          "name" => agent_computer.name,
-          "namespace" => agent_computer.namespace,
-          "labels" => labels(agent_computer)
-        },
-        "spec" => {
-          "runStrategy" => "Always",
-          "dataVolumeTemplates" => [
-            {
-              "metadata" => { "name" => "#{agent_computer.name}-root" },
-              "spec" => {
-                "sourceRef" => { "kind" => "DataSource", "name" => AgentComputer::Image.name, "namespace" => AgentComputer::Image::NAMESPACE },
-                # CDI's StorageProfile for local-path has no default access mode, so always spell these out
-                "storage" => {
-                  "accessModes" => [ "ReadWriteOnce" ],
-                  "volumeMode" => "Filesystem",
-                  "resources" => { "requests" => { "storage" => AgentComputer::DISK_SIZE } }
-                }
-              }
-            }
-          ],
-          "template" => {
-            "metadata" => { "labels" => labels(agent_computer) },
-            "spec" => {
-              "terminationGracePeriodSeconds" => 30,
-              "domain" => {
-                "cpu" => { "cores" => AgentComputer::CPU_CORES },
-                "memory" => { "guest" => AgentComputer::MEMORY },
-                "devices" => {
-                  "logSerialConsole" => true,
-                  "disks" => [
-                    { "name" => "root", "disk" => { "bus" => "virtio" } },
-                    { "name" => "cloudinit", "disk" => { "bus" => "virtio" } }
-                  ],
-                  "interfaces" => [ { "name" => "default", "masquerade" => {} } ]
-                }
-              },
-              "networks" => [ { "name" => "default", "pod" => {} } ],
-              "volumes" => [
-                { "name" => "root", "dataVolume" => { "name" => "#{agent_computer.name}-root" } },
-                { "name" => "cloudinit", "cloudInitNoCloud" => { "userData" => "#cloud-config\nhostname: #{agent_computer.name}\n" } }
-              ]
-            }
-          }
-        }
+        "metadata" => { "name" => "deny-all-ingress", "namespace" => agent_computer.namespace },
+        "spec" => { "podSelector" => {}, "policyTypes" => [ "Ingress" ] }
       }.to_yaml
     end
   end

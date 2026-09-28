@@ -11,7 +11,6 @@ module AgentComputers
       kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
 
       kubectl.(%W[delete namespace #{agent_computer.namespace} --ignore-not-found])
-      kubectl.(%W[delete rolebinding #{AgentComputer::Image.clone_role_binding_name(agent_computer)} -n #{AgentComputer::Image::NAMESPACE} --ignore-not-found])
 
       agent_computer.destroy!
     rescue StandardError => e

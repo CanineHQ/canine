@@ -8,7 +8,6 @@ module AgentComputersHelper
     ns = agent_computer.namespace
     vm = agent_computer.name
     launcher = "-l vm.kubevirt.io/name=#{vm}"
-    api = AgentComputer::COMPUTER_SERVER_PORT
     desktop = AgentComputer::DESKTOP_PORT
 
     [
@@ -22,12 +21,7 @@ module AgentComputersHelper
       { group: "Debug", title: "Recent events", command: "kubectl get events -n #{ns} --sort-by=.lastTimestamp" },
       { group: "Debug", title: "VM resource", command: "kubectl describe vm #{vm} -n #{ns}" },
       # Port-forward to the VM's launcher pod: virtctl port-forward hangs on HTTP (client-first) connections
-      { group: "Remote", title: "Desktop on localhost:#{desktop}", command: "kubectl port-forward -n #{ns} $(kubectl get pod -n #{ns} #{launcher} -o name) #{desktop}:#{desktop}" },
-      { group: "Remote", title: "Computer API on localhost:#{api}", command: "kubectl port-forward -n #{ns} $(kubectl get pod -n #{ns} #{launcher} -o name) #{api}:#{api}" },
-      { group: "Remote", title: "API health (after port-forward)", command: "curl -s localhost:#{api}/status" },
-      { group: "Remote", title: "Save a screenshot (after port-forward)", command: %(curl -s -X POST localhost:#{api}/cmd -H 'Content-Type: application/json' -d '{"command":"screenshot"}' | jq -r .image_data | base64 -d > screenshot.png) },
-      { group: "Remote", title: "Accessibility tree (after port-forward)", command: %(curl -s -X POST localhost:#{api}/cmd -H 'Content-Type: application/json' -d '{"command":"get_accessibility_tree","params":{"max_depth":6}}' | jq .tree) },
-      { group: "Remote", title: "All agent commands (after port-forward)", command: "curl -s localhost:#{api}/commands | jq" }
+      { group: "Remote", title: "Desktop on localhost:#{desktop}", command: "kubectl port-forward -n #{ns} $(kubectl get pod -n #{ns} #{launcher} -o name) #{desktop}:#{desktop}" }
     ]
   end
 

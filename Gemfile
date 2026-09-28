@@ -108,6 +108,7 @@ gem 'flipper-ui', '~> 1.2.2'
 gem "net-ldap", "~> 0.20.0"
 
 gem "jwt", "~> 2.9"
+gem "net-ssh", "~> 7.3"
 
 gem "ruby-saml", "~> 1.17"
 

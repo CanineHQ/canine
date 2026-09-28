@@ -168,7 +168,6 @@ Rails.application.routes.draw do
   resources :agent_computers, only: %i[index show new create destroy] do
     member do
       get :connect
-      get :control
       get :stats
     end
   end

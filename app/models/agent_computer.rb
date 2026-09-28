@@ -3,8 +3,11 @@
 # Table name: agent_computers
 #
 #  id              :bigint           not null, primary key
+#  desktop         :string           default("selkies"), not null
 #  name            :string           not null
 #  namespace       :string           not null
+#  password        :string
+#  ssh_private_key :text
 #  status          :integer          default("pending"), not null
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
@@ -21,18 +24,20 @@
 #  fk_rails_...  (account_user_id => account_users.id)
 #  fk_rails_...  (cluster_id => clusters.id)
 #
+require "net/ssh" # adds ssh_type/to_blob to OpenSSL keys
+
 class AgentComputer < ApplicationRecord
   include Namespaced
 
   NAMESPACE_PREFIX = "computer-"
-  # Each agent computer is a KubeVirt VM cloned from AgentComputer::Image: Ubuntu 24.04 with XFCE, streamed to the
-  # browser by Selkies, and our computer server for agent control. See resources/agent_computer/.
-  DESKTOP_USER = "computer"
+  # Each agent computer is a KubeVirt VM running Omarchy (Arch Linux + Hyprland), installed unattended from the
+  # Omarchy ISO and streamed to the browser by Selkies. See AgentComputer::Omarchy and ProvisionJob.
+  DESKTOP_USER = "omarchy"
   DESKTOP_PORT = 8080
-  COMPUTER_SERVER_PORT = 8000
-  CPU_CORES = 2
-  MEMORY = "4Gi"
-  DISK_SIZE = "40Gi"
+  SSH_PORT = 22
+  CPU_CORES = 4
+  MEMORY = "8Gi"
+  DISK_SIZE = "60Gi"
 
   belongs_to :account_user
   belongs_to :cluster
@@ -48,10 +53,22 @@ class AgentComputer < ApplicationRecord
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
 
   before_validation :assign_namespace, on: :create
+  before_create :generate_guest_credentials
 
   scope :for_account, ->(account) { joins(:account_user).where(account_users: { account_id: account.id }) }
 
+  # OpenSSH authorized_keys line for the key Canine uses to reach the guest
+  def ssh_public_key
+    key = OpenSSL::PKey.read(ssh_private_key)
+    "#{key.ssh_type} #{[ key.to_blob ].pack("m0")} canine-#{name}"
+  end
+
   private
+
+  def generate_guest_credentials
+    self.password ||= SecureRandom.alphanumeric(16)
+    self.ssh_private_key ||= OpenSSL::PKey::EC.generate("prime256v1").to_pem
+  end
 
   def assign_namespace
     self.namespace = "#{NAMESPACE_PREFIX}#{name}" if name.present?

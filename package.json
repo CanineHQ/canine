@@ -19,6 +19,7 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.20",
     "@iconify/tailwind": "^1.1.3",
+    "@novnc/novnc": "1.4.0",
     "@popperjs/core": "^2.11.8",
     "@rails/actioncable": "^7.1.0",
     "@rails/activestorage": "^7.2.100",

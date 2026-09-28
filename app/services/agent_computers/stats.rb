@@ -10,7 +10,7 @@ module AgentComputers
     GUEST_ADDRESS = "10.0.2.2"
     SERVICES = {
       "desktop" => AgentComputer::DESKTOP_PORT,
-      "computer-server" => AgentComputer::COMPUTER_SERVER_PORT
+      "ssh" => AgentComputer::SSH_PORT
     }.freeze
 
     attr_reader :vmi, :pod, :cpu_used, :memory_used, :disk_used, :disk_size, :services

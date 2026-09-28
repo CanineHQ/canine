@@ -1,6 +1,6 @@
 class AgentComputersController < ApplicationController
-  before_action :set_agent_computer, only: %i[show destroy connect control stats]
-  before_action :require_running, only: %i[connect control]
+  before_action :set_agent_computer, only: %i[show destroy connect stats]
+  before_action :require_running, only: %i[connect]
 
   def index
     @agent_computers = current_account.agent_computers
@@ -53,9 +53,6 @@ class AgentComputersController < ApplicationController
 
   def connect
     render layout: "fullscreen"
-  end
-
-  def control
   end
 
   # Loaded lazily into a turbo frame on the overview, since it shells out to the cluster several times

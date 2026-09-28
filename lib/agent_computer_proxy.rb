@@ -4,18 +4,19 @@ require "socket"
 require "digest/sha1"
 require "shellwords"
 require "net/http"
+require_relative "kubevirt_vnc_relay"
 
-# Rack middleware that reverse-proxies HTTP and WebSocket requests to a sandbox pod
+# Rack middleware that reverse-proxies HTTP and WebSocket requests to an agent computer's VM
 # via kubectl port-forward. Authenticates via Rails session.
 #
 # Paths:
 #   /agent_computers/:id/proxy/*  — Selkies desktop (HTTP + /websockets WebSocket)
-#   /agent_computers/:id/api/*    — computer server (HTTP + /ws WebSocket)
+#   /agent_computers/:id/vnc      — the VM's own screen via KubeVirt's VNC subresource (WebSocket)
 class AgentComputerProxy
-  # Mirrors AgentComputer::DESKTOP_PORT / COMPUTER_SERVER_PORT; app models aren't autoloadable when middleware loads
-  TARGET_PORTS = { "proxy" => 8080, "api" => 8000 }.freeze
+  # Mirrors AgentComputer::DESKTOP_PORT; app models aren't autoloadable when middleware loads
+  TARGET_PORTS = { "proxy" => 8080 }.freeze
   FORWARD_PORT_RANGE = (18000..19000)
-  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|api)(?:/(.*))?}
+  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|vnc)(?:/(.*))?}
 
   AUTH_CACHE_TTL = 60 # seconds
 
@@ -30,7 +31,9 @@ class AgentComputerProxy
     request = Rack::Request.new(env)
     match = request.path_info.match(PATH_PATTERN)
 
-    if match
+    if match && match[2] == "vnc"
+      handle_vnc(env, match[1].to_i)
+    elsif match
       sandbox_id = match[1].to_i
       remote_port = TARGET_PORTS.fetch(match[2])
       subpath = match[3] || ""
@@ -46,6 +49,18 @@ class AgentComputerProxy
   end
 
   private
+
+  # No port-forward: KubevirtVncRelay talks to the cluster API directly
+  def handle_vnc(env, sandbox_id)
+    return [ 400, {}, [ "WebSocket required" ] ] unless websocket?(env)
+
+    sandbox = authenticate_sandbox(sandbox_id, env)
+    return [ 401, {}, [ "Unauthorized" ] ] unless sandbox
+
+    connection = K8::Connection.new(sandbox.cluster, sandbox.user)
+    KubevirtVncRelay.new(namespace: sandbox.namespace, vm: sandbox.name, kubeconfig: connection.kubeconfig,
+                         skip_tls_verify: true).call(env)
+  end
 
   def log(msg)
     Rails.logger.info("[AgentComputerProxy] #{msg}")
@@ -260,11 +275,14 @@ class AgentComputerProxy
     upgrade_request = "GET #{path_for_upstream} HTTP/1.1\r\n"
     # Forward all relevant headers
     env.each do |key, value|
-      next unless key.start_with?("HTTP_") && key != "HTTP_HOST"
+      next unless key.start_with?("HTTP_") && !%w[HTTP_HOST HTTP_ORIGIN].include?(key)
       header_name = key.sub("HTTP_", "").split("_").map(&:capitalize).join("-")
       upgrade_request += "#{header_name}: #{value}\r\n"
     end
     upgrade_request += "Host: 127.0.0.1:#{local_port}\r\n"
+    # Servers like Selkies 2.0 reject upgrades whose Origin doesn't match their Host. The user is already
+    # authenticated above, so present the request as same-origin to the upstream.
+    upgrade_request += "Origin: http://127.0.0.1:#{local_port}\r\n" if env["HTTP_ORIGIN"]
     upgrade_request += "\r\n"
 
     upstream.write(upgrade_request)

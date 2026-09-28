@@ -20,3 +20,11 @@
 - [ ] log drain from application
 - [ ] Check the pods in the namespace and ensure they are running. - app/services/k8/build_cloud_manager.rb
 - [ ] Handle stuck helm `pending-upgrade` releases — detect and rollback before retrying in `K8::Helm::Client#install`
+
+## Agent computers
+
+- [ ] Lifecycle: stop/start/pause/resume from the UI; pause when idle and resume on connect
+- [ ] Agent control: a way for agents to see and drive the Omarchy (Wayland/Hyprland) desktop, e.g. hyprctl IPC,
+      a screen-capture protocol, and virtual keyboard/pointer input; then accept Canine API tokens for it in
+      `lib/agent_computer_proxy.rb` and add `/api/v1/agent_computers` (update the swagger specs)
+- [ ] Share the Omarchy ISO across computers on a cluster instead of importing 6GB per computer

@@ -1,5 +1,5 @@
-# Installs KubeVirt (VMs on Kubernetes) and CDI (disk importer/cloner), which agent computers run on, then builds the
-# agent computer golden image. Reuses an existing KubeVirt install and never removes one Canine didn't install.
+# Installs KubeVirt (VMs on Kubernetes) and CDI (disk importer), which agent computers run on. Reuses an existing
+# KubeVirt install and never removes one Canine didn't install.
 class ClusterPackage::Installer::KubeVirt < ClusterPackage::Installer::Base
   KUBEVIRT_VERSION = "v1.9.0"
   CDI_VERSION = "v1.66.1"
@@ -24,14 +24,11 @@ class ClusterPackage::Installer::KubeVirt < ClusterPackage::Installer::Base
     end
 
     ensure_kvm!(kubectl)
-    AgentComputers::BuildImageJob.perform_later(cluster)
   end
 
   def uninstall!(kubectl)
     cluster = package.cluster
     raise "Delete this cluster's agent computers before uninstalling KubeVirt" if cluster.agent_computers.exists?
-
-    kubectl.(%W[delete namespace #{AgentComputer::Image::NAMESPACE} --ignore-not-found])
     return cluster.info("KubeVirt was installed outside Canine; leaving it in place", color: :yellow) unless package.config["installed_by_canine"]
 
     kubectl.(%w[delete kubevirt/kubevirt -n kubevirt --ignore-not-found --wait=true])
@@ -42,17 +39,23 @@ class ClusterPackage::Installer::KubeVirt < ClusterPackage::Installer::Base
   private
 
   def deployed?(kubectl)
-    kubectl.(%w[get kubevirt -A -o jsonpath={.items[*].status.phase}]).include?("Deployed") &&
-      kubectl.(%w[get cdi -A -o jsonpath={.items[*].status.phase}]).include?("Deployed")
+    reader = output_reader(kubectl)
+    reader.(%w[get kubevirt -A -o jsonpath={.items[*].status.phase}]).include?("Deployed") &&
+      reader.(%w[get cdi -A -o jsonpath={.items[*].status.phase}]).include?("Deployed")
   rescue Cli::CommandFailedError
     false
   end
 
   # KubeVirt advertises KVM as a node resource; without it VMs would fall back to (very slow) emulation or not start
   def ensure_kvm!(kubectl)
-    kvm = kubectl.(%w[get nodes -o jsonpath={.items[*].status.allocatable.devices\.kubevirt\.io/kvm}]).split
+    kvm = output_reader(kubectl).(%w[get nodes -o jsonpath={.items[*].status.allocatable.devices\.kubevirt\.io/kvm}]).split
     return if kvm.any? { |count| count.to_i.positive? || count.end_with?("k") }
 
     raise "No node in this cluster exposes KVM (/dev/kvm). Agent computers need bare-metal nodes or VMs with nested virtualization."
+  end
+
+  # The install job's kubectl logs output to the cluster and returns the exit status, so reads need their own
+  def output_reader(kubectl)
+    K8::Kubectl.new(kubectl.connection)
   end
 end

@@ -1,4 +1,14 @@
 <%= content_for :title, "#{@agent_computer.name} | Desktop" %>
+<% if @agent_computer.desktop == "vnc" %>
+  <div class="relative h-screen w-screen bg-black"
+       data-controller="vnc-viewer" data-vnc-viewer-url-value="<%= "/agent_computers/#{@agent_computer.id}/vnc" %>">
+    <div data-vnc-viewer-target="screen" class="absolute inset-0"></div>
+    <div data-vnc-viewer-target="status" hidden
+         class="absolute top-3 left-1/2 -translate-x-1/2 z-10 alert alert-warning shadow-lg w-auto py-2 text-sm">
+      Connecting...
+    </div>
+  </div>
+<% else %>
 <% proxy_url = "/agent_computers/#{@agent_computer.id}/proxy/" %>
 
 <div class="relative h-screen w-screen bg-base-300">
@@ -52,3 +62,4 @@
 
   startHealthCheck();
 </script>
+<% end %>

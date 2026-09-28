@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_24_050000) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -97,6 +97,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_24_050000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "namespace", null: false
+    t.string "desktop", default: "selkies", null: false
+    t.string "password"
+    t.text "ssh_private_key"
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end
