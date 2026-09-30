@@ -1,6 +1,7 @@
 module AgentComputers
   # Creates an agent computer: a KubeVirt VM that installs Omarchy unattended from its ISO (AgentComputer::Omarchy),
-  # then, once the installed system is up, logs in over SSH and runs omarchy-setup.sh to stream it with Selkies.
+  # then, once the installed system is up, logs in over SSH, copies in the computer-use server, and runs
+  # omarchy-setup.sh to stream it with Selkies.
   class ProvisionJob < ApplicationJob
     queue_as :default
 
@@ -28,6 +29,8 @@ module AgentComputers
       wait_until_installed(agent_computer, connection)
       cluster.info("Setting up the desktop stream on #{agent_computer.name}...", color: :yellow)
       GuestShell.open(agent_computer, connection) do |shell|
+        shell.run("rm -rf ~/.local/share/canine/computer_use && mkdir -p ~/.local/share/canine && tar -xzf - -C ~/.local/share/canine",
+                  stdin: AgentComputer::Omarchy.computer_use_archive)
         shell.run("bash -s", stdin: AgentComputer::Omarchy::SETUP_SCRIPT.read, env: omarchy.setup_environment)
       end
       wait_until_streaming(agent_computer, connection)

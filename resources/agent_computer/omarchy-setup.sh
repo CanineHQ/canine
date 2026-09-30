@@ -1,9 +1,10 @@
 #!/bin/bash
 # Turns a fresh Omarchy install into an agent computer: streams the Hyprland session to the browser with Selkies.
 # AgentComputers::ProvisionJob runs it over SSH as the desktop user once the unattended install has finished, with
-# SETUP_PASSWORD (the generated password, for sudo until it's removed below), DESKTOP_PORT, SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
+# SETUP_PASSWORD (the generated password, for sudo until it's removed below), DESKTOP_PORT, COMPUTER_USE_PORT,
+# SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
 set -euo pipefail
-: "${SETUP_PASSWORD:?}" "${DESKTOP_PORT:?}" "${SELKIES_PACKAGE_URL:?}" "${SELKIES_PACKAGE_SHA256:?}"
+: "${SETUP_PASSWORD:?}" "${DESKTOP_PORT:?}" "${COMPUTER_USE_PORT:?}" "${SELKIES_PACKAGE_URL:?}" "${SELKIES_PACKAGE_SHA256:?}"
 as_root() { printf '%s\n' "$SETUP_PASSWORD" | sudo -S -p '' "$@"; }
 
 # --- Selkies ---------------------------------------------------------------------------------------------------------
@@ -76,6 +77,45 @@ fi
 # (a second, lagging pointer in the stream). Nobody watches an idle stream, so turn it off; that also saves CPU.
 mkdir -p ~/.local/state/omarchy/toggles
 touch ~/.local/state/omarchy/toggles/screensaver-off
+
+# --- Computer use: lets agents see and drive the desktop ------------------------------------------------------------
+# The server is a Python package (resources/agent_computer/computer_use), copied to ~/.local/share/canine/computer_use
+# before this ran. It goes in its own venv; --system-site-packages lets it use Omarchy's PyGObject for AT-SPI.
+python3 -m venv --system-site-packages ~/.local/share/canine/venv
+~/.local/share/canine/venv/bin/pip install --quiet --disable-pip-version-check ~/.local/share/canine/computer_use
+
+# It clicks and presses keys through a virtual input device, which the desktop user (in wheel) may create.
+echo uinput > /tmp/canine-uinput.conf
+as_root install -m 644 /tmp/canine-uinput.conf /etc/modules-load.d/canine-uinput.conf
+echo 'KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", GROUP="wheel", MODE="0660"' > /tmp/60-canine-uinput.rules
+as_root install -m 644 /tmp/60-canine-uinput.rules /etc/udev/rules.d/60-canine-uinput.rules
+rm /tmp/canine-uinput.conf /tmp/60-canine-uinput.rules
+as_root modprobe uinput
+
+# Apps only publish their accessibility tree (what agents read and press by name) when asked: GTK through this
+# setting, Qt through QT_ACCESSIBILITY, Chromium through a flag
+gsettings set org.gnome.desktop.interface toolkit-accessibility true
+mkdir -p ~/.config/environment.d
+echo QT_ACCESSIBILITY=1 > ~/.config/environment.d/60-canine-accessibility.conf
+grep -qx -- --force-renderer-accessibility ~/.config/chromium-flags.conf 2>/dev/null ||
+  echo --force-renderer-accessibility >> ~/.config/chromium-flags.conf
+
+cat > ~/.config/systemd/user/canine-computer-use.service <<UNIT
+[Unit]
+Description=Canine computer-use server
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/share/canine/venv/bin/canine-computer-use --port ${COMPUTER_USE_PORT}
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
+UNIT
+ln -sf ../canine-computer-use.service ~/.config/systemd/user/graphical-session.target.wants/canine-computer-use.service
+as_root ufw allow "${COMPUTER_USE_PORT}/tcp" comment "Computer use (Canine)" >/dev/null
 
 # --- No desktop password: Canine already decides who can reach this desktop ---------------------------------------
 # sudo and graphical admin prompts stop asking, idle locking is off, and the account's password is deleted. Omarchy's

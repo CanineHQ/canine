@@ -34,6 +34,7 @@ class AgentComputer < ApplicationRecord
   # Omarchy ISO and streamed to the browser by Selkies. See AgentComputer::Omarchy and ProvisionJob.
   DESKTOP_USER = "omarchy"
   DESKTOP_PORT = 8080
+  COMPUTER_USE_PORT = 8000 # resources/agent_computer/computer_use
   SSH_PORT = 22
   CPU_CORES = 4
   # Measured: the desktop idles at ~2GiB and handled 12 heavy browser tabs with video in 4GiB (spilling ~270MiB into

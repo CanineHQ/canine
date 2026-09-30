@@ -1,4 +1,5 @@
 require "bcrypt"
+require "open3"
 
 # How an agent computer's VM is built: Omarchy (Arch Linux + Hyprland) installed unattended from its ISO.
 #
@@ -12,6 +13,7 @@ class AgentComputer::Omarchy
   ISO_URL = "https://iso.omarchy.org/omarchy-#{VERSION}.iso"
   ISO_DISK_SIZE = "8Gi" # the ISO is ~6.2GB
   SETUP_SCRIPT = Rails.root.join("resources/agent_computer/omarchy-setup.sh")
+  COMPUTER_USE_SERVER = Rails.root.join("resources/agent_computer/computer_use")
   # Pinned Selkies build for Arch, installed by the setup script
   SELKIES_PACKAGE_URL = "https://github.com/selkies-project/selkies/releases/download/2.0.0/selkies-2.0.0-x86_64.pkg.tar.zst"
   SELKIES_PACKAGE_SHA256 = "39d195ac7acb2924f57cfa564aa97f2ede0d6a5f3c92720c1906142c824a8f74"
@@ -91,9 +93,20 @@ class AgentComputer::Omarchy
     {
       "SETUP_PASSWORD" => @computer.password,
       "DESKTOP_PORT" => AgentComputer::DESKTOP_PORT.to_s,
+      "COMPUTER_USE_PORT" => AgentComputer::COMPUTER_USE_PORT.to_s,
       "SELKIES_PACKAGE_URL" => SELKIES_PACKAGE_URL,
       "SELKIES_PACKAGE_SHA256" => SELKIES_PACKAGE_SHA256
     }
+  end
+
+  # The computer-use server's Python project (pyproject.toml and the package) as a .tar.gz, which the setup unpacks
+  # into ~/.local/share/canine/computer_use and pip-installs
+  def self.computer_use_archive
+    archive, status = Open3.capture2("tar", "-czf", "-", "--exclude=__pycache__", "--exclude=build", "--exclude=*.egg-info",
+                                     "-C", COMPUTER_USE_SERVER.dirname.to_s, COMPUTER_USE_SERVER.basename.to_s, binmode: true)
+    raise "Couldn't archive #{COMPUTER_USE_SERVER}" unless status.success?
+
+    archive
   end
 
   private

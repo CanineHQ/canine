@@ -27,9 +27,10 @@
 - [ ] Lifecycle: stop idle computers automatically (nobody connected for a while); start on connect
 - [ ] Keep memory across Stop: hibernate inside the VM (`systemctl hibernate`; Omarchy already sets up a swapfile
       and `resume=`), with a forced shutdown as the fallback. Saved memory can't be restored at a different size.
-- [ ] Agent control: a way for agents to see and drive the Omarchy (Wayland/Hyprland) desktop, e.g. hyprctl IPC,
-      a screen-capture protocol, and virtual keyboard/pointer input; then accept Canine API tokens for it in
+- [x] Computer use: a server in the VM (Anthropic's computer-use actions + the accessibility tree) and MCP tools for it
+- [ ] Computer use over the API: accept Canine API tokens on `/agent_computers/:id/computer-use` in
       `lib/agent_computer_proxy.rb` and add `/api/v1/agent_computers` (update the swagger specs)
+- [ ] Computer use is slow per call (a kubectl port-forward each time); keep one open per computer if agents need speed
 - [ ] Share the Omarchy ISO across computers on a cluster instead of importing 6GB per computer
 - [x] Watch a computer from a second tab (view-only, Selkies' #shared) and take control back when another tab takes over
 - [ ] Several tabs controlling one desktop at once: Selkies secure mode (master token per computer, Canine provisions

@@ -10,13 +10,14 @@ require_relative "kubevirt_vnc_relay"
 # via kubectl port-forward. Authenticates via Rails session.
 #
 # Paths:
-#   /agent_computers/:id/proxy/*  — Selkies desktop (HTTP + /websockets WebSocket)
-#   /agent_computers/:id/vnc      — the VM's own screen via KubeVirt's VNC subresource (WebSocket)
+#   /agent_computers/:id/proxy/*         — Selkies desktop (HTTP + /websockets WebSocket)
+#   /agent_computers/:id/computer-use/*  — the computer-use server (HTTP; see resources/agent_computer/computer_use)
+#   /agent_computers/:id/vnc             — the VM's own screen via KubeVirt's VNC subresource (WebSocket)
 class AgentComputerProxy
-  # Mirrors AgentComputer::DESKTOP_PORT; app models aren't autoloadable when middleware loads
-  TARGET_PORTS = { "proxy" => 8080 }.freeze
+  # Mirrors AgentComputer::DESKTOP_PORT and COMPUTER_USE_PORT; app models aren't autoloadable when middleware loads
+  TARGET_PORTS = { "proxy" => 8080, "computer-use" => 8000 }.freeze
   FORWARD_PORT_RANGE = (18000..19000)
-  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|vnc)(?:/(.*))?}
+  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|computer-use|vnc)(?:/(.*))?}
 
   AUTH_CACHE_TTL = 60 # seconds
 
