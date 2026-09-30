@@ -1,0 +1,85 @@
+<%= turbo_frame_tag "computer_stats" do %>
+  <div class="flex items-center justify-between mb-3">
+    <h6 class="text-sm font-semibold">Live Stats</h6>
+    <%= link_to stats_agent_computer_path(@agent_computer), class: "btn btn-ghost btn-xs gap-1" do %>
+      <iconify-icon icon="lucide:refresh-cw" height="12"></iconify-icon>
+      Refresh
+    <% end %>
+  </div>
+
+  <% if @error %>
+    <div class="text-sm text-error">Couldn't reach the cluster: <%= @error %></div>
+  <% elsif @stats.nil? || @stats.vmi.nil? %>
+    <div class="text-sm text-base-content/50">This computer's VM isn't running yet.</div>
+  <% else %>
+    <% stats = @stats %>
+    <% gauges = [
+         { label: "CPU", icon: "lucide:cpu", used: stats.cpu_used, limit: stats.cpu_limit,
+           format: ->(m) { m >= 1000 ? "#{(m / 1000.0).round(2)} cores" : "#{m}m" } },
+         { label: "Memory", icon: "lucide:memory-stick", used: stats.memory_used, limit: stats.memory_limit,
+           format: ->(b) { number_to_human_size(b) } },
+         { label: "Disk", icon: "lucide:hard-drive", used: stats.disk_used, limit: stats.disk_size,
+           format: ->(b) { number_to_human_size(b) } }
+       ] %>
+    <div class="grid gap-4 md:grid-cols-3">
+      <% gauges.each do |gauge| %>
+        <% percent = gauge[:used] && gauge[:limit].to_i.positive? ? (gauge[:used] * 100.0 / gauge[:limit]).round : nil %>
+        <div class="bg-base-200 rounded-lg p-3">
+          <div class="flex items-center justify-between text-xs uppercase tracking-wide text-base-content/50">
+            <span class="flex items-center gap-1"><iconify-icon icon="<%= gauge[:icon] %>"></iconify-icon><%= gauge[:label] %></span>
+            <span><%= percent ? "#{percent}%" : "—" %></span>
+          </div>
+          <div class="mt-1 text-lg font-semibold">
+            <%= gauge[:used] ? gauge[:format].(gauge[:used]) : "—" %>
+            <span class="text-xs font-normal text-base-content/50">/ <%= gauge[:limit] ? gauge[:format].(gauge[:limit]) : "—" %></span>
+          </div>
+          <progress class="progress w-full <%= percent.to_i >= 85 ? 'progress-error' : percent.to_i >= 60 ? 'progress-warning' : 'progress-success' %>"
+            value="<%= percent || 0 %>" max="100"></progress>
+        </div>
+      <% end %>
+    </div>
+    <div class="text-xs text-base-content/50 mt-1">Memory includes the VM's own overhead. Disk usage comes from the guest agent.</div>
+
+    <div class="grid gap-4 md:grid-cols-4 mt-4">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">VM</div>
+        <div class="mt-1">
+          <% state = stats.paused? ? "Paused" : stats.phase %>
+          <span class="badge badge-sm <%= state == 'Running' ? 'badge-success' : %w[Paused Pending Scheduling Scheduled].include?(state) ? 'badge-warning' : 'badge-error' %>"><%= state %></span>
+          <span class="font-mono text-xs ml-1"><%= stats.ip %></span>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Up For</div>
+        <div class="mt-1"><%= stats.started_at ? time_ago_in_words(stats.started_at) : "—" %></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Operating System</div>
+        <div class="mt-1 text-sm"><%= stats.guest_os || "—" %></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Node</div>
+        <div class="mt-1 font-mono text-xs"><%= stats.node || "—" %></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Namespace</div>
+        <div class="mt-1 font-mono text-xs"><%= @agent_computer.namespace %></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Guest Agent</div>
+        <div class="mt-1">
+          <span class="badge badge-sm <%= stats.guest_agent_connected? ? 'badge-success' : 'badge-warning' %>"><%= stats.guest_agent_connected? ? "Connected" : "Not connected" %></span>
+        </div>
+      </div>
+      <div class="md:col-span-2">
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Services</div>
+        <div class="mt-1 flex flex-wrap gap-1">
+          <% stats.services.each do |service| %>
+            <span class="badge badge-sm <%= service.state == 'RUNNING' ? 'badge-success' : 'badge-error' %>" title="<%= service.detail %>"><%= service.name %></span>
+          <% end %>
+          <%= "—" if stats.services.empty? %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

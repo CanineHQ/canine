@@ -165,6 +165,15 @@ Rails.application.routes.draw do
     post :upload, on: :member
   end
   resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
+  resources :agent_computers, only: %i[index show new create destroy] do
+    member do
+      get :connect
+      get :stats
+      post :stop
+      post :start
+    end
+  end
+
   resources :projects do
     member do
       post :restart

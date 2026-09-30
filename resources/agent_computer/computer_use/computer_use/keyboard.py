@@ -1,0 +1,103 @@
+"""The keyboard.
+
+- Key presses and combinations ("Return", "ctrl+a", "super+2") go through the virtual device (uinput.py) as real
+  US-keyboard key codes, so Hyprland's shortcuts and apps see exactly what a physical keyboard would send.
+- Typing text goes through wtype (Omarchy ships it), which can type any Unicode character without caring about the
+  keyboard layout.
+
+Key names follow the Anthropic computer-use tool, which uses xdotool's names ("Return", "Page_Down", "ctrl+s").
+"""
+
+import subprocess
+import time
+
+from .uinput import device
+
+MODIFIER_CODES = {"shift": 42, "ctrl": 29, "alt": 56, "super": 125}
+MODIFIER_NAMES = {
+    "ctrl": "ctrl", "control": "ctrl",
+    "shift": "shift",
+    "alt": "alt", "option": "alt",
+    "super": "super", "cmd": "super", "meta": "super", "win": "super",
+}
+
+# Linux key codes for a US keyboard (linux/input-event-codes.h)
+KEYS = {
+    **{c: code for c, code in zip("1234567890", range(2, 12))},
+    **{c: code for c, code in zip("qwertyuiop", range(16, 26))},
+    **{c: code for c, code in zip("asdfghjkl", range(30, 39))},
+    **{c: code for c, code in zip("zxcvbnm", range(44, 51))},
+    "-": 12, "=": 13, "[": 26, "]": 27, ";": 39, "'": 40, "`": 41, "\\": 43, ",": 51, ".": 52, "/": 53,
+    "escape": 1, "backspace": 14, "tab": 15, "return": 28, "space": 57, "capslock": 58,
+    **{f"f{n}": code for n, code in zip(range(1, 11), range(59, 69))}, "f11": 87, "f12": 88,
+    "print": 99, "home": 102, "up": 103, "prior": 104, "left": 105, "right": 106, "end": 107, "down": 108,
+    "next": 109, "insert": 110, "delete": 111, "menu": 127,
+}
+ALIASES = {
+    "enter": "return", "esc": "escape", "del": "delete", "pageup": "prior", "page_up": "prior",
+    "pagedown": "next", "page_down": "next", "minus": "-", "equal": "=", "comma": ",", "period": ".",
+    "slash": "/", "backslash": "\\", "semicolon": ";", "apostrophe": "'", "grave": "`",
+    "bracketleft": "[", "bracketright": "]",
+}
+# Characters typed with Shift on a US keyboard, and the key they're on
+SHIFTED = dict(zip('!@#$%^&*()_+{}:"~|<>?', "1234567890-=[];'`\\,./"))
+
+
+def press(combo):
+    """Press a key or combination, e.g. "Return", "ctrl+a", "super+2", "shift+Tab"."""
+    parts = [part.strip() for part in combo.split("+") if part.strip()]
+    if combo.strip() == "+":
+        parts = ["+"]
+    modifiers = [MODIFIER_NAMES[p.lower()] for p in parts[:-1]]
+    name = parts[-1]
+
+    if name.lower() in MODIFIER_NAMES:  # a lone modifier, e.g. "super"
+        return _tap([*modifiers, MODIFIER_NAMES[name.lower()]], None)
+    code, shifted = _key_code(name)
+    if code is None:
+        raise ValueError(f"Unknown key {name!r}")
+    _tap(modifiers + (["shift"] if shifted and "shift" not in modifiers else []), code)
+
+
+def type_text(text):
+    subprocess.run(["wtype", "--", text], capture_output=True, text=True, check=True, timeout=60)
+
+
+def hold(combo, seconds):
+    """Hold a key (or combination) down for a while, e.g. to trigger key repeat."""
+    parts = [part.strip() for part in combo.split("+")]
+    modifiers = [MODIFIER_NAMES[p.lower()] for p in parts[:-1]]
+    code, shifted = _key_code(parts[-1])
+    codes = [MODIFIER_CODES[m] for m in modifiers + (["shift"] if shifted else [])] + [code]
+    for c in codes:
+        device().key(c, down=True)
+    time.sleep(seconds)
+    for c in reversed(codes):
+        device().key(c, down=False)
+
+
+def pause(seconds):
+    time.sleep(seconds)
+
+
+def _key_code(name):
+    """(key code, needs Shift) for a key name or character."""
+    if len(name) == 1:
+        if name in SHIFTED:
+            return KEYS[SHIFTED[name]], True
+        if name.isupper():
+            return KEYS.get(name.lower()), True
+    key = ALIASES.get(name.lower(), name.lower())
+    return KEYS.get(key), False
+
+
+def _tap(modifiers, code):
+    """Press modifiers, tap the key, release in reverse order."""
+    modifier_codes = [MODIFIER_CODES[m] for m in modifiers]
+    for c in modifier_codes:
+        device().key(c, down=True)
+    if code is not None:
+        device().key(code, down=True)
+        device().key(code, down=False)
+    for c in reversed(modifier_codes):
+        device().key(c, down=False)

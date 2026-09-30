@@ -158,6 +158,15 @@ packages:
         pattern: ^[A-Za-z0-9/+=]{40}$
         pattern_hint: "Must be a valid 40-character AWS secret access key."
 
+  - name: kubevirt
+    display_name: KubeVirt
+    description: Runs agent computers as isolated VMs. Requires nodes with KVM (bare metal or nested virtualization).
+    icon: lucide:monitor
+    default: false
+    recommended: false
+    install_type: manifest
+    check_command: get crd virtualmachines.kubevirt.io
+
   - name: cloudflared
     display_name: Cloudflare Tunnel
     description: Secure tunnel to expose cluster services through Cloudflare
