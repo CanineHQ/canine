@@ -1,20 +1,20 @@
-# The agent feed: what the account's agents did, found and left for the person, newest first, across all its
-# computers and tasks (AgentPost, written after each run by AgentLoop::Posts). It scrolls on forever: each page ends
-# with a lazy frame that loads the next. The browser groups posts under the day they're from, in its own time zone
-# (feed_day_controller.js).
+# One agent computer's feed: what its agents did, found and left for the person, newest first (AgentPost, written
+# after each run by AgentLoop::Posts). It scrolls on forever: each page ends with a lazy frame that loads the next.
+# The browser groups posts under the day they're from, in its own time zone (feed_day_controller.js).
 class AgentPostsController < ApplicationController
   include AgentTasksFeature
 
   PER_PAGE = 15
 
   def index
-    posts = AgentPost.where(agent_computer: current_account.agent_computers).newest_first
-                     .includes(:agent_computer, :activity, session: :agent_task, action: { screenshot_attachment: :blob })
+    @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
+    posts = @agent_computer.agent_posts.newest_first
+                           .includes(:activity, session: :agent_task, action: { screenshot_attachment: :blob })
     posts = after_cursor(posts) if params[:before_at]
     @posts = posts.limit(PER_PAGE + 1).to_a
     @more = @posts.size > PER_PAGE
     @posts = @posts.first(PER_PAGE)
-    render partial: "agent_posts/page", locals: { posts: @posts, more: @more } if turbo_frame_request?
+    render partial: "agent_posts/page", locals: { posts: @posts, more: @more, agent_computer: @agent_computer } if turbo_frame_request?
   end
 
   private

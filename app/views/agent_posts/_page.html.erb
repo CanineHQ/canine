@@ -4,17 +4,16 @@
 <% content = capture do %>
   <% posts.each do |post| %>
     <div data-controller="feed-day" data-feed-day-at-value="<%= post.posted_at.iso8601 %>"
-         class="hidden my-5 items-center gap-3 text-xs font-medium uppercase tracking-wide text-base-content/50">
-      <div class="h-px flex-1 bg-base-content/15"></div>
-      <span data-feed-day-target="label"></span>
-      <div class="h-px flex-1 bg-base-content/15"></div>
+         class="hidden justify-center my-4 first:mt-0">
+      <span data-feed-day-target="label"
+            class="rounded-full bg-base-200 px-3 py-1 text-xs font-medium text-base-content/60"></span>
     </div>
     <%= render "agent_posts/post", post: post %>
   <% end %>
   <% if more %>
     <% last = posts.last %>
     <%= turbo_frame_tag "agent_feed_after_#{last.id}", loading: :lazy, target: "_top",
-          src: agent_posts_path(before_at: last.posted_at.iso8601(6), after_id: last.id) do %>
+          src: agent_computer_agent_posts_path(agent_computer, before_at: last.posted_at.iso8601(6), after_id: last.id) do %>
       <div class="flex justify-center py-6"><span class="loading loading-dots loading-sm text-base-content/40"></span></div>
     <% end %>
   <% else %>

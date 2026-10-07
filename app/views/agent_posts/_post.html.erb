@@ -1,42 +1,45 @@
 <%# One post: which task and computer it came from and when, what the agent did (the bracketed words link to the step
-    in the run), and the screenshot that shows it %>
+    in the run), and a screenshot of the result. %>
 <% kind = AgentPostsHelper::POST_KINDS[post.kind] %>
 <% before, link, after = post.parts %>
 <% href = agent_post_path(post) %>
-<article id="<%= dom_id(post) %>" class="card card-bordered mb-3 bg-base-100">
-  <div class="card-body gap-3 p-4">
+<article id="<%= dom_id(post) %>" class="card card-bordered mb-4 bg-base-100">
+  <div class="card-body gap-4 p-5">
     <header class="flex items-center gap-3">
-      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-base-200">
-        <iconify-icon icon="lucide:bot" height="18"></iconify-icon>
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200 text-base-content/70">
+        <iconify-icon icon="lucide:bot" height="16"></iconify-icon>
       </span>
       <div class="min-w-0 flex-1 leading-tight">
-        <div class="truncate font-medium"><%= post.session.agent_task&.name || "Agent session" %></div>
+        <div class="truncate text-sm font-semibold"><%= post.session.agent_task&.name || "Agent session" %></div>
         <div class="truncate text-xs text-base-content/50">
           <%= post.agent_computer.name %> ·
           <time datetime="<%= post.posted_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(post.posted_at) %> ago</time>
         </div>
       </div>
       <% if kind[:label] %>
-        <span class="badge badge-sm gap-1 <%= kind[:color] %> badge-ghost">
+        <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-base-200 px-2.5 py-1 text-xs font-medium <%= kind[:color] %>">
           <iconify-icon icon="<%= kind[:icon] %>"></iconify-icon><%= kind[:label] %>
         </span>
       <% end %>
     </header>
 
-    <p class="text-[15px] leading-relaxed">
-      <%= before %><% if link %><%= link_to link, href, class: "link link-primary font-medium" %><% end %><%= after %>
+    <p class="text-[15px] leading-relaxed text-base-content/90">
+      <%= before %><% if link %><%= link_to link, href,
+            class: "font-medium text-base-content underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content" %><% end %><%= after %>
     </p>
 
     <% if (shot = post.screenshot) %>
-      <%= link_to href, class: "block overflow-hidden rounded-lg border border-base-content/10 hover:border-primary" do %>
-        <%= image_tag rails_representation_path(shot.variant(:medium)), class: "w-full", loading: "lazy",
-              alt: "Screenshot after #{post.action.label}" %>
+      <%= link_to href, class: "group relative block overflow-hidden rounded-lg border border-base-content/10", title: "Open this step" do %>
+        <%= image_tag rails_representation_path(shot.variant(:medium)), loading: "lazy",
+              class: "h-64 w-full bg-base-200 object-cover object-top", alt: "Screenshot after #{post.action.label}" %>
+        <span class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-base-100/80 to-transparent"></span>
       <% end %>
     <% end %>
 
-    <footer class="flex justify-end">
-      <%= link_to agent_computer_agent_session_path(post.agent_computer, post.session), class: "btn btn-ghost btn-xs text-base-content/60" do %>
-        View the whole run <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+    <footer class="flex items-center justify-end border-t border-base-content/5 pt-3">
+      <%= link_to agent_computer_agent_session_path(post.agent_computer, post.session),
+            class: "inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content" do %>
+        View the whole run <iconify-icon icon="lucide:arrow-right" height="14"></iconify-icon>
       <% end %>
     </footer>
   </div>

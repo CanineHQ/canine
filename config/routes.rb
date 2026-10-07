@@ -181,9 +181,9 @@ Rails.application.routes.draw do
       get :screenshots, on: :member
       resources :activities, controller: "agent_session_activities", only: :show
     end
+    resources :agent_posts, path: "feed", only: :index
   end
   resources :agent_provider_keys, only: %i[index create destroy]
-  resources :agent_posts, path: "agent_feed", only: :index
 
   resources :projects do
     member do
