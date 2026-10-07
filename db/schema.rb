@@ -210,7 +210,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_02_120000) do
     t.string "name", null: false
     t.text "instruction", null: false
     t.jsonb "spec", default: {}, null: false
-    t.string "schedule", null: false
+    t.string "schedule"
     t.string "model", null: false
     t.boolean "enabled", default: false, null: false
     t.datetime "next_run_at"

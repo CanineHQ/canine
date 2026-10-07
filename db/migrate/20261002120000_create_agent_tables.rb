@@ -16,7 +16,7 @@ class CreateAgentTables < ActiveRecord::Migration[7.2]
       t.string :name, null: false
       t.text :instruction, null: false
       t.jsonb :spec, null: false, default: {}
-      t.string :schedule, null: false
+      t.string :schedule # a cron schedule to recur on, or null for a one-off run
       t.string :model, null: false
       t.boolean :enabled, null: false, default: false
       t.datetime :next_run_at

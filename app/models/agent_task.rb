@@ -36,12 +36,16 @@ class AgentTask < ApplicationRecord
   belongs_to :agent_computer
   has_many :sessions, class_name: "AgentSession", dependent: :destroy
 
-  validates :name, :instruction, :schedule, :model, presence: true
+  validates :name, :instruction, :model, presence: true
   validate :schedule_is_cron
+  validate :enabled_needs_a_schedule
 
   before_save :schedule_next_run, if: -> { will_save_change_to_schedule? || (will_save_change_to_enabled? && enabled?) }
 
   scope :due, -> { where(enabled: true).where(next_run_at: ..Time.current) }
+
+  # A task with a schedule recurs on it; without one it's a one-off the person runs when they want.
+  def recurring? = schedule.present?
 
   def cron
     Fugit.parse_cron(schedule)
@@ -64,5 +68,9 @@ class AgentTask < ApplicationRecord
 
   def schedule_is_cron
     errors.add(:schedule, "isn't a cron schedule, e.g. 0 * * * *") if schedule.present? && cron.nil?
+  end
+
+  def enabled_needs_a_schedule
+    errors.add(:schedule, "is needed to run a task on a schedule") if enabled? && schedule.blank?
   end
 end
