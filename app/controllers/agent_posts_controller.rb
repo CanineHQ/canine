@@ -8,6 +8,8 @@ class AgentPostsController < ApplicationController
 
   def index
     @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
+    @scheduled = @agent_computer.agent_tasks.where(enabled: true).order(Arel.sql("next_run_at ASC NULLS LAST"))
+    @active = @agent_computer.agent_sessions.active.order(created_at: :desc).includes(:agent_task)
     posts = @agent_computer.agent_posts.newest_first
                            .includes(:activity, session: :agent_task, action: { screenshot_attachment: :blob })
     posts = after_cursor(posts) if params[:before_at]

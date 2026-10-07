@@ -55,6 +55,7 @@ class AgentSession < ApplicationRecord
   scope :active, -> { where(status: ACTIVE) }
 
   after_create_commit -> { broadcast_prepend_to [ agent_task, :runs ], target: dom_id(agent_task, :runs), partial: "agent_tasks/run", locals: { session: self, animate: true } if agent_task }
+  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_active", partial: "agent_posts/running", locals: { session: self } }
   after_update_commit :broadcast_changes
 
   # A new session for a task, covering what arrived since its last successful run (window_from: nil covers everything
@@ -118,6 +119,8 @@ class AgentSession < ApplicationRecord
   def broadcast_changes
     broadcast_replace_to self, target: dom_id(self, :header), partial: "agent_sessions/header", locals: { session: self }
     broadcast_replace_to [ agent_task, :runs ], target: dom_id(self), partial: "agent_tasks/run", locals: { session: self } if agent_task
+    # Keep the feed's live run card in step; it renders empty once the run leaves an active state, so it drops out.
+    broadcast_replace_to [ agent_computer, :feed ], target: dom_id(self, :running), partial: "agent_posts/running", locals: { session: self } if saved_change_to_status?
     if summary_previously_changed? || error_previously_changed?
       broadcast_replace_to self, target: dom_id(self, :outcome), partial: "agent_sessions/outcome", locals: { session: self }
     end

@@ -1,21 +1,39 @@
 <%= content_for :title, "#{@agent_computer.name} | Feed" %>
 
 <%= agent_computer_layout(@agent_computer) do %>
-  <div class="mb-4">
-    <h6 class="text-sm font-semibold">Feed</h6>
-    <p class="text-xs text-base-content/60">What this computer's agents did for you, newest first.</p>
-  </div>
+  <div class="flex justify-center gap-6">
+    <div class="w-full max-w-[600px]">
+      <%= turbo_stream_from [ @agent_computer, :feed ] %>
+      <%= render "agent_posts/compose" %>
 
-  <div class="mx-auto max-w-2xl">
-    <% if @posts.empty? %>
-      <div class="card card-bordered bg-base-100">
-        <div class="card-body items-center text-center text-base-content/60">
-          <iconify-icon icon="lucide:newspaper" height="32"></iconify-icon>
-          <p>Nothing yet. After each run, what your agent did for you shows up here.</p>
-        </div>
+      <%# Active runs stream in here (newest first) and drop out when they finish. %>
+      <div id="agent_feed_active">
+        <% @active.each do |session| %>
+          <%= render "agent_posts/running", session: session %>
+        <% end %>
       </div>
-    <% else %>
-      <%= render "agent_posts/page", posts: @posts, more: @more, agent_computer: @agent_computer %>
-    <% end %>
+
+      <%# Finished runs' posts. New ones prepend here live. %>
+      <div id="agent_feed_posts">
+        <% unless @posts.empty? %>
+          <%= render "agent_posts/page", posts: @posts, more: @more, agent_computer: @agent_computer %>
+        <% end %>
+      </div>
+
+      <% if @posts.empty? && @active.empty? %>
+        <div class="card card-bordered bg-base-100">
+          <div class="card-body items-center text-center text-base-content/60">
+            <iconify-icon icon="lucide:newspaper" height="32"></iconify-icon>
+            <p>Nothing yet. Describe a task above — what your agent does for you shows up here.</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <aside class="hidden lg:block w-72 shrink-0">
+      <div class="lg:sticky lg:top-4">
+        <%= render "agent_posts/scheduled", tasks: @scheduled %>
+      </div>
+    </aside>
   </div>
 <% end %>

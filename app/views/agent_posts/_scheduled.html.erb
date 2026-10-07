@@ -1,0 +1,31 @@
+<%# Right rail on the feed: the computer's enabled, recurring tasks, soonest first. %>
+<div class="card card-bordered bg-base-100">
+  <div class="card-body gap-3 p-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold">Scheduled</h3>
+      <%= link_to "All tasks", agent_computer_agent_tasks_path(@agent_computer), class: "text-xs text-base-content/50 hover:text-base-content" %>
+    </div>
+
+    <% if tasks.any? %>
+      <ul class="flex flex-col divide-y divide-base-content/5">
+        <% tasks.each do |task| %>
+          <li class="py-2.5 first:pt-0 last:pb-0">
+            <%= link_to agent_computer_agent_task_path(@agent_computer, task), class: "group block" do %>
+              <div class="line-clamp-2 text-sm text-base-content/80 group-hover:text-base-content"><%= task.name %></div>
+              <div class="mt-1 flex items-center gap-1.5 text-xs text-base-content/50">
+                <iconify-icon icon="lucide:repeat" height="12"></iconify-icon>
+                <span><%= schedule_in_words(task.schedule) %></span>
+                <% if task.next_run_at %>
+                  <span class="text-base-content/30">·</span>
+                  <span>next in <%= time_ago_in_words(task.next_run_at) %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-xs text-base-content/50">No scheduled tasks yet. Pick a schedule when you compose above and it'll show up here.</p>
+    <% end %>
+  </div>
+</div>

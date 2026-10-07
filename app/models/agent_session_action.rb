@@ -68,5 +68,7 @@ class AgentSessionAction < ApplicationRecord
 
     broadcast_replace_to session, target: dom_id(session, :screen), partial: "agent_sessions/screen", locals: { action: self }
     broadcast_replace_to session, target: dom_id(activity, :shots), partial: "agent_sessions/shots", locals: { activity: }
+    # Keep the feed's live run thumbnail current with what's on screen now.
+    broadcast_replace_to [ session.agent_computer, :feed ], target: dom_id(session, :running), partial: "agent_posts/running", locals: { session: } if session.active?
   end
 end

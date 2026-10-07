@@ -27,7 +27,7 @@ class AgentComputersController < ApplicationController
 
   # A computer opens on its tasks; its machine (status, resources, access commands) is on edit
   def show
-    redirect_to AgentTask.enabled_for?(current_account) ? agent_computer_agent_tasks_path(@agent_computer) : edit_agent_computer_path(@agent_computer)
+    redirect_to AgentTask.enabled_for?(current_account) ? agent_computer_agent_posts_path(@agent_computer) : edit_agent_computer_path(@agent_computer)
   end
 
   def edit

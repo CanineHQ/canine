@@ -28,7 +28,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
 
   it "saves a key, creates a task from the form, runs it, and shows the session" do
     get agent_computer_path(computer)
-    expect(response).to redirect_to(agent_computer_agent_tasks_path(computer)) # a computer opens on its tasks
+    expect(response).to redirect_to(agent_computer_agent_posts_path(computer)) # a computer opens on its feed
 
     post agent_provider_keys_path, params: { agent_provider_key: { provider: "openrouter", api_key: "sk-or-v1-abcdef123456" } }
     get agent_provider_keys_path
@@ -69,5 +69,43 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     expect(response.body).to include("Slack check", "Slack: #akula-dev", "Runs every hour", agent_computer_agent_session_path(computer, session))
     get agent_computer_agent_sessions_path(computer)
     expect(response).to redirect_to(agent_computer_agent_tasks_path(computer))
+  end
+  describe "composing from the feed" do
+    it "runs an instruction now as a one-off task, and schedules one from a preset" do
+      # Run now: creates a one-off (no schedule), starts a session, redirects to it.
+      expect {
+        post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Summarize my email", every: "now" }
+      }.to change { computer.agent_tasks.count }.by(1).and change { computer.agent_sessions.count }.by(1)
+      task = computer.agent_tasks.order(:created_at).last
+      expect(task.schedule).to be_nil
+      expect(task.enabled?).to be(false)
+      # Stays on the feed, where the running session shows at the top.
+      expect(response).to redirect_to(agent_computer_agent_posts_path(computer))
+      get agent_computer_agent_posts_path(computer)
+      expect(response.body).to include("Working…")
+
+      # Schedule: a preset becomes a cron, enabled, and no session starts now.
+      expect {
+        post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Check issues", every: "1h" }
+      }.to change { computer.agent_tasks.count }.by(1).and change { computer.agent_sessions.count }.by(0)
+      scheduled = computer.agent_tasks.order(:created_at).last
+      expect(scheduled.schedule).to eq("0 * * * *")
+      expect(scheduled.enabled?).to be(true)
+
+      # Feed renders the compose box and the scheduled task in the sidebar.
+      get agent_computer_agent_posts_path(computer)
+      expect(response.body).to include("What should your agent do?", "Scheduled", "Check issues")
+    end
+
+    it "builds a daily cron from the time, and won't run now when the computer is stopped" do
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Morning digest", every: "daily", daily_time: "08:30" }
+      expect(computer.agent_tasks.order(:created_at).last.schedule).to eq("30 8 * * *")
+
+      computer.update!(status: :stopped)
+      expect {
+        post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do it", every: "now" }
+      }.not_to change { computer.agent_tasks.count }
+      expect(flash[:alert]).to match(/must be running/)
+    end
   end
 end

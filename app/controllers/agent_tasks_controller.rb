@@ -16,7 +16,26 @@ class AgentTasksController < ApplicationController
   end
 
   def new
-    @task = @agent_computer.agent_tasks.new(model: AgentTask::DEFAULT_MODEL, spec: AgentLoop::Spec.normalize({}))
+    @task = @agent_computer.agent_tasks.new(model: AgentTask::DEFAULT_MODEL, spec: AgentLoop::Spec.normalize({}),
+                                            instruction: params[:instruction])
+  end
+
+  # The feed's compose box: one instruction becomes a task that either runs now (no schedule) or recurs on a preset
+  # the person picked (COMPOSE_SCHEDULES, or "daily" at a time).
+  def compose
+    instruction = params[:instruction].to_s.strip
+    return to_feed(alert: "Describe what the agent should do first.") if instruction.blank?
+
+    schedule = compose_schedule
+    return to_feed(alert: "The computer must be running to run a task now.") if schedule.blank? && !@agent_computer.running?
+
+    @task = @agent_computer.agent_tasks.new(instruction:, name: instruction.truncate(70), model: AgentTask::DEFAULT_MODEL,
+                                            spec: AgentLoop::Spec.normalize({}), schedule:, enabled: schedule.present?)
+    return to_feed(alert: @task.errors.full_messages.to_sentence) unless @task.save
+
+    return run_now_and_redirect(@task) if schedule.blank?
+
+    to_feed(notice: "Scheduled — first run #{helpers.time_ago_in_words(@task.next_run_at)} from now.")
   end
 
   # Compile the instruction into a draft and save it, not enabled, for the person to review on its edit page. (A
@@ -68,7 +87,38 @@ class AgentTasksController < ApplicationController
     redirect_to agent_computer_agent_session_path(@agent_computer, session)
   end
 
+  # The recurring presets the compose box offers, in order, as label => cron. "now" (one-off) and "daily" (with a time)
+  # are handled separately.
+  COMPOSE_SCHEDULES = {
+    "10m" => [ "Every 10 minutes", "*/10 * * * *" ],
+    "30m" => [ "Every 30 minutes", "*/30 * * * *" ],
+    "1h" => [ "Every hour", "0 * * * *" ],
+    "6h" => [ "Every 6 hours", "0 */6 * * *" ]
+  }.freeze
+
   private
+
+  def compose_schedule
+    choice = params[:every].to_s
+    return nil if choice.blank? || choice == "now"
+    return COMPOSE_SCHEDULES[choice].last if COMPOSE_SCHEDULES.key?(choice)
+    return unless choice == "daily"
+
+    hour, minute = params[:daily_time].to_s.split(":")
+    "#{minute.to_i.clamp(0, 59)} #{hour.to_i.clamp(0, 23)} * * *"
+  end
+
+  def run_now_and_redirect(task)
+    session = @agent_computer.with_lock { AgentSession.start!(task, trigger: :manual) unless @agent_computer.agent_sessions.active.exists? }
+    return to_feed(alert: "A session is already running on this computer.") unless session
+
+    # Stay on the feed — the run shows up at the top and updates live, like posting.
+    to_feed(notice: "On it — watch it run below.")
+  end
+
+  def to_feed(**flash)
+    redirect_to agent_computer_agent_posts_path(@agent_computer), **flash
+  end
 
   def set_agent_computer
     @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
