@@ -17,6 +17,10 @@
     </div>
   </div>
 
+  <% filtering = params[:search].present? || params[:status].present? || params[:created_by_id].present? %>
+  <% if !filtering && current_account.agent_computers.none? %>
+    <%= render "agent_computers/intro" %>
+  <% else %>
   <div class="mt-5">
     <div aria-label="Card" class="card card-bordered bg-base-100">
       <div class="card-body">
@@ -93,4 +97,5 @@
   </div>
 
   <%= render 'shared/pagination', pagy: @pagy %>
+  <% end %>
 </div>
