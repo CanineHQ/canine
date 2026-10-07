@@ -37,9 +37,9 @@ class AgentComputer < ApplicationRecord
   COMPUTER_USE_PORT = 8000 # resources/agent_computer/computer_use
   SSH_PORT = 22
   CPU_CORES = 4
-  # Measured: the desktop idles at ~2GiB and handled 12 heavy browser tabs with video in 4GiB (spilling ~270MiB into
-  # Omarchy's compressed zram swap, no OOM kills). Memory, not CPU, decides how many computers fit on a node.
-  MEMORY = "4Gi"
+  # The desktop idles at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past
+  # 4GiB, where the VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
+  MEMORY = "8Gi"
   DISK_SIZE = "60Gi"
 
   belongs_to :account_user
