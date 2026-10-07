@@ -31,8 +31,12 @@ module AgentLoop
                       required: %w[instructions cwd] }
       },
       "finish" => {
-        description: "End the session. The summary is what the person reads first: what you found and did, with links, and anything that needs them.",
-        parameters: { type: "object", properties: { summary: { type: "string" } }, required: [ "summary" ] }
+        description: "End the session. `summary` is the short note the person reads first \u2014 at most 2\u20133 sentences, or a few one-line bullets, " \
+                     "on what you accomplished and anything that needs them, with links. Keep it tight: the result, not a play-by-play, and no " \
+                     "retelling of each step \u2014 the full timeline is already recorded.",
+        parameters: { type: "object", properties: {
+          summary: { type: "string", description: "At most 2\u20133 sentences or a few short bullets. The outcome and anything needed, with links. Not a transcript." }
+        }, required: [ "summary" ] }
       }
     }.freeze
 

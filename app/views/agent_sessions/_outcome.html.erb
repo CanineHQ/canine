@@ -1,8 +1,17 @@
 <div id="<%= dom_id(session, :outcome) %>">
   <% if session.summary.present? %>
-    <div class="alert mt-4 agent-enter items-start">
-      <iconify-icon icon="lucide:flag" class="mt-1"></iconify-icon>
-      <div class="prose prose-sm max-w-none"><%= agent_markdown(session.summary) %></div>
+    <div class="card card-bordered bg-base-100 mt-4 agent-enter">
+      <div class="card-body gap-2 p-5">
+        <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-base-content/50">
+          <iconify-icon icon="lucide:flag" height="14"></iconify-icon>
+          Summary
+        </div>
+        <div class="prose prose-sm max-w-2xl leading-relaxed
+                    prose-headings:font-semibold prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5
+                    prose-a:text-base-content prose-a:decoration-base-content/30 hover:prose-a:decoration-base-content">
+          <%= agent_markdown(session.summary) %>
+        </div>
+      </div>
     </div>
   <% end %>
   <% if session.error.present? %>

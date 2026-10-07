@@ -3,8 +3,8 @@ module AgentLoop
   # usually found things already, and without a summary the person gets nothing. One last model call, with only the
   # finish tool, asks for what was found, what was done and what's left; if that fails, the session's notes stand in.
   module Wrapup
-    PROMPT = "Stop here: %<reason>s Don't do anything more on the computer. Call finish with your summary: what you " \
-             "found and did (with links), what you didn't get to, and anything that needs the person."
+    PROMPT = "Stop here: %<reason>s Don't do anything more on the computer. Call finish with a short summary \u2014 at most " \
+             "2\u20133 sentences or a few one-line bullets: what you got done, what you didn't get to, and anything that needs the person, with links."
 
     def self.call(session)
       return if session.summary.present? || session.messages.none?
