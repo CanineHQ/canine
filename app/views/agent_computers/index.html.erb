@@ -3,10 +3,18 @@
 <div>
   <div class="flex items-center justify-between">
     <h3 class="text-lg font-medium">Agent Computers</h3>
-    <%= link_to new_agent_computer_path, class: "btn btn-primary btn-sm" do %>
-      <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-      New Computer
-    <% end %>
+    <div class="flex gap-2">
+      <% if AgentTask.enabled_for?(current_account) %>
+        <%= link_to agent_provider_keys_path, class: "btn btn-ghost btn-sm" do %>
+          <iconify-icon icon="lucide:key-round" height="16"></iconify-icon>
+          Agent settings
+        <% end %>
+      <% end %>
+      <%= link_to new_agent_computer_path, class: "btn btn-primary btn-sm" do %>
+        <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+        New Computer
+      <% end %>
+    </div>
   </div>
 
   <div class="mt-5">

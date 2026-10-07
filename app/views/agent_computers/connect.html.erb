@@ -14,7 +14,8 @@
 <div class="relative h-screen w-screen bg-base-300"
      data-controller="computer-desktop"
      data-computer-desktop-url-value="<%= "/agent_computers/#{@agent_computer.id}/proxy/" %>"
-     data-computer-desktop-watch-value="<%= watching %>">
+     data-computer-desktop-watch-value="<%= watching %>"
+     data-computer-desktop-human-url-value="<%= "/agent_computers/#{@agent_computer.id}/computer-use/human/" %>">
   <iframe
     data-computer-desktop-target="frame"
     class="absolute inset-0 w-full h-full border-0"
@@ -42,6 +43,14 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <%# While the person uses the desktop, agents are paused (computer_desktop_controller.js) %>
+  <div data-computer-desktop-target="human" class="hidden absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-full bg-base-100/90 px-3 py-1 text-xs shadow">
+    <iconify-icon icon="lucide:hand"></iconify-icon>
+    <span data-computer-desktop-target="humanText"></span>
+    <button type="button" data-computer-desktop-target="takeOverButton" data-action="computer-desktop#takeOver" class="link link-primary">Take over</button>
+    <button type="button" data-action="computer-desktop#handBack" class="link link-primary">Hand back</button>
   </div>
 
   <% if watching %>

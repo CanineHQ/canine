@@ -1,0 +1,11 @@
+<div id="<%= dom_id(session, :outcome) %>">
+  <% if session.summary.present? %>
+    <div class="alert mt-4 agent-enter items-start">
+      <iconify-icon icon="lucide:flag" class="mt-1"></iconify-icon>
+      <div class="prose prose-sm max-w-none"><%= agent_markdown(session.summary) %></div>
+    </div>
+  <% end %>
+  <% if session.error.present? %>
+    <div class="alert alert-error mt-4 agent-enter text-sm"><%= session.error %></div>
+  <% end %>
+</div>

@@ -60,8 +60,11 @@ class MCPController < ActionController::API
       # Agent computers
       Tools::ListAgentComputers,
       Tools::ComputerScreenshot,
-      Tools::ComputerAction,
-      Tools::ComputerAccessibility
+      Tools::ComputerRun,
+      Tools::ComputerTerminal,
+      Tools::ComputerWindows,
+      Tools::ComputerAccessibility,
+      Tools::ComputerAction
     ]
   end
 

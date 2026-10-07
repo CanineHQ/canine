@@ -1,0 +1,29 @@
+<%# Run history of anything that runs on a schedule: a service's cron job, an agent task. Each row is a hash for
+    shared/_run_history_row: run (name, status, started_at, duration), and optionally href, id and actions. %>
+<% if rows.empty? && local_assigns[:tbody_id].blank? %>
+  <div class="text-center py-12">
+    <p class="text-gray-500 text-md"><%= local_assigns.fetch(:empty, "This job has not been run yet.") %></p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto">
+    <table class="table table-zebra w-full">
+      <thead>
+        <tr class="border-b border-base-300">
+          <th class="text-left font-medium text-sm">Started</th>
+          <th class="text-left font-medium text-sm">Ran for</th>
+          <th class="text-left font-medium text-sm">Name</th>
+          <th class="text-left font-medium text-sm">Status</th>
+          <th class="text-left font-medium text-sm">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="<%= local_assigns[:tbody_id] %>">
+        <% rows.each do |row| %>
+          <%= render "shared/run_history_row", **row %>
+        <% end %>
+      </tbody>
+    </table>
+    <% if rows.empty? %>
+      <p class="text-gray-500 text-sm text-center py-6"><%= local_assigns.fetch(:empty, "This job has not been run yet.") %></p>
+    <% end %>
+  </div>
+<% end %>

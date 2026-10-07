@@ -1,0 +1,24 @@
+# Canine's local Langfuse (see README.md): the official docker-compose.yml, moved off the ports Canine's own
+# Rails (3000), Postgres (5432) and Redis (6379) use
+services:
+  langfuse-web:
+    ports: !override
+      - 127.0.0.1:3100:3000
+  redis:
+    ports: !override
+      - 127.0.0.1:6380:6379
+  postgres:
+    ports: !override
+      - 127.0.0.1:5433:5432
+  minio:
+    # Langfuse's default S3 store (cgr.dev/chainguard/minio) dies with "illegal instruction" under Docker Desktop
+    # on Apple silicon, and MinIO no longer publishes public images, so this is SeaweedFS's S3 server in its place,
+    # on the same port, creating the bucket Langfuse uses. (No access keys are checked: local use only.)
+    image: chrislusf/seaweedfs:latest
+    entrypoint: sh
+    command: -c 'weed server -s3 -s3.port=9000 -dir=/data & until echo "s3.bucket.create -name langfuse" | weed shell 2>/dev/null | grep -qE "created|exist"; do sleep 2; done; wait'
+    healthcheck:
+      test: ["CMD-SHELL", "echo s3.bucket.list | weed shell 2>/dev/null | grep -q langfuse"]
+      interval: 5s
+      timeout: 10s
+      retries: 30

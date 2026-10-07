@@ -1,0 +1,48 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div class="flex items-center justify-between mb-3">
+    <div>
+      <h6 class="text-sm font-semibold">Tasks</h6>
+      <p class="text-xs text-base-content/60">Canine's agent runs each enabled task on its schedule, while nobody is using the computer.
+        Models use the account's <%= link_to "OpenRouter key", agent_provider_keys_path, class: "link" %>.</p>
+    </div>
+    <%= link_to new_agent_computer_agent_task_path(@agent_computer), class: "btn btn-primary btn-sm" do %>
+      <iconify-icon icon="lucide:plus" height="14"></iconify-icon>
+      New task
+    <% end %>
+  </div>
+
+  <% if @tasks.empty? %>
+    <p class="text-sm text-base-content/60 py-6 text-center">No tasks yet. Try: "Every hour, check Slack and email for feature requests to the akula codebase, and implement the straightforward ones."</p>
+  <% else %>
+    <table class="table table-sm">
+      <thead><tr><th>Task</th><th>Last run</th><th>Next run</th><th></th></tr></thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td>
+              <%= link_to task.name, agent_computer_agent_task_path(@agent_computer, task), class: "font-medium link link-hover" %>
+              <div class="text-xs text-base-content/50"><%= schedule_in_words(task.schedule) %></div>
+            </td>
+            <td>
+              <% if (last = task.last_session) %>
+                <%= link_to agent_computer_agent_session_path(@agent_computer, last), class: "flex items-center gap-2" do %>
+                  <%= render "projects/services/jobs/status", status: last.as_run.status %>
+                  <span class="text-xs text-base-content/50"><%= time_ago_in_words(last.created_at) %> ago</span>
+                <% end %>
+              <% else %>
+                <span class="text-xs text-base-content/40">never</span>
+              <% end %>
+            </td>
+            <td class="text-xs"><%= task.enabled? && task.next_run_at ? "in #{time_ago_in_words(task.next_run_at)}" : "not enabled" %></td>
+            <td class="text-right whitespace-nowrap">
+              <%= button_to "Run now", run_now_agent_computer_agent_task_path(@agent_computer, task), class: "btn btn-ghost btn-xs", form: { class: "inline" } %>
+              <%= link_to "Edit", edit_agent_computer_agent_task_path(@agent_computer, task), class: "btn btn-ghost btn-xs" %>
+              <%= button_to "Delete", agent_computer_agent_task_path(@agent_computer, task), method: :delete, class: "btn btn-ghost btn-xs text-error",
+                form: { class: "inline", data: { turbo_confirm: "Delete #{task.name} and its sessions?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+<% end %>

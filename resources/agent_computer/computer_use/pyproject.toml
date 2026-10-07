@@ -9,9 +9,9 @@ description = "An HTTP server that lets AI agents see and drive a Hyprland (Wayl
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
-# PyGObject is the only Python dependency (for AT-SPI). On a desktop it's usually already installed by the
-# distribution (Arch: python-gobject); a venv made with --system-site-packages picks it up.
-dependencies = ["PyGObject>=3.42"]
+# PyGObject (for AT-SPI) is usually already there from the distribution (Arch: python-gobject); a venv made with
+# --system-site-packages picks it up. browser-use drives the browser over CDP for the browse endpoints (browse.py).
+dependencies = ["PyGObject>=3.42", "browser-use>=0.13"]
 
 [project.scripts]
 canine-computer-use = "computer_use.__main__:main"

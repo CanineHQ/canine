@@ -1,0 +1,12 @@
+<%# The latest screenshot, crossfading as new ones arrive (AgentSessionAction#broadcast_changes) %>
+<div id="<%= dom_id(action&.session || local_assigns[:session], :screen) %>">
+  <div class="text-xs uppercase tracking-wide text-base-content/50 mb-2">Screen</div>
+  <% if action&.screenshot&.attached? %>
+    <button type="button" data-action="lightbox#open" data-lightbox-id="<%= action.id %>" class="block w-full">
+      <%= image_tag rails_representation_path(action.screenshot.variant(:medium)), class: "rounded border border-base-content/10 w-full agent-fade hover:border-primary" %>
+    </button>
+    <div class="text-xs text-base-content/50 mt-1">after <span class="font-mono"><%= action.label %></span></div>
+  <% else %>
+    <div class="rounded border border-dashed border-base-content/20 aspect-video flex items-center justify-center text-sm text-base-content/40">No screenshots yet</div>
+  <% end %>
+</div>

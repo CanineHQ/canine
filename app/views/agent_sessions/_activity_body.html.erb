@@ -1,0 +1,17 @@
+<%# An activity's contents. Inline for the running activity (so streamed actions and screenshots land in it); for
+    finished ones, fetched when the activity is opened (AgentSessionActivitiesController), inside the same frame. %>
+<% doing = activity.actions.reject(&:look_only?) %>
+<%= turbo_frame_tag dom_id(activity, :body) do %>
+  <div class="px-3 pb-3 pl-11 space-y-2">
+    <% if activity.description.present? %>
+      <p class="text-sm text-base-content/70 whitespace-pre-wrap"
+         <% if local_assigns[:reveal_from] %>data-controller="reveal" data-reveal-from-value="<%= local_assigns[:reveal_from] %>"<% end %>><%= activity.description %></p>
+    <% end %>
+    <ul id="<%= dom_id(activity, :actions) %>" class="space-y-1">
+      <% doing.each do |action| %>
+        <%= render "agent_sessions/action", action: action %>
+      <% end %>
+    </ul>
+    <%= render "agent_sessions/shots", activity: activity %>
+  </div>
+<% end %>

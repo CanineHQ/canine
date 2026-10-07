@@ -5,7 +5,10 @@ module Tools
     include Tools::Concerns::Authentication
     include Tools::Concerns::AgentComputerAccess
 
-    description "Take a screenshot of an agent computer's desktop. Coordinates in the image are what computer_action takes."
+    description <<~TEXT.squish
+      Take a screenshot of an agent computer's desktop, to see what's there or check what an action did. Coordinates
+      in the image are what computer_action takes. #{Tools::Concerns::AgentComputerAccess::PREFERENCE}
+    TEXT
 
     input_schema(
       properties: {

@@ -32,6 +32,16 @@ class KeyboardTest(unittest.TestCase):
         self.assertEqual(self.press("?"), [(42, "down"), (53, "down"), (53, "up"), (42, "up")])
         self.assertEqual(self.press("super"), [(125, "down"), (125, "up")])
 
+    def test_typing_uses_key_codes_for_keyboard_characters_and_pastes_the_rest(self):
+        fake = FakeDevice()
+        with mock.patch.object(keyboard, "device", return_value=fake), mock.patch.object(keyboard, "_paste") as paste:
+            keyboard.type_text("a-B é!")
+        self.assertEqual(fake.events, [(30, "down"), (30, "up"), (12, "down"), (12, "up"),          # a -
+                                       (42, "down"), (48, "down"), (48, "up"), (42, "up"),          # B
+                                       (57, "down"), (57, "up"),                                    # space
+                                       (42, "down"), (2, "down"), (2, "up"), (42, "up")])           # !
+        paste.assert_called_once_with("é")
+
     def test_unknown_keys_are_rejected(self):
         with self.assertRaises(ValueError):
             self.press("ctrl+nope")

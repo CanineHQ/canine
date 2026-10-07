@@ -1,0 +1,43 @@
+<%# One post: which task and computer it came from and when, what the agent did (the bracketed words link to the step
+    in the run), and the screenshot that shows it %>
+<% kind = AgentPostsHelper::POST_KINDS[post.kind] %>
+<% before, link, after = post.parts %>
+<% href = agent_post_path(post) %>
+<article id="<%= dom_id(post) %>" class="card card-bordered mb-3 bg-base-100">
+  <div class="card-body gap-3 p-4">
+    <header class="flex items-center gap-3">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-base-200">
+        <iconify-icon icon="lucide:bot" height="18"></iconify-icon>
+      </span>
+      <div class="min-w-0 flex-1 leading-tight">
+        <div class="truncate font-medium"><%= post.session.agent_task&.name || "Agent session" %></div>
+        <div class="truncate text-xs text-base-content/50">
+          <%= post.agent_computer.name %> ·
+          <time datetime="<%= post.posted_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(post.posted_at) %> ago</time>
+        </div>
+      </div>
+      <% if kind[:label] %>
+        <span class="badge badge-sm gap-1 <%= kind[:color] %> badge-ghost">
+          <iconify-icon icon="<%= kind[:icon] %>"></iconify-icon><%= kind[:label] %>
+        </span>
+      <% end %>
+    </header>
+
+    <p class="text-[15px] leading-relaxed">
+      <%= before %><% if link %><%= link_to link, href, class: "link link-primary font-medium" %><% end %><%= after %>
+    </p>
+
+    <% if (shot = post.screenshot) %>
+      <%= link_to href, class: "block overflow-hidden rounded-lg border border-base-content/10 hover:border-primary" do %>
+        <%= image_tag rails_representation_path(shot.variant(:medium)), class: "w-full", loading: "lazy",
+              alt: "Screenshot after #{post.action.label}" %>
+      <% end %>
+    <% end %>
+
+    <footer class="flex justify-end">
+      <%= link_to agent_computer_agent_session_path(post.agent_computer, post.session), class: "btn btn-ghost btn-xs text-base-content/60" do %>
+        View the whole run <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+      <% end %>
+    </footer>
+  </div>
+</article>

@@ -11,9 +11,10 @@ module Tools
     ].freeze
 
     description <<~TEXT.squish
-      Use an agent computer's mouse and keyboard, following Anthropic's computer-use tool: e.g. left_click at a
-      coordinate, type text, key "ctrl+s" or "super+2", scroll. Coordinates are pixels in computer_screenshot's
+      Use an agent computer's mouse and keyboard, following Anthropic's computer-use tool: e.g. key "ctrl+s" or
+      "super+2", type text, scroll, left_click at a coordinate. Coordinates are pixels in computer_screenshot's
       image. The desktop is Omarchy (Hyprland): Super is its main modifier, e.g. super+Return opens a terminal.
+      #{Tools::Concerns::AgentComputerAccess::PREFERENCE}
     TEXT
 
     input_schema(

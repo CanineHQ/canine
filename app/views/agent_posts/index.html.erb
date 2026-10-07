@@ -1,0 +1,25 @@
+<%= content_for :title, "Agent feed" %>
+
+<div class="mx-auto max-w-xl">
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h3 class="text-lg font-medium">Agent feed</h3>
+      <p class="text-sm text-base-content/60">What your agents did for you, newest first.</p>
+    </div>
+    <%= link_to agent_computers_path, class: "btn btn-ghost btn-sm" do %>
+      <iconify-icon icon="lucide:box" height="16"></iconify-icon>
+      Computers
+    <% end %>
+  </div>
+
+  <% if @posts.empty? %>
+    <div class="card card-bordered bg-base-100">
+      <div class="card-body items-center text-center text-base-content/60">
+        <iconify-icon icon="lucide:newspaper" height="32"></iconify-icon>
+        <p>Nothing yet. After each run, what your agent did for you shows up here.</p>
+      </div>
+    </div>
+  <% else %>
+    <%= render "agent_posts/page", posts: @posts, more: @more %>
+  <% end %>
+</div>

@@ -100,6 +100,12 @@ echo QT_ACCESSIBILITY=1 > ~/.config/environment.d/60-canine-accessibility.conf
 grep -qx -- --force-renderer-accessibility ~/.config/chromium-flags.conf 2>/dev/null ||
   echo --force-renderer-accessibility >> ~/.config/chromium-flags.conf
 
+# browse (browser-use) drives Chromium over the DevTools protocol on a port that listens only inside the VM. The
+# open-source Chromium Arch ships allows this on the normal profile (Google Chrome-branded builds would not: they
+# need a non-default --user-data-dir). Restart Chromium after adding the flag for it to take effect.
+grep -qx -- --remote-debugging-port=9222 ~/.config/chromium-flags.conf 2>/dev/null ||
+  echo --remote-debugging-port=9222 >> ~/.config/chromium-flags.conf
+
 cat > ~/.config/systemd/user/canine-computer-use.service <<UNIT
 [Unit]
 Description=Canine computer-use server
@@ -110,12 +116,53 @@ PartOf=graphical-session.target
 ExecStart=%h/.local/share/canine/venv/bin/canine-computer-use --port ${COMPUTER_USE_PORT}
 Restart=always
 RestartSec=2
+# Restarting the server (a deploy) mustn't take the terminal sessions it started with it: tmux runs in this unit
+KillMode=process
 
 [Install]
 WantedBy=graphical-session.target
 UNIT
 ln -sf ../canine-computer-use.service ~/.config/systemd/user/graphical-session.target.wants/canine-computer-use.service
 as_root ufw allow "${COMPUTER_USE_PORT}/tcp" comment "Computer use (Canine)" >/dev/null
+
+# The computer-use tools for agent harnesses running on this computer (scheduled tasks), as a standard mcpServers
+# config; AgentComputerTask's commands point at it with $CANINE_MCP_CONFIG
+mkdir -p ~/.config/canine
+cat > ~/.config/canine/mcp.json <<JSON
+{"mcpServers": {"computer": {"command": "$HOME/.local/share/canine/venv/bin/canine-computer-use", "args": ["mcp"]}}}
+JSON
+
+# Omarchy's first-run notifications ("Update System", "Learn Keybindings") stay until dismissed, covering the top right
+# of every app, including buttons agents need. Dismiss them through Omarchy's own post-boot hook, once its first-run
+# setup (which sends them) has finished.
+mkdir -p ~/.config/omarchy/hooks/post-boot.d
+cat > ~/.config/omarchy/hooks/post-boot.d/canine-dismiss-welcome <<'HOOK'
+#!/bin/bash
+# Canine: first-run notifications cover the top right of the streamed desktop
+for _ in $(seq 60); do [ -e ~/.local/state/omarchy/done/first-run-user ] && break; sleep 2; done
+sleep 5
+omarchy-shell -q notifications dismissAll
+HOOK
+chmod +x ~/.config/omarchy/hooks/post-boot.d/canine-dismiss-welcome
+
+# Docker is installed but only root can use it; let the desktop user (and so agents' commands) run containers
+getent group docker >/dev/null && as_root usermod -aG docker "$USER"
+
+# --- Memory: lose a tab, not the browser ----------------------------------------------------------------------------
+# systemd-oomd kills a whole app (every Chromium window at once) when the desktop's app slice stalls on memory or swap
+# fills up (/usr/lib/systemd/user/app.slice.d/10-oomd.conf). Turned off for apps, the kernel's own OOM killer acts
+# instead when memory really runs out, and it takes Chromium's tab processes first (they're marked to go first): a tab
+# crashes, the browser and its windows stay. Memory Saver frees tabs that haven't been used for a while.
+sudo mkdir -p /etc/systemd/user/app.slice.d /etc/chromium/policies/managed
+sudo tee /etc/systemd/user/app.slice.d/90-canine-no-oomd.conf >/dev/null <<'CONF'
+[Slice]
+ManagedOOMMemoryPressure=auto
+ManagedOOMSwap=auto
+CONF
+systemctl --user daemon-reload
+sudo tee /etc/chromium/policies/managed/canine.json >/dev/null <<'JSON'
+{"HighEfficiencyModeEnabled": true, "MemorySaverModeSavings": 1}
+JSON
 
 # --- No desktop password: Canine already decides who can reach this desktop ---------------------------------------
 # sudo and graphical admin prompts stop asking, idle locking is off, and the account's password is deleted. Omarchy's

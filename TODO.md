@@ -31,6 +31,12 @@
 - [ ] Computer use over the API: accept Canine API tokens on `/agent_computers/:id/computer-use` in
       `lib/agent_computer_proxy.rb` and add `/api/v1/agent_computers` (update the swagger specs)
 - [ ] Computer use is slow per call (a kubectl port-forward each time); keep one open per computer if agents need speed
+- [x] Human lock: the desktop page reports the person's input; agents are paused from the screen while they're active
+- [x] Agent loop in Canine (AgentLoop): tasks compiled from an instruction, sessions with a live timeline, OpenRouter models
+- [ ] Agent sessions: notifications when a session finds something; a hypervisor (VNC) recording of each session
+- [ ] Agent sessions: delegate runs the coding agent as the desktop user; give it its own user and a repo-scoped token
+- [ ] Agent provider keys are stored in plain text: encrypt them before other people's accounts use agents
+- [ ] Agents and people on one desktop: give agents a workspace the person isn't looking at, so neither disturbs the other
 - [ ] Share the Omarchy ISO across computers on a cluster instead of importing 6GB per computer
 - [x] Watch a computer from a second tab (view-only, Selkies' #shared) and take control back when another tab takes over
 - [ ] Several tabs controlling one desktop at once: Selkies secure mode (master token per computer, Canine provisions

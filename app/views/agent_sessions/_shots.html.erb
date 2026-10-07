@@ -1,0 +1,15 @@
+<%# The activity's screenshots as a strip of thumbnails, oldest first; each opens the session's lightbox %>
+<% shots = activity.actions.select { |a| a.screenshot.attached? } %>
+<div id="<%= dom_id(activity, :shots) %>">
+  <% if shots.any? %>
+    <div class="text-xs text-base-content/50 mb-1"><%= pluralize(shots.size, "screenshot") %></div>
+    <div class="flex gap-2 overflow-x-auto pb-1">
+      <% shots.each do |action| %>
+        <button type="button" class="shrink-0" data-action="lightbox#open" data-lightbox-id="<%= action.id %>">
+          <%= image_tag rails_representation_path(action.screenshot.variant(:thumb)), class: "h-16 rounded border border-base-content/10 hover:border-primary",
+                        loading: "lazy", alt: action.label, width: 120, height: 68 %>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+</div>

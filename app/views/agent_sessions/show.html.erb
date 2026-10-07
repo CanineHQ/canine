@@ -1,0 +1,42 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div data-controller="lightbox deep-link" data-action="keydown@window->lightbox#keydown"
+       data-lightbox-url-value="<%= screenshots_agent_computer_agent_session_path(@agent_computer, @session) %>">
+  <%= turbo_stream_from @session %>
+  <%= render "agent_sessions/header", session: @session %>
+  <%= render "agent_sessions/outcome", session: @session %>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] mt-4">
+    <div>
+      <%= render "agent_sessions/timeline", session: @session %>
+      <%= render "agent_sessions/thinking", session: @session, thinking: false %>
+    </div>
+    <div class="lg:sticky lg:top-4 self-start">
+      <% last_shot = @session.actions.joins(:screenshot_attachment).last %>
+      <%= render "agent_sessions/screen", action: last_shot, session: @session %>
+    </div>
+  </div>
+
+  <%# Screenshot browser (lightbox_controller.js) %>
+  <div data-lightbox-target="overlay" data-action="click->lightbox#backdrop touchstart->lightbox#touchstart touchend->lightbox#touchend"
+       class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black/90 p-4" role="dialog" aria-label="Screenshots">
+    <div class="flex w-full max-w-6xl items-center gap-3 text-sm text-white/80">
+      <span data-lightbox-target="counter" class="font-mono"></span>
+      <span data-lightbox-target="caption" class="truncate flex-1"></span>
+      <a data-lightbox-target="original" target="_blank" class="link text-white/70">Original</a>
+      <button type="button" data-action="lightbox#close" class="btn btn-ghost btn-sm text-white" aria-label="Close">
+        <iconify-icon icon="lucide:x" height="20"></iconify-icon>
+      </button>
+    </div>
+    <div class="flex w-full max-w-6xl flex-1 min-h-0 items-center gap-2">
+      <button type="button" data-action="lightbox#previous" class="btn btn-circle btn-ghost text-white shrink-0" aria-label="Previous">
+        <iconify-icon icon="lucide:chevron-left" height="28"></iconify-icon>
+      </button>
+      <img data-lightbox-target="image" class="mx-auto max-h-full max-w-full min-w-0 rounded object-contain" alt="">
+      <button type="button" data-action="lightbox#next" class="btn btn-circle btn-ghost text-white shrink-0" aria-label="Next">
+        <iconify-icon icon="lucide:chevron-right" height="28"></iconify-icon>
+      </button>
+    </div>
+    <div class="text-xs text-white/50">← → to browse · Esc to close</div>
+  </div>
+  </div>
+<% end %>

@@ -73,7 +73,7 @@
   </li>
 
   <li class="mb-0.5">
-    <details <%= 'open' if in_namespace?('agent_computers') || open_section == "agent_computers" %>>
+    <details <%= 'open' if in_namespace?('agent_computers') || in_namespace?('agent_posts') || open_section == "agent_computers" %>>
       <summary>
         <%= link_to agent_computers_path do %>
           <div class="flex items-center gap-2">
@@ -83,6 +83,16 @@
         <% end %>
       </summary>
       <ul>
+        <% if AgentTask.enabled_for?(current_account) %>
+          <li>
+            <%= link_to agent_posts_path, class: "hover:bg-base-content/15 #{'active' if current_page?(agent_posts_path)}" do %>
+              <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:newspaper" height="18"></iconify-icon>
+                Feed
+              </div>
+            <% end %>
+          </li>
+        <% end %>
         <% current_account.agent_computers.includes(account_user: :user).order(created_at: :desc).limit(10).each do |computer| %>
           <li>
             <%= link_to agent_computer_path(computer), class: "hover:bg-base-content/15 #{'active' if active_path?(agent_computer_path(computer))}" do %>

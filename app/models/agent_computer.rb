@@ -44,9 +44,17 @@ class AgentComputer < ApplicationRecord
 
   belongs_to :account_user
   belongs_to :cluster
+  has_many :agent_tasks, dependent: :destroy
+  has_many :agent_sessions, dependent: :destroy
+  has_many :agent_posts, dependent: :delete_all
 
   has_one :user, through: :account_user
   has_one :account, through: :account_user
+
+  # The client for the computer-use server in this computer's VM (AgentComputers::ComputerUse)
+  def computer_use
+    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user))
+  end
 
   enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
 

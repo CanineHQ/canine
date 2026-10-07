@@ -1,0 +1,64 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <% spec = AgentLoop::Spec.normalize(@task.spec) %>
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <%= link_to "Tasks", agent_computer_agent_tasks_path(@agent_computer), class: "link text-sm" %>
+        <span class="text-base-content/40">/</span>
+        <h5 class="font-semibold"><%= @task.name %></h5>
+        <span class="badge badge-sm <%= @task.enabled? ? "badge-success" : "badge-ghost" %>"><%= @task.enabled? ? "enabled" : "not enabled" %></span>
+      </div>
+      <div class="mt-1 text-xs text-base-content/60">
+        <%= schedule_in_words(@task.schedule) %> · next run: <%= next_run_in_words(@task) %> · <%= @task.model %>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <%= button_to "Run now", run_now_agent_computer_agent_task_path(@agent_computer, @task), class: "btn btn-primary btn-sm" %>
+      <%= link_to "Edit", edit_agent_computer_agent_task_path(@agent_computer, @task), class: "btn btn-ghost btn-sm" %>
+      <%= button_to "Delete", agent_computer_agent_task_path(@agent_computer, @task), method: :delete, class: "btn btn-ghost btn-sm text-error",
+        form: { data: { turbo_confirm: "Delete #{@task.name} and its runs?" } } %>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] mt-5">
+    <section>
+      <h6 class="text-sm font-semibold mb-2">Runs</h6>
+      <%= turbo_stream_from @task, :runs %>
+      <%= render "shared/run_history", tbody_id: dom_id(@task, :runs), empty: "No runs yet. Run it now, or enable it to run on its schedule.",
+            rows: @runs.map { |session|
+              path = agent_computer_agent_session_path(@agent_computer, session)
+              { run: session.as_run, id: dom_id(session), href: path, actions: link_to("View", path, class: "btn btn-sm btn-ghost") }
+            } %>
+    </section>
+
+    <aside class="space-y-4 text-sm">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Instruction</div>
+        <p class="whitespace-pre-wrap"><%= @task.instruction %></p>
+      </div>
+      <% { "Looks at" => spec["sources"], "Looking for" => spec["looking_for"], "What counts" => spec["criteria"],
+           "May" => spec["may"], "Never" => spec["never"], "Leaves markers" => spec["markers"] }.each do |label, value| %>
+        <% next if value.blank? %>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1"><%= label %></div>
+          <% if value.is_a?(Array) %>
+            <ul class="list-disc pl-5 space-y-0.5"><% value.each do |item| %><li><%= item %></li><% end %></ul>
+          <% else %>
+            <p><%= value %></p>
+          <% end %>
+        </div>
+      <% end %>
+      <% enforced = spec["blocked_commands"].map { |c| "command /#{c}/" } + spec["blocked_buttons"].map { |b| "button \"#{b}\"" } %>
+      <% if enforced.any? %>
+        <div>
+          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Blocked by Canine</div>
+          <ul class="list-disc pl-5 space-y-0.5 font-mono text-xs"><% enforced.each do |item| %><li><%= item %></li><% end %></ul>
+        </div>
+      <% end %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Limits per run</div>
+        <p><%= spec.dig("limits", "minutes") %> minutes · $<%= spec.dig("limits", "cost_usd") %> · <%= spec.dig("limits", "turns") %> turns</p>
+      </div>
+    </aside>
+  </div>
+<% end %>

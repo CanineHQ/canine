@@ -1,0 +1,4 @@
+<%# One run of a task, as a row of the shared run history; replaced live as the run changes (AgentSession#broadcast_changes) %>
+<%= render "shared/run_history_row", run: session.as_run, id: dom_id(session),
+                                     href: agent_computer_agent_session_path(session.agent_computer, session),
+                                     actions: link_to("View", agent_computer_agent_session_path(session.agent_computer, session), class: "btn btn-sm btn-ghost") %>

@@ -130,11 +130,12 @@ class AgentComputerProxy
     end
   end
 
+  # Whether kubectl's local listener is up. This runs under @mutex, so it's capped: a wedged listener mustn't block
+  # every other proxy request. (A listener being up doesn't prove the tunnel works — a request that fails through it
+  # invalidates the entry, so a dead-but-listening port gets rebuilt rather than reused forever.)
   def port_alive?(port)
-    s = TCPSocket.new("127.0.0.1", port)
-    s.close
-    true
-  rescue Errno::ECONNREFUSED
+    Socket.tcp("127.0.0.1", port, connect_timeout: 1) { true }
+  rescue SystemCallError, IO::TimeoutError
     false
   end
 
@@ -244,12 +245,16 @@ class AgentComputerProxy
     response.each_header { |k, v| headers[k] = v unless %w[transfer-encoding connection].include?(k.downcase) }
 
     [ response.code.to_i, headers, [ response.body || "" ] ]
-  rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EPIPE, Net::OpenTimeout => e
+    # A cached port-forward whose local port still listens but whose tunnel is dead (after a sleep, a network blip
+    # or a VM restart) fails here, often as a read timeout. Clear it so the next request rebuilds it, instead of
+    # reusing the dead tunnel forever.
+  rescue Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EPIPE, Net::OpenTimeout, Net::ReadTimeout, IOError, SocketError, EOFError => e
     log_error "HTTP proxy error: #{e.class} #{e.message} — clearing stale port-forward"
     invalidate_port_forward(sandbox_id, remote_port)
     [ 502, {}, [ "Proxy error — reconnecting" ] ]
   rescue StandardError => e
-    log_error "HTTP proxy error: #{e.class} #{e.message}"
+    log_error "HTTP proxy error: #{e.class} #{e.message} — clearing stale port-forward"
+    invalidate_port_forward(sandbox_id, remote_port)
     [ 502, {}, [ "Proxy error" ] ]
   end
 
@@ -267,7 +272,14 @@ class AgentComputerProxy
     client_socket = env["rack.hijack_io"]
 
     # Connect to upstream and forward the original HTTP upgrade request as-is
-    upstream = TCPSocket.new("127.0.0.1", local_port)
+    begin
+      upstream = TCPSocket.new("127.0.0.1", local_port)
+    rescue SystemCallError => e
+      log_error "WebSocket upstream connect failed: #{e.class} — clearing stale port-forward"
+      invalidate_port_forward(sandbox_id, remote_port)
+      client_socket.close rescue nil
+      return [ -1, {}, [] ]
+    end
 
     path_for_upstream = "/#{subpath}"
     path_for_upstream += "?#{request.query_string}" if request.query_string.present?
@@ -307,7 +319,10 @@ class AgentComputerProxy
     client_socket.write(upstream_response)
 
     unless upstream_response.start_with?("HTTP/1.1 101")
-      log_error "Upstream WebSocket handshake failed"
+      # No 101 (often an empty response: the tunnel listens but is dead). Clear the port-forward so the client's
+      # next reconnect rebuilds it, rather than hitting the same dead tunnel and looping forever.
+      log_error "Upstream WebSocket handshake failed — clearing stale port-forward"
+      invalidate_port_forward(sandbox_id, remote_port)
       client_socket.close rescue nil
       upstream.close rescue nil
       return [ -1, {}, [] ]

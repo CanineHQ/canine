@@ -1,0 +1,40 @@
+<%= form_with model: [@agent_computer, task], url: task.persisted? ? agent_computer_agent_task_path(@agent_computer, task) : agent_computer_agent_tasks_path(@agent_computer) do |form| %>
+  <%= render "shared/error_messages", resource: task %>
+  <div class="space-y-8">
+    <%= render(FormFieldComponent.new(label: "What should the agent do?", description: "In your own words, including how often. \"Draft\" turns it into the details below, which you can review and change.")) do %>
+      <%= form.text_area :instruction, rows: 3, class: "textarea textarea-bordered w-full", required: true,
+        placeholder: "Every hour, check Slack and email for feature requests to the akula codebase, and if they look straightforward enough, implement them." %>
+      <% unless task.persisted? %>
+        <%= form.button "Draft from this", formaction: draft_agent_computer_agent_tasks_path(@agent_computer), class: "btn btn-secondary btn-sm mt-2",
+          data: { turbo_submits_with: "Drafting…" } %>
+      <% end %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Name")) do %>
+      <%= form.text_field :name, class: "input input-bordered w-full" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Schedule", description: "Cron, in the server's time zone: \"0 * * * *\" is hourly; \"0 9-18 * * 1-5\" is hourly, 9 to 6, on weekdays.")) do %>
+      <%= form.text_field :schedule, class: "input input-bordered w-full font-mono" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Model", description: "Any OpenRouter model id that supports tools and images.")) do %>
+      <%= form.text_field :model, class: "input input-bordered w-full font-mono" %>
+    <% end %>
+
+    <%= render(FormFieldComponent.new(label: "Details", description: "What the agent is told: where to look, what counts, what it may and must never do, markers, phases, limits. blocked_commands, blocked_buttons and limits are also enforced by Canine.")) do %>
+      <%= text_area_tag "agent_task[spec_yaml]", AgentLoop::Spec.normalize(task.spec).to_yaml.delete_prefix("---\n"), rows: 22,
+        class: "textarea textarea-bordered w-full font-mono text-xs" %>
+    <% end %>
+
+    <label class="flex items-center gap-2 text-sm">
+      <%= form.check_box :enabled, class: "checkbox checkbox-sm" %>
+      Enabled: run on the schedule
+    </label>
+  </div>
+
+  <div class="form-footer">
+    <%= form.button "Save Task", class: "btn btn-primary" %>
+    <%= link_to "Cancel", agent_computer_agent_tasks_path(@agent_computer), class: "btn btn-secondary" %>
+  </div>
+<% end %>

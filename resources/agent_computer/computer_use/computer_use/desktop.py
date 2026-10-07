@@ -82,11 +82,13 @@ def windows():
         left, top = to_pixels(*client["at"])
         right, bottom = to_pixels(client["at"][0] + client["size"][0], client["at"][1] + client["size"][1])
         result.append({
+            "id": client["address"],
             "title": client["title"],
             "app": client["class"],
             "pid": client["pid"],
             "workspace": client["workspace"]["id"],
             "focused": client["address"] == focused,
+            "maximized": client.get("fullscreen", 0) > 0,
             "bounds": {"x": left, "y": top, "width": right - left, "height": bottom - top},
         })
     return result
