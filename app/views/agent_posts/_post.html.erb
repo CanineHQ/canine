@@ -1,5 +1,5 @@
-<%# One post: which task and computer it came from and when, what the agent did (the bracketed words link to the step
-    in the run), and a screenshot of the result. %>
+<%# One post: its task (the header links to it) and computer and when, what the agent did, and a screenshot of the
+    result. %>
 <% kind = AgentPostsHelper::POST_KINDS[post.kind] %>
 <% before, link, after = post.parts %>
 <% href = agent_post_path(post) %>
@@ -10,7 +10,12 @@
         <iconify-icon icon="lucide:bot" height="16"></iconify-icon>
       </span>
       <div class="min-w-0 flex-1 leading-tight">
-        <div class="truncate text-sm font-semibold"><%= post.session.agent_task&.name || "Agent session" %></div>
+        <% if (task = post.session.agent_task) %>
+          <%= link_to task.name, agent_computer_agent_task_path(post.agent_computer, task),
+                class: "block truncate text-sm font-semibold hover:underline" %>
+        <% else %>
+          <div class="truncate text-sm font-semibold">Agent session</div>
+        <% end %>
         <div class="truncate text-xs text-base-content/50">
           <%= post.agent_computer.name %> ·
           <time datetime="<%= post.posted_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(post.posted_at) %> ago</time>
@@ -24,8 +29,7 @@
     </header>
 
     <p class="text-[15px] leading-relaxed text-base-content/90">
-      <%= before %><% if link %><%= link_to link, href,
-            class: "font-medium text-base-content underline decoration-base-content/30 underline-offset-2 hover:decoration-base-content" %><% end %><%= after %>
+      <%= before %><% if link.present? %><span class="font-medium text-base-content"><%= link %></span><% end %><%= after %>
     </p>
 
     <% if (shot = post.screenshot) %>
@@ -36,7 +40,15 @@
       <% end %>
     <% end %>
 
-    <footer class="flex items-center justify-end border-t border-base-content/5 pt-3">
+    <footer class="flex items-center justify-between border-t border-base-content/5 pt-3">
+      <% if (scheduled = post.session.agent_task)&.recurring? %>
+        <%= link_to agent_computer_agent_task_path(post.agent_computer, scheduled),
+              class: "inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content" do %>
+          <iconify-icon icon="lucide:repeat" height="13"></iconify-icon> View scheduled task
+        <% end %>
+      <% else %>
+        <span></span>
+      <% end %>
       <%= link_to agent_computer_agent_session_path(post.agent_computer, post.session),
             class: "inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content" do %>
         View the whole run <iconify-icon icon="lucide:arrow-right" height="14"></iconify-icon>
