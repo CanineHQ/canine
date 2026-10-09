@@ -145,6 +145,15 @@ omarchy-shell -q notifications dismissAll
 HOOK
 chmod +x ~/.config/omarchy/hooks/post-boot.d/canine-dismiss-welcome
 
+# --- Guest agent: let KubeVirt (and so the UI) see inside the VM -----------------------------------------------------
+# qemu-guest-agent talks to KubeVirt over the virtio-serial channel KubeVirt adds by default. Without it KubeVirt
+# reports AgentConnected=false and can't fill in the guest OS or the filesystem usage, so the computer's Live Stats
+# show a blank Operating System and Disk and a "Not connected" guest agent. Installing and enabling it fixes all three.
+if ! command -v qemu-ga >/dev/null; then
+  as_root pacman -Sy --noconfirm --needed qemu-guest-agent
+fi
+as_root systemctl enable --now qemu-guest-agent.service
+
 # Docker is installed but only root can use it; let the desktop user (and so agents' commands) run containers
 getent group docker >/dev/null && as_root usermod -aG docker "$USER"
 
