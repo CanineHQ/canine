@@ -2,5 +2,5 @@
               "succeeded" => "badge-success", "failed" => "badge-error", "cancelled" => "badge-ghost" } %>
 <span class="badge badge-sm <%= colors[session.status] %> gap-1">
   <% if session.running? || session.waiting_for_tool? %><span class="loading loading-spinner loading-xs"></span><% end %>
-  <%= { "waiting_for_human" => "paused: you're using the computer", "waiting_for_tool" => "coding agent working" }[session.status] || session.status %>
+  <%= agent_session_status_label(session) %>
 </span>
