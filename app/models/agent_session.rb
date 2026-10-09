@@ -59,17 +59,28 @@ class AgentSession < ApplicationRecord
   after_update_commit :broadcast_changes
 
   # A new session for a task, covering what arrived since its last successful run (window_from: nil covers everything
-  # up to now, for one-off tasks with no "since last run" dimension), and its first turn
+  # up to now, for one-off tasks with no "since last run" dimension). One session runs per computer at a time: if the
+  # computer is free this starts its first turn now, otherwise it sits queued and start_next_queued runs it when the
+  # current one finishes.
   def self.start!(task, trigger:, window_from: task.next_window_from)
-    session = task.agent_computer.agent_sessions.create!(agent_task: task, trigger:, model: task.model,
-                                                         window_from:, window_to: Time.current)
-    task.update!(next_run_at: task.cron.next_time.to_t) if trigger.to_s == "scheduled"
-    AgentSessions::TurnJob.perform_later(session)
-    session
+    computer = task.agent_computer
+    computer.with_lock do
+      busy = computer.agent_sessions.active.exists?
+      session = computer.agent_sessions.create!(agent_task: task, trigger:, model: task.model,
+                                                window_from:, window_to: Time.current)
+      task.update!(next_run_at: task.cron.next_time.to_t) if trigger.to_s == "scheduled"
+      AgentSessions::TurnJob.perform_later(session) unless busy
+      session
+    end
   end
 
   def active?
     status.in?(ACTIVE)
+  end
+
+  # Queued behind another run on the same computer (rather than queued and about to start).
+  def waiting_in_queue?
+    queued? && agent_computer.agent_sessions.active.where("created_at < ?", created_at).exists?
   end
 
   def current_activity
@@ -102,6 +113,17 @@ class AgentSession < ApplicationRecord
     AgentSessions::WrapupJob.perform_later(self) # a summary if it has none, and close the windows it opened
     AgentSessions::PostJob.set(wait: AgentSessions::PostJob::WAIT).perform_later(self) # what it did, for the feed
     broadcast_thinking(false)
+    start_next_queued
+  end
+
+  # The computer is free now, so start the oldest run waiting on it (one session runs at a time).
+  def start_next_queued
+    agent_computer.with_lock do
+      return if agent_computer.agent_sessions.where(status: %i[running waiting_for_tool waiting_for_human]).exists?
+
+      next_up = agent_computer.agent_sessions.queued.order(:created_at).first
+      AgentSessions::TurnJob.perform_later(next_up) if next_up
+    end
   end
 
   # The "thinking" indicator while a model call is in flight

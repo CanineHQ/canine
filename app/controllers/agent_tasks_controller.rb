@@ -81,8 +81,7 @@ class AgentTasksController < ApplicationController
 
   def run_now
     return redirect_to(agent_computer_agent_tasks_path(@agent_computer), alert: "Computer must be running.") unless @agent_computer.running?
-    session = @agent_computer.with_lock { AgentSession.start!(@task, trigger: :manual) unless @agent_computer.agent_sessions.active.exists? }
-    return redirect_to(agent_computer_agent_tasks_path(@agent_computer), alert: "A session is already running on this computer.") unless session
+    session = AgentSession.start!(@task, trigger: :manual)
 
     redirect_to agent_computer_agent_session_path(@agent_computer, session)
   end
@@ -109,11 +108,11 @@ class AgentTasksController < ApplicationController
   end
 
   def run_now_and_redirect(task)
-    session = @agent_computer.with_lock { AgentSession.start!(task, trigger: :manual) unless @agent_computer.agent_sessions.active.exists? }
-    return to_feed(alert: "A session is already running on this computer.") unless session
+    session = AgentSession.start!(task, trigger: :manual)
 
-    # Stay on the feed — the run shows up at the top and updates live, like posting.
-    to_feed(notice: "On it — watch it run below.")
+    # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer is busy it queues
+    # behind the current run and starts when that finishes.
+    to_feed(notice: session.waiting_in_queue? ? "Queued — it'll run after the current session." : "On it — watch it run below.")
   end
 
   def to_feed(**flash)

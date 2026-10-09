@@ -5,15 +5,24 @@
     <% shot = session.actions.joins(:screenshot_attachment).order(:id).last %>
     <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
       <div class="flex flex-col gap-3">
+        <% waiting = session.waiting_in_queue? %>
         <header class="flex items-center gap-3">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
-            <span class="loading loading-spinner loading-sm text-primary"></span>
+            <% if waiting %>
+              <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
+            <% else %>
+              <span class="loading loading-spinner loading-sm text-primary"></span>
+            <% end %>
           </span>
           <div class="min-w-0 flex-1 leading-tight">
             <div class="truncate text-sm font-semibold"><%= session.agent_task&.name || "Agent run" %></div>
             <div class="truncate text-xs text-base-content/50">
-              Working… · started
-              <time datetime="<%= session.created_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(session.created_at) %> ago</time>
+              <% if waiting %>
+                Queued · will run after the current session
+              <% else %>
+                Working… · started
+                <time datetime="<%= session.created_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(session.created_at) %> ago</time>
+              <% end %>
             </div>
           </div>
           <%= link_to agent_computer_agent_session_path(session.agent_computer, session),

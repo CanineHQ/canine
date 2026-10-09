@@ -107,6 +107,23 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       }.not_to change { computer.agent_tasks.count }
       expect(flash[:alert]).to match(/must be running/)
     end
+
+    it "queues a run behind the one already going, and starts it when that finishes" do
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "first", every: "now" }
+      first = computer.agent_sessions.sole
+
+      expect {
+        post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "second", every: "now" }
+      }.to change { computer.agent_sessions.count }.by(1)
+      second = computer.agent_sessions.order(:created_at).last
+      expect(second).to be_queued
+      expect(second.waiting_in_queue?).to be(true)
+      expect(flash[:notice]).to match(/Queued/)
+      get agent_computer_agent_posts_path(computer)
+      expect(response.body).to include("Queued")
+
+      expect { first.finish!(:succeeded, summary: "done") }.to have_enqueued_job(AgentSessions::TurnJob).with(second)
+    end
   end
   describe "machine model settings" do
     it "saves on the machine page, and new runs inherit the models" do
