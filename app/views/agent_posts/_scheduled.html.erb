@@ -1,5 +1,5 @@
 <%# Right rail on the feed: the computer's enabled, recurring tasks, soonest first. %>
-<div class="card card-bordered bg-base-100">
+<div class="card border border-base-content/20 bg-base-100">
   <div class="card-body gap-3 p-4">
     <div class="flex items-center justify-between">
       <h3 class="text-sm font-semibold">Scheduled</h3>
@@ -7,10 +7,10 @@
     </div>
 
     <% if tasks.any? %>
-      <ul class="flex flex-col divide-y divide-base-content/5">
+      <ul class="flex flex-col divide-y divide-base-300">
         <% tasks.each do |task| %>
-          <li class="py-2.5 first:pt-0 last:pb-0">
-            <%= link_to agent_computer_agent_task_path(@agent_computer, task), class: "group block" do %>
+          <li class="flex items-start justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
+            <%= link_to agent_computer_agent_task_path(@agent_computer, task), class: "group min-w-0 flex-1" do %>
               <div class="line-clamp-2 text-sm text-base-content/80 group-hover:text-base-content"><%= task.name %></div>
               <div class="mt-1 flex items-center gap-1.5 text-xs text-base-content/50">
                 <iconify-icon icon="lucide:repeat" height="12"></iconify-icon>
@@ -21,6 +21,16 @@
                 <% end %>
               </div>
             <% end %>
+            <div class="shrink-0 text-right">
+              <% if (last = task.last_session) %>
+                <%= link_to agent_computer_agent_session_path(@agent_computer, last), class: "inline-flex flex-col items-end gap-0.5" do %>
+                  <%= render "projects/services/jobs/status", status: last.as_run.status %>
+                  <span class="text-xs text-base-content/40"><%= time_ago_in_words(last.created_at) %> ago</span>
+                <% end %>
+              <% else %>
+                <span class="text-xs text-base-content/40">never run</span>
+              <% end %>
+            </div>
           </li>
         <% end %>
       </ul>

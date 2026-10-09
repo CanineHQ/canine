@@ -82,7 +82,7 @@
     </details>
   </li>
   <li class="mb-0.5">
-    <details <%= 'open' if in_namespace?('agent_computers') || open_section == "agent_computers" %>>
+    <details <%= 'open' if in_namespace?('agent_computers') || request.path.start_with?("/agent_computers") || open_section == "agent_computers" %>>
       <summary>
         <%= link_to agent_computers_path do %>
           <div class="flex items-center gap-2">

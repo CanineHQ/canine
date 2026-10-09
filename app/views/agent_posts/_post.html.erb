@@ -1,10 +1,8 @@
 <%# One post: its task (the header links to it) and computer and when, what the agent did, and a screenshot of the
     result. %>
 <% kind = AgentPostsHelper::POST_KINDS[post.kind] %>
-<% before, link, after = post.parts %>
-<% href = agent_post_path(post) %>
-<article id="<%= dom_id(post) %>" class="card card-bordered mb-4 bg-base-100">
-  <div class="card-body gap-4 p-5">
+<article id="<%= dom_id(post) %>" class="border-b border-base-content/15 pb-5 mb-5 last:mb-0 last:border-b-0 last:pb-0">
+  <div class="flex flex-col gap-4">
     <header class="flex items-center gap-3">
       <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200 text-base-content/70">
         <iconify-icon icon="lucide:bot" height="16"></iconify-icon>
@@ -28,19 +26,25 @@
       <% end %>
     </header>
 
-    <p class="text-[15px] leading-relaxed text-base-content/90">
-      <%= before %><% if link.present? %><span class="font-medium text-base-content"><%= link %></span><% end %><%= after %>
-    </p>
+    <div class="flex items-start gap-4">
+      <p class="min-w-0 flex-1 text-[15px] leading-relaxed text-base-content/90 break-words">
+        <%= agent_post_body(post) %>
+      </p>
 
-    <% if (shot = post.screenshot) %>
-      <%= link_to href, class: "group relative block overflow-hidden rounded-lg border border-base-content/10", title: "Open this step" do %>
-        <%= image_tag rails_representation_path(shot.variant(:medium)), loading: "lazy",
-              class: "h-64 w-full bg-base-200 object-cover object-top", alt: "Screenshot after #{post.action.label}" %>
-        <span class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-base-100/80 to-transparent"></span>
+      <% if (shot = post.screenshot) %>
+        <button type="button" class="group relative block shrink-0 overflow-hidden rounded-lg border border-base-300" title="Open screenshot"
+                data-action="lightbox#open" data-lightbox-id="<%= post.action.id %>"
+                data-lightbox-url="<%= screenshots_agent_computer_agent_session_path(post.agent_computer, post.session) %>">
+          <%= image_tag rails_representation_path(shot.variant(:medium)), loading: "lazy",
+                class: "h-40 w-56 bg-base-200 object-cover object-top sm:w-72 lg:w-80", alt: "Screenshot after #{post.action.label}" %>
+          <span class="absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-md bg-base-100/80 text-base-content/80 opacity-0 transition group-hover:opacity-100">
+            <iconify-icon icon="lucide:maximize-2" height="13"></iconify-icon>
+          </span>
+        </button>
       <% end %>
-    <% end %>
+    </div>
 
-    <footer class="flex items-center justify-between border-t border-base-content/5 pt-3">
+    <footer class="flex items-center justify-between border-t border-base-300 pt-3">
       <% if (scheduled = post.session.agent_task)&.recurring? %>
         <%= link_to agent_computer_agent_task_path(post.agent_computer, scheduled),
               class: "inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content" do %>

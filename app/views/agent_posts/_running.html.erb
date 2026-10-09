@@ -3,8 +3,8 @@
 <div id="<%= dom_id(session, :running) %>">
   <% if session.active? %>
     <% shot = session.actions.joins(:screenshot_attachment).order(:id).last %>
-    <article class="card card-bordered bg-base-100 mb-4 agent-enter">
-      <div class="card-body gap-3 p-5">
+    <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
+      <div class="flex flex-col gap-3">
         <header class="flex items-center gap-3">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
             <span class="loading loading-spinner loading-sm text-primary"></span>
@@ -25,7 +25,7 @@
         <%# A small live thumbnail of what's on screen right now, swapped in as new screenshots arrive. %>
         <% if shot&.screenshot&.attached? %>
           <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
-                class: "block w-40 overflow-hidden rounded-md border border-base-content/10 hover:border-primary" do %>
+                class: "block w-40 overflow-hidden rounded-md border border-base-300 hover:border-primary" do %>
             <%= image_tag rails_representation_path(shot.screenshot.variant(:thumb)),
                   class: "aspect-video w-full object-cover object-top agent-fade", alt: "What the agent is doing now" %>
           <% end %>

@@ -1,8 +1,8 @@
 <%= content_for :title, "#{@agent_computer.name} | Feed" %>
 
 <%= agent_computer_layout(@agent_computer) do %>
-  <div class="flex justify-center gap-6">
-    <div class="w-full max-w-[600px]">
+  <div class="flex gap-6" data-controller="lightbox" data-action="keydown@window->lightbox#keydown">
+    <div class="min-w-0 flex-1 lg:border-r lg:border-base-content/15 lg:pr-6">
       <%= turbo_stream_from [ @agent_computer, :feed ] %>
       <%= render "agent_posts/compose" %>
 
@@ -21,7 +21,7 @@
       </div>
 
       <% if @posts.empty? && @active.empty? %>
-        <div class="card card-bordered bg-base-100">
+        <div class="card border border-base-content/20 bg-base-100">
           <div class="card-body items-center text-center text-base-content/60">
             <iconify-icon icon="lucide:newspaper" height="32"></iconify-icon>
             <p>Nothing yet. Describe a task above — what your agent does for you shows up here.</p>
@@ -30,10 +30,12 @@
       <% end %>
     </div>
 
-    <aside class="hidden lg:block w-72 shrink-0">
+    <aside class="hidden lg:block w-96 shrink-0">
       <div class="lg:sticky lg:top-4">
         <%= render "agent_posts/scheduled", tasks: @scheduled %>
       </div>
     </aside>
+
+    <%= render "agent_sessions/lightbox_overlay" %>
   </div>
 <% end %>

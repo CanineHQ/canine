@@ -1,7 +1,7 @@
 <%# The compose box at the top of the feed: describe a task and run it now, or pick a recurring schedule. Posts to
     AgentTasksController#compose, which creates the task and either starts a session or schedules it. %>
 <% has_key = current_account.agent_provider_keys.exists?(provider: "openrouter") %>
-<div class="card card-bordered bg-base-100 mb-5"
+<div class="card border border-base-content/20 bg-base-100 mb-5"
      data-controller="agent-compose"
      data-agent-compose-labels-value='<%= { now: "Run now", "10m": "Every 10 minutes", "30m": "Every 30 minutes", "1h": "Every hour", "6h": "Every 6 hours" }.to_json %>'>
   <div class="card-body gap-3 p-4">
@@ -22,7 +22,7 @@
         </label>
       </div>
 
-      <div class="flex items-center justify-between border-t border-base-content/5 pt-3">
+      <div class="flex items-center justify-between border-t border-base-300 pt-3">
         <%# When-to-run picker. %>
         <details class="dropdown" data-agent-compose-target="menu">
           <summary class="btn btn-ghost btn-sm gap-1 font-normal text-base-content/70">
@@ -30,7 +30,7 @@
             <span data-agent-compose-target="label">Run now</span>
             <iconify-icon icon="lucide:chevron-down" height="14"></iconify-icon>
           </summary>
-          <ul class="dropdown-content menu z-10 mt-1 w-52 rounded-box border border-base-content/10 bg-base-100 p-1 shadow">
+          <ul class="dropdown-content menu z-10 mt-1 w-52 rounded-box border border-base-300 bg-base-100 p-1 shadow">
             <% [["now", "Run now"], ["10m", "Every 10 minutes"], ["30m", "Every 30 minutes"], ["1h", "Every hour"], ["6h", "Every 6 hours"], ["daily", "Daily at…"]].each do |key, label| %>
               <li><a data-key="<%= key %>" data-action="agent-compose#choose"><%= label %></a></li>
             <% end %>

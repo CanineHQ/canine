@@ -11,6 +11,9 @@ export default class extends Controller {
   async open(event) {
     event.preventDefault()
     const id = Number(event.currentTarget.dataset.lightboxId)
+    // A trigger can name its own screenshots source (the feed, where each post is a different session); otherwise the
+    // controller's urlValue is used (a single session's page).
+    this.currentUrl = event.currentTarget.dataset.lightboxUrl || this.urlValue
     await this.load()
     this.index = Math.max(0, this.items.findIndex((item) => item.id === id))
     this.overlayTarget.classList.remove("hidden")
@@ -19,7 +22,7 @@ export default class extends Controller {
   }
 
   async load() {
-    const response = await fetch(this.urlValue, { headers: { Accept: "application/json" } })
+    const response = await fetch(this.currentUrl || this.urlValue, { headers: { Accept: "application/json" } })
     this.items = await response.json()
   }
 
