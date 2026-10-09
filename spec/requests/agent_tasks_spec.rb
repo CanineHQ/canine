@@ -108,4 +108,23 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       expect(flash[:alert]).to match(/must be running/)
     end
   end
+  describe "machine model settings" do
+    it "saves on the machine page, and new runs inherit the models" do
+      patch agent_computer_path(computer), params: { agent_computer: {
+        planning_model: "openai/gpt-5-mini", coding_model: "deepseek/deepseek-v4.1-flash", coding_agent: "pi" } }
+      computer.reload
+      expect(computer.planning_model).to eq("openai/gpt-5-mini")
+      expect(computer.coding_agent).to eq("pi")
+
+      # A task composed now starts on the machine's planning model.
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do x", every: "1h" }
+      task = computer.agent_tasks.order(:created_at).last
+      expect(task.model).to eq("openai/gpt-5-mini")
+
+      # Delegate falls back to the machine's coding model and agent when the task doesn't override.
+      session = computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: task.model)
+      run = AgentLoop::Delegate.command(session, {}, "~/x").first
+      expect(run).to include("deepseek/deepseek-v4.1-flash").and include("pi ")
+    end
+  end
 end

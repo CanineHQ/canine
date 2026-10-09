@@ -12,7 +12,7 @@ module AgentLoop
       key = session.agent_computer.account.agent_provider_keys.find_by(provider: "openrouter")
       return Tools::Result.new(text: "Add an OpenRouter key in Agent settings first.", error: true) unless key
 
-      model = session.agent_task&.spec&.dig("browse_model").presence || session.model
+      model = session.agent_task&.spec&.dig("browse_model").presence || session.agent_computer.browse_model.presence || session.model
       response = session.computer_use.browse_start(
         task: args["task"], url: args["url"].presence, model:, api_key: key.api_key,
         files: Array(args["files"]).presence, max_steps: MAX_STEPS,

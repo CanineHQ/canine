@@ -3,10 +3,14 @@
 # Table name: agent_computers
 #
 #  id              :bigint           not null, primary key
+#  browse_model    :string
+#  coding_agent    :string
+#  coding_model    :string
 #  desktop         :string           default("selkies"), not null
 #  name            :string           not null
 #  namespace       :string           not null
 #  password        :string
+#  planning_model  :string
 #  ssh_private_key :text
 #  status          :integer          default("pending"), not null
 #  created_at      :datetime         not null
@@ -42,6 +46,22 @@ class AgentComputer < ApplicationRecord
   MEMORY = "8Gi"
   DISK_SIZE = "60Gi"
 
+  # A pickable option in the machine's model settings: id is the value stored (blank means "inherit"), name and note
+  # are shown, recommended flags the ones we've seen work well. planning_model/browse_model/coding_model and
+  # coding_agent are plain columns; null means inherit. The list is curated from our own benchmark runs.
+  # price is OpenRouter's input / output cost per 1M tokens, shown in the picker. Update if OpenRouter's pricing moves.
+  Option = Data.define(:id, :name, :note, :recommended, :icon, :price)
+  MODELS = [
+    Option.new("openai/gpt-5.1", "GPT-5.1", "reliable for planning & browsing", true, "logos:openai-icon", "$1.25 / $10"),
+    Option.new("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", "great for coding · very cheap", true, "logos:deepseek-icon", "$0.05 / $0.60"),
+    Option.new("openai/gpt-5-mini", "GPT-5 mini", "cheaper, weaker on heavy sites", false, "logos:openai-icon", "$0.25 / $2")
+  ].freeze
+
+  CODING_AGENT_OPTIONS = [
+    Option.new("opencode", "opencode", nil, true, "lucide:square-terminal", nil),
+    *(AgentLoop::Delegate::AGENTS.keys - [ "opencode" ]).map { |a| Option.new(a, a, nil, false, "lucide:terminal", nil) }
+  ].freeze
+
   belongs_to :account_user
   belongs_to :cluster
   has_many :agent_tasks, dependent: :destroy
@@ -55,6 +75,9 @@ class AgentComputer < ApplicationRecord
   def computer_use
     AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user))
   end
+
+  # The planning model a new task on this computer starts with: the machine's, or the global default.
+  def default_model = planning_model.presence || AgentTask::DEFAULT_MODEL
 
   enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
 

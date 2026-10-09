@@ -8,7 +8,7 @@
 #  model             :string           not null
 #  name              :string           not null
 #  next_run_at       :datetime
-#  schedule          :string           not null
+#  schedule          :string
 #  spec              :jsonb            not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null

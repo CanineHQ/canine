@@ -38,28 +38,75 @@
     <% end %>
   <% end %>
 
-  <div class="divider"></div>
-  <div class="flex items-center justify-between mb-3">
-    <h6 class="text-sm font-semibold">Commands</h6>
-    <%= link_to download_kubeconfig_cluster_path(@agent_computer.cluster), class: "link link-primary text-xs", target: "_blank" do %>
-      Download the <%= @agent_computer.cluster.name %> kubeconfig and install virtctl first
+  <% if AgentTask.enabled_for?(current_account) %>
+    <div class="divider"></div>
+    <div class="mb-4">
+      <h6 class="text-sm font-semibold">Models</h6>
+      <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task can still override
+        these in its spec.</p>
+    </div>
+    <%= form_with(model: @agent_computer) do |form| %>
+      <%= render "shared/error_messages", resource: form.object %>
+      <div class="space-y-8">
+        <% [
+             [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
+           ].each do |field, label, description, options, fallback| %>
+          <%= render(FormFieldComponent.new(label: label, description: description)) do %>
+            <%= render(RichSelectComponent.new(
+              name: "agent_computer[#{field}]",
+              id: "agent_computer_#{field}",
+              collection: options,
+              selected: @agent_computer.public_send(field).presence || fallback,
+              partial: "agent_computers/option_item",
+              placeholder: ""
+            )) %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="form-footer">
+        <%= form.button "Save models", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+      </div>
     <% end %>
-  </div>
-  <% agent_computer_commands(@agent_computer).group_by { |c| c[:group] }.each do |group, commands| %>
-    <div class="text-xs uppercase tracking-wide text-base-content/50 mt-4 mb-2"><%= group %></div>
-    <div class="flex flex-col gap-2">
-      <% commands.each do |command| %>
-        <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
-          <div class="text-sm md:w-64 shrink-0"><%= command[:title] %></div>
-          <div class="flex-1 min-w-0 flex items-center gap-2 bg-base-200 rounded px-3 py-1.5">
-            <code class="flex-1 min-w-0 text-xs overflow-x-auto whitespace-nowrap"><%= command[:command] %></code>
-            <button type="button" class="btn btn-ghost btn-xs shrink-0" title="Copy"
-              data-controller="clipboard" data-clipboard-text="<%= command[:command] %>">
-              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
-            </button>
+  <% end %>
+
+  <div class="divider"></div>
+  <a class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block mb-4"
+     onclick="agent_terminal_modal.showModal()">
+    Prefer using your own terminal?
+  </a>
+
+  <dialog id="agent_terminal_modal" aria-label="Connect from your terminal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl bg-base-300">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <h3 class="mb-4 text-xl font-bold">Connect from your terminal</h3>
+      <p class="mb-6 text-sm text-base-content/70">
+        Reach this computer straight from your own machine — open a shell, drop into the console, or forward a port.
+        <%= link_to download_kubeconfig_cluster_path(@agent_computer.cluster), class: "link link-primary", target: "_blank" do %>
+          Download the <%= @agent_computer.cluster.name %> kubeconfig and install virtctl first.
+        <% end %>
+      </p>
+      <% agent_computer_commands(@agent_computer).group_by { |c| c[:group] }.each do |group, commands| %>
+        <div class="mb-2 mt-4 text-xs uppercase tracking-wide text-base-content/50"><%= group %></div>
+        <% commands.each do |command| %>
+          <div class="mb-5">
+            <p class="mb-2 text-sm text-base-content"><strong><%= command[:title] %></strong></p>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="<%= command[:command] %>" class="input input-bordered input-sm flex-1 font-mono text-xs">
+              <button type="button" class="btn btn-sm btn-square btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.clipboardText)" data-clipboard-text="<%= command[:command] %>">
+                <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+              </button>
+            </div>
           </div>
-        </div>
+        <% end %>
       <% end %>
     </div>
-  <% end %>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
 <% end %>

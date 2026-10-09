@@ -1,5 +1,5 @@
 class AgentComputersController < ApplicationController
-  before_action :set_agent_computer, only: %i[show edit destroy connect stats stop start]
+  before_action :set_agent_computer, only: %i[show edit update destroy connect stats stop start]
   before_action :require_running, only: %i[connect]
 
   def index
@@ -31,6 +31,14 @@ class AgentComputersController < ApplicationController
   end
 
   def edit
+  end
+
+  def update
+    if @agent_computer.update(agent_computer_params)
+      redirect_to edit_agent_computer_path(@agent_computer), notice: "Model settings saved."
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def new
@@ -97,6 +105,6 @@ class AgentComputersController < ApplicationController
   end
 
   def agent_computer_params
-    params.require(:agent_computer).permit(:name, :cluster_id)
+    params.require(:agent_computer).permit(:name, :cluster_id, :planning_model, :browse_model, :coding_model, :coding_agent)
   end
 end

@@ -64,8 +64,8 @@ module AgentLoop
     def self.command(session, spec, dir)
       return [ spec["delegate_command"], "echo 0" ] if spec["delegate_command"].present?
 
-      agent = AGENTS[spec["delegate_agent"].presence || DEFAULT_AGENT] || AGENTS[DEFAULT_AGENT]
-      model = spec["delegate_model"].presence || session.model
+      agent = AGENTS[spec["delegate_agent"].presence || session.agent_computer.coding_agent.presence || DEFAULT_AGENT] || AGENTS[DEFAULT_AGENT]
+      model = spec["delegate_model"].presence || session.agent_computer.coding_model.presence || session.model
       [ agent[:run].call(model, dir), agent[:cost].call(dir) ]
     end
 

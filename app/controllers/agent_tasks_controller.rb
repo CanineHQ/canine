@@ -16,7 +16,7 @@ class AgentTasksController < ApplicationController
   end
 
   def new
-    @task = @agent_computer.agent_tasks.new(model: AgentTask::DEFAULT_MODEL, spec: AgentLoop::Spec.normalize({}),
+    @task = @agent_computer.agent_tasks.new(model: @agent_computer.default_model, spec: AgentLoop::Spec.normalize({}),
                                             instruction: params[:instruction])
   end
 
@@ -29,7 +29,7 @@ class AgentTasksController < ApplicationController
     schedule = compose_schedule
     return to_feed(alert: "The computer must be running to run a task now.") if schedule.blank? && !@agent_computer.running?
 
-    @task = @agent_computer.agent_tasks.new(instruction:, name: instruction.truncate(70), model: AgentTask::DEFAULT_MODEL,
+    @task = @agent_computer.agent_tasks.new(instruction:, name: instruction.truncate(70), model: @agent_computer.default_model,
                                             spec: AgentLoop::Spec.normalize({}), schedule:, enabled: schedule.present?)
     return to_feed(alert: @task.errors.full_messages.to_sentence) unless @task.save
 
@@ -45,7 +45,7 @@ class AgentTasksController < ApplicationController
     key = current_account.agent_provider_keys.find_by(provider: "openrouter")
     return redirect_to(agent_provider_keys_path, alert: "Add an OpenRouter key first.") unless key
 
-    @task.model = @task.model.presence || AgentTask::DEFAULT_MODEL
+    @task.model = @task.model.presence || @agent_computer.default_model
     draft = AgentLoop::Compiler.compile(@task.instruction.to_s, api_key: key.api_key, model: @task.model)
     @task.update!(name: draft.name, schedule: draft.schedule, spec: draft.spec, enabled: false)
     redirect_to edit_agent_computer_agent_task_path(@agent_computer, @task), notice: "Drafted. Review it, then enable it and save."
