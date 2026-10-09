@@ -96,7 +96,17 @@ class AgentComputer::Omarchy
       "COMPUTER_USE_PORT" => AgentComputer::COMPUTER_USE_PORT.to_s,
       "SELKIES_PACKAGE_URL" => SELKIES_PACKAGE_URL,
       "SELKIES_PACKAGE_SHA256" => SELKIES_PACKAGE_SHA256
-    }
+    }.merge(turn_environment)
+  end
+
+  # Cloudflare TURN credentials for Selkies' WebRTC transport, from the Canine deployment's env. When unset, the setup
+  # script leaves Selkies on its WebSocket transport, so this is optional infrastructure.
+  def turn_environment
+    id = ENV["CLOUDFLARE_TURN_TOKEN_ID"]
+    token = ENV["CLOUDFLARE_TURN_API_TOKEN"]
+    return {} if id.blank? || token.blank?
+
+    { "CLOUDFLARE_TURN_TOKEN_ID" => id, "CLOUDFLARE_TURN_API_TOKEN" => token }
   end
 
   # The computer-use server's Python project (pyproject.toml and the package) as a .tar.gz, which the setup unpacks
