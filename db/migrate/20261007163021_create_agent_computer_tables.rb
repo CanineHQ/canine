@@ -1,7 +1,29 @@
-# The scheduled agent loop: provider keys, tasks, their sessions, and each session's messages, timeline (activities
-# and the actions under them) and feed posts. (See app/services/agent_loop and app/jobs/agent_sessions.)
-class CreateAgentTables < ActiveRecord::Migration[7.2]
+# Agent computers and the scheduled agent loop, compacted from the branch's incremental migrations: a computer (a
+# KubeVirt VM), its provider keys, tasks, their sessions, and each session's messages, timeline (activities and the
+# actions under them) and feed posts. (See app/models/agent_computer.rb, app/services/agent_loop, app/jobs/agent_*.)
+class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
   def change
+    create_table :agent_computers do |t|
+      t.string :name, null: false
+      t.integer :status, null: false, default: 0
+      t.references :account_user, null: false, foreign_key: true
+      t.references :cluster, null: false, foreign_key: true, index: false
+      t.timestamps
+      t.string :namespace, null: false
+      # How the Desktop tab shows the computer: "selkies" (stream from inside the guest) or "vnc" (the VM's own screen)
+      t.string :desktop, null: false, default: "selkies"
+      # The desktop login password (lock screen, sudo) and the key Canine uses to finish setting up the VM over SSH
+      t.string :password
+      t.text :ssh_private_key
+      # Machine-level model defaults; runs inherit them, a task can override. Null means "inherit": planning falls back
+      # to the global default, browse and coding to the planning model.
+      t.string :planning_model
+      t.string :browse_model
+      t.string :coding_model
+      t.string :coding_agent
+      t.index %i[cluster_id name], unique: true
+    end
+
     create_table :agent_provider_keys do |t|
       t.references :account, null: false, foreign_key: true
       t.string :provider, null: false, default: "openrouter"
