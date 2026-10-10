@@ -1,7 +1,7 @@
 module Users
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
-    before_action :set_provider
-    before_action :set_user
+    before_action :set_provider, only: :github
+    before_action :set_user, only: :github
 
     attr_reader :provider, :user
 
@@ -11,6 +11,28 @@ module Users
 
     def github
       handle_auth "Github"
+    end
+
+    # Google is a login method only: unlike GitHub it isn't a git/registry credential,
+    # so no Provider record is stored. Users are matched by their verified email.
+    def google_oauth2
+      unless auth.info.email.present? && auth.extra&.raw_info&.email_verified
+        redirect_to new_user_session_path, alert: "Your Google account's email address must be verified."
+        return
+      end
+
+      @user = current_user || create_user
+
+      if user_signed_in?
+        redirect_to after_sign_in_path_for(user)
+      elsif user.otp_required_for_login?
+        session[:otp_user_id] = user.id
+        redirect_to new_two_factor_verification_path
+      else
+        sign_in_and_redirect user, event: :authentication
+        session[:account_id] = user.accounts.first&.id
+        set_flash_message :notice, :success, kind: "Google"
+      end
     end
 
     private
