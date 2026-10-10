@@ -1,0 +1,26 @@
+<% icons = { "running" => "lucide:loader-circle", "done" => "lucide:check", "failed" => "lucide:x", "blocked" => "lucide:shield-x" } %>
+<% colors = { "running" => "text-info", "done" => "text-success", "failed" => "text-error", "blocked" => "text-warning" } %>
+<li id="<%= dom_id(action) %>" class="text-sm <%= "agent-enter" if local_assigns[:animate] %>">
+  <details>
+    <summary class="flex cursor-pointer items-center gap-2 list-none">
+      <iconify-icon icon="<%= icons[action.status] %>" class="<%= colors[action.status] %> <%= "animate-spin" if action.running? %>"></iconify-icon>
+      <span class="font-mono text-xs truncate"><%= action.label %></span>
+      <% if action.duration_ms %><span class="text-xs text-base-content/40"><%= (action.duration_ms / 1000.0).round(1) %>s</span><% end %>
+      <% if action.screenshot.attached? %><iconify-icon icon="lucide:image" class="text-base-content/40"></iconify-icon><% end %>
+    </summary>
+    <div class="mt-2 ml-6 space-y-2">
+      <pre class="bg-base-200 rounded p-2 text-xs whitespace-pre-wrap break-words max-h-48 overflow-y-auto"><%= JSON.pretty_generate(action.arguments) %></pre>
+      <% if action.result %>
+        <pre class="bg-base-200 rounded p-2 text-xs whitespace-pre-wrap break-words max-h-48 overflow-y-auto"><%= action.result["text"] %></pre>
+      <% end %>
+      <% if action.screenshot.attached? %>
+        <button type="button" data-action="lightbox#open" data-lightbox-id="<%= action.id %>" class="block">
+          <%= image_tag rails_representation_path(action.screenshot.variant(:medium)), class: "rounded border border-base-content/10 w-full max-w-lg hover:border-primary", loading: "lazy" %>
+        </button>
+      <% end %>
+      <% if action.arguments["intent"].present? %>
+        <div class="text-xs text-base-content/40">intent: <%= action.arguments["intent"] %></div>
+      <% end %>
+    </div>
+  </details>
+</li>

@@ -1,0 +1,112 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div class="grid gap-4 md:grid-cols-3">
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Status</div>
+      <div class="mt-1"><%= agent_computer_status_badge(@agent_computer) %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Cluster</div>
+      <div class="mt-1 font-medium"><%= @agent_computer.cluster.name %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Created</div>
+      <div class="mt-1"><%= @agent_computer.created_at.strftime("%b %d, %Y at %I:%M %p") %></div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Created By</div>
+      <div class="mt-1 font-medium">
+        <%= @agent_computer.user.first_name.present? ? "#{@agent_computer.user.first_name} #{@agent_computer.user.last_name}".strip : @agent_computer.user.email %>
+      </div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Machine</div>
+      <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputer::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
+    </div>
+    <div>
+      <div class="text-xs uppercase tracking-wide text-base-content/50">Last Updated</div>
+      <div class="mt-1"><%= time_ago_in_words(@agent_computer.updated_at) %> ago</div>
+    </div>
+  </div>
+
+  <% if @agent_computer.running? %>
+    <div class="divider"></div>
+    <%= turbo_frame_tag "computer_stats", src: stats_agent_computer_path(@agent_computer), loading: :lazy do %>
+      <div class="flex items-center gap-2 text-sm text-base-content/50">
+        <span class="loading loading-spinner loading-sm"></span>
+        Loading live stats from the cluster...
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if AgentTask.enabled_for?(current_account) %>
+    <div class="divider"></div>
+    <div class="mb-4">
+      <h6 class="text-sm font-semibold">Models</h6>
+      <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task can still override
+        these in its spec.</p>
+    </div>
+    <%= form_with(model: @agent_computer) do |form| %>
+      <%= render "shared/error_messages", resource: form.object %>
+      <div class="space-y-8">
+        <% [
+             [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
+           ].each do |field, label, description, options, fallback| %>
+          <%= render(FormFieldComponent.new(label: label, description: description)) do %>
+            <%= render(RichSelectComponent.new(
+              name: "agent_computer[#{field}]",
+              id: "agent_computer_#{field}",
+              collection: options,
+              selected: @agent_computer.public_send(field).presence || fallback,
+              partial: "agent_computers/option_item",
+              placeholder: ""
+            )) %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="form-footer">
+        <%= form.button "Save models", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="divider"></div>
+  <a class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block mb-4"
+     onclick="agent_terminal_modal.showModal()">
+    Prefer using your own terminal?
+  </a>
+
+  <dialog id="agent_terminal_modal" aria-label="Connect from your terminal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl bg-base-300">
+      <form method="dialog">
+        <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <h3 class="mb-4 text-xl font-bold">Connect from your terminal</h3>
+      <p class="mb-6 text-sm text-base-content/70">
+        Reach this computer straight from your own machine — open a shell, drop into the console, or forward a port.
+        <%= link_to download_kubeconfig_cluster_path(@agent_computer.cluster), class: "link link-primary", target: "_blank" do %>
+          Download the <%= @agent_computer.cluster.name %> kubeconfig and install virtctl first.
+        <% end %>
+      </p>
+      <% agent_computer_commands(@agent_computer).group_by { |c| c[:group] }.each do |group, commands| %>
+        <div class="mb-2 mt-4 text-xs uppercase tracking-wide text-base-content/50"><%= group %></div>
+        <% commands.each do |command| %>
+          <div class="mb-5">
+            <p class="mb-2 text-sm text-base-content"><strong><%= command[:title] %></strong></p>
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="<%= command[:command] %>" class="input input-bordered input-sm flex-1 font-mono text-xs">
+              <button type="button" class="btn btn-sm btn-square btn-ghost" onclick="navigator.clipboard.writeText(this.dataset.clipboardText)" data-clipboard-text="<%= command[:command] %>">
+                <iconify-icon icon="lucide:copy" height="16"></iconify-icon>
+              </button>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+<% end %>

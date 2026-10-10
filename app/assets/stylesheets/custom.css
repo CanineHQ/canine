@@ -143,3 +143,14 @@
   color: oklch(var(--s)) !important;
   border: 0 !important;
 }
+/* Agent sessions, animated live as they run (app/views/agent_sessions) */
+@keyframes agent-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.agent-enter { animation: agent-enter 0.35s ease-out both; }
+@keyframes agent-fade { from { opacity: 0.2; } to { opacity: 1; } }
+.agent-fade { animation: agent-fade 0.5s ease-out both; }
+@keyframes agent-pulse { 0%, 100% { border-color: oklch(var(--in) / 0.25); } 50% { border-color: oklch(var(--in) / 0.8); } }
+.agent-current { animation: agent-pulse 2s ease-in-out infinite; }
+.agent-dots span { display: inline-block; width: 6px; height: 6px; margin-right: 3px; border-radius: 9999px; background: currentColor; animation: agent-dot 1.2s infinite ease-in-out both; }
+.agent-dots span:nth-child(2) { animation-delay: 0.15s; }
+.agent-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes agent-dot { 0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }

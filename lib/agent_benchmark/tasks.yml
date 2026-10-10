@@ -1,0 +1,56 @@
+# The agent benchmark (lib/agent_benchmark/runner.rb): small, read-only tasks with hand-written specs, so a run
+# measures the agent loop (not the task compiler). `reference` is either a live check, computed from a public API
+# right after the run, or what was true when the task was written; the judge (Runner#judge) compares the session's
+# summary with it.
+defaults:
+  never:
+    - Send, post, reply to, react to, edit, delete, archive or label anything
+    - Change any settings
+  limits: { minutes: 8, cost_usd: 0.5, turns: 40 }
+  time_zone: America/New_York
+
+tasks:
+  - key: gmail_newest
+    instruction: Open Gmail, open the newest email in the inbox, and report who sent it and its subject.
+    sources: ["Gmail: inbox"]
+    reference: "The newest inbox email (as of 2026-10-03) is from Chris Zhu via Google Keep (keep-shares-dm-noreply@google.com): a shared note (subject starts \"Note shared with you\"). A newer email would also be acceptable if it's clearly the newest."
+  - key: slack_akula_dev
+    instruction: Open Slack, go to #akula-dev, and report who posted the last three messages and when.
+    sources: ["Slack: #akula-dev"]
+    reference: "Any answer that names three posters with times, read from #akula-dev's newest messages (not search results or a thread), is acceptable; it must not claim the channel is unreadable."
+  - key: wikipedia_turing
+    instruction: Open the Wikipedia article on Alan Turing, follow the link to the Turing machine article, and report its first sentence.
+    sources: ["Wikipedia"]
+    reference: live:wikipedia_turing_machine
+  - key: hn_top
+    instruction: Open Hacker News, open the comments page of the top story, and report the story's title, points and number of comments.
+    sources: ["Hacker News"]
+    reference: live:hn_top_story
+  - key: canine_issue
+    instruction: Open github.com/czhu12/canine, go to its Issues tab, and report the title and number of the newest open issue.
+    sources: ["GitHub: czhu12/canine issues"]
+    reference: live:canine_newest_issue
+  - key: drive_newest_file
+    instruction: Open Google Drive, open the most recently modified file, and report its name and who last edited it.
+    sources: ["Google Drive: My Drive"]
+    reference: "My Drive's most recently modified item is a folder (ClaytonWork); the answer must be a FILE, not that folder. Last editor is the signed-in account (Clayton Claw, shown as \"me\")."
+  - key: calendar_today
+    instruction: Open Google Calendar and report today's events with their times.
+    sources: ["Google Calendar"]
+    reference: "The calendar has had no events on recent days (none on 2026-10-02, -03 or -04). The answer must be for the person's today in America/New_York on the day of the run (judge the date against the run's date, not this text)."
+  - key: gmail_sent
+    instruction: Open Gmail, go to the Sent folder, and report the subject and recipient of the most recent email I sent.
+    sources: ["Gmail: Sent"]
+    reference: "The Sent folder of the open account (clawclayton5) is empty: \"no sent email\" is correct. A draft doesn't count."
+  - key: slack_newest_dm
+    instruction: Open Slack, open the DMs view, and report who sent me the most recent direct message (just the name and time, don't open it).
+    sources: ["Slack: DMs view"]
+    reference: "The newest DM changes over time and can't be checked live. Correct: names one sender and a time, read from the top of Slack's DMs list (sorted by recency) without opening the conversation, and says which workspace. Wrong: no sender, several candidates without choosing, or opening the conversation."
+  - key: rails_release
+    instruction: Open the Rails releases page on GitHub (github.com/rails/rails/releases), open the newest release, and report its version and date.
+    sources: ["GitHub: rails/rails releases"]
+    reference: live:rails_latest_release
+  - key: wikipedia_race
+    instruction: "Wikipedia race: starting from the Wikipedia article on Pizza (https://en.wikipedia.org/wiki/Pizza), get to the article on Alan Turing by clicking links inside the articles only. Do it in the browser: no shell commands, no Wikipedia API, no search, no typing URLs or addresses. Report the path of articles you went through."
+    sources: ["Wikipedia"]
+    reference: "Correct: the path starts at Pizza, ends at the Alan Turing article, and each step is a plausible link from the previous article (any path is fine; shorter is better). Wrong: it didn't reach Alan Turing, or it used search or typed an address."

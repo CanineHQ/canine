@@ -1,0 +1,28 @@
+<%# Replaced live whenever the session changes (AgentSession#broadcast_changes) %>
+<div id="<%= dom_id(session, :header) %>" class="flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <div class="flex items-center gap-2">
+      <% if session.agent_task %>
+        <%= link_to session.agent_task.name, agent_computer_agent_task_path(session.agent_computer, session.agent_task), class: "link text-sm" %>
+        <span class="text-base-content/40">/</span>
+      <% end %>
+      <span class="font-semibold">Run <%= session.created_at.strftime("%b %-d, %H:%M") %></span>
+      <%= render "agent_sessions/status_badge", session: session %>
+    </div>
+    <div class="text-xs text-base-content/60 mt-1 flex flex-wrap gap-x-3">
+      <span><%= session.trigger.humanize %> · <%= session.model %></span>
+      <% if session.started_at %>
+        <span data-controller="elapsed" data-elapsed-from-value="<%= session.started_at.iso8601 %>"
+              data-elapsed-to-value="<%= session.finished_at&.iso8601 %>"></span>
+      <% end %>
+      <span><%= session.turns %> turns · <%= number_with_delimiter(session.input_tokens + session.output_tokens) %> tokens · $<%= format("%.4f", session.cost_usd) %></span>
+      <% if session.window_from %>
+        <span>covers <%= session.window_from.strftime("%H:%M") %>–<%= session.window_to&.strftime("%H:%M") %></span>
+      <% end %>
+    </div>
+  </div>
+  <% if session.active? %>
+    <%= button_to "Cancel", cancel_agent_computer_agent_session_path(session.agent_computer, session), class: "btn btn-ghost btn-sm text-error",
+      form: { data: { turbo_confirm: "Stop this session?" } } %>
+  <% end %>
+</div>

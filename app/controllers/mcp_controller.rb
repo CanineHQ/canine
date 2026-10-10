@@ -55,7 +55,16 @@ class MCPController < ActionController::API
       # Add-ons
       Tools::SearchAddOns,
       Tools::CreateAddOn,
-      Tools::GetAddOnLogs
+      Tools::GetAddOnLogs,
+
+      # Agent computers
+      Tools::ListAgentComputers,
+      Tools::ComputerScreenshot,
+      Tools::ComputerRun,
+      Tools::ComputerTerminal,
+      Tools::ComputerWindows,
+      Tools::ComputerAccessibility,
+      Tools::ComputerAction
     ]
   end
 

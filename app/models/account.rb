@@ -41,12 +41,14 @@ class Account < ApplicationRecord
   has_one :stack_manager, dependent: :destroy
   has_one :sso_provider, dependent: :destroy
   has_many :teams, dependent: :destroy
+  has_many :agent_provider_keys, dependent: :destroy
 
   has_many :clusters, dependent: :destroy
   has_many :build_clouds, through: :clusters
   has_many :projects, through: :clusters
   has_many :add_ons, through: :clusters
   has_many :services, through: :projects
+  has_many :agent_computers, through: :account_users
   has_many :providers, through: :users
   has_many :favorites, dependent: :destroy
 

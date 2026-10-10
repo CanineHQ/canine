@@ -1,0 +1,21 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div data-controller="lightbox deep-link" data-action="keydown@window->lightbox#keydown"
+       data-lightbox-url-value="<%= screenshots_agent_computer_agent_session_path(@agent_computer, @session) %>">
+  <%= turbo_stream_from @session %>
+  <%= render "agent_sessions/header", session: @session %>
+  <%= render "agent_sessions/outcome", session: @session %>
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] mt-4">
+    <div>
+      <%= render "agent_sessions/timeline", session: @session %>
+      <%= render "agent_sessions/thinking", session: @session, thinking: false %>
+    </div>
+    <div class="lg:sticky lg:top-4 self-start">
+      <% last_shot = @session.actions.joins(:screenshot_attachment).last %>
+      <%= render "agent_sessions/screen", action: last_shot, session: @session %>
+    </div>
+  </div>
+
+  <%= render "agent_sessions/lightbox_overlay" %>
+  </div>
+<% end %>

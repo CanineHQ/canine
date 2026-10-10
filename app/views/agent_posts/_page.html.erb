@@ -1,0 +1,27 @@
+<%# One page of the feed, and a frame at the end that loads the next page when it scrolls into view (a page loaded into
+    that frame comes back wrapped in a frame of the same id). Each post has a day heading, which the browser shows
+    only where a new day starts, in its own time zone (feed_day_controller.js). %>
+<% content = capture do %>
+  <% posts.each do |post| %>
+    <div data-controller="feed-day" data-feed-day-at-value="<%= post.posted_at.iso8601 %>"
+         class="hidden justify-center my-4 first:mt-0">
+      <span data-feed-day-target="label"
+            class="rounded-full bg-base-200 px-3 py-1 text-xs font-medium text-base-content/60"></span>
+    </div>
+    <%= render "agent_posts/post", post: post %>
+  <% end %>
+  <% if more %>
+    <% last = posts.last %>
+    <%= turbo_frame_tag "agent_feed_after_#{last.id}", loading: :lazy, target: "_top",
+          src: agent_computer_agent_posts_path(agent_computer, before_at: last.posted_at.iso8601(6), after_id: last.id) do %>
+      <div class="flex justify-center py-6"><span class="loading loading-dots loading-sm text-base-content/40"></span></div>
+    <% end %>
+  <% else %>
+    <div class="py-8 text-center text-xs text-base-content/40">That's everything.</div>
+  <% end %>
+<% end %>
+<% if turbo_frame_request? %>
+  <%= turbo_frame_tag request.headers["Turbo-Frame"], target: "_top" do %><%= content %><% end %>
+<% else %>
+  <%= content %>
+<% end %>

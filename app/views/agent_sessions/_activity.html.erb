@@ -1,0 +1,36 @@
+<%# One activity on the live timeline: collapsed to a line once it's done; open, with its actions ticking in, while it runs %>
+<% current = activity.current? %>
+<% doing = activity.actions.reject(&:look_only?) %>
+<li id="<%= dom_id(activity) %>" class="rounded-lg border border-base-content/10 <%= "agent-enter" if local_assigns[:animate] %> <%= "agent-current" if current %>">
+  <details <%= "open" if current %> class="group">
+    <summary class="flex cursor-pointer list-none items-start gap-3 p-3">
+      <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
+        <% if current %>
+          <span class="loading loading-spinner loading-xs text-info"></span>
+        <% elsif activity.troubled? %>
+          <iconify-icon icon="lucide:circle-alert" class="text-warning"></iconify-icon>
+        <% else %>
+          <iconify-icon icon="lucide:circle-check" class="text-success"></iconify-icon>
+        <% end %>
+      </span>
+      <div class="min-w-0 flex-1">
+        <div class="font-medium"><%= activity.title %></div>
+        <% if activity.outcome.present? %>
+          <div class="text-sm text-base-content/60"><%= activity.outcome %></div>
+        <% end %>
+      </div>
+      <span class="shrink-0 text-xs text-base-content/50 text-right">
+        <%= pluralize(doing.size, "action") %><% if activity.duration %> · <%= activity.duration < 60 ? "#{activity.duration.round}s" : "#{(activity.duration / 60).round(1)}m" %><% end %>
+      </span>
+      <iconify-icon icon="lucide:chevron-down" class="mt-1 shrink-0 text-base-content/40 transition-transform group-open:rotate-180"></iconify-icon>
+    </summary>
+    <% if current %>
+      <%= render "agent_sessions/activity_body", activity: activity, reveal_from: local_assigns[:reveal_from] %>
+    <% else %>
+      <%= turbo_frame_tag dom_id(activity, :body), loading: :lazy,
+            src: agent_computer_agent_session_activity_path(activity.session.agent_computer, activity.session, activity) do %>
+        <div class="px-3 pb-3 pl-11 text-sm text-base-content/50"><span class="loading loading-dots loading-xs"></span></div>
+      <% end %>
+    <% end %>
+  </details>
+</li>

@@ -1,0 +1,28 @@
+<%# One option in a model / coding-agent rich select (AgentComputer::Option): a provider logo, a friendly name, an
+    optional note, and the OpenRouter id in mono when it differs from the name. %>
+<div class="flex items-center gap-3">
+  <% if item.icon.present? %>
+    <% brand = item.icon.start_with?("logos:") %>
+    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md <%= brand ? 'bg-white' : 'bg-base-200' %>">
+      <iconify-icon icon="<%= item.icon %>" height="18" class="<%= 'text-base-content/80' unless brand %>"></iconify-icon>
+    </span>
+  <% end %>
+  <div class="min-w-0">
+    <div class="flex items-center gap-2 font-semibold">
+      <%= item.name %>
+      <% if item.recommended %><span class="badge badge-success badge-sm badge-outline">Recommended</span><% end %>
+      <% if item.note.present? %><span class="text-xs font-normal text-base-content/50"><%= item.note %></span><% end %>
+    </div>
+    <% if (item.id.present? && item.id != item.name) || item.price %>
+      <div class="flex items-center gap-2 text-xs text-base-content/50">
+        <% if item.id.present? && item.id != item.name %><span class="truncate font-mono"><%= item.id %></span><% end %>
+        <% if item.price %>
+          <span class="shrink-0 whitespace-nowrap">
+            <span class="font-semibold text-base-content/70"><%= item.price %></span>
+            <span class="font-mono text-base-content/40">per 1M</span>
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

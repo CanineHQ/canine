@@ -1,0 +1,22 @@
+<div class="tabs tabs-bordered mb-3" role="tablist">
+  <% if AgentTask.enabled_for?(current_account) %>
+    <%= link_to agent_computer_agent_posts_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if controller_name == 'agent_posts'}" do %>
+      <div class="flex items-center gap-2">
+        Feed
+        <iconify-icon icon="lucide:newspaper"></iconify-icon>
+      </div>
+    <% end %>
+    <%= link_to agent_computer_agent_tasks_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if controller_name.in?(%w[agent_tasks agent_sessions])}" do %>
+      <div class="flex items-center gap-2">
+        Tasks
+        <iconify-icon icon="lucide:calendar-clock"></iconify-icon>
+      </div>
+    <% end %>
+  <% end %>
+  <%= link_to edit_agent_computer_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if action_name == 'edit' && controller_name == 'agent_computers'}" do %>
+    <div class="flex items-center gap-2">
+      Machine
+      <iconify-icon icon="lucide:server"></iconify-icon>
+    </div>
+  <% end %>
+</div>

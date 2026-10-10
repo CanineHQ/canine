@@ -1,0 +1,9 @@
+<%# Shown while a model call is in flight (AgentSession#broadcast_thinking) %>
+<div id="<%= dom_id(session, :thinking) %>">
+  <% if thinking %>
+    <div class="flex items-center gap-2 text-sm text-base-content/60 mt-3 agent-enter">
+      <span class="agent-dots"><span></span><span></span><span></span></span>
+      Thinking
+    </div>
+  <% end %>
+</div>

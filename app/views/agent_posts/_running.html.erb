@@ -1,0 +1,45 @@
+<%# A live card for an in-progress run, at the top of the feed. It's replaced as the session updates; once the run is
+    no longer active the card renders empty, so it drops out and the result posts take its place. %>
+<div id="<%= dom_id(session, :running) %>">
+  <% if session.active? %>
+    <% shot = session.actions.joins(:screenshot_attachment).order(:id).last %>
+    <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
+      <div class="flex flex-col gap-3">
+        <% waiting = session.waiting_in_queue? %>
+        <header class="flex items-center gap-3">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
+            <% if waiting %>
+              <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
+            <% else %>
+              <span class="loading loading-spinner loading-sm text-primary"></span>
+            <% end %>
+          </span>
+          <div class="min-w-0 flex-1 leading-tight">
+            <div class="truncate text-sm font-semibold"><%= session.agent_task&.name || "Agent run" %></div>
+            <div class="truncate text-xs text-base-content/50">
+              <% if waiting %>
+                Queued · will run after the current session
+              <% else %>
+                Working… · started
+                <time datetime="<%= session.created_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(session.created_at) %> ago</time>
+              <% end %>
+            </div>
+          </div>
+          <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
+                class: "btn btn-ghost btn-xs text-base-content/60" do %>
+            Watch <iconify-icon icon="lucide:arrow-right" height="13"></iconify-icon>
+          <% end %>
+        </header>
+
+        <%# A small live thumbnail of what's on screen right now, swapped in as new screenshots arrive. %>
+        <% if shot&.screenshot&.attached? %>
+          <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
+                class: "block w-40 overflow-hidden rounded-md border border-base-300 hover:border-primary" do %>
+            <%= image_tag rails_representation_path(shot.screenshot.variant(:thumb)),
+                  class: "aspect-video w-full object-cover object-top agent-fade", alt: "What the agent is doing now" %>
+          <% end %>
+        <% end %>
+      </div>
+    </article>
+  <% end %>
+</div>
