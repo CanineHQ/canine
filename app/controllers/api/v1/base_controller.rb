@@ -5,15 +5,23 @@ module Api
 
       helper_method :current_user, :current_account, :current_account_user
 
+      before_action :default_format_json
       before_action :authenticate_with_api_token!
 
       rescue_from ActiveRecord::RecordNotFound, with: :not_found
       rescue_from Pundit::NotAuthorizedError, with: :forbidden
+      rescue_from ActionController::ParameterMissing do |e|
+        render_error(e.message, status: :bad_request)
+      end
 
       private
 
+      def default_format_json
+        request.format = :json
+      end
+
       def authenticate_with_api_token!
-        token = request.headers["X-API-Key"]
+        token = request.headers["X-API-Key"].presence || bearer_token
 
         if token.blank?
           render json: { error: "Missing API token" }, status: :unauthorized
@@ -31,8 +39,22 @@ module Api
         @current_user = api_token.user
       end
 
+      def bearer_token
+        request.authorization.to_s[/\ABearer (.+)\z/, 1]
+      end
+
       def current_user
         @current_user
+      end
+
+      # Clusters can be referenced by numeric ID or by name.
+      def find_visible_cluster(id_or_name)
+        clusters = ::Clusters::VisibleToUser.execute(account_user: current_account_user).clusters
+        clusters.find_by(name: id_or_name.to_s) || clusters.find(id_or_name)
+      end
+
+      def render_error(message, status: :unprocessable_entity)
+        render json: { error: message }, status: status
       end
 
       def current_account
