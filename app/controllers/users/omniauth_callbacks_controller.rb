@@ -24,10 +24,12 @@ module Users
 
       user.update!(password_change_required: false) if user.password_change_required?
 
-      if user_signed_in?
+      if user_signed_in? && current_user == user
         flash[:notice] = "Your #{kind} account was connected."
         redirect_to edit_user_registration_path
       else
+        # Either a fresh login or a GitHub identity that belongs to someone other than the active session:
+        # sign in as that identity rather than leaving the leftover session in place.
         sign_in_and_redirect user, event: :authentication
         session[:account_id] = user.accounts.first.id
         set_flash_message :notice, :success, kind: kind
@@ -43,12 +45,15 @@ module Users
     end
 
     def set_user
-      if user_signed_in?
-        @user = current_user
-      elsif provider.present?
-        @user = provider.user
+      # Resolve an existing GitHub identity before the session: a GitHub account that already belongs to someone
+      # signs in (or re-connects) as that someone, never as whoever a leftover session happened to be. Only a
+      # brand-new GitHub (no provider record) attaches to the signed-in user — the genuine "connect my account" flow.
+      @user = if provider.present?
+        provider.user
+      elsif user_signed_in?
+        current_user
       else
-        @user = create_user
+        create_user
       end
     end
 
