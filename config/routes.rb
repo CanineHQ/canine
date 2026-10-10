@@ -3,27 +3,35 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resource :me, only: :show, controller: "me"
-      resources :projects, only: %i[index show] do
+      resources :providers, only: %i[index create]
+      resources :projects, only: %i[index show create update] do
         member do
           post :deploy
           post :restart
           get :doctor
+          get :logs
         end
         resources :processes, only: %i[index show create destroy], module: :projects
+        resources :services, only: %i[index create], module: :projects
+        resources :environment_variables, only: %i[index show create destroy], module: :projects
       end
       resources :builds, only: %i[index show] do
         member do
           patch :kill
         end
       end
-      resources :clusters, only: %i[index] do
+      resources :clusters, only: %i[index show create] do
         member do
           get :download_kubeconfig
         end
       end
-      resources :add_ons, only: %i[index show] do
+      resources :add_ons, only: %i[index show create] do
+        collection do
+          get :search
+        end
         member do
           post :restart
+          get :logs
         end
       end
     end
@@ -276,6 +284,7 @@ Rails.application.routes.draw do
   get "/swagger", to: "static#swagger"
 
   get "/install.sh", to: "static#install"
+  get "/llms.txt", to: "llms#show", format: false, defaults: { format: "text" }
   get "/calculator", to: "static#calculator"
   get "/model-context-protocol", to: "static#mcp_tools"
   get "/self-hosted", to: "static#self_hosted"

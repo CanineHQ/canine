@@ -6,22 +6,33 @@ info:
   description: Canine API
 components:
   schemas:
-    project:
+    project_detail:
       type: object
       required:
       - id
       - name
+      - namespace
       - repository_url
       - branch
+      - status
       - cluster_id
-      - subfolder
+      - cluster_name
+      - container_registry_url
+      - link_to_view_url
       - updated_at
       - created_at
+      - autodeploy
+      - services
+      - volumes
+      - builds
       properties:
         id:
           type: integer
-          example: '1'
+          example: 1
         name:
+          type: string
+          example: example-project
+        namespace:
           type: string
           example: example-project
         repository_url:
@@ -30,25 +41,555 @@ components:
         branch:
           type: string
           example: main
+        status:
+          type: string
+          example: deployed
         cluster_id:
           type: integer
-          example: '1'
-        subfolder:
+          example: 1
+        cluster_name:
           type: string
-          example: example-subfolder
+          example: production
+        container_registry_url:
+          type: string
+          example: ghcr.io/example/example-project:main
+        link_to_view_url:
+          type: string
+          example: "/projects/example-project"
+        last_deployment_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+          nullable: true
+        current_commit_message:
+          type: string
+          example: Fix bug in authentication
+          nullable: true
+        created_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
         updated_at:
           type: string
-          example: '2021-01-01T00:00:00Z'
+          example: '2024-01-01T00:00:00Z'
+        autodeploy:
+          type: boolean
+          example: true
+        dockerfile_path:
+          type: string
+          example: Dockerfile
+          nullable: true
+        docker_build_context_directory:
+          type: string
+          example: "."
+          nullable: true
+        predeploy_command:
+          type: string
+          example: bundle exec rails db:migrate
+          nullable: true
+        postdeploy_command:
+          type: string
+          example:
+          nullable: true
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: web
+              service_type:
+                type: string
+                example: web
+              status:
+                type: string
+                example: running
+              replicas:
+                type: integer
+                example: 1
+              container_port:
+                type: integer
+                example: 3000
+                nullable: true
+              command:
+                type: string
+                example:
+                nullable: true
+              healthcheck_url:
+                type: string
+                example: "/health"
+                nullable: true
+              allow_public_networking:
+                type: boolean
+                example: true
+              domains:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    domain_name:
+                      type: string
+                      example: example.com
+                    status:
+                      type: string
+                      example: active
+        volumes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: data
+              mount_path:
+                type: string
+                example: "/app/storage"
+              size:
+                type: string
+                example: 10Gi
+              access_mode:
+                type: string
+                example: ReadWriteOnce
+              status:
+                type: string
+                example: bound
+        builds:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              status:
+                type: string
+                example: completed
+              commit_sha:
+                type: string
+                example: abc123
+              commit_message:
+                type: string
+                example: Fix bug in authentication
+                nullable: true
+              created_at:
+                type: string
+                example: '2024-01-01T00:00:00Z'
+              log_tail:
+                type: string
+                example: |-
+                  Step 1/10 : FROM ruby:3.2
+                  ...
+    projects:
+      type: object
+      required:
+      - projects
+      properties:
+        projects:
+          type: array
+          items:
+            "$ref": "#/components/schemas/project"
+    add_on:
+      type: object
+      required:
+      - id
+      - name
+      - namespace
+      - chart_url
+      - version
+      - status
+      - cluster_id
+      - cluster_name
+      - link_to_view_url
+      - created_at
+      - updated_at
+      - endpoints
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: redis
+        namespace:
+          type: string
+          example: redis
+        chart_url:
+          type: string
+          example: https://charts.bitnami.com/bitnami/redis
+        chart_type:
+          type: string
+          example: helm_chart
+          nullable: true
+        repository_url:
+          type: string
+          example: https://charts.bitnami.com/bitnami
+          nullable: true
+        version:
+          type: string
+          example: 17.0.0
+        status:
+          type: string
+          example: installed
+        install_stage:
+          type: integer
+          example: 0
+          nullable: true
+        cluster_id:
+          type: integer
+          example: 1
+        cluster_name:
+          type: string
+          example: production
+        link_to_view_url:
+          type: string
+          example: "/add_ons/1"
         created_at:
           type: string
           example: '2021-01-01T00:00:00Z'
-        url:
+        updated_at:
           type: string
-          example: https://example.com/projects/1
-    projects:
-      type: array
-      items:
-        "$ref": "#/components/schemas/project"
+          example: '2021-01-01T00:00:00Z'
+        endpoints:
+          type: array
+          items:
+            "$ref": "#/components/schemas/add_on_endpoint"
+    add_on_endpoint:
+      type: object
+      required:
+      - name
+      - internal_urls
+      - external_urls
+      properties:
+        name:
+          type: string
+          example: redis-master
+        internal_urls:
+          type: array
+          items:
+            type: string
+          example:
+          - redis-master.redis.svc.cluster.local:6379
+        external_urls:
+          type: array
+          items:
+            type: string
+          example:
+          - redis.example.com
+    add_on_list_item:
+      type: object
+      required:
+      - id
+      - name
+      - namespace
+      - chart_url
+      - version
+      - status
+      - cluster_id
+      - cluster_name
+      - link_to_view_url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: redis
+        namespace:
+          type: string
+          example: redis
+        chart_url:
+          type: string
+          example: https://charts.bitnami.com/bitnami/redis
+        chart_type:
+          type: string
+          example: helm_chart
+          nullable: true
+        version:
+          type: string
+          example: 17.0.0
+        status:
+          type: string
+          example: installed
+        install_stage:
+          type: integer
+          example: 0
+          nullable: true
+        cluster_id:
+          type: integer
+          example: 1
+        cluster_name:
+          type: string
+          example: production
+        link_to_view_url:
+          type: string
+          example: "/add_ons/1"
+        created_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+    add_ons:
+      type: object
+      required:
+      - add_ons
+      properties:
+        add_ons:
+          type: array
+          items:
+            "$ref": "#/components/schemas/add_on_list_item"
+    build:
+      type: object
+      required:
+      - id
+      - status
+      - commit_sha
+      - link_to_view_url
+      - logs
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: completed
+        commit_sha:
+          type: string
+          example: abc123
+        commit_message:
+          type: string
+          example: Fix bug in authentication
+          nullable: true
+        git_sha:
+          type: string
+          example: abc123
+          nullable: true
+        repository_url:
+          type: string
+          example: https://github.com/example/example-project
+          nullable: true
+        project_id:
+          type: integer
+          example: 1
+        project_name:
+          type: string
+          example: example-project
+        link_to_view_url:
+          type: string
+          example: "/projects/example-project/deployments/1"
+        logs:
+          type: string
+          example: |-
+            Step 1/10 : FROM ruby:3.2
+            ...
+        created_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+        deployment:
+          "$ref": "#/components/schemas/deployment"
+          nullable: true
+    cluster:
+      type: object
+      required:
+      - id
+      - name
+      - cluster_type
+      - status
+      - link_to_view_url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: production-cluster
+        cluster_type:
+          type: string
+          example: k8s
+        status:
+          type: string
+          example: ready
+        link_to_view_url:
+          type: string
+          example: "/clusters/1"
+        created_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        packages:
+          type: array
+          items:
+            type: object
+    clusters:
+      type: object
+      required:
+      - clusters
+      properties:
+        clusters:
+          type: array
+          items:
+            "$ref": "#/components/schemas/cluster"
+    deployment:
+      type: object
+      required:
+      - id
+      - version
+      - status
+      - is_current
+      - build_id
+      - commit_sha
+      - link_to_view_url
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        version:
+          type: integer
+          example: 3
+        status:
+          type: string
+          example: running
+        is_current:
+          type: boolean
+          example: true
+        build_id:
+          type: integer
+          example: 1
+        commit_sha:
+          type: string
+          example: abc123
+        commit_message:
+          type: string
+          example: Fix bug in authentication
+          nullable: true
+        link_to_view_url:
+          type: string
+          example: "/projects/example-project/deployments/1"
+        manifests:
+          type: object
+          nullable: true
+        created_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+    pod:
+      type: object
+      required:
+      - name
+      - namespace
+      - status
+      - created_at
+      properties:
+        name:
+          type: string
+          example: example-project-run-abc123
+        namespace:
+          type: string
+          example: example-project-namespace
+        status:
+          type: string
+          example: Running
+        created_at:
+          type: string
+          example: '2021-01-01T00:00:00Z'
+        labels:
+          type: object
+          nullable: true
+          example:
+            app: example-project
+            oneoff: 'true'
+    pods:
+      type: object
+      required:
+      - pods
+      properties:
+        pods:
+          type: array
+          items:
+            "$ref": "#/components/schemas/pod"
+    project:
+      type: object
+      required:
+      - id
+      - name
+      - namespace
+      - repository_url
+      - branch
+      - status
+      - cluster_id
+      - cluster_name
+      - container_registry_url
+      - link_to_view_url
+      - updated_at
+      - created_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: example-project
+        namespace:
+          type: string
+          example: example-project
+        repository_url:
+          type: string
+          example: https://github.com/example/example-project
+        branch:
+          type: string
+          example: main
+        status:
+          type: string
+          example: deployed
+        cluster_id:
+          type: integer
+          example: 1
+        cluster_name:
+          type: string
+          example: production
+        container_registry_url:
+          type: string
+          example: ghcr.io/example/example-project:main
+        link_to_view_url:
+          type: string
+          example: "/projects/example-project"
+        last_deployment_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+          nullable: true
+        current_commit_message:
+          type: string
+          example: Fix bug in authentication
+          nullable: true
+        created_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          example: '2024-01-01T00:00:00Z'
   securitySchemes:
     x_api_key:
       type: apiKey
@@ -57,12 +598,674 @@ components:
 security:
 - x_api_key: []
 paths:
-  "/projects/{project_id}/deployments/deploy":
-    post:
-      summary: Deploy Project
+  "/api/v1/add_ons":
+    get:
+      summary: List Add Ons
       tags:
-      - Deployments
-      operationId: deployProject
+      - Add Ons
+      operationId: listAddOns
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/add_ons"
+    post:
+      summary: Create Add On
+      tags:
+      - Add Ons
+      operationId: createAddOn
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/add_on_list_item"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: main-redis
+                cluster_id:
+                  type: string
+                  description: Cluster name or ID
+                chart_url:
+                  type: string
+                  example: bitnami/redis
+                version:
+                  type: string
+                  example: 18.6.1
+                repository_url:
+                  type: string
+                  example: https://charts.bitnami.com/bitnami
+                values_yaml:
+                  type: string
+                  description: Custom Helm values as YAML
+              required:
+              - name
+              - cluster_id
+              - chart_url
+              - version
+              - repository_url
+  "/api/v1/add_ons/{id}":
+    get:
+      summary: Show Add On
+      tags:
+      - Add Ons
+      operationId: showAddOn
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Add On name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/add_on"
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Resource not found
+  "/api/v1/add_ons/{id}/restart":
+    post:
+      summary: Restart Add On
+      tags:
+      - Add Ons
+      operationId: restartAddOn
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Add On name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Add on redis has been restarted
+                required:
+                - message
+  "/api/v1/add_ons/search":
+    get:
+      summary: Search Add On Charts
+      tags:
+      - Add Ons
+      operationId: searchAddOns
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: q
+        in: query
+        description: Search query, e.g. postgres
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  curated:
+                    type: array
+                    items:
+                      type: object
+                  artifact_hub:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - curated
+                - artifact_hub
+  "/api/v1/add_ons/{id}/logs":
+    get:
+      summary: Add On Logs
+      tags:
+      - Add Ons
+      operationId: addOnLogs
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Add on name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pods:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - pods
+  "/api/v1/builds":
+    get:
+      summary: List Builds
+      tags:
+      - Builds
+      operationId: listBuilds
+      description: Returns builds that are in progress or created within the last
+        24 hours
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: project_id
+        in: query
+        required: false
+        description: Filter by project name
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+  "/api/v1/builds/{id}":
+    get:
+      summary: Show Build
+      tags:
+      - Builds
+      operationId: showBuild
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Build ID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+  "/api/v1/builds/{id}/kill":
+    patch:
+      summary: Kill Build
+      tags:
+      - Builds
+      operationId: killBuild
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Build ID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Build has been killed.
+                required:
+                - message
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Build cannot be killed (not in progress).
+                required:
+                - error
+  "/api/v1/clusters":
+    get:
+      summary: List Clusters
+      tags:
+      - Clusters
+      operationId: listClusters
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/clusters"
+    post:
+      summary: Create Cluster
+      tags:
+      - Clusters
+      operationId: createCluster
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cluster"
+        '422':
+          description: invalid kubeconfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: production
+                kubeconfig:
+                  type: string
+                  description: Kubeconfig YAML
+                cluster_type:
+                  type: string
+                  enum:
+                  - k8s
+                  - k3s
+                  example: k8s
+                ip_address:
+                  type: string
+                  description: Public IP of a k3s server; replaces 127.0.0.1 in the
+                    kubeconfig
+              required:
+              - name
+              - kubeconfig
+  "/api/v1/clusters/{id}/download_kubeconfig":
+    get:
+      summary: Download Kubeconfig
+      tags:
+      - Clusters
+      operationId: downloadKubeconfig
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Cluster name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  kubeconfig:
+                    type: object
+                    description: Kubernetes configuration object
+                required:
+                - kubeconfig
+  "/api/v1/clusters/{id}":
+    get:
+      summary: Show Cluster
+      tags:
+      - Clusters
+      operationId: showCluster
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Cluster name or ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cluster"
+  "/api/v1/projects/{project_id}/environment_variables":
+    parameters:
+    - name: X-API-Key
+      in: header
+      description: API Key
+      schema:
+        type: string
+    - name: project_id
+      in: path
+      description: Project name
+      required: true
+      schema:
+        type: string
+    get:
+      summary: List Environment Variables
+      tags:
+      - Environment Variables
+      operationId: listEnvironmentVariables
+      responses:
+        '200':
+          description: successful (secret values are masked)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  environment_variables:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                          example: DATABASE_URL
+                        value:
+                          type: string
+                        storage_type:
+                          type: string
+                          enum:
+                          - config
+                          - secret
+                      required:
+                      - id
+                      - name
+                      - value
+                      - storage_type
+                required:
+                - environment_variables
+    post:
+      summary: Create or Update Environment Variable
+      tags:
+      - Environment Variables
+      operationId: upsertEnvironmentVariable
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                    example: DATABASE_URL
+                  value:
+                    type: string
+                  storage_type:
+                    type: string
+                    enum:
+                    - config
+                    - secret
+                required:
+                - id
+                - name
+                - value
+                - storage_type
+        '200':
+          description: updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                    example: DATABASE_URL
+                  value:
+                    type: string
+                  storage_type:
+                    type: string
+                    enum:
+                    - config
+                    - secret
+                required:
+                - id
+                - name
+                - value
+                - storage_type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: DATABASE_URL
+                value:
+                  type: string
+                storage_type:
+                  type: string
+                  enum:
+                  - config
+                  - secret
+              required:
+              - name
+              - value
+  "/api/v1/projects/{project_id}/environment_variables/{id}":
+    parameters:
+    - name: X-API-Key
+      in: header
+      description: API Key
+      schema:
+        type: string
+    - name: project_id
+      in: path
+      description: Project name
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      description: Variable name
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Show Environment Variable
+      tags:
+      - Environment Variables
+      operationId: showEnvironmentVariable
+      responses:
+        '200':
+          description: successful (value revealed)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                    example: DATABASE_URL
+                  value:
+                    type: string
+                  storage_type:
+                    type: string
+                    enum:
+                    - config
+                    - secret
+                required:
+                - id
+                - name
+                - value
+                - storage_type
+    delete:
+      summary: Delete Environment Variable
+      tags:
+      - Environment Variables
+      operationId: deleteEnvironmentVariable
+      responses:
+        '200':
+          description: deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                - message
+  "/api/v1/me":
+    get:
+      summary: Show Current User
+      tags:
+      - Me
+      operationId: showMe
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  current_account:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      slug:
+                        type: string
+                    required:
+                    - id
+                    - name
+                    - slug
+                  accounts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        slug:
+                          type: string
+                      required:
+                      - id
+                      - name
+                      - slug
+                required:
+                - id
+                - email
+                - name
+                - created_at
+                - current_account
+                - accounts
+  "/api/v1/projects/{project_id}/processes":
+    get:
+      summary: List Processes
+      tags:
+      - Processes
+      operationId: listProcesses
       parameters:
       - name: X-API-Key
         in: header
@@ -71,14 +1274,106 @@ paths:
           type: string
       - name: project_id
         in: path
-        description: Project ID
+        description: Project name
         required: true
         schema:
-          type: integer
+          type: string
       responses:
         '200':
           description: successful
-  "/projects":
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/pods"
+    post:
+      summary: Create Process
+      tags:
+      - Processes
+      operationId: createProcess
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: project_id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/pod"
+  "/api/v1/projects/{project_id}/processes/{id}":
+    get:
+      summary: Show Process
+      tags:
+      - Processes
+      operationId: showProcess
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: project_id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Pod name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/pod"
+    delete:
+      summary: Delete Process
+      tags:
+      - Processes
+      operationId: deleteProcess
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: project_id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Pod name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  "/api/v1/projects":
     get:
       summary: List Projects
       tags:
@@ -97,7 +1392,251 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/projects"
-  "/projects/{id}/restart":
+    post:
+      summary: Create Project
+      tags:
+      - Projects
+      operationId: createProject
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/project_detail"
+        '422':
+          description: missing provider
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: my-app
+                cluster_id:
+                  type: string
+                  description: Cluster name or ID
+                provider_id:
+                  type: integer
+                  description: Git provider ID (from /api/v1/providers)
+                repository_url:
+                  type: string
+                  example: acme/my-app
+                branch:
+                  type: string
+                  example: main
+                dockerfile_path:
+                  type: string
+                  example: "./Dockerfile"
+                context_directory:
+                  type: string
+                  example: "."
+                predeploy_command:
+                  type: string
+                  example: rails db:migrate
+                public_image_url:
+                  type: string
+                  description: Deploy a public image instead of a git repo
+                  example: nginx:latest
+              required:
+              - name
+              - cluster_id
+  "/api/v1/projects/{id}":
+    get:
+      summary: Show Project
+      tags:
+      - Projects
+      operationId: showProject
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/project_detail"
+    patch:
+      summary: Update Project
+      tags:
+      - Projects
+      operationId: updateProject
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/project_detail"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                repository_url:
+                  type: string
+                branch:
+                  type: string
+                autodeploy:
+                  type: boolean
+                predeploy_command:
+                  type: string
+                image_repository:
+                  type: string
+                dockerfile_path:
+                  type: string
+                context_directory:
+                  type: string
+  "/api/v1/projects/{id}/deploy":
+    post:
+      summary: Deploy Project
+      tags:
+      - Projects
+      operationId: deployProject
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Deploying project example-project.
+                  build_id:
+                    type: integer
+                    example: 1
+                required:
+                - message
+                - build_id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                skip_build:
+                  type: boolean
+                  example: false
+                  description: Skip building and deploy the latest image
+  "/api/v1/projects/{id}/doctor":
+    get:
+      summary: Project Doctor
+      tags:
+      - Projects
+      operationId: projectDoctor
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checks:
+                    type: object
+                    properties:
+                      cluster:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: ok
+                          message:
+                            type: string
+                            example: Cluster is reachable
+                        required:
+                        - status
+                        - message
+                      source:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: ok
+                          message:
+                            type: string
+                            example: Repository is accessible
+                        required:
+                        - status
+                        - message
+                      registry:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: ok
+                          message:
+                            type: string
+                            example: Registry is reachable and authenticated
+                        required:
+                        - status
+                        - message
+                    required:
+                    - cluster
+                    - source
+                    - registry
+                required:
+                - checks
+  "/api/v1/projects/{id}/restart":
     post:
       summary: Restart Project
       tags:
@@ -108,10 +1647,10 @@ paths:
       parameters:
       - name: id
         in: path
-        description: Project ID
+        description: Project name
         required: true
         schema:
-          type: integer
+          type: string
       - name: X-API-Key
         in: header
         description: API Key
@@ -120,6 +1659,341 @@ paths:
       responses:
         '200':
           description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: All services have been restarted
+                required:
+                - message
+  "/api/v1/projects/{id}/logs":
+    get:
+      summary: Project Logs
+      tags:
+      - Projects
+      operationId: projectLogs
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      - name: id
+        in: path
+        description: Project name
+        required: true
+        schema:
+          type: string
+      - name: tail_lines
+        in: query
+        required: false
+        description: Lines per pod (max 500)
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pods:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - pods
+  "/api/v1/providers":
+    get:
+      summary: List Providers
+      tags:
+      - Providers
+      operationId: listProviders
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  providers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        type:
+                          type: string
+                          example: github
+                        username:
+                          type: string
+                          nullable: true
+                          example: octocat
+                        git:
+                          type: boolean
+                        has_native_registry:
+                          type: boolean
+                        enterprise:
+                          type: boolean
+                      required:
+                      - id
+                      - type
+                      - username
+                      - git
+                      - has_native_registry
+                      - enterprise
+                required:
+                - providers
+    post:
+      summary: Create Provider
+      tags:
+      - Providers
+      operationId: createProvider
+      parameters:
+      - name: X-API-Key
+        in: header
+        description: API Key
+        schema:
+          type: string
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  type:
+                    type: string
+                    example: github
+                  username:
+                    type: string
+                    nullable: true
+                    example: octocat
+                  git:
+                    type: boolean
+                  has_native_registry:
+                    type: boolean
+                  enterprise:
+                    type: boolean
+                required:
+                - id
+                - type
+                - username
+                - git
+                - has_native_registry
+                - enterprise
+        '422':
+          description: invalid provider type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - github
+                  - gitlab
+                  - bitbucket
+                  - container_registry
+                  example: github
+                access_token:
+                  type: string
+                  example: ghp_xxx
+                username:
+                  type: string
+                  description: Required for bitbucket and container_registry
+                registry_url:
+                  type: string
+                  description: Required for container_registry
+              required:
+              - type
+              - access_token
+  "/api/v1/projects/{project_id}/services":
+    parameters:
+    - name: X-API-Key
+      in: header
+      description: API Key
+      schema:
+        type: string
+    - name: project_id
+      in: path
+      description: Project name
+      required: true
+      schema:
+        type: string
+    get:
+      summary: List Services
+      tags:
+      - Services
+      operationId: listServices
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  services:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                          example: web
+                        service_type:
+                          type: string
+                          example: web_service
+                        status:
+                          type: string
+                          example: pending
+                        replicas:
+                          type: integer
+                        container_port:
+                          type: integer
+                          nullable: true
+                        command:
+                          type: string
+                          nullable: true
+                        healthcheck_url:
+                          type: string
+                          nullable: true
+                        allow_public_networking:
+                          type: boolean
+                          nullable: true
+                        cron_schedule:
+                          type: string
+                          nullable: true
+                        internal_url:
+                          type: string
+                        domains:
+                          type: array
+                          items:
+                            type: object
+                      required:
+                      - id
+                      - name
+                      - service_type
+                      - status
+                      - replicas
+                      - internal_url
+                      - domains
+                required:
+                - services
+    post:
+      summary: Create Service
+      tags:
+      - Services
+      operationId: createService
+      parameters: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                    example: web
+                  service_type:
+                    type: string
+                    example: web_service
+                  status:
+                    type: string
+                    example: pending
+                  replicas:
+                    type: integer
+                  container_port:
+                    type: integer
+                    nullable: true
+                  command:
+                    type: string
+                    nullable: true
+                  healthcheck_url:
+                    type: string
+                    nullable: true
+                  allow_public_networking:
+                    type: boolean
+                    nullable: true
+                  cron_schedule:
+                    type: string
+                    nullable: true
+                  internal_url:
+                    type: string
+                  domains:
+                    type: array
+                    items:
+                      type: object
+                required:
+                - id
+                - name
+                - service_type
+                - status
+                - replicas
+                - internal_url
+                - domains
+        '422':
+          description: invalid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: web
+                service_type:
+                  type: string
+                  enum:
+                  - web_service
+                  - background_service
+                  - cron_job
+                container_port:
+                  type: integer
+                  example: 3000
+                replicas:
+                  type: integer
+                  example: 1
+                command:
+                  type: string
+                healthcheck_url:
+                  type: string
+                  example: "/up"
+                allow_public_networking:
+                  type: boolean
+                cron_schedule:
+                  type: string
+                  example: 0 * * * *
+              required:
+              - name
+              - service_type
 servers:
 - url: https://canine.sh
   description: Production

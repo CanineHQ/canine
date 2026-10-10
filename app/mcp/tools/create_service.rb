@@ -68,34 +68,29 @@ module Tools
           } ], error: true)
         end
 
-        service_attrs = {
-          name: name,
-          service_type: service_type,
-          container_port: container_port,
-          replicas: replicas,
-          command: command,
-          healthcheck_url: healthcheck_url,
-          allow_public_networking: allow_public_networking
-        }
-
-        params = ActionController::Parameters.new(service: service_attrs)
-
-        if cron_schedule.present?
-          params[:service][:cron_schedule] = { schedule: cron_schedule }
-        end
-
-        service = project.services.build(Service.permitted_params(params))
-        result = ::Services::Create.call(service, params)
+        result = Api::Services::Create.execute(
+          project: project,
+          params: {
+            name: name,
+            service_type: service_type,
+            container_port: container_port,
+            replicas: replicas,
+            command: command,
+            healthcheck_url: healthcheck_url,
+            allow_public_networking: allow_public_networking,
+            cron_schedule: cron_schedule
+          }
+        )
 
         if result.success?
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Service '#{service.name}' created for project '#{project.name}' (ID: #{service.id}). Deploy the project for changes to take effect."
+            text: "Service '#{result.service.name}' created for project '#{project.name}' (ID: #{result.service.id}). Deploy the project for changes to take effect."
           } ])
         else
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to create service: #{service.errors.full_messages.join(", ").presence || result.message}"
+            text: "Failed to create service: #{result.message}"
           } ], error: true)
         end
       end

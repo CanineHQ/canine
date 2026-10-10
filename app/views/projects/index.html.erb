@@ -12,6 +12,10 @@
           <div class="text-center">
             <p class="mb-4 h3">Create your first Cluster to get started</p>
             <%= link_to t("scaffold.new.title", model: "Cluster"), new_cluster_path, class: "btn btn-primary" %>
+            <p class="mt-4 text-sm text-base-content/70">
+              Or let your AI agent do it:
+              <%= link_to "set up with Claude Code, Cursor, or Codex", api_tokens_path, class: "link" %>
+            </p>
           </div>
         <% else %>
           <div>

@@ -37,42 +37,17 @@ module Tools
           } ], error: true)
         end
 
-        tail_lines = [ tail_lines, 500 ].min
+        result = Api::Projects::Logs.execute(project: project, user: user, tail_lines: tail_lines)
 
-        begin
-          connection = K8::Connection.new(project, user)
-          client = K8::Client.new(connection)
-          pods = client.pods_for_namespace(project.namespace)
-
-          logs_data = pods.map do |pod|
-            pod_name = pod.metadata.name
-            service_name = pod.metadata.labels&.app || pod_name.split("-").first
-
-            pod_logs = begin
-              client.get_pod_log(pod_name, project.namespace, tail_lines: tail_lines)
-            rescue Kubeclient::HttpError => e
-              "Error fetching logs: #{e.message}"
-            end
-
-            pod_events = begin
-              client.get_pod_events(pod_name, project.namespace).map do |event|
-                Api::Pods::EventViewModel.new(event).as_json
-              end
-            rescue Kubeclient::HttpError => e
-              [ { error: "Error fetching events: #{e.message}" } ]
-            end
-
-            Api::Pods::LogViewModel.new(pod, logs: pod_logs, events: pod_events, service_name: service_name).as_json
-          end
-
+        if result.success?
           MCP::Tool::Response.new([ {
             type: "text",
-            text: logs_data.to_json
+            text: result.pods.to_json
           } ])
-        rescue StandardError => e
+        else
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Error connecting to cluster: #{e.message}"
+            text: result.message
           } ], error: true)
         end
       end

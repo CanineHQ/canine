@@ -86,4 +86,91 @@ RSpec.describe Api::V1::AddOnsController, :swagger, type: :request do
       end
     end
   end
+
+  path '/api/v1/add_ons/search' do
+    get('Search Add On Charts') do
+      tags 'Add Ons'
+      operationId 'searchAddOns'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :q, in: :query, type: :string, description: 'Search query, e.g. postgres'
+
+      response(200, 'successful') do
+        let(:q) { 'redis' }
+
+        before do
+          allow(AddOns::HelmChartSearch).to receive(:execute).and_return(double(success?: true, response: { 'packages' => [] }))
+        end
+
+        schema type: :object,
+               properties: {
+                 curated: { type: :array, items: { type: :object } },
+                 artifact_hub: { type: :array, items: { type: :object } }
+               },
+               required: %w[curated artifact_hub]
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/add_ons' do
+    post('Create Add On') do
+      tags 'Add Ons'
+      operationId 'createAddOn'
+      consumes 'application/json'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string, example: 'main-redis' },
+          cluster_id: { type: :string, description: 'Cluster name or ID' },
+          chart_url: { type: :string, example: 'bitnami/redis' },
+          version: { type: :string, example: '18.6.1' },
+          repository_url: { type: :string, example: 'https://charts.bitnami.com/bitnami' },
+          values_yaml: { type: :string, description: 'Custom Helm values as YAML' }
+        },
+        required: %w[name cluster_id chart_url version repository_url]
+      }
+
+      response(201, 'created') do
+        let(:body) do
+          { name: 'main-redis', cluster_id: cluster.name, chart_url: 'bitnami/redis', version: '18.6.1',
+            repository_url: 'https://charts.bitnami.com/bitnami' }
+        end
+
+        before do
+          allow(Namespaced::ValidateNamespace).to receive(:execute)
+          allow(AddOns::InstallJob).to receive(:perform_later)
+        end
+
+        schema '$ref' => '#/components/schemas/add_on_list_item'
+        run_test! do
+          expect(AddOn.find_by!(name: 'main-redis').cluster).to eq(cluster)
+          expect(AddOns::InstallJob).to have_received(:perform_later)
+        end
+      end
+    end
+  end
+
+  path '/api/v1/add_ons/{id}/logs' do
+    let(:id) { add_on.name }
+
+    get('Add On Logs') do
+      tags 'Add Ons'
+      operationId 'addOnLogs'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :id, in: :path, type: :string, description: 'Add on name'
+
+      response(200, 'successful') do
+        before do
+          allow(K8::PodLogs).to receive(:for_add_on).and_return([])
+        end
+
+        schema type: :object, properties: { pods: { type: :array, items: { type: :object } } }, required: %w[pods]
+        run_test!
+      end
+    end
+  end
 end

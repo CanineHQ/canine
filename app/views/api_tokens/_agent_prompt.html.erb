@@ -1,0 +1,23 @@
+<% prompt = "Read #{request.base_url}/llms.txt and use the Canine API to help me deploy my app. My Canine API key is #{api_token&.access_token || '<your API key>'}" %>
+<div class="card card-bordered bg-base-200 mb-6">
+  <div class="card-body p-4 gap-3">
+    <div class="flex items-center gap-2 font-semibold">
+      <iconify-icon icon="lucide:sparkles" height="18"></iconify-icon>
+      Set up Canine with your AI agent
+    </div>
+    <p class="text-sm text-base-content/70">
+      Paste this into Claude Code, Cursor, Codex, or any coding agent. It reads
+      <%= link_to "llms.txt", "/llms.txt", target: "_blank", class: "link" %> to learn the Canine API, then connects your cluster, creates the project, and deploys it for you.
+    </p>
+    <div class="flex items-start gap-2 bg-base-100 rounded-lg p-3 font-mono text-sm break-all cursor-pointer"
+         data-controller="clipboard" data-clipboard-text="<%= prompt %>">
+      <span class="flex-1"><%= prompt %></span>
+      <iconify-icon icon="lucide:clipboard" height="16" class="shrink-0 mt-0.5"></iconify-icon>
+    </div>
+    <% unless api_token %>
+      <div>
+        <%= link_to "Create an API key", new_api_token_path, class: "btn btn-primary btn-sm" %>
+      </div>
+    <% end %>
+  </div>
+</div>

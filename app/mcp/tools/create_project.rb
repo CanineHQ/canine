@@ -58,9 +58,7 @@ module Tools
                   dockerfile_path: "./Dockerfile", docker_build_context_directory: ".",
                   predeploy_command: nil, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        account = account_user.account
-
-        cluster = account.clusters.find_by(id: cluster_id)
+        cluster = account_user.account.clusters.find_by(id: cluster_id)
         unless cluster
           return MCP::Tool::Response.new([ {
             type: "text",
@@ -68,33 +66,19 @@ module Tools
           } ], error: true)
         end
 
-        provider = user.providers.find_by(id: provider_id)
-        unless provider
-          return MCP::Tool::Response.new([ {
-            type: "text",
-            text: "Provider not found. Use list_providers to see available providers."
-          } ], error: true)
-        end
-
-        params = ActionController::Parameters.new(
-          project: {
+        result = Api::Projects::Create.execute(
+          user: user,
+          cluster: cluster,
+          params: {
             name: name,
             repository_url: repository_url,
-            cluster_id: cluster_id,
+            provider_id: provider_id,
             branch: branch,
-            managed_namespace: true,
-            predeploy_command: predeploy_command,
-            project_credential_provider: {
-              provider_id: provider_id
-            },
-            build_configuration: {
-              dockerfile_path: dockerfile_path,
-              context_directory: docker_build_context_directory
-            }
+            dockerfile_path: dockerfile_path,
+            context_directory: docker_build_context_directory,
+            predeploy_command: predeploy_command
           }
         )
-
-        result = ::Projects::Create.call(params, user)
 
         if result.success?
           project = result.project
@@ -104,10 +88,9 @@ module Tools
                   "Use deploy_project to trigger the first deployment."
           } ])
         else
-          errors = result.project&.errors&.full_messages&.join(", ") || result.message
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to create project: #{errors}"
+            text: "Failed to create project: #{result.message}"
           } ], error: true)
         end
       end

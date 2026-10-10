@@ -1,3 +1,5 @@
+<% api_tokens = current_user.api_tokens.order(created_at: :desc).to_a %>
+<%= render "api_tokens/agent_prompt", api_token: api_tokens.find { |token| token.created_at == token.updated_at } %>
 <div class="overflow-x-auto mb-4">
   <table class="table">
     <!-- head -->
@@ -11,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      <% current_user.api_tokens.order(created_at: :desc).each do |api_token| %>
+      <% api_tokens.each do |api_token| %>
         <tr>
           <td><%= api_token.name %></td>
           <td>
