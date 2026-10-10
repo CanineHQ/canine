@@ -64,7 +64,8 @@ export default class extends Controller {
     if (this.heartbeat) return
     this.beat()
     this.heartbeat = setInterval(() => this.beat(), HEARTBEAT_MS)
-    this.showHuman(this.takenOver ? "You've taken over: agents are paused until you hand back." : "You're using this computer, so agents are paused.")
+    // A scheduled run always pauses while you're here; a run you started yourself keeps going (Take over pauses it too).
+    this.showHuman(this.takenOver ? "You've taken over: agents are paused until you hand back." : "You're using this computer — scheduled runs are paused. Take over to pause everything.")
   }
 
   stopHeartbeat() {

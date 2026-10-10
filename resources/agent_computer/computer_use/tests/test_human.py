@@ -18,6 +18,15 @@ class HumanTest(unittest.TestCase):
         with mock.patch.object(human.time, "monotonic", return_value=human.time.monotonic() + human.IDLE_SECONDS + 1):
             human.check()  # idle long enough
 
+    def test_priority_goes_through_presence_but_not_take_over(self):
+        human.activity()
+        with self.assertRaises(human.HumanHasScreen):
+            human.check()  # a scheduled run waits while they're present
+        human.check(priority=True)  # a run they started themselves goes through
+        human.take_over()
+        with self.assertRaises(human.HumanHasScreen):
+            human.check(priority=True)  # but still yields when they've taken over
+
     def test_take_over_holds_until_hand_back(self):
         human.take_over()
         with mock.patch.object(human.time, "monotonic", return_value=human.time.monotonic() + 3600):

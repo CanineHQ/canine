@@ -249,8 +249,9 @@ module AgentLoop
       {}
     end
 
+    # A manual run (the person asked for it) gets through while they're merely at the computer; a scheduled one yields.
     def computer_use
-      @computer_use ||= @computer.computer_use
+      @computer_use ||= @computer.computer_use(priority: @session.manual?)
     end
   end
 end

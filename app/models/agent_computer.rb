@@ -72,8 +72,8 @@ class AgentComputer < ApplicationRecord
   has_one :account, through: :account_user
 
   # The client for the computer-use server in this computer's VM (AgentComputers::ComputerUse)
-  def computer_use
-    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user))
+  def computer_use(priority: false)
+    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user), priority:)
   end
 
   # The planning model a new task on this computer starts with: the machine's, or the global default.

@@ -64,11 +64,13 @@ def status():
     return {"has_screen": taken_over or idle_in > 0, "taken_over": taken_over, "free_in_seconds": round(idle_in)}
 
 
-def check():
-    """Raise if the person has the screen."""
+def check(priority=False):
+    """Raise if the person has the screen. A priority request — one the person kicked off themselves (a manual run) —
+    goes through while they're merely present, since they asked for it; it still waits when they've explicitly taken
+    over, so "Take over" always wins."""
     current = status()
     if current["taken_over"]:
         raise HumanHasScreen("The person has taken over this computer. Wait until they hand it back.")
-    if current["has_screen"]:
+    if current["has_screen"] and not priority:
         raise HumanHasScreen(f"The person is using this computer. It's free once they've been idle for {IDLE_SECONDS}s "
                              f"(about {current['free_in_seconds']}s from now if they stop).")

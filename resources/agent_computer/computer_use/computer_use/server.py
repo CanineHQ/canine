@@ -120,7 +120,9 @@ class Handler(BaseHTTPRequestHandler):
             length = int(self.headers.get("Content-Length") or 0)
             body = json.loads(self.rfile.read(length) or b"{}") if length else {}
             if method == "POST" and human.needs_screen(path, body):
-                human.check()
+                # X-Agent-Priority marks a run the person started themselves: it goes through while they're only
+                # present, but human.check still blocks it if they've taken over (see human.check).
+                human.check(self.headers.get("X-Agent-Priority") == "1")
             if (method, path) in UNLOCKED:
                 result = route(body)
             else:
