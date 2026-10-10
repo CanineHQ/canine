@@ -4,7 +4,9 @@ Rails.application.configure do
     retry_on_unhandled_error: false,
     on_thread_error: ->(exception) { Rails.logger.error(exception) },
     execution_mode: :external,
-    queues: 'agent:4;monitoring:10;builds:3;*:10', # agent: agent-session turns, which someone may be watching
+    # agent: agent-session turns, which someone may be watching. agent_computers: VM provision/start/stop/destroy,
+    # which a user is usually waiting on, kept off the backlog-prone default queue.
+    queues: 'agent:4;agent_computers:3;monitoring:10;builds:3;*:10',
     max_threads: 5,
     poll_interval: 15,
     shutdown_timeout: 25,

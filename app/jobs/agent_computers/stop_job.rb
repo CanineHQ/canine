@@ -2,7 +2,7 @@ module AgentComputers
   # Shuts the VM down (runStrategy Halted). Its disk, and everything installed on it, stays; a stopped computer holds
   # no memory or CPU on the node.
   class StopJob < ApplicationJob
-    queue_as :default
+    queue_as :agent_computers
 
     TIMEOUT = 3.minutes
     POLL_INTERVAL = 3.seconds

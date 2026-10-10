@@ -3,7 +3,7 @@ module AgentComputers
   # then, once the installed system is up, logs in over SSH, copies in the computer-use server, and runs
   # omarchy-setup.sh to stream it with Selkies.
   class ProvisionJob < ApplicationJob
-    queue_as :default
+    queue_as :agent_computers # provision/start/stop/destroy, which someone is usually waiting on
 
     BOOT_TIMEOUT = 15.minutes    # importing the ISO and starting the VM
     INSTALL_TIMEOUT = 40.minutes # the unattended install, from the VM starting to the installed system answering SSH

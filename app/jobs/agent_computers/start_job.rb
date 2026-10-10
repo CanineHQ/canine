@@ -2,7 +2,7 @@ module AgentComputers
   # Boots a stopped computer (runStrategy Always) and waits for its desktop stream. Omarchy logs straight into the
   # desktop and starts Selkies on its own, so there's nothing to set up again.
   class StartJob < ApplicationJob
-    queue_as :default
+    queue_as :agent_computers
 
     TIMEOUT = 5.minutes
     POLL_INTERVAL = 3.seconds

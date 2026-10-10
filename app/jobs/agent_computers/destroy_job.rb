@@ -1,6 +1,6 @@
 module AgentComputers
   class DestroyJob < ApplicationJob
-    queue_as :default
+    queue_as :agent_computers
 
     def perform(agent_computer)
       agent_computer.destroying!
