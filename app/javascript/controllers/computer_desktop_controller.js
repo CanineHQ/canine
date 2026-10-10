@@ -4,11 +4,14 @@ import { Controller } from "@hotwired/stimulus"
 // tab connects as the controller, this one's stream is closed ("Connection Terminated"), and we offer to take it back
 // or keep watching. Watch mode joins as a view-only viewer (Selkies' #shared link), which never displaces anyone.
 //
-// While the person uses the desktop, agents are paused from it: this page reports their activity to the computer-use
-// server (at most every few seconds), which pauses the agent until they've been idle a while (human.py in the VM).
+// While a person has the controlling tab open, the agent is locked out of the screen. We hold that lock on the
+// computer-use server (human.py in the VM) with a heartbeat for as long as this tab is open and visible — so the agent
+// stays paused even while the person is only reading the screen, not touching anything. (Reporting activity only on
+// input let the lock decay after ~20s, so the agent would grab the mouse the moment they paused.) The heartbeat's short
+// server-side TTL means the computer frees itself if this tab goes away. "Hand back" releases the lock to let the agent
+// drive while the person watches; any input, or "Take over", re-takes it.
 const ACTIVITY_EVENTS = ["keydown", "pointerdown", "pointermove", "wheel"]
-const REPORT_EVERY_MS = 3000
-const IDLE_MS = 20000 // matches human.IDLE_SECONDS
+const HEARTBEAT_MS = 5000 // must stay well under human.IDLE_SECONDS so one missed beat doesn't drop the lock
 
 export default class extends Controller {
   static targets = ["frame", "status", "statusText", "replaced", "human", "humanText", "takeOverButton"]
@@ -21,13 +24,17 @@ export default class extends Controller {
     if (!this.watchValue) {
       this.onActivity = (event) => this.reportActivity(event)
       this.listenForActivity(window)
+      this.onVisibility = () => this.syncPresence()
+      document.addEventListener("visibilitychange", this.onVisibility)
+      this.syncPresence()
     }
   }
 
   disconnect() {
     clearInterval(this.healthCheck)
     clearInterval(this.replacedCheck)
-    clearTimeout(this.idleTimer)
+    this.stopHeartbeat()
+    if (this.onVisibility) document.removeEventListener("visibilitychange", this.onVisibility)
     ACTIVITY_EVENTS.forEach((type) => window.removeEventListener(type, this.onActivity, true))
   }
 
@@ -46,27 +53,50 @@ export default class extends Controller {
     ACTIVITY_EVENTS.forEach((type) => target.addEventListener(type, this.onActivity, { capture: true, passive: true }))
   }
 
-  reportActivity(event) {
-    if (this.hasHumanTarget && this.humanTarget.contains(event.target)) return // clicking "Hand back" isn't using it
-    if (!this.lastReport || Date.now() - this.lastReport > REPORT_EVERY_MS) {
-      this.lastReport = Date.now()
-      this.postHuman("activity")
-    }
-    this.showHuman("You're using this computer, so agents are paused.")
-    clearTimeout(this.idleTimer)
-    if (!this.takenOver) this.idleTimer = setTimeout(() => this.hideHuman(), IDLE_MS)
+  // Hold the lock whenever this controlling tab is in the foreground (unless the person handed it back on purpose).
+  // Leaving the tab stops the heartbeat and the server's TTL frees the computer for the agent.
+  syncPresence() {
+    if (document.visibilityState === "visible" && !this.released) this.startHeartbeat()
+    else this.stopHeartbeat()
   }
 
+  startHeartbeat() {
+    if (this.heartbeat) return
+    this.beat()
+    this.heartbeat = setInterval(() => this.beat(), HEARTBEAT_MS)
+    this.showHuman(this.takenOver ? "You've taken over: agents are paused until you hand back." : "You're using this computer, so agents are paused.")
+  }
+
+  stopHeartbeat() {
+    clearInterval(this.heartbeat)
+    this.heartbeat = null
+    if (!this.takenOver) this.hideHuman()
+  }
+
+  beat() {
+    this.postHuman(this.takenOver ? "take_over" : "activity")
+  }
+
+  // Touching the desktop after handing back means they're driving again: take the lock back.
+  reportActivity(event) {
+    if (this.hasHumanTarget && this.humanTarget.contains(event.target)) return // clicking "Hand back" isn't using it
+    if (this.released) {
+      this.released = false
+      this.syncPresence()
+    }
+  }
+
+  // Keep the lock even after stepping away: take_over holds until hand_back, regardless of the heartbeat or idleness.
   takeOver() {
     this.takenOver = true
-    clearTimeout(this.idleTimer)
-    this.postHuman("take_over")
-    this.showHuman("You've taken over: agents are paused until you hand back.")
+    this.released = false
+    this.startHeartbeat()
   }
 
   handBack() {
     this.takenOver = false
-    clearTimeout(this.idleTimer)
+    this.released = true
+    this.stopHeartbeat()
     this.postHuman("hand_back")
     this.hideHuman()
   }
