@@ -4,7 +4,7 @@
 # re-enqueues on a timer (or any duplicate enqueue) can't pile up identical jobs on a backed-up worker. The lock only
 # covers the wait in the queue (GoodJob enqueue_limit, like Sidekiq's until_executing), so a fresh run is queued again
 # once the current one starts. Arguments are keyed via ActiveJob's serializer, which identifies records by GlobalID
-# (stable class+id) rather than their mutable attributes.
+# (stable class+id) rather than their mutable attributes. ApplicationJob includes it, so it applies to every job.
 module UniqueJob
   extend ActiveSupport::Concern
 
