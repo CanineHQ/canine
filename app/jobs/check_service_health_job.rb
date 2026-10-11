@@ -1,4 +1,6 @@
 class CheckServiceHealthJob < ApplicationJob
+  include UniqueJob
+
   queue_as :monitoring
 
   TIMEOUT = 10.seconds

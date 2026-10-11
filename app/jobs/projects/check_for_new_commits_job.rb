@@ -1,5 +1,7 @@
 module Projects
   class CheckForNewCommitsJob < ApplicationJob
+    include UniqueJob
+
     queue_as :default
 
     def perform(project)

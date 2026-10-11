@@ -8,8 +8,8 @@ export default class extends Controller {
   }
 
   complete() {
-    this.nextTarget.type = "submit";
-    this.nextTarget.innerHTML = "Submit";
+    // The form's "Create Cluster" button handles submission once the last step is shown
+    this.nextTarget.classList.add("hidden");
   }
 
   async checkIpAddress() {
@@ -70,7 +70,6 @@ export default class extends Controller {
     }
     if (this.step === this.stepTargets.length - 1) {
       this.complete()
-      event.preventDefault();
     }
   }
 

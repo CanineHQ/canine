@@ -20,10 +20,15 @@ class Projects::Services::DomainsController < Projects::Services::BaseController
   end
 
   def destroy
-    @domain = @project.domains.find(params[:id])
+    @domain = @service.domains.find(params[:id])
     Domains::Destroy.execute(domain: @domain)
+    @service.updated!
+    @service.domains.reload
 
-    respond_to(&:turbo_stream)
+    respond_to do |format|
+      format.turbo_stream
+      format.html { render partial: "projects/services/domains/index", locals: { service: @service } }
+    end
   end
 
   private
