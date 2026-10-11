@@ -21,6 +21,14 @@ export default class extends Controller {
     this.load()
     this.healthCheck = setInterval(() => this.checkHealth(), 5000)
     this.replacedCheck = setInterval(() => this.checkReplaced(), 1000)
+    // Release only a lock WE took (see fullscreen()), and only on exit — never Selkies' own lock from its fullscreen.
+    this.onFullscreenChange = () => {
+      if (!document.fullscreenElement && this.locked) {
+        navigator.keyboard?.unlock?.()
+        this.locked = false
+      }
+    }
+    document.addEventListener("fullscreenchange", this.onFullscreenChange)
     if (!this.watchValue) {
       this.onActivity = (event) => this.reportActivity(event)
       this.listenForActivity(window)
@@ -35,7 +43,20 @@ export default class extends Controller {
     clearInterval(this.replacedCheck)
     this.stopHeartbeat()
     if (this.onVisibility) document.removeEventListener("visibilitychange", this.onVisibility)
+    document.removeEventListener("fullscreenchange", this.onFullscreenChange)
+    if (this.locked) navigator.keyboard?.unlock?.()
     ACTIVITY_EVENTS.forEach((type) => window.removeEventListener(type, this.onActivity, true))
+  }
+
+  // Go fullscreen on the stream and capture the keys the browser/OS would otherwise intercept, so Cmd (which maps to
+  // Super) can reach Omarchy shortcuts like the launcher. Keyboard Lock only works from the top-level page, so the
+  // parent takes it here and focuses the frame so the captured keys go to the desktop. macOS still reserves a few
+  // combos it won't release (Cmd+Space, Cmd+Tab) — hence the SUPER+D/SUPER+N bindings on the computer itself.
+  fullscreen() {
+    this.frameTarget.requestFullscreen().then(() => {
+      this.frameTarget.contentWindow?.focus()
+      navigator.keyboard?.lock?.().then(() => { this.locked = true }).catch(() => {})
+    }).catch(() => {})
   }
 
   // A fresh query string forces a real reload, since changing only the #hash wouldn't

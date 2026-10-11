@@ -91,6 +91,22 @@ hl.config({
 LUA
 fi
 
+# macOS reserves Cmd+Space and Cmd+Tab (Spotlight, app switcher) at the OS level, so a Mac controlling the stream
+# can't reach Omarchy's SUPER+SPACE launcher or SUPER+TAB over Cmd — the browser never sees those. Expose the same
+# actions on keys the browser's Keyboard Lock forwards in fullscreen (Cmd acts as Super). Added, not replaced, so a
+# real keyboard keeps the defaults.
+if ! grep -q "Canine: macOS reserves" ~/.config/hypr/bindings.lua; then
+  cat >> ~/.config/hypr/bindings.lua <<'LUA'
+
+-- Canine: macOS reserves Cmd+Space / Cmd+Tab (Spotlight, app switcher), so a Mac can never trigger SUPER+SPACE or
+-- SUPER+TAB over Cmd. Move the launcher and next-workspace onto keys Chrome's Keyboard Lock forwards in fullscreen.
+hl.unbind("SUPER + SPACE")
+hl.unbind("SUPER + TAB")
+o.bind("SUPER + D", "Omarchy menu", "omarchy-menu toggle")
+o.bind("SUPER + N", "Next workspace", hl.dsp.focus({ workspace = "e+1" }))
+LUA
+fi
+
 # Omarchy's screensaver hides the cursor while it runs and turns it back on when it exits, undoing the setting above
 # (a second, lagging pointer in the stream). Nobody watches an idle stream, so turn it off; that also saves CPU.
 mkdir -p ~/.local/state/omarchy/toggles

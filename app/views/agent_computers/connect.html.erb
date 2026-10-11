@@ -22,6 +22,13 @@
     allow="clipboard-read; clipboard-write; autoplay; fullscreen; keyboard-map"
   ></iframe>
 
+  <%# Fullscreen captures browser/OS keyboard shortcuts (via the Keyboard Lock API) so Cmd works as Super across the
+      board. Hold Esc to leave fullscreen (all keys are captured). %>
+  <button type="button" data-action="computer-desktop#fullscreen"
+          class="absolute top-3 right-3 z-10 btn btn-sm btn-ghost bg-base-100/80 shadow gap-1" title="Fullscreen (captures keyboard shortcuts)">
+    <iconify-icon icon="lucide:expand"></iconify-icon> Fullscreen
+  </button>
+
   <%# Only shown while the connection is down, so the desktop gets the whole window %>
   <div data-computer-desktop-target="status" class="hidden absolute top-3 left-1/2 -translate-x-1/2 z-10 alert alert-warning shadow-lg w-auto py-2 text-sm">
     <span class="loading loading-spinner loading-xs"></span>
