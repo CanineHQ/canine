@@ -88,7 +88,8 @@ def clear(workspace=WORKSPACE, grace=3):
     one starts; the server ends the agent's terminal sessions with it). Each window is asked to close like its close button.
     One still open after `grace` seconds is closed harder: a browser window held open by a page's "Leave site?" prompt
     has its tabs closed over the debugging port, which skips the prompt, and any other window has its process ended,
-    if that process has no windows anywhere else. The browser process never is: it runs the person's windows too.
+    if that process has no windows anywhere else. A browser's process never is: Chromium runs all its windows in one,
+    the person's and its web apps' (Omarchy's web apps are Chromium windows of their own class) as well as the agent's.
     Returns how many windows closed, and the ones still open."""
     workspace = int(workspace)
     windows = [c for c in desktop.hyprctl_json("clients") if c["workspace"]["id"] == workspace]
@@ -96,9 +97,10 @@ def clear(workspace=WORKSPACE, grace=3):
         desktop.hyprctl("dispatch", f'hl.dsp.window.close({{ window = "address:{address}" }})')
     left = _still_open(windows, grace)
     if left:
-        _close_browser_windows([w for w in left if w["class"] == "chromium"])
+        browser = {w["pid"] for w in left if _is_browser(w["pid"])}
+        _close_browser_windows([w for w in left if w["pid"] in browser])
         elsewhere = {c["pid"] for c in desktop.hyprctl_json("clients") if c["workspace"]["id"] != workspace}
-        for pid in {w["pid"] for w in left if w["class"] != "chromium"} - elsewhere:
+        for pid in {w["pid"] for w in left} - browser - elsewhere:
             try:
                 os.kill(pid, signal.SIGTERM)
             except ProcessLookupError:
@@ -108,10 +110,21 @@ def clear(workspace=WORKSPACE, grace=3):
             "still_open": [{"id": w["address"], "app": w["class"], "title": w["title"]} for w in left]}
 
 
+BROWSERS = {"chromium", "chrome", "brave", "vivaldi-bin", "msedge", "helium", "firefox", "zen", "librewolf"}
+
+
+def _is_browser(pid):
+    try:
+        with open(f"/proc/{pid}/comm") as comm:
+            return comm.read().strip() in BROWSERS
+    except OSError:
+        return True  # can't tell: don't risk ending it
+
+
 def _close_browser_windows(windows):
     """Close these Chromium windows' tabs over the debugging port. Chromium doesn't say which of its windows is which
-    Hyprland window, so each is found by its title (its current tab's), and left alone when that's ambiguous (a tab
-    of the person's with the same title)."""
+    Hyprland window, so each is found by its title (its current tab's: "Hacker News - Chromium", or just "Hacker News"
+    for a web app), and left alone when that's ambiguous (a tab of the person's with the same title)."""
     if not windows:
         return
     try:

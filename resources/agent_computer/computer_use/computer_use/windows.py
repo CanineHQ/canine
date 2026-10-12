@@ -29,12 +29,16 @@ def open_app(command, workspace=None, maximize=False):
     can keep working; without one, it opens on the workspace they're looking at. With `maximize`, the window fills
     the screen (see maximize)."""
     before = {w["id"] for w in desktop.windows()}
+    # The placement rule catches whatever opens next, the person's windows too, so it's only on until the app's first
+    # window appears; any it opens after that are moved over below
     with agent_workspace.placing(workspace) if workspace is not None else nullcontext():
         subprocess.Popen(["uwsm-app", "--", *shlex.split(command)], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, start_new_session=True)
-        new = _wait_for_new_windows(before)
         if workspace is not None:
-            agent_workspace.tag([w["id"] for w in new])
+            agent_workspace.wait_for_new(before, timeout=OPEN_TIMEOUT)
+    new = _wait_for_new_windows(before)
+    if workspace is not None:
+        agent_workspace.tag([w["id"] for w in new])
     if not new:
         return {"window": None, "note": f"No new window within {OPEN_TIMEOUT}s. It may still be starting (check list), "
                                         "or it reused an existing window (some apps open a tab in their running window)."}
