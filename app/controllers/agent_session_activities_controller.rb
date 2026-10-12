@@ -5,7 +5,7 @@ class AgentSessionActivitiesController < ApplicationController
 
   def show
     computer = current_account.agent_computers.find(params[:agent_computer_id])
-    @activity = computer.agent_sessions.find(params[:agent_session_id]).activities
+    @activity = computer.sessions.find(params[:session_id]).activities
       .includes(actions: { screenshot_attachment: :blob }).find(params[:id])
     render partial: "agent_sessions/activity_body", locals: { activity: @activity, lazy: true }
   end

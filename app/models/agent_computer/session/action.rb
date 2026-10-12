@@ -1,35 +1,35 @@
 # == Schema Information
 #
-# Table name: agent_session_actions
+# Table name: agent_computer_session_actions
 #
-#  id                        :bigint           not null, primary key
-#  arguments                 :jsonb            not null
-#  duration_ms               :integer
-#  result                    :jsonb
-#  started_at                :datetime
-#  status                    :integer          default("running"), not null
-#  tool                      :string           not null
-#  created_at                :datetime         not null
-#  updated_at                :datetime         not null
-#  agent_session_activity_id :bigint           not null
-#  agent_session_id          :bigint           not null
-#  tool_call_id              :string
+#  id           :bigint           not null, primary key
+#  arguments    :jsonb            not null
+#  duration_ms  :integer
+#  result       :jsonb
+#  started_at   :datetime
+#  status       :integer          default("running"), not null
+#  tool         :string           not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  activity_id  :bigint           not null
+#  session_id   :bigint           not null
+#  tool_call_id :string
 #
 # Indexes
 #
-#  index_agent_session_actions_on_agent_session_activity_id  (agent_session_activity_id)
-#  index_agent_session_actions_on_agent_session_id           (agent_session_id)
+#  index_agent_computer_session_actions_on_activity_id  (activity_id)
+#  index_agent_computer_session_actions_on_session_id   (session_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (agent_session_activity_id => agent_session_activities.id)
-#  fk_rails_...  (agent_session_id => agent_sessions.id)
+#  fk_rails_...  (activity_id => agent_computer_session_activities.id)
+#  fk_rails_...  (session_id => agent_computer_sessions.id)
 #
-class AgentSessionAction < ApplicationRecord
+class AgentComputer::Session::Action < ApplicationRecord
   include ActionView::RecordIdentifier
 
-  belongs_to :session, class_name: "AgentSession", foreign_key: :agent_session_id
-  belongs_to :activity, class_name: "AgentSessionActivity", foreign_key: :agent_session_activity_id
+  belongs_to :session
+  belongs_to :activity
   # Small versions for the timeline, made in the background as each screenshot is saved; the lightbox shows the original
   has_one_attached :screenshot do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 240, 135 ], format: :webp, preprocessed: true

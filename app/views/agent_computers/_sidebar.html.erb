@@ -1,5 +1,5 @@
 <div class="tabs tabs-bordered mb-3" role="tablist">
-  <% if AgentTask.enabled_for?(current_account) %>
+  <% if AgentComputer::Task.enabled_for?(current_account) %>
     <%= link_to agent_computer_agent_posts_path(agent_computer), class: "tab hover:bg-base-content/15 #{'tab-active' if controller_name == 'agent_posts'}" do %>
       <div class="flex items-center gap-2">
         Feed

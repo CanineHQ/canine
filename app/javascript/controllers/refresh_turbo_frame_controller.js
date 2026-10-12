@@ -6,8 +6,10 @@ export default class extends Controller {
   }
 
   connect() {
+    // A frame that loads from its own src reloads from it; one rendered with the page reloads from the page
     this.refreshInterval = setInterval(() => {
-      this.element.setAttribute("src", window.location.href);
+      if (this.element.src) this.element.reload()
+      else this.element.setAttribute("src", window.location.href)
     }, this.frequencyValue)
   }
 

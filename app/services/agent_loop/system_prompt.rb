@@ -1,32 +1,9 @@
 module AgentLoop
-  # A task's spec: the person's instruction compiled into explicit parts they can review (AgentLoop::Compiler), and
-  # the system prompt every session of the task starts from. Most parts are guidance for the model; `blocked_commands`,
-  # `blocked_buttons` and `limits` are also enforced by Canine (AgentLoop::Policy).
-  module Spec
-    DEFAULTS = {
-      "sources" => [],           # where to look: "Slack: #akula-dev, DMs", "Gmail: inbox"
-      "looking_for" => "",       # what counts: "feature requests for the akula codebase"
-      "criteria" => [],          # judgment calls made explicit: what "straightforward" means
-      "may" => [],               # what it can do without asking
-      "never" => [],             # what it must not do, in words
-      "blocked_commands" => [],  # regexes for shell commands Canine refuses, e.g. "gh pr merge"
-      "blocked_buttons" => [],   # button names Canine won't press, e.g. "Merge pull request"
-      "markers" => [],           # traces to leave so later runs know what's handled: "react 👀 when picked up"
-      "phases" => [],            # suggested order: "Gather", "Triage", "Work", "Report"
-      "prerequisites" => [],     # what must be set up on the computer: "~/akula cloned", "gh logged in"
-      "delegate_command" => "",  # the coding agent delegate starts (default: AgentLoop::Delegate::DEFAULT_COMMAND)
-      "time_zone" => "",         # the person's time zone, e.g. "America/New_York": run times are given in it
-      "limits" => { "minutes" => 45, "cost_usd" => 2.0, "turns" => 120 }
-    }.freeze
-
-    def self.normalize(spec)
-      spec = DEFAULTS.merge((spec || {}).to_h.stringify_keys.slice(*DEFAULTS.keys))
-      spec.merge("limits" => DEFAULTS["limits"].merge(spec["limits"].to_h.stringify_keys))
-    end
-
-    def self.system_prompt(session)
-      task = session.agent_task
-      spec = normalize(task&.spec)
+  # The system prompt every session starts from: the task in the person's own words, the run's time window, and how
+  # to work with the tools. What Canine enforces itself (the task's limits) is in AgentLoop::Policy.
+  module SystemPrompt
+    def self.build(session)
+      task = session.task
       <<~PROMPT
         You are an agent working on a person's computer for them, unattended: nobody is watching, and Canine runs you
         on a schedule. The computer runs Omarchy (Arch Linux with the Hyprland desktop); Chromium is logged in to the
@@ -35,8 +12,7 @@ module AgentLoop
         Your task, in the person's words:
         #{task&.instruction || session.summary}
 
-        #{details(spec)}
-        #{times(session, spec)}
+        #{times(session)}
 
         You work through four tools, never by touching the screen yourself:
         - browse: anything in the web browser. Give it the whole task in words ("In Slack, find messages in #akula-dev
@@ -70,8 +46,8 @@ module AgentLoop
     # The run's window, in the person's time zone when the task has one. The computer's clock is UTC, but apps like
     # Slack and Google Calendar show the person's own time zone, and agents mixed the two up (reading "today" as
     # tomorrow, or a window as five hours off).
-    def self.times(session, spec)
-      zone = ActiveSupport::TimeZone[spec["time_zone"].to_s]
+    def self.times(session)
+      zone = session.task&.zone
       at = ->(time) { time && (zone ? time.in_time_zone(zone).strftime("%a %-d %b %Y %-l:%M %p %Z") : time.utc.iso8601) }
       clock = if zone
         "The person's time zone is #{zone.tzinfo.name}: it's #{at.(Time.current)} for them."
@@ -84,20 +60,6 @@ module AgentLoop
         This run covers what arrived from #{at.(session.window_from) || "the start"} to #{at.(session.window_to) || "now"}. Ignore older
         messages, except to check threads you've already worked on and your own markers.
       TEXT
-    end
-
-    def self.details(spec)
-      parts = {
-        "Look at" => spec["sources"], "Looking for" => spec["looking_for"], "What counts" => spec["criteria"],
-        "You may" => spec["may"], "Never" => spec["never"], "Leave these markers" => spec["markers"],
-        "Suggested phases" => spec["phases"]
-      }
-      lines = parts.filter_map do |label, value|
-        next if value.blank?
-
-        value.is_a?(Array) ? "#{label}:\n#{value.map { |v| "- #{v}" }.join("\n")}" : "#{label}: #{value}"
-      end
-      lines.any? ? "The details, as the person confirmed them:\n#{lines.join("\n")}\n" : ""
     end
   end
 end

@@ -140,9 +140,9 @@ module AgentLoop
         started_at: session.started_at || session.created_at, ended_at: session.finished_at || Time.current,
         attributes: trace_attributes(session).merge(
           "langfuse.observation.type" => "agent",
-          "langfuse.observation.input" => session.agent_task&.instruction.to_json,
+          "langfuse.observation.input" => session.task&.instruction.to_json,
           "langfuse.observation.output" => (session.summary || session.error).to_json,
-          "langfuse.trace.input" => session.agent_task&.instruction.to_json,
+          "langfuse.trace.input" => session.task&.instruction.to_json,
           "langfuse.trace.output" => (session.summary || session.error).to_json,
           "langfuse.trace.metadata.status" => session.status, "langfuse.trace.metadata.turns" => session.turns.to_s,
           "langfuse.trace.metadata.cost_usd" => session.cost_usd.to_f.round(4).to_s
@@ -151,7 +151,7 @@ module AgentLoop
     end
 
     def self.trace_name(session)
-      "#{session.agent_task&.name || "Session"} · session #{session.id}"
+      "#{session.task&.name || "Session"} · session #{session.id}"
     end
 
     # On every job's span, not only the session's (written at the end), so a trace has its instruction as its input
@@ -159,9 +159,9 @@ module AgentLoop
     # its last span never arrives, and opened in Canine from Langfuse
     def self.trace_attributes(session)
       { "langfuse.trace.name" => trace_name(session), "langfuse.session.id" => "agent-session-#{session.id}",
-        "langfuse.trace.input" => session.agent_task&.instruction&.to_json,
+        "langfuse.trace.input" => session.task&.instruction&.to_json,
         "langfuse.trace.metadata.computer" => session.agent_computer&.name.to_s, "langfuse.trace.metadata.model" => session.model.to_s,
-        "langfuse.trace.metadata.agent_session_id" => session.id.to_s, "langfuse.trace.metadata.agent_task_id" => session.agent_task_id.to_s,
+        "langfuse.trace.metadata.session_id" => session.id.to_s, "langfuse.trace.metadata.task_id" => session.task_id.to_s,
         "langfuse.trace.metadata.agent_computer_id" => session.agent_computer_id.to_s,
         "langfuse.trace.metadata.account_id" => session.agent_computer&.account&.id.to_s,
         "langfuse.trace.metadata.canine_url" => session_url(session) }.compact

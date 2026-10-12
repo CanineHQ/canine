@@ -8,7 +8,7 @@
         <iconify-icon icon="lucide:bot" height="16"></iconify-icon>
       </span>
       <div class="min-w-0 flex-1 leading-tight">
-        <% if (task = post.session.agent_task) %>
+        <% if (task = post.session.task) %>
           <%= link_to task.name, agent_computer_agent_task_path(post.agent_computer, task),
                 class: "block truncate text-sm font-semibold hover:underline" %>
         <% else %>
@@ -45,7 +45,7 @@
     </div>
 
     <footer class="flex items-center justify-between border-t border-base-300 pt-3">
-      <% if (scheduled = post.session.agent_task)&.recurring? %>
+      <% if (scheduled = post.session.task)&.recurring? %>
         <%= link_to agent_computer_agent_task_path(post.agent_computer, scheduled),
               class: "inline-flex items-center gap-1 text-xs font-medium text-base-content/60 hover:text-base-content" do %>
           <iconify-icon icon="lucide:repeat" height="13"></iconify-icon> View scheduled task

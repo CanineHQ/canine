@@ -4,7 +4,7 @@
   <div class="flex items-center justify-between">
     <h3 class="text-lg font-medium">Agent Computers</h3>
     <div class="flex gap-2">
-      <% if AgentTask.enabled_for?(current_account) %>
+      <% if AgentComputer::Task.enabled_for?(current_account) %>
         <%= link_to agent_provider_keys_path, class: "btn btn-ghost btn-sm" do %>
           <iconify-icon icon="lucide:key-round" height="16"></iconify-icon>
           Agent settings

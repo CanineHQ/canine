@@ -1,5 +1,5 @@
-# Tasks the agent loop runs on an agent computer on a schedule (AgentTask). A new task starts from the person's
-# instruction, which `draft` compiles into a name, schedule and spec for them to review before saving.
+# Tasks the agent loop runs on an agent computer on a schedule (AgentComputer::Task). A new task starts from the person's
+# instruction, which `draft` compiles into a name, schedule and limits for them to review before saving.
 class AgentTasksController < ApplicationController
   include AgentTasksFeature
 
@@ -7,17 +7,16 @@ class AgentTasksController < ApplicationController
   before_action :set_task, only: %i[show edit update destroy run_now]
 
   def index
-    @tasks = @agent_computer.agent_tasks.order(:name)
+    @tasks = @agent_computer.tasks.order(:name)
   end
 
-  # A task and its runs, newest first (they update live: AgentSession broadcasts to the task's stream)
+  # A task and its runs, newest first (they update live: AgentComputer::Session broadcasts to the task's stream)
   def show
     @runs = @task.sessions.order(created_at: :desc).limit(50)
   end
 
   def new
-    @task = @agent_computer.agent_tasks.new(model: @agent_computer.default_model, spec: AgentLoop::Spec.normalize({}),
-                                            instruction: params[:instruction])
+    @task = @agent_computer.tasks.new(model: @agent_computer.default_model, instruction: params[:instruction])
   end
 
   # The feed's compose box: one instruction becomes a task that either runs now (no schedule) or recurs on a preset
@@ -29,8 +28,8 @@ class AgentTasksController < ApplicationController
     schedule = compose_schedule
     return to_feed(alert: "The computer must be running to run a task now.") if schedule.blank? && !@agent_computer.running?
 
-    @task = @agent_computer.agent_tasks.new(instruction:, name: instruction.truncate(70), model: @agent_computer.default_model,
-                                            spec: AgentLoop::Spec.normalize({}), schedule:, enabled: schedule.present?)
+    @task = @agent_computer.tasks.new(instruction:, name: instruction.truncate(70), model: @agent_computer.default_model,
+                                            schedule:, enabled: schedule.present?)
     return to_feed(alert: @task.errors.full_messages.to_sentence) unless @task.save
 
     return run_now_and_redirect(@task) if schedule.blank?
@@ -41,13 +40,13 @@ class AgentTasksController < ApplicationController
   # Compile the instruction into a draft and save it, not enabled, for the person to review on its edit page. (A
   # redirect, rather than rendering the form again: Turbo ignores a form submission answered with a page.)
   def draft
-    @task = @agent_computer.agent_tasks.new(task_params.except(:spec_yaml))
+    @task = @agent_computer.tasks.new(task_params.compact_blank) # fields left empty keep their defaults
     key = current_account.agent_provider_keys.find_by(provider: "openrouter")
     return redirect_to(agent_provider_keys_path, alert: "Add an OpenRouter key first.") unless key
 
     @task.model = @task.model.presence || @agent_computer.default_model
     draft = AgentLoop::Compiler.compile(@task.instruction.to_s, api_key: key.api_key, model: @task.model)
-    @task.update!(name: draft.name, schedule: draft.schedule, spec: draft.spec, enabled: false)
+    @task.update!(**draft.to_h.compact, enabled: false)
     redirect_to edit_agent_computer_agent_task_path(@agent_computer, @task), notice: "Drafted. Review it, then enable it and save."
   rescue Llm::OpenRouter::Error => e
     flash.now[:alert] = e.message
@@ -55,8 +54,8 @@ class AgentTasksController < ApplicationController
   end
 
   def create
-    @task = @agent_computer.agent_tasks.new
-    if assign_from_form && @task.save
+    @task = @agent_computer.tasks.new(task_params)
+    if @task.save
       redirect_to agent_computer_agent_task_path(@agent_computer, @task), notice: "Task saved#{@task.enabled? ? ", next run #{helpers.time_ago_in_words(@task.next_run_at)} from now" : " (not enabled yet)"}."
     else
       render :new, status: :unprocessable_entity
@@ -67,7 +66,7 @@ class AgentTasksController < ApplicationController
   end
 
   def update
-    if assign_from_form && @task.save
+    if @task.update(task_params)
       redirect_to agent_computer_agent_task_path(@agent_computer, @task), notice: "Task saved."
     else
       render :edit, status: :unprocessable_entity
@@ -81,7 +80,7 @@ class AgentTasksController < ApplicationController
 
   def run_now
     return redirect_to(agent_computer_agent_tasks_path(@agent_computer), alert: "Computer must be running.") unless @agent_computer.running?
-    session = AgentSession.start!(@task, trigger: :manual)
+    session = AgentComputer::Session.start!(@task, trigger: :manual)
 
     redirect_to agent_computer_agent_session_path(@agent_computer, session)
   end
@@ -108,7 +107,7 @@ class AgentTasksController < ApplicationController
   end
 
   def run_now_and_redirect(task)
-    session = AgentSession.start!(task, trigger: :manual)
+    session = AgentComputer::Session.start!(task, trigger: :manual)
 
     # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer is busy it queues
     # behind the current run and starts when that finishes.
@@ -124,20 +123,10 @@ class AgentTasksController < ApplicationController
   end
 
   def set_task
-    @task = @agent_computer.agent_tasks.find(params[:id])
+    @task = @agent_computer.tasks.find(params[:id])
   end
 
   def task_params
-    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :spec_yaml)
-  end
-
-  # The spec is edited as YAML, which is easier to read and change than JSON
-  def assign_from_form
-    @task.assign_attributes(task_params.except(:spec_yaml))
-    @task.spec = AgentLoop::Spec.normalize(YAML.safe_load(task_params[:spec_yaml].to_s) || {})
-    true
-  rescue Psych::Exception => e
-    @task.errors.add(:spec, "isn't valid YAML: #{e.message}")
-    false
+    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :time_zone, :max_minutes, :max_cost_usd, :max_turns)
   end
 end

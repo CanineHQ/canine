@@ -48,7 +48,7 @@ module AgentLoop
     end
 
     def self.task(session)
-      session.agent_task&.instruction.presence || session.messages.find_by(role: "system")&.content.to_s.truncate(2000)
+      session.task&.instruction.presence || session.messages.find_by(role: "system")&.content.to_s.truncate(2000)
     end
 
     # Where the work starts: everything before the first model reply (the system prompt, "Start now") is always sent

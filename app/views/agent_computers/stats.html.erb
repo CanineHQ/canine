@@ -38,7 +38,7 @@
         </div>
       <% end %>
     </div>
-    <div class="text-xs text-base-content/50 mt-1">Memory includes the VM's own overhead. Disk usage comes from the guest agent.</div>
+    <div class="text-xs text-base-content/50 mt-1">Memory is what programs in the computer are using (not cache it can free). Disk usage comes from the guest agent.</div>
 
     <div class="grid gap-4 md:grid-cols-4 mt-4">
       <div>
@@ -47,6 +47,24 @@
           <% state = stats.paused? ? "Paused" : stats.phase %>
           <span class="badge badge-sm <%= state == 'Running' ? 'badge-success' : %w[Paused Pending Scheduling Scheduled].include?(state) ? 'badge-warning' : 'badge-error' %>"><%= state %></span>
           <span class="font-mono text-xs ml-1"><%= stats.ip %></span>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">In Control</div>
+        <div class="mt-1">
+          <% human = stats.human %>
+          <% if human.nil? %>
+            <span class="badge badge-sm badge-ghost" title="The computer-use server didn't answer">Unknown</span>
+          <% elsif human["taken_over"] %>
+            <span class="badge badge-sm badge-warning gap-1"><iconify-icon icon="lucide:hand"></iconify-icon>Person (taken over)</span>
+          <% elsif human["has_screen"] %>
+            <span class="badge badge-sm badge-warning gap-1"><iconify-icon icon="lucide:hand"></iconify-icon>Person</span>
+            <span class="text-xs text-base-content/50">free in <%= human["free_in_seconds"] %>s if idle</span>
+          <% elsif @agent_computer.sessions.active.exists? %>
+            <span class="badge badge-sm badge-info gap-1"><iconify-icon icon="lucide:bot"></iconify-icon>Agent</span>
+          <% else %>
+            <span class="badge badge-sm badge-ghost">Nobody</span>
+          <% end %>
         </div>
       </div>
       <div>
@@ -71,7 +89,7 @@
           <span class="badge badge-sm <%= stats.guest_agent_connected? ? 'badge-success' : 'badge-warning' %>"><%= stats.guest_agent_connected? ? "Connected" : "Not connected" %></span>
         </div>
       </div>
-      <div class="md:col-span-2">
+      <div>
         <div class="text-xs uppercase tracking-wide text-base-content/50">Services</div>
         <div class="mt-1 flex flex-wrap gap-1">
           <% stats.services.each do |service| %>

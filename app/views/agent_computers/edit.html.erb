@@ -30,7 +30,8 @@
 
   <% if @agent_computer.running? %>
     <div class="divider"></div>
-    <%= turbo_frame_tag "computer_stats", src: stats_agent_computer_path(@agent_computer), loading: :lazy do %>
+    <%= turbo_frame_tag "computer_stats", src: stats_agent_computer_path(@agent_computer), loading: :lazy,
+          data: { controller: "refresh-turbo-frame", refresh_turbo_frame_frequency_value: 10000 } do %>
       <div class="flex items-center gap-2 text-sm text-base-content/50">
         <span class="loading loading-spinner loading-sm"></span>
         Loading live stats from the cluster...
@@ -38,20 +39,20 @@
     <% end %>
   <% end %>
 
-  <% if AgentTask.enabled_for?(current_account) %>
+  <% if AgentComputer::Task.enabled_for?(current_account) %>
     <div class="divider"></div>
     <div class="mb-4">
       <h6 class="text-sm font-semibold">Models</h6>
-      <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task can still override
-        these in its spec.</p>
+      <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task picks its own
+        planning model.</p>
     </div>
     <%= form_with(model: @agent_computer) do |form| %>
       <%= render "shared/error_messages", resource: form.object %>
       <div class="space-y-8">
         <% [
-             [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
-             [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
-             [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentTask::DEFAULT_MODEL],
+             [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+             [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+             [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
              [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
            ].each do |field, label, description, options, fallback| %>
           <%= render(FormFieldComponent.new(label: label, description: description)) do %>

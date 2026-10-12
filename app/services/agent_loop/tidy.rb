@@ -21,7 +21,7 @@ module AgentLoop
                  "Found 3 new messages", "Opened draft PR #483"); empty if it ended unremarkably
     PROMPT
 
-    # Called by AgentSessionActivity#finish! and AgentSession#finish!: enqueue a tidy when there's a batch to do
+    # Called by AgentComputer::Session::Activity#finish! and AgentComputer::Session#finish!: enqueue a tidy when there's a batch to do
     def self.enqueue(session, all: false)
       waiting = session.activities.unscope(:order).where(tidied_at: nil).where.not(finished_at: nil).count
       AgentSessions::TidyActivitiesJob.perform_later(session) if all || waiting >= BATCH
@@ -52,7 +52,7 @@ module AgentLoop
         members.drop(1).each { |other| merge(other, into: first) }
       end
     ensure
-      AgentSessionActivity.where(id: batch.map(&:id)).update_all(tidied_at: Time.current) # never retry a batch forever
+      AgentComputer::Session::Activity.where(id: batch.map(&:id)).update_all(tidied_at: Time.current) # never retry a batch forever
     end
 
     def self.ask(session, key, activities)
@@ -87,7 +87,7 @@ module AgentLoop
     end
 
     def self.merge(activity, into:)
-      activity.actions.update_all(agent_session_activity_id: into.id)
+      activity.actions.update_all(activity_id: into.id)
       into.update!(finished_at: [ into.finished_at, activity.finished_at ].compact.max,
                    description: [ into.description, activity.description ].compact.join("\n\n").truncate(4000).presence)
       activity.actions.reset # they belong to `into` now: don't let destroy! delete them from a stale list

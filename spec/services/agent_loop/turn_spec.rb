@@ -4,10 +4,9 @@ RSpec.describe AgentLoop::Turn do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let(:task) do
-    computer.agent_tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model",
-                                 spec: { "blocked_commands" => [ "gh pr merge" ] })
+    computer.tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model")
   end
-  let(:session) { computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: "test/model") }
+  let(:session) { computer.sessions.create!(task: task, trigger: :manual, model: "test/model") }
   let(:key) { account_user.account.agent_provider_keys.create!(api_key: "sk-or-test") }
   let(:client) { instance_double(Llm::OpenRouter) }
   let(:computer_use) { instance_double(AgentComputers::ComputerUse) }
@@ -25,12 +24,12 @@ RSpec.describe AgentLoop::Turn do
     allow(computer_use).to receive(:computer).and_return(computer)
   end
 
-  it "groups calls into activities by intent, runs the shell, blocks commands, and finishes" do
+  it "groups calls into activities by intent, runs the shell, and finishes" do
     allow(Tools::ComputerRun).to receive(:call).and_return(MCP::Tool::Response.new([ { type: "text", text: "akula is three repos" } ]))
     allow(client).to receive(:chat).and_return(
       reply("Checking the repo.", [ "computer_run", { intent: "Checking the repo", command: "ls ~/akula" } ]),
       reply(nil, [ "computer_run", { intent: "Checking the repo", command: "cat README.md" } ],
-               [ "computer_run", { intent: "Merging the PR", command: "gh pr merge 12" } ]),
+               [ "computer_run", { intent: "Reading the docs", command: "ls docs" } ]),
       reply(nil, [ "finish", { summary: "akula is three repos." } ])
     )
 
@@ -40,9 +39,9 @@ RSpec.describe AgentLoop::Turn do
     expect(session.messages.last).to have_attributes(role: "tool")
 
     described_class.new(session, key).run
-    merging = session.activities.last
-    expect(merging).to have_attributes(title: "Merging the PR")
-    expect(merging.actions.sole).to have_attributes(tool: "computer_run", status: "blocked")
+    reading = session.activities.last
+    expect(reading).to have_attributes(title: "Reading the docs")
+    expect(reading.actions.sole).to have_attributes(tool: "computer_run", status: "done")
     expect(checking.reload.finished_at).to be_present
 
     expect(described_class.new(session, key).run).to eq(:finished)

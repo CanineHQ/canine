@@ -1,5 +1,4 @@
 <%= agent_computer_layout(@agent_computer) do %>
-  <% spec = AgentLoop::Spec.normalize(@task.spec) %>
   <div class="flex flex-wrap items-start justify-between gap-3">
     <div>
       <div class="flex items-center gap-2">
@@ -36,28 +35,9 @@
         <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Instruction</div>
         <p class="whitespace-pre-wrap"><%= @task.instruction %></p>
       </div>
-      <% { "Looks at" => spec["sources"], "Looking for" => spec["looking_for"], "What counts" => spec["criteria"],
-           "May" => spec["may"], "Never" => spec["never"], "Leaves markers" => spec["markers"] }.each do |label, value| %>
-        <% next if value.blank? %>
-        <div>
-          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1"><%= label %></div>
-          <% if value.is_a?(Array) %>
-            <ul class="list-disc pl-5 space-y-0.5"><% value.each do |item| %><li><%= item %></li><% end %></ul>
-          <% else %>
-            <p><%= value %></p>
-          <% end %>
-        </div>
-      <% end %>
-      <% enforced = spec["blocked_commands"].map { |c| "command /#{c}/" } + spec["blocked_buttons"].map { |b| "button \"#{b}\"" } %>
-      <% if enforced.any? %>
-        <div>
-          <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Blocked by Canine</div>
-          <ul class="list-disc pl-5 space-y-0.5 font-mono text-xs"><% enforced.each do |item| %><li><%= item %></li><% end %></ul>
-        </div>
-      <% end %>
       <div>
         <div class="text-xs uppercase tracking-wide text-base-content/50 mb-1">Limits per run</div>
-        <p><%= spec.dig("limits", "minutes") %> minutes · $<%= spec.dig("limits", "cost_usd") %> · <%= spec.dig("limits", "turns") %> turns</p>
+        <p><%= @task.max_minutes %> minutes · <%= number_to_currency(@task.max_cost_usd) %> · <%= @task.max_turns %> turns</p>
       </div>
     </aside>
   </div>

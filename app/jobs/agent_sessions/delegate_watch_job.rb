@@ -8,9 +8,9 @@ module AgentSessions
     MAX_OUTPUT = 20_000 # characters, from the end
 
     def perform(session, terminal_session)
-      return unless session.waiting_for_tool?
-
       computer_use = session.computer_use
+      return stop_after_session_ended(session, computer_use, terminal_session) unless session.waiting_for_tool?
+
       dir = AgentLoop::Delegate.directory(terminal_session)
       exit_code = computer_use.run("cat #{dir}/exit 2>/dev/null")["stdout"].strip
 
@@ -28,6 +28,14 @@ module AgentSessions
 
     private
 
+    # The session ended (cancelled) while the coding agent was still working: close its terminal, which stops it
+    def stop_after_session_ended(session, computer_use, terminal_session)
+      computer_use.terminal(:close, session: terminal_session) rescue nil # already gone if it exited
+      session.actions.running.where(tool: "delegate").find_each do |action|
+        action.update!(status: :failed, result: { "text" => "Stopped: the run ended." })
+      end
+    end
+
     # opencode's own record of what the coding model spent (delegate.rb writes it to the cost file)
     def add_coding_cost(session, raw)
       cost = raw.to_s.strip.to_f
@@ -39,10 +47,7 @@ module AgentSessions
       outcome = exit_code.blank? ? "was stopped (out of time)" : "exited with code #{exit_code}"
       action&.update!(status: exit_code == "0" ? :done : :failed, result: { "text" => "The coding agent #{outcome}.\n\n#{output.last(4000)}" },
                       duration_ms: ((Time.current - action.started_at) * 1000).round)
-      position = session.messages.unscope(:order).maximum(:position).to_i + 1
-      session.messages.create!(position:, role: "user", content: "The coding agent #{outcome}. Its output (the end of it):\n\n#{output}")
-      session.running!
-      TurnJob.perform_later(session)
+      session.resume_with!("The coding agent #{outcome}. Its output (the end of it):\n\n#{output}")
     end
   end
 end

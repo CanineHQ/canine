@@ -10,6 +10,6 @@ module AgentTasksFeature
   private
 
   def require_agent_tasks_feature
-    raise ActionController::RoutingError, "Not Found" unless AgentTask.enabled_for?(current_account)
+    raise ActionController::RoutingError, "Not Found" unless AgentComputer::Task.enabled_for?(current_account)
   end
 end

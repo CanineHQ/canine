@@ -7,9 +7,9 @@ module AgentSessions
     queue_as :agent
 
     def perform(session, job_id, task, cursor = -1)
-      return unless session.waiting_for_tool?
-
       computer_use = session.computer_use
+      return stop_after_session_ended(session, computer_use, job_id) unless session.waiting_for_tool?
+
       data = computer_use.browse_events(job_id, after: cursor, wait: 25)
       parent = session.actions.running.where(tool: "browse").last
       done = nil
@@ -40,6 +40,14 @@ module AgentSessions
     end
 
     private
+
+    # The session ended (cancelled) while the browser was still working: stop it, and close the browse on the timeline
+    def stop_after_session_ended(session, computer_use, job_id)
+      stop_job(computer_use, job_id)
+      session.actions.running.where(tool: "browse").find_each do |action|
+        action.update!(status: :failed, result: { "text" => "Stopped: the run ended." })
+      end
+    end
 
     def should_stop?(session)
       !session.reload.active? || AgentLoop::Policy.limit_reached(session)
@@ -91,10 +99,7 @@ module AgentSessions
       parent&.update!(status: done["finished"] && done["success"] != false ? :done : :failed,
                       result: { "text" => summary.truncate(4000) },
                       duration_ms: parent.started_at ? ((Time.current - parent.started_at) * 1000).round : 0)
-      position = session.messages.unscope(:order).maximum(:position).to_i + 1
-      session.messages.create!(position:, role: "user", content: summary)
-      session.running!
-      TurnJob.perform_later(session)
+      session.resume_with!(summary)
     end
 
     def browse_summary(task, done)

@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: agent_session_activities
+# Table name: agent_computer_session_activities
 #
 #  id                     :bigint           not null, primary key
 #  description            :text
@@ -14,22 +14,21 @@
 #  title                  :string           not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
-#  agent_session_id       :bigint           not null
+#  session_id             :bigint           not null
 #
 # Indexes
 #
-#  index_agent_session_activities_on_agent_session_id  (agent_session_id)
+#  index_agent_computer_session_activities_on_session_id  (session_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (agent_session_id => agent_sessions.id)
+#  fk_rails_...  (session_id => agent_computer_sessions.id)
 #
-class AgentSessionActivity < ApplicationRecord
+class AgentComputer::Session::Activity < ApplicationRecord
   include ActionView::RecordIdentifier
 
-  belongs_to :session, class_name: "AgentSession", foreign_key: :agent_session_id
-  has_many :actions, -> { order(:created_at) }, class_name: "AgentSessionAction", foreign_key: :agent_session_activity_id,
-                                                dependent: :destroy
+  belongs_to :session
+  has_many :actions, -> { order(:created_at) }, dependent: :destroy
 
   # New activities slide in; an updated one only types out the new part of its description
   after_create_commit lambda {

@@ -1,6 +1,7 @@
 # Agent computers and the scheduled agent loop, compacted from the branch's incremental migrations: a computer (a
-# KubeVirt VM), its provider keys, tasks, their sessions, and each session's messages, timeline (activities and the
-# actions under them) and feed posts. (See app/models/agent_computer.rb, app/services/agent_loop, app/jobs/agent_*.)
+# KubeVirt VM), the account's provider keys, and the computer's tasks, their sessions, and each session's messages,
+# timeline (activities and the actions under them) and feed posts. The models live under AgentComputer::
+# (app/models/agent_computer/), so their tables are agent_computer_*. (See app/services/agent_loop, app/jobs/agent_*.)
 class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
   def change
     create_table :agent_computers do |t|
@@ -15,8 +16,8 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       # The desktop login password (lock screen, sudo) and the key Canine uses to finish setting up the VM over SSH
       t.string :password
       t.text :ssh_private_key
-      # Machine-level model defaults; runs inherit them, a task can override. Null means "inherit": planning falls back
-      # to the global default, browse and coding to the planning model.
+      # Machine-level model defaults; runs inherit them (a task picks its own planning model). Null means "inherit":
+      # planning falls back to the global default, browse and coding to the planning model.
       t.string :planning_model
       t.string :browse_model
       t.string :coding_model
@@ -33,22 +34,26 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    create_table :agent_tasks do |t|
+    create_table :agent_computer_tasks do |t|
       t.references :agent_computer, null: false, foreign_key: true
       t.string :name, null: false
       t.text :instruction, null: false
-      t.jsonb :spec, null: false, default: {}
       t.string :schedule # a cron schedule to recur on, or null for a one-off run
       t.string :model, null: false
       t.boolean :enabled, null: false, default: false
       t.datetime :next_run_at
+      # Canine stops a run at whichever limit it reaches first (AgentLoop::Policy)
+      t.integer :max_minutes, null: false, default: 45
+      t.decimal :max_cost_usd, precision: 10, scale: 2, null: false, default: 2.0
+      t.integer :max_turns, null: false, default: 120
+      t.string :time_zone # the person's, e.g. "America/New_York": run times are shown and given to the agent in it
       t.timestamps
       t.index %i[enabled next_run_at]
     end
 
-    create_table :agent_sessions do |t|
+    create_table :agent_computer_sessions do |t|
       t.references :agent_computer, null: false, foreign_key: true
-      t.references :agent_task, null: true, foreign_key: true
+      t.references :task, null: true, foreign_key: { to_table: :agent_computer_tasks }
       t.integer :trigger, null: false, default: 0
       t.integer :status, null: false, default: 0
       t.string :model, null: false
@@ -67,22 +72,22 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.decimal :cost_usd, precision: 10, scale: 6, null: false, default: 0
       t.string :provider
       t.timestamps
-      t.index %i[agent_task_id status]
+      t.index %i[task_id status]
     end
 
-    create_table :agent_session_messages do |t|
-      t.references :agent_session, null: false, foreign_key: true
+    create_table :agent_computer_session_messages do |t|
+      t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
       t.integer :position, null: false
       t.string :role, null: false
       t.jsonb :content
       t.jsonb :tool_calls
       t.string :tool_call_id
       t.timestamps
-      t.index %i[agent_session_id position], unique: true
+      t.index %i[session_id position], unique: true
     end
 
-    create_table :agent_session_activities do |t|
-      t.references :agent_session, null: false, foreign_key: true
+    create_table :agent_computer_session_activities do |t|
+      t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
       t.integer :position, null: false
       t.string :intent
       t.string :title, null: false
@@ -95,9 +100,9 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    create_table :agent_session_actions do |t|
-      t.references :agent_session, null: false, foreign_key: true
-      t.references :agent_session_activity, null: false, foreign_key: true
+    create_table :agent_computer_session_actions do |t|
+      t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
+      t.references :activity, null: false, foreign_key: { to_table: :agent_computer_session_activities }
       t.string :tool, null: false
       t.string :tool_call_id
       t.jsonb :arguments, null: false, default: {}
@@ -108,11 +113,12 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
-    create_table :agent_posts do |t|
+    create_table :agent_computer_posts do |t|
       t.references :agent_computer, null: false, foreign_key: true
-      t.references :agent_session, null: false, foreign_key: true
-      t.references :agent_session_activity, null: true, foreign_key: { on_delete: :nullify } # tidying merges activities away
-      t.references :agent_session_action, null: true, foreign_key: { on_delete: :nullify }
+      t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
+      # tidying merges activities away
+      t.references :activity, null: true, foreign_key: { to_table: :agent_computer_session_activities, on_delete: :nullify }
+      t.references :action, null: true, foreign_key: { to_table: :agent_computer_session_actions, on_delete: :nullify }
       t.string :kind, null: false
       t.text :text, null: false
       t.datetime :posted_at, null: false

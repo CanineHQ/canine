@@ -4,7 +4,7 @@ RSpec.describe AgentLoop::Notes do
   it "folds the oldest turns into notes once there are enough, and sends the notes instead of them" do
     account_user = create(:account_user)
     computer = AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running)
-    session = computer.agent_sessions.create!(trigger: :manual, model: "test/model", status: :running)
+    session = computer.sessions.create!(trigger: :manual, model: "test/model", status: :running)
     session.messages.create!(position: 0, role: "system", content: "You are an agent")
     session.messages.create!(position: 1, role: "user", content: "Start now")
     41.times do |turn|

@@ -64,9 +64,9 @@ class AgentComputer < ApplicationRecord
 
   belongs_to :account_user
   belongs_to :cluster
-  has_many :agent_tasks, dependent: :destroy
-  has_many :agent_sessions, dependent: :destroy
-  has_many :agent_posts, dependent: :delete_all
+  has_many :tasks, dependent: :destroy
+  has_many :sessions, dependent: :destroy
+  has_many :posts, dependent: :delete_all
 
   has_one :user, through: :account_user
   has_one :account, through: :account_user
@@ -77,7 +77,7 @@ class AgentComputer < ApplicationRecord
   end
 
   # The planning model a new task on this computer starts with: the machine's, or the global default.
-  def default_model = planning_model.presence || AgentTask::DEFAULT_MODEL
+  def default_model = planning_model.presence || AgentComputer::Task::DEFAULT_MODEL
 
   enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
 

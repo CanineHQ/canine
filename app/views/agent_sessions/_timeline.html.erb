@@ -1,5 +1,5 @@
 <%# The session's work: its activities in order. New activities stream into the list at the end
-    (AgentSessionActivity); the batch tidy (AgentLoop::Tidy) titles and merges them. Re-drawn after each tidy. %>
+    (AgentComputer::Session::Activity); the batch tidy (AgentLoop::Tidy) titles and merges them. Re-drawn after each tidy. %>
 <% activities = session.activities.includes(:actions).to_a %>
 <div id="<%= dom_id(session, :timeline) %>">
   <ol id="<%= dom_id(session, :activities) %>" class="space-y-2">

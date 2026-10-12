@@ -10,7 +10,7 @@ module AgentTasksHelper
   def next_run_in_words(task)
     return "not enabled" unless task.enabled? && task.next_run_at
 
-    zone = ActiveSupport::TimeZone[task.spec.to_h["time_zone"].to_s] || Time.zone
+    zone = task.zone || Time.zone
     "#{task.next_run_at.in_time_zone(zone).strftime("%a %b %-d, %H:%M %Z")}, in #{time_ago_in_words(task.next_run_at)}"
   end
 end

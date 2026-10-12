@@ -1,4 +1,4 @@
-<%# The latest screenshot, crossfading as new ones arrive (AgentSessionAction#broadcast_changes) %>
+<%# The latest screenshot, crossfading as new ones arrive (AgentComputer::Session::Action#broadcast_changes) %>
 <div id="<%= dom_id(action&.session || local_assigns[:session], :screen) %>">
   <div class="text-xs uppercase tracking-wide text-base-content/50 mb-2">Screen</div>
   <% if action&.screenshot&.attached? %>

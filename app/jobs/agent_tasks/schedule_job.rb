@@ -13,15 +13,15 @@ module AgentTasks
     discard_on GoodJob::ActiveJobExtensions::Concurrency::ConcurrencyExceededError
 
     def perform
-      AgentTask.due.includes(agent_computer: :cluster).find_each do |task|
+      AgentComputer::Task.due.includes(agent_computer: :cluster).find_each do |task|
         computer = task.agent_computer
-        # skip this run, don't pile up: the computer is off, or the account doesn't have the feature (AgentTask.enabled_for?)
-        next task.update!(next_run_at: task.cron.next_time.to_t) unless computer.running? && AgentTask.enabled_for?(computer.account)
+        # skip this run, don't pile up: the computer is off, or the account doesn't have the feature (AgentComputer::Task.enabled_for?)
+        next task.update!(next_run_at: task.cron.next_time.to_t) unless computer.running? && AgentComputer::Task.enabled_for?(computer.account)
         next if computer.computer_use.human["has_screen"]
 
         # Check and start under a lock on the computer, so nothing else starts a session on it in between
         computer.with_lock do
-          AgentSession.start!(task, trigger: :scheduled) unless computer.agent_sessions.active.exists?
+          AgentComputer::Session.start!(task, trigger: :scheduled) unless computer.sessions.active.exists?
         end
       rescue AgentComputers::ComputerUse::Error => e
         Rails.logger.info("Agent task #{task.id} waits: #{e.message}")

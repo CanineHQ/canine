@@ -1,6 +1,6 @@
 module AgentSessions
   # Tidies a session's finished activities in a batch (AgentLoop::Tidy): groups them by goal, titles each group and
-  # gives it an outcome and phase. One at a time per session, with at most one more waiting, which picks up whatever
+  # gives it an outcome. One at a time per session, with at most one more waiting, which picks up whatever
   # finished in the meantime.
   class TidyActivitiesJob < ApplicationJob
     include GoodJob::ActiveJobExtensions::Concurrency

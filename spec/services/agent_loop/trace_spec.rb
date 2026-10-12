@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe AgentLoop::Trace do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
-  let(:task) { computer.agent_tasks.create!(name: "Inbox", instruction: "Report the newest email", schedule: "0 * * * *", model: "test/model") }
-  let(:session) { computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: "test/model", status: :running) }
+  let(:task) { computer.tasks.create!(name: "Inbox", instruction: "Report the newest email", schedule: "0 * * * *", model: "test/model") }
+  let(:session) { computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running) }
   let(:pushed) { [] }
   let(:screenshot) { "A" * 2000 }
 
@@ -37,7 +37,7 @@ RSpec.describe AgentLoop::Trace do
     expect(root.attributes).to include("langfuse.observation.type" => "agent", "langfuse.trace.input" => "Report the newest email".to_json,
                                        "langfuse.trace.output" => "Newest email: Chris".to_json, "langfuse.trace.name" => "Inbox · session #{session.id}")
     expect(turn.attributes).to include("langfuse.trace.input" => "Report the newest email".to_json, # before the session ends
-                                       "langfuse.trace.metadata.agent_session_id" => session.id.to_s, # findable while it runs
+                                       "langfuse.trace.metadata.session_id" => session.id.to_s, # findable while it runs
                                        "langfuse.trace.metadata.agent_computer_id" => computer.id.to_s,
                                        "langfuse.trace.metadata.canine_url" => end_with("/agent_computers/#{computer.id}/sessions/#{session.id}"))
   end

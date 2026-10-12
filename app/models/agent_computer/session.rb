@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: agent_sessions
+# Table name: agent_computer_sessions
 #
 #  id                :bigint           not null, primary key
 #  cached_tokens     :bigint           default(0), not null
@@ -23,30 +23,30 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  agent_computer_id :bigint           not null
-#  agent_task_id     :bigint
+#  task_id           :bigint
 #
 # Indexes
 #
-#  index_agent_sessions_on_agent_computer_id         (agent_computer_id)
-#  index_agent_sessions_on_agent_task_id             (agent_task_id)
-#  index_agent_sessions_on_agent_task_id_and_status  (agent_task_id,status)
+#  index_agent_computer_sessions_on_agent_computer_id   (agent_computer_id)
+#  index_agent_computer_sessions_on_task_id             (task_id)
+#  index_agent_computer_sessions_on_task_id_and_status  (task_id,status)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (agent_computer_id => agent_computers.id)
-#  fk_rails_...  (agent_task_id => agent_tasks.id)
+#  fk_rails_...  (task_id => agent_computer_tasks.id)
 #
-class AgentSession < ApplicationRecord
+class AgentComputer::Session < ApplicationRecord
   include ActionView::RecordIdentifier
 
   belongs_to :agent_computer
-  belongs_to :agent_task, optional: true
+  belongs_to :task, optional: true
 
   delegate :computer_use, to: :agent_computer
-  has_many :messages, -> { order(:position) }, class_name: "AgentSessionMessage", dependent: :destroy
-  has_many :activities, -> { order(:position) }, class_name: "AgentSessionActivity", dependent: :destroy
-  has_many :actions, -> { order(:created_at) }, class_name: "AgentSessionAction", dependent: :destroy
-  has_many :posts, class_name: "AgentPost", dependent: :delete_all
+  has_many :messages, -> { order(:position) }, dependent: :destroy
+  has_many :activities, -> { order(:position) }, dependent: :destroy
+  has_many :actions, -> { order(:created_at) }, dependent: :destroy
+  has_many :posts, dependent: :delete_all
 
   enum :trigger, { scheduled: 0, manual: 1 }
   enum :status, { queued: 0, running: 1, waiting_for_human: 2, waiting_for_tool: 3, succeeded: 4, failed: 5, cancelled: 6 }
@@ -54,7 +54,7 @@ class AgentSession < ApplicationRecord
   ACTIVE = %w[queued running waiting_for_human waiting_for_tool].freeze
   scope :active, -> { where(status: ACTIVE) }
 
-  after_create_commit -> { broadcast_prepend_to [ agent_task, :runs ], target: dom_id(agent_task, :runs), partial: "agent_tasks/run", locals: { session: self, animate: true } if agent_task }
+  after_create_commit -> { broadcast_prepend_to [ task, :runs ], target: dom_id(task, :runs), partial: "agent_tasks/run", locals: { session: self, animate: true } if task }
   after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_active", partial: "agent_posts/running", locals: { session: self } }
   after_update_commit :broadcast_changes
 
@@ -65,8 +65,8 @@ class AgentSession < ApplicationRecord
   def self.start!(task, trigger:, window_from: task.next_window_from)
     computer = task.agent_computer
     computer.with_lock do
-      busy = computer.agent_sessions.active.exists?
-      session = computer.agent_sessions.create!(agent_task: task, trigger:, model: task.model,
+      busy = computer.sessions.active.exists?
+      session = computer.sessions.create!(task:, trigger:, model: task.model,
                                                 window_from:, window_to: Time.current)
       task.update!(next_run_at: task.cron.next_time.to_t) if trigger.to_s == "scheduled"
       AgentSessions::TurnJob.perform_later(session) unless busy
@@ -80,7 +80,7 @@ class AgentSession < ApplicationRecord
 
   # Queued behind another run on the same computer (rather than queued and about to start).
   def waiting_in_queue?
-    queued? && agent_computer.agent_sessions.active.where("created_at < ?", created_at).exists?
+    queued? && agent_computer.sessions.active.where("created_at < ?", created_at).exists?
   end
 
   def current_activity
@@ -103,7 +103,22 @@ class AgentSession < ApplicationRecord
   end
 
   def title
-    agent_task&.name || "One-off session"
+    task&.name || "One-off session"
+  end
+
+  # Hands a tool's result back to the model and carries on (BrowseWatchJob, DelegateWatchJob), unless the session
+  # ended while the tool ran. The watch job's copy of the session can be stale by then (cancelled during a long poll),
+  # so this rereads it under a row lock: resuming a cancelled session would undo the cancel. Returns whether it resumed.
+  def resume_with!(content)
+    resumed = with_lock do
+      next false unless waiting_for_tool?
+
+      messages.create!(position: messages.unscope(:order).maximum(:position).to_i + 1, role: "user", content:)
+      running!
+      true
+    end
+    AgentSessions::TurnJob.perform_later(self) if resumed
+    resumed
   end
 
   def finish!(status, summary: nil, error: nil)
@@ -119,9 +134,9 @@ class AgentSession < ApplicationRecord
   # The computer is free now, so start the oldest run waiting on it (one session runs at a time).
   def start_next_queued
     agent_computer.with_lock do
-      return if agent_computer.agent_sessions.where(status: %i[running waiting_for_tool waiting_for_human]).exists?
+      return if agent_computer.sessions.where(status: %i[running waiting_for_tool waiting_for_human]).exists?
 
-      next_up = agent_computer.agent_sessions.queued.order(:created_at).first
+      next_up = agent_computer.sessions.queued.order(:created_at).first
       AgentSessions::TurnJob.perform_later(next_up) if next_up
     end
   end
@@ -140,7 +155,7 @@ class AgentSession < ApplicationRecord
 
   def broadcast_changes
     broadcast_replace_to self, target: dom_id(self, :header), partial: "agent_sessions/header", locals: { session: self }
-    broadcast_replace_to [ agent_task, :runs ], target: dom_id(self), partial: "agent_tasks/run", locals: { session: self } if agent_task
+    broadcast_replace_to [ task, :runs ], target: dom_id(self), partial: "agent_tasks/run", locals: { session: self } if task
     # Keep the feed's live run card in step; it renders empty once the run leaves an active state, so it drops out.
     broadcast_replace_to [ agent_computer, :feed ], target: dom_id(self, :running), partial: "agent_posts/running", locals: { session: self } if saved_change_to_status?
     if summary_previously_changed? || error_previously_changed?

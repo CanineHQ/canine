@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe AgentLoop::Posts do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
-  let(:task) { computer.agent_tasks.create!(name: "Inbox", instruction: "Handle access requests", schedule: "0 * * * *", model: "test/model") }
+  let(:task) { computer.tasks.create!(name: "Inbox", instruction: "Handle access requests", schedule: "0 * * * *", model: "test/model") }
   let(:session) do
-    computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: "test/model", status: :succeeded,
+    computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :succeeded,
                                     summary: "Added Sean to Persona.", finished_at: Time.current)
   end
   let(:client) { instance_double(Llm::OpenRouter) }
@@ -38,5 +38,15 @@ RSpec.describe AgentLoop::Posts do
     expect(posts.first.parts).to eq([ "I noticed Sean asked to be added to Persona, so ", "I added him", "." ])
     expect(posts.second.action).to eq(shots.first)
     expect(session.reload.cost_usd).to eq(0.0002)
+  end
+
+  it "keeps only problem posts from a run that turned up nothing new" do
+    allow(client).to receive(:chat).and_return(Llm::OpenRouter::Reply.new({ "content" => { anything_new: false, posts: [
+      { kind: "found", text: "I [checked #akula-dev] and there were no new messages." },
+      { kind: "problem", text: "I [couldn't open the sheet]: JavaScript was off." }
+    ] }.to_json }, { cost_usd: 0.0001 }))
+
+    described_class.call(session)
+    expect(session.posts.reload.map(&:kind)).to eq(%w[problem])
   end
 end

@@ -29,7 +29,7 @@ export default class extends Controller {
 
   openShot(step, id) {
     const show = () => {
-      const action = document.getElementById(`agent_session_action_${id}`)
+      const action = document.getElementById(`agent_computer_session_action_${id}`)
       if (!action) return false
       this.open(action)
       action.querySelector(":scope > details")?.setAttribute("open", "")

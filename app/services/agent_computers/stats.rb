@@ -1,6 +1,7 @@
 module AgentComputers
-  # Live stats for an agent computer's VM: KubeVirt's view of the VM, metrics-server usage of its launcher pod
-  # (QEMU included), disk usage from the guest agent, and port probes for the services inside the guest.
+  # Live stats for an agent computer's VM: KubeVirt's view of the VM, metrics-server CPU of its launcher pod (QEMU
+  # included), memory and who has the screen from inside the guest (the computer-use server), disk usage from the
+  # guest agent, and port probes for the services inside the guest.
   class Stats
     include StorageHelper
 
@@ -14,7 +15,7 @@ module AgentComputers
       "computer-use" => AgentComputer::COMPUTER_USE_PORT
     }.freeze
 
-    attr_reader :vmi, :pod, :cpu_used, :memory_used, :disk_used, :disk_size, :services
+    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services, :human
 
     def initialize(agent_computer, user)
       @agent_computer = agent_computer
@@ -30,9 +31,14 @@ module AgentComputers
         .find { |p| p.status.phase == "Running" }
       return self unless phase == "Running" && @pod
 
-      fetch_usage(namespace)
+      # Asked alongside the cluster calls, since each takes a few seconds (the computer-use one opens a port-forward).
+      # The client is built here so the thread has nothing to autoload, and joining permits loads so it can't deadlock.
+      computer_use = @agent_computer.computer_use
+      guest = Thread.new { Rails.application.executor.wrap { fetch_guest(computer_use) } }
+      fetch_cpu(namespace)
       fetch_disk(namespace)
       probe_services(namespace)
+      @human, @memory_used, @memory_total = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
       self
     end
 
@@ -49,9 +55,27 @@ module AgentComputers
     end
 
     def cpu_limit = AgentComputer::CPU_CORES * 1000
-    def memory_limit = memory_to_integer(AgentComputer::MEMORY)
+    def memory_limit = memory_total || memory_to_integer(AgentComputer::MEMORY)
 
     private
+
+    # From inside the guest, over one tunnel: who has the screen (human.py: { "has_screen", "taken_over",
+    # "free_in_seconds" }), and memory in use as Linux counts it, total minus available, so page cache it would drop on
+    # demand doesn't count. (The pod's working set counts all the guest RAM QEMU has ever touched, so it sits near the
+    # VM's size even when the guest has plenty free: no sign of pressure.) Nils if the server didn't answer.
+    def fetch_guest(computer_use)
+      human = meminfo = nil
+      computer_use.connected do
+        human = computer_use.human
+        meminfo = computer_use.run("cat /proc/meminfo")["stdout"].to_s
+      end
+      bytes = ->(key) { meminfo[/^#{key}:\s+(\d+) kB/, 1]&.to_i&.*(1024) }
+      total, available = bytes.("MemTotal"), bytes.("MemAvailable")
+      [ human, total && available && total - available, total ]
+    rescue StandardError => e
+      Rails.logger.info("Couldn't read computer #{@agent_computer.id}'s guest stats: #{e.message}")
+      [ nil, nil, nil ]
+    end
 
     def condition?(type)
       @vmi&.dig("status", "conditions")&.any? { |c| c["type"] == type && c["status"] == "True" }
@@ -63,10 +87,9 @@ module AgentComputers
       nil
     end
 
-    def fetch_usage(namespace)
+    def fetch_cpu(namespace)
       usage = K8::Metrics::Api::Pod.fetch(@connection, namespace).find { |p| p.name == @pod.metadata.name }
       @cpu_used = usage&.cpu
-      @memory_used = usage&.memory
     rescue StandardError => e
       Rails.logger.warn("Agent computer #{@agent_computer.id} metrics unavailable: #{e.message}")
     end

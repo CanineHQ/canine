@@ -101,7 +101,7 @@ module AgentLoop
 
     def start
       @session.update!(started_at: Time.current)
-      append(role: "system", content: Spec.system_prompt(@session))
+      append(role: "system", content: SystemPrompt.build(@session))
       append(role: "user", content: "Start now.") # the time, in the person's time zone, is in the system prompt
     end
 
@@ -178,12 +178,6 @@ module AgentLoop
       Trace.span(span_name(name, args), type: "tool", input: args) do |traced|
         action = @session.actions.create!(activity: activity_for(args["intent"]), tool: name, tool_call_id:, arguments: args,
                                           started_at: Time.current)
-        if (reason = Policy.blocked_reason(@session, name, args))
-          action.update!(status: :blocked, result: { "text" => reason }, duration_ms: 0)
-          traced.output = "Not allowed: #{reason}"
-          return Tools::Result.new(text: traced.output, error: true)
-        end
-
         result = call_tool(name, args)
         traced.output = result.text
         # browse and delegate finish when their watch job does; the action stays running until then
@@ -220,7 +214,7 @@ module AgentLoop
     # Consecutive calls with the same intent share an activity; a new intent starts another
     def activity_for(intent)
       current = @session.current_activity
-      return current if current && !current.finished_at && (intent.blank? || AgentSessionActivity.same_intent?(current.intent, intent))
+      return current if current && !current.finished_at && (intent.blank? || AgentComputer::Session::Activity.same_intent?(current.intent, intent))
 
       current&.finish!
       @session.activities.create!(position: @session.activities.unscope(:order).maximum(:position).to_i + 1, intent: intent.presence || "Working",

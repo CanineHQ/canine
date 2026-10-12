@@ -1,29 +1,32 @@
 # == Schema Information
 #
-# Table name: agent_tasks
+# Table name: agent_computer_tasks
 #
 #  id                :bigint           not null, primary key
 #  enabled           :boolean          default(FALSE), not null
 #  instruction       :text             not null
+#  max_cost_usd      :decimal(10, 2)   default(2.0), not null
+#  max_minutes       :integer          default(45), not null
+#  max_turns         :integer          default(120), not null
 #  model             :string           not null
 #  name              :string           not null
 #  next_run_at       :datetime
 #  schedule          :string
-#  spec              :jsonb            not null
+#  time_zone         :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  agent_computer_id :bigint           not null
 #
 # Indexes
 #
-#  index_agent_tasks_on_agent_computer_id        (agent_computer_id)
-#  index_agent_tasks_on_enabled_and_next_run_at  (enabled,next_run_at)
+#  index_agent_computer_tasks_on_agent_computer_id        (agent_computer_id)
+#  index_agent_computer_tasks_on_enabled_and_next_run_at  (enabled,next_run_at)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (agent_computer_id => agent_computers.id)
 #
-class AgentTask < ApplicationRecord
+class AgentComputer::Task < ApplicationRecord
   FEATURE_FLAG = :agent_tasks
 
   # Whether the account has agent tasks and sessions (a Flipper flag while the feature is new)
@@ -34,9 +37,13 @@ class AgentTask < ApplicationRecord
   DEFAULT_MODEL = "openai/gpt-5.1"
 
   belongs_to :agent_computer
-  has_many :sessions, class_name: "AgentSession", dependent: :destroy
+  has_many :sessions, dependent: :destroy
 
   validates :name, :instruction, :model, presence: true
+  # Canine stops a run at whichever of these it reaches first (AgentLoop::Policy)
+  validates :max_minutes, :max_turns, numericality: { only_integer: true, greater_than: 0 }
+  validates :max_cost_usd, numericality: { greater_than: 0 }
+  validate :time_zone_is_known
   validate :schedule_is_cron
   validate :enabled_needs_a_schedule
 
@@ -55,6 +62,11 @@ class AgentTask < ApplicationRecord
     self.next_run_at = cron&.next_time&.to_t
   end
 
+  # The person's time zone, if they set one: run times are shown and given to the agent in it
+  def zone
+    ActiveSupport::TimeZone[time_zone.to_s] if time_zone.present?
+  end
+
   def last_session
     sessions.order(created_at: :desc).first
   end
@@ -68,6 +80,10 @@ class AgentTask < ApplicationRecord
 
   def schedule_is_cron
     errors.add(:schedule, "isn't a cron schedule, e.g. 0 * * * *") if schedule.present? && cron.nil?
+  end
+
+  def time_zone_is_known
+    errors.add(:time_zone, "isn't a time zone, e.g. America/New_York") if time_zone.present? && zone.nil?
   end
 
   def enabled_needs_a_schedule

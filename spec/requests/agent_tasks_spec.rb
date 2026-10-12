@@ -36,23 +36,25 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     expect(response.body).not_to include("sk-or-v1-abcdef123456")
 
     get new_agent_computer_agent_task_path(computer)
-    expect(response.body).to include("Draft from this", "blocked_commands")
+    expect(response.body).to include("Draft from this", "Limits per run")
 
     # Draft compiles the instruction, saves it (not enabled) and redirects to review it
-    draft = AgentLoop::Compiler::Draft.new(name: "Slack check", schedule: "0 * * * *", spec: AgentLoop::Spec.normalize("never" => [ "merge" ]))
+    draft = AgentLoop::Compiler::Draft.new(name: "Slack check", schedule: "0 * * * *", max_minutes: 10, max_cost_usd: nil)
     allow(AgentLoop::Compiler).to receive(:compile).and_return(draft)
-    post draft_agent_computer_agent_tasks_path(computer), params: { agent_task: { instruction: "Every hour, check Slack" } }
-    drafted = computer.agent_tasks.sole
+    post draft_agent_computer_agent_tasks_path(computer), params: { agent_task: {
+      instruction: "Every hour, check Slack", name: "", schedule: "", time_zone: "", max_minutes: "", max_cost_usd: "", max_turns: ""
+    } }
+    drafted = computer.tasks.sole
     expect(response).to redirect_to(edit_agent_computer_agent_task_path(computer, drafted))
-    expect(drafted).to have_attributes(enabled: false, schedule: "0 * * * *")
+    expect(drafted).to have_attributes(enabled: false, schedule: "0 * * * *", max_minutes: 10, max_cost_usd: 2.0)
     drafted.destroy!
 
     post agent_computer_agent_tasks_path(computer), params: { agent_task: {
       instruction: "Every hour, check Slack", name: "Slack check", schedule: "0 * * * *", model: "test/model", enabled: "1",
-      spec_yaml: "sources:\n- 'Slack: #akula-dev'\nnever:\n- merge pull requests\n"
+      time_zone: "America/New_York", max_minutes: "15", max_cost_usd: "0.75", max_turns: "60"
     } }
-    task = computer.agent_tasks.sole
-    expect(task.spec).to include("sources" => [ "Slack: #akula-dev" ], "never" => [ "merge pull requests" ])
+    task = computer.tasks.sole
+    expect(task).to have_attributes(time_zone: "America/New_York", max_minutes: 15, max_cost_usd: 0.75, max_turns: 60)
     expect(task.next_run_at).to be > Time.current
 
     post run_now_agent_computer_agent_task_path(computer, task)
@@ -66,7 +68,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     expect(response.body).to include("Runs every hour", agent_computer_agent_session_path(computer, session))
     expect(response.body).not_to include("test/model")
     get agent_computer_agent_task_path(computer, task)
-    expect(response.body).to include("Slack check", "Slack: #akula-dev", "Runs every hour", agent_computer_agent_session_path(computer, session))
+    expect(response.body).to include("Slack check", "15 minutes", "Runs every hour", agent_computer_agent_session_path(computer, session))
     get agent_computer_agent_sessions_path(computer)
     expect(response).to redirect_to(agent_computer_agent_tasks_path(computer))
   end
@@ -75,8 +77,8 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       # Run now: creates a one-off (no schedule), starts a session, redirects to it.
       expect {
         post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Summarize my email", every: "now" }
-      }.to change { computer.agent_tasks.count }.by(1).and change { computer.agent_sessions.count }.by(1)
-      task = computer.agent_tasks.order(:created_at).last
+      }.to change { computer.tasks.count }.by(1).and change { computer.sessions.count }.by(1)
+      task = computer.tasks.order(:created_at).last
       expect(task.schedule).to be_nil
       expect(task.enabled?).to be(false)
       # Stays on the feed, where the running session shows at the top.
@@ -87,8 +89,8 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       # Schedule: a preset becomes a cron, enabled, and no session starts now.
       expect {
         post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Check issues", every: "1h" }
-      }.to change { computer.agent_tasks.count }.by(1).and change { computer.agent_sessions.count }.by(0)
-      scheduled = computer.agent_tasks.order(:created_at).last
+      }.to change { computer.tasks.count }.by(1).and change { computer.sessions.count }.by(0)
+      scheduled = computer.tasks.order(:created_at).last
       expect(scheduled.schedule).to eq("0 * * * *")
       expect(scheduled.enabled?).to be(true)
 
@@ -99,23 +101,23 @@ RSpec.describe "Agent tasks and sessions", type: :request do
 
     it "builds a daily cron from the time, and won't run now when the computer is stopped" do
       post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Morning digest", every: "daily", daily_time: "08:30" }
-      expect(computer.agent_tasks.order(:created_at).last.schedule).to eq("30 8 * * *")
+      expect(computer.tasks.order(:created_at).last.schedule).to eq("30 8 * * *")
 
       computer.update!(status: :stopped)
       expect {
         post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do it", every: "now" }
-      }.not_to change { computer.agent_tasks.count }
+      }.not_to change { computer.tasks.count }
       expect(flash[:alert]).to match(/must be running/)
     end
 
     it "queues a run behind the one already going, and starts it when that finishes" do
       post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "first", every: "now" }
-      first = computer.agent_sessions.sole
+      first = computer.sessions.sole
 
       expect {
         post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "second", every: "now" }
-      }.to change { computer.agent_sessions.count }.by(1)
-      second = computer.agent_sessions.order(:created_at).last
+      }.to change { computer.sessions.count }.by(1)
+      second = computer.sessions.order(:created_at).last
       expect(second).to be_queued
       expect(second.waiting_in_queue?).to be(true)
       expect(flash[:notice]).to match(/Queued/)
@@ -135,12 +137,12 @@ RSpec.describe "Agent tasks and sessions", type: :request do
 
       # A task composed now starts on the machine's planning model.
       post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do x", every: "1h" }
-      task = computer.agent_tasks.order(:created_at).last
+      task = computer.tasks.order(:created_at).last
       expect(task.model).to eq("openai/gpt-5-mini")
 
-      # Delegate falls back to the machine's coding model and agent when the task doesn't override.
-      session = computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: task.model)
-      run = AgentLoop::Delegate.command(session, {}, "~/x").first
+      # Delegate runs the machine's coding agent on its coding model.
+      session = computer.sessions.create!(task: task, trigger: :manual, model: task.model)
+      run = AgentLoop::Delegate.command(session, "~/x").first
       expect(run).to include("deepseek/deepseek-v4.1-flash").and include("pi ")
     end
   end

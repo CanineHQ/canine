@@ -29,10 +29,10 @@ module AgentBenchmark
     private
 
     def run_one(definition)
-      sleep 5 while @computer.agent_sessions.active.exists?
+      sleep 5 while @computer.sessions.active.exists?
       task = task_for(definition)
-      session = AgentSession.start!(task, trigger: :manual, window_from: nil)
-      deadline = Time.current + task.spec.dig("limits", "minutes").to_i.minutes + 3.minutes
+      session = AgentComputer::Session.start!(task, trigger: :manual, window_from: nil)
+      deadline = Time.current + task.max_minutes.minutes + 3.minutes
       sleep 5 while session.reload.active? && Time.current < deadline
       session.finish!(:cancelled, error: "Stopped by the benchmark (over time).") if session.active?
       wait_for_wrapup(session)
@@ -53,13 +53,14 @@ module AgentBenchmark
                     GoodJob::Job.where(job_class: "AgentSessions::WrapupJob", finished_at: nil).exists?
     end
 
-    # A disabled task per benchmark item, with its hand-written spec and the model under test
+    # A disabled task per benchmark item, with the shared rules appended to its instruction and the model under test
     def task_for(definition)
       defaults = TASKS["defaults"]
-      task = @computer.agent_tasks.find_or_initialize_by(name: "[benchmark] #{definition["key"]}")
-      task.update!(instruction: definition["instruction"], schedule: "0 0 1 1 *", model: @model, enabled: false,
-                   spec: { "sources" => definition["sources"], "never" => defaults["never"], "limits" => defaults["limits"],
-                           "time_zone" => defaults["time_zone"] })
+      limits = defaults["limits"]
+      task = @computer.tasks.find_or_initialize_by(name: "[benchmark] #{definition["key"]}")
+      task.update!(instruction: "#{definition["instruction"]}\n\nNever:\n#{defaults["never"].map { |rule| "- #{rule}" }.join("\n")}",
+                   schedule: "0 0 1 1 *", model: @model, enabled: false, time_zone: defaults["time_zone"],
+                   max_minutes: limits["minutes"], max_cost_usd: limits["cost_usd"], max_turns: limits["turns"])
       task
     end
 

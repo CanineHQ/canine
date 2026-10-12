@@ -4,12 +4,12 @@ RSpec.describe AgentSessions::TurnJob do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let(:task) do
-    computer.agent_tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model",
-                                 spec: { "limits" => { "minutes" => 20 } })
+    computer.tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model",
+                                 max_minutes: 20)
   end
 
   it "stops a session that has run past its task's limit, without calling the model" do
-    session = computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: "test/model", status: :running, started_at: 21.minutes.ago)
+    session = computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running, started_at: 21.minutes.ago)
     expect(Llm::OpenRouter).not_to receive(:new)
 
     described_class.perform_now(session)
@@ -17,7 +17,7 @@ RSpec.describe AgentSessions::TurnJob do
   end
 
   it "tries a turn again when the computer can't be reached, and gives up after the last try" do
-    session = computer.agent_sessions.create!(agent_task: task, trigger: :manual, model: "test/model", status: :running)
+    session = computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running)
     computer.account.agent_provider_keys.create!(provider: "openrouter", api_key: "key")
     allow(AgentComputers::PortForward).to receive(:open).and_raise(AgentComputers::PortForward::Error, "kubectl port-forward to desk didn't start")
     stub_const("ENV", ENV.to_h.merge("LANGFUSE_HOST" => "http://localhost:3100", "LANGFUSE_PUBLIC_KEY" => "pk", "LANGFUSE_SECRET_KEY" => "sk"))

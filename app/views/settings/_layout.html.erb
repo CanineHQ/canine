@@ -76,7 +76,7 @@
               Stack Manager
             <% end %>
           </li>
-          <% if AgentTask.enabled_for?(current_account) %>
+          <% if AgentComputer::Task.enabled_for?(current_account) %>
           <li class="<%= 'underline' if controller_name == 'agent_provider_keys' %>" style="text-underline-offset: 0.25rem;">
             <%= link_to agent_provider_keys_path do %>
               <iconify-icon icon="lucide:bot" ></iconify-icon>

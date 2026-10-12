@@ -3,14 +3,9 @@ module AgentLoop
   # The session waits without model turns until it exits (AgentSessions::DelegateWatchJob), and its output comes back
   # to the model as a message.
   #
-  # Configurable per task, in its spec:
-  #   delegate_agent:   which supported coding agent to run — "opencode" (default) or "pi" (AGENTS). Each is run
-  #                     headlessly through the account's OpenRouter key, and each writes what it spent to a cost file
-  #                     that the watch job adds to the run's total.
-  #   delegate_model:   the model that agent drives with, an OpenRouter id (default: the session's planning model).
-  #   delegate_command: a full manual override of the command, for an agent not in AGENTS. Then auth and the model are
-  #                     the command's own business, and its cost isn't tracked.
-  #   (browse_model is the browser's model; the planning model is the task's own `model`.)
+  # Which agent runs ("opencode", the default, or "pi": AGENTS) and the model it drives with are the computer's
+  # coding_agent and coding_model (the model defaults to the session's planning model). Each runs headlessly through
+  # the account's OpenRouter key and writes what it spent to a cost file that the watch job adds to the run's total.
   #
   # The coding agent has its own shell, so it isn't limited by Canine's tool rules: what keeps it contained is what
   # the computer lets it reach (the repository, and the credentials set up there, e.g. a GitHub token that can open
@@ -36,11 +31,10 @@ module AgentLoop
 
     def self.start(session, args)
       computer_use = session.computer_use
-      spec = session.agent_task&.spec || {}
       id = "delegate-#{session.id}-#{SecureRandom.hex(3)}"
       dir = directory(id)
       key = session.agent_computer.account.agent_provider_keys.find_by(provider: "openrouter")&.api_key
-      run, cost = command(session, spec, dir)
+      run, cost = command(session, dir)
       script = <<~SH
         #{"export OPENROUTER_API_KEY=#{Shellwords.escape(key)}" if key}
         export CANINE_PROMPT_FILE=#{dir}/prompt
@@ -59,13 +53,10 @@ module AgentLoop
       Tools::Result.new(text: "Couldn't start the coding agent: #{e.message}", error: true)
     end
 
-    # [the command to run, the shell snippet that prints its cost]. A custom delegate_command bypasses the registry
-    # (and cost tracking); otherwise the chosen agent runs on delegate_model (or the planning model) via OpenRouter.
-    def self.command(session, spec, dir)
-      return [ spec["delegate_command"], "echo 0" ] if spec["delegate_command"].present?
-
-      agent = AGENTS[spec["delegate_agent"].presence || session.agent_computer.coding_agent.presence || DEFAULT_AGENT] || AGENTS[DEFAULT_AGENT]
-      model = spec["delegate_model"].presence || session.agent_computer.coding_model.presence || session.model
+    # [the command to run, the shell snippet that prints its cost]
+    def self.command(session, dir)
+      agent = AGENTS[session.agent_computer.coding_agent.presence || DEFAULT_AGENT] || AGENTS[DEFAULT_AGENT]
+      model = session.agent_computer.coding_model.presence || session.model
       [ agent[:run].call(model, dir), agent[:cost].call(dir) ]
     end
 
