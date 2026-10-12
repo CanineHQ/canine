@@ -36,41 +36,23 @@ module Tools
     )
 
     def self.call(name:, kubeconfig_yaml:, cluster_type: "k8s", account_id: nil, server_context:)
-      with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        # Validate YAML before passing to the action
-        begin
-          YAML.safe_load(kubeconfig_yaml)
-        rescue Psych::SyntaxError => e
-          return MCP::Tool::Response.new([ {
-            type: "text",
-            text: "Invalid kubeconfig YAML: #{e.message}"
-          } ], error: true)
-        end
-
-        params = ActionController::Parameters.new(
-          cluster: {
-            name: name,
-            cluster_type: cluster_type,
-            kubeconfig: kubeconfig_yaml,
-            kubeconfig_yaml_format: "true"
-          }
+      with_account_user(server_context: server_context, account_id: account_id) do |_user, account_user|
+        result = Api::Clusters::Create.execute(
+          account_user: account_user,
+          params: { name: name, kubeconfig: kubeconfig_yaml, cluster_type: cluster_type }
         )
-
-        result = ::Clusters::Create.call(params, account_user)
 
         if result.success?
           cluster = result.cluster
-          ::Clusters::InstallJob.perform_later(cluster, user)
           MCP::Tool::Response.new([ {
             type: "text",
             text: "Cluster '#{cluster.name}' created and setup started (ID: #{cluster.id}). " \
                   "System components are being installed in the background."
           } ])
         else
-          errors = result.cluster&.errors&.full_messages&.join(", ") || result.message
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to create cluster: #{errors}"
+            text: "Failed to create cluster: #{result.message}"
           } ], error: true)
         end
       end

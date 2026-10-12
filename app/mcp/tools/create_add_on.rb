@@ -48,9 +48,7 @@ module Tools
 
     def self.call(name:, chart_url:, version:, repository_url:, cluster_id:, values_yaml: nil, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        account = account_user.account
-
-        cluster = account.clusters.find_by(id: cluster_id)
+        cluster = account_user.account.clusters.find_by(id: cluster_id)
         unless cluster
           return MCP::Tool::Response.new([ {
             type: "text",
@@ -58,41 +56,28 @@ module Tools
           } ], error: true)
         end
 
-        add_on_attrs = {
-          cluster_id: cluster_id,
-          chart_url: chart_url,
-          name: name,
-          version: version,
-          repository_url: repository_url,
-          managed_namespace: true
-        }
-
-        if values_yaml.present?
-          begin
-            add_on_attrs[:values] = YAML.safe_load(values_yaml)
-          rescue Psych::SyntaxError => e
-            return MCP::Tool::Response.new([ {
-              type: "text",
-              text: "Invalid YAML in values_yaml: #{e.message}"
-            } ], error: true)
-          end
-        end
-
-        add_on = AddOn.new(add_on_attrs)
-        result = ::AddOns::Create.call(add_on, user)
+        result = Api::AddOns::Create.execute(
+          cluster: cluster,
+          user: user,
+          params: {
+            name: name,
+            chart_url: chart_url,
+            version: version,
+            repository_url: repository_url,
+            values_yaml: values_yaml
+          }
+        )
 
         if result.success?
-          ::AddOns::InstallJob.perform_later(add_on, user)
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Add-on '#{add_on.name}' created and installation started on cluster '#{cluster.name}'. " \
-                  "Chart: #{chart_url} v#{version}. Add-on ID: #{add_on.id}"
+            text: "Add-on '#{result.add_on.name}' created and installation started on cluster '#{cluster.name}'. " \
+                  "Chart: #{chart_url} v#{version}. Add-on ID: #{result.add_on.id}"
           } ])
         else
-          errors = add_on.errors.full_messages.join(", ").presence || result.message
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to create add-on: #{errors}"
+            text: "Failed to create add-on: #{result.message}"
           } ], error: true)
         end
       end

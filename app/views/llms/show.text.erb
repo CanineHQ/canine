@@ -1,0 +1,144 @@
+# Canine
+
+> Canine is a Heroku-style deployment platform for your own Kubernetes clusters. Connect a cluster, point Canine at a git repository or a container image, and it builds, deploys, and runs the app, plus databases and other Helm chart add-ons.
+
+This file is written for AI agents (Claude Code, Cursor, Codex, and others). A user has asked you to set up or manage their apps on Canine. Do everything through the REST API below with the user's API key. You don't need an MCP server.
+
+- Canine instance: <%= @base_url %>
+- API base: <%= @base_url %>/api/v1
+- Create an API key: <%= @base_url %>/api_tokens
+- OpenAPI spec: <%= @base_url %>/swagger
+- Docs: https://docs.canine.sh
+
+## Authentication
+
+Send the API key on every request, in either header:
+
+    X-API-Key: $CANINE_API_KEY
+    Authorization: Bearer $CANINE_API_KEY
+
+If the user hasn't given you a key, ask them to create one at <%= @base_url %>/api_tokens and paste it to you.
+Store it in an environment variable rather than echoing it back:
+
+    export CANINE_URL=<%= @base_url %>
+    export CANINE_API_KEY=<key the user gave you>
+    curl -s -H "X-API-Key: $CANINE_API_KEY" $CANINE_URL/api/v1/me
+
+If a user belongs to several accounts, `GET /api/v1/me` lists them. Add `X-Account-Id: <account id or slug>` to choose one. Without it, the API uses the first account.
+
+Request bodies are JSON (`Content-Type: application/json`) with flat fields. Projects, clusters, and add-ons are addressed by **name** in URLs. Errors look like `{"error": "..."}`.
+
+## Onboarding playbook
+
+Follow these steps in order and skip any the user has already done. Check before you create anything.
+
+1. **Verify the key.** Call `GET /api/v1/me`. A 401 means the key is wrong or expired.
+2. **Find or connect a cluster.** Call `GET /api/v1/clusters`. If there's no cluster with status `running`, help the user connect one (see "Connecting a cluster"). After creating a cluster, poll `GET /api/v1/clusters/{name}` until `status` is `running`. That takes a few minutes while Canine installs its system packages. If it shows `failed`, tell the user.
+3. **Find or connect a git provider.** Skip this step if you're deploying a public container image. Call `GET /api/v1/providers`. If there's no `github`/`gitlab`/`bitbucket` provider, create one from a personal access token (see "Connecting a git provider").
+4. **Create the project.** Call `POST /api/v1/projects`. Read the user's repository first: check that a Dockerfile exists and note the port the app listens on.
+5. **Add services.** A project runs nothing until it has at least one service. A web app needs a `web_service` with the correct `container_port`, plus `allow_public_networking: true` if it should be reachable from the internet. Add `background_service` entries for workers and `cron_job` entries for scheduled tasks.
+6. **Set environment variables.** Call `POST /api/v1/projects/{name}/environment_variables` once per variable. Store credentials as `storage_type: "secret"`. If the app needs a database, install an add-on first (see "Add-ons") and use its `connection_url`.
+7. **Deploy.** `POST /api/v1/projects/{name}/deploy` returns a `build_id`. Poll `GET /api/v1/builds/{build_id}` every 10–20 seconds. `status` goes `in_progress` → `completed` or `failed`. The response includes build `logs` and the `deployment` status.
+8. **Verify.** Call `GET /api/v1/projects/{name}` and read each service's `domains` to get the public URL. If something went wrong, run `GET /api/v1/projects/{name}/doctor` and `GET /api/v1/projects/{name}/logs`, fix the cause, and redeploy.
+9. **Report back.** Give the user the live URL and a link to the project: <%= @base_url %>/projects/{id}.
+
+Ask the user before you do anything destructive or anything that costs money, such as provisioning a server.
+
+## Connecting a cluster
+
+Canine needs a kubeconfig whose API server Canine can reach over the network. A cluster that only listens on the user's laptop (`127.0.0.1`, kind, Docker Desktop) won't work unless Canine also runs on that machine.
+
+- **Existing cluster** (EKS, GKE, DigitalOcean, and so on): get the kubeconfig with `kubectl config view --raw --minify` and send it with `cluster_type: "k8s"`.
+- **A fresh Linux VPS with k3s:** on the server, run `curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <public-ip>" sh -`. Make sure TCP port 6443 is open. Then run `sudo cat /etc/rancher/k3s/k3s.yaml` and send the output with `cluster_type: "k3s"` and `ip_address: "<public-ip>"`. Canine changes the `127.0.0.1` server address to that IP.
+
+```
+POST /api/v1/clusters
+{"name": "production", "cluster_type": "k8s", "kubeconfig": "<kubeconfig YAML as a string>"}
+```
+
+Cluster names use lowercase letters, numbers, and hyphens.
+
+## Connecting a git provider
+
+GitHub needs a classic personal access token with the `repo` and `write:packages` scopes. The built image is pushed to GitHub Container Registry. If the user has the GitHub CLI, `gh auth refresh -s write:packages` followed by `gh auth token` gives you a suitable token without the user creating one by hand. Otherwise, send them to https://github.com/settings/tokens/new?scopes=repo,write:packages&description=Canine
+
+```
+POST /api/v1/providers
+{"type": "github", "access_token": "<token>"}
+```
+
+`type` can be `github`, `gitlab`, `bitbucket`, or `container_registry`. Bitbucket and container registries also need `username`. Container registries also need `registry_url`.
+
+## API reference
+
+All paths are relative to <%= @base_url %>/api/v1.
+
+### Account
+- `GET /me`: the current user, current account, and all accounts.
+
+### Providers
+- `GET /providers`: the user's git and registry credentials. The `id` is needed to create a project.
+- `POST /providers`: `{type, access_token, username?, registry_url?}`.
+
+### Clusters
+- `GET /clusters`: list clusters.
+- `GET /clusters/{name}`: cluster status and installed packages.
+- `POST /clusters`: `{name, kubeconfig, cluster_type?: "k8s"|"k3s", ip_address?}`. Installation runs in the background.
+- `GET /clusters/{name}/download_kubeconfig`: the kubeconfig as JSON, for use with kubectl.
+
+### Projects
+- `GET /projects`: list projects.
+- `GET /projects/{name}`: details, including services, domains, volumes, and recent builds.
+- `POST /projects`: create a project from a git repo: `{name, cluster_id, provider_id, repository_url: "owner/repo", branch?: "main", dockerfile_path?: "./Dockerfile", context_directory?: ".", predeploy_command?}`. To use a public container image instead: `{name, cluster_id, public_image_url: "nginx:latest"}`. `cluster_id` can be a cluster's ID or its name.
+- `PATCH /projects/{name}`: update any of `{name, repository_url, branch, autodeploy, predeploy_command, image_repository, dockerfile_path, context_directory}`.
+- `POST /projects/{name}/deploy`: build and deploy the latest commit. Pass `{skip_build: true}` to redeploy the current image. Returns `build_id`.
+- `POST /projects/{name}/restart`: restart all pods.
+- `GET /projects/{name}/doctor`: diagnose cluster, source, and registry connectivity.
+- `GET /projects/{name}/logs?tail_lines=100`: logs and events for every pod, up to 500 lines per pod.
+- `GET /projects/{name}/processes`: running pods. `POST` starts a one-off pod. `DELETE /processes/{pod}` stops one.
+
+### Services
+Service changes take effect on the next deploy.
+- `GET /projects/{name}/services`: list services.
+- `POST /projects/{name}/services`: `{name, service_type: "web_service"|"background_service"|"cron_job", container_port?: 3000, replicas?: 1, command?, healthcheck_url?, allow_public_networking?: false, cron_schedule?}`. A `cron_job` needs both `command` and `cron_schedule` (for example `"0 * * * *"`). Setting `allow_public_networking: true` gives a `web_service` an automatically managed public domain.
+
+### Environment variables
+Redeploy after changing these.
+- `GET /projects/{name}/environment_variables`: list variables. Secret values are masked.
+- `GET /projects/{name}/environment_variables/{VAR_NAME}`: one variable, with its value revealed.
+- `POST /projects/{name}/environment_variables`: create or update `{name, value, storage_type?: "config"|"secret"}`.
+- `DELETE /projects/{name}/environment_variables/{VAR_NAME}`: delete a variable.
+
+### Builds
+- `GET /builds?project_id={name}`: recent builds (in progress, or from the last 24 hours).
+- `GET /builds/{id}`: build status, logs, and deployment.
+- `PATCH /builds/{id}/kill`: cancel a build.
+
+### Add-ons (databases, caches, and other Helm charts)
+- `GET /add_ons/search?q=postgres`: search Helm charts. The `curated` results are tested with Canine; prefer them.
+- `POST /add_ons`: `{name, cluster_id, chart_url, version, repository_url, values_yaml?}`, using the values from a search result. Installation runs in the background.
+- `GET /add_ons`: list add-ons.
+- `GET /add_ons/{name}`: status, endpoints, and `connection_url` once `status` is `installed`.
+- `GET /add_ons/{name}/logs`: pod logs and events.
+- `POST /add_ons/{name}/restart`: restart the add-on.
+
+## Example: deploy a GitHub repo end to end
+
+```bash
+H=(-H "X-API-Key: $CANINE_API_KEY" -H "Content-Type: application/json")
+curl -s "${H[@]}" $CANINE_URL/api/v1/clusters
+curl -s "${H[@]}" $CANINE_URL/api/v1/providers
+curl -s "${H[@]}" -X POST $CANINE_URL/api/v1/projects \
+  -d '{"name":"my-app","cluster_id":"production","provider_id":1,"repository_url":"acme/my-app"}'
+curl -s "${H[@]}" -X POST $CANINE_URL/api/v1/projects/my-app/services \
+  -d '{"name":"web","service_type":"web_service","container_port":3000,"allow_public_networking":true}'
+curl -s "${H[@]}" -X POST $CANINE_URL/api/v1/projects/my-app/environment_variables \
+  -d '{"name":"SECRET_KEY_BASE","value":"...","storage_type":"secret"}'
+curl -s "${H[@]}" -X POST $CANINE_URL/api/v1/projects/my-app/deploy
+curl -s "${H[@]}" $CANINE_URL/api/v1/builds/<build_id>
+```
+
+## Optional
+
+- Canine also offers an MCP server at <%= @base_url %>/mcp (OAuth). Everything above works without it.
+- Source code: https://github.com/CanineHQ/canine

@@ -67,33 +67,27 @@ module Tools
           } ], error: true)
         end
 
-        project_attrs = {}
-        project_attrs[:name] = name if name.present?
-        project_attrs[:repository_url] = repository_url if repository_url.present?
-        project_attrs[:branch] = branch if branch.present?
-        project_attrs[:autodeploy] = autodeploy unless autodeploy.nil?
-        project_attrs[:predeploy_command] = predeploy_command unless predeploy_command.nil?
-
-        build_config_attrs = {}
-        build_config_attrs[:image_repository] = image_repository if image_repository.present?
-        build_config_attrs[:dockerfile_path] = dockerfile_path if dockerfile_path.present?
-        build_config_attrs[:context_directory] = context_directory if context_directory.present?
-
-        params = ActionController::Parameters.new(
-          project: project_attrs.merge(
-            build_configuration: build_config_attrs
-          )
+        result = Api::Projects::Update.execute(
+          project: project,
+          user: user,
+          params: {
+            name: name.presence,
+            repository_url: repository_url.presence,
+            branch: branch.presence,
+            autodeploy: autodeploy,
+            predeploy_command: predeploy_command,
+            image_repository: image_repository.presence,
+            dockerfile_path: dockerfile_path.presence,
+            context_directory: context_directory.presence
+          }
         )
 
-        result = ::Projects::Update.call(project, params, user)
-
         if result.success?
-          changes = project_attrs.except(:build_configuration).map { |k, v| "#{k}=#{v}" }
-          changes += build_config_attrs.map { |k, v| "#{k}=#{v}" }
+          changes = result.changes.map { |k, v| "#{k}=#{v}" }
 
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Project '#{project.reload.name}' updated successfully (#{changes.join(', ')}). Redeploy the project for changes to take effect."
+            text: "Project '#{project.name}' updated successfully (#{changes.join(', ')}). Redeploy the project for changes to take effect."
           } ])
         else
           MCP::Tool::Response.new([ {

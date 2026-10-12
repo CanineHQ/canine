@@ -160,4 +160,115 @@ RSpec.describe Api::V1::ProjectsController, :swagger, type: :request do
       end
     end
   end
+
+  path '/api/v1/projects' do
+    post('Create Project') do
+      tags 'Projects'
+      operationId 'createProject'
+      consumes 'application/json'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string, example: 'my-app' },
+          cluster_id: { type: :string, description: 'Cluster name or ID' },
+          provider_id: { type: :integer, description: 'Git provider ID (from /api/v1/providers)' },
+          repository_url: { type: :string, example: 'acme/my-app' },
+          branch: { type: :string, example: 'main' },
+          dockerfile_path: { type: :string, example: './Dockerfile' },
+          context_directory: { type: :string, example: '.' },
+          predeploy_command: { type: :string, example: 'rails db:migrate' },
+          public_image_url: { type: :string, description: 'Deploy a public image instead of a git repo', example: 'nginx:latest' }
+        },
+        required: %w[name cluster_id]
+      }
+
+      let(:cluster) { create :cluster, account: }
+      let(:provider) { create :provider, :github, user: api_token.user }
+
+      before do
+        allow(Projects::ValidateGitRepository).to receive(:execute)
+        allow(Namespaced::ValidateNamespace).to receive(:execute)
+        allow(Projects::RegisterGitWebhook).to receive(:execute)
+      end
+
+      response(201, 'created') do
+        let(:body) { { name: 'api-app', cluster_id: cluster.name, provider_id: provider.id, repository_url: 'acme/api-app' } }
+
+        schema '$ref' => '#/components/schemas/project_detail'
+        run_test! do
+          project = Project.find_by!(name: 'api-app')
+          expect(project.repository_url).to eq('acme/api-app')
+          expect(project.branch).to eq('main')
+        end
+      end
+
+      response(422, 'missing provider') do
+        let(:body) { { name: 'api-app', cluster_id: cluster.id, repository_url: 'acme/api-app' } }
+        run_test!
+      end
+    end
+  end
+
+  path '/api/v1/projects/{id}' do
+    let(:id) { project.name }
+
+    patch('Update Project') do
+      tags 'Projects'
+      operationId 'updateProject'
+      consumes 'application/json'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
+      parameter name: :body, in: :body, schema: {
+        type: :object,
+        properties: {
+          name: { type: :string },
+          repository_url: { type: :string },
+          branch: { type: :string },
+          autodeploy: { type: :boolean },
+          predeploy_command: { type: :string },
+          image_repository: { type: :string },
+          dockerfile_path: { type: :string },
+          context_directory: { type: :string }
+        }
+      }
+
+      response(200, 'successful') do
+        let(:body) { { branch: 'release', autodeploy: false } }
+
+        schema '$ref' => '#/components/schemas/project_detail'
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['branch']).to eq('release')
+          expect(data['autodeploy']).to be(false)
+        end
+      end
+    end
+  end
+
+  path '/api/v1/projects/{id}/logs' do
+    let(:id) { project.name }
+
+    get('Project Logs') do
+      tags 'Projects'
+      operationId 'projectLogs'
+      produces 'application/json'
+      parameter name: 'X-API-Key', in: :header, type: :string, description: 'API Key'
+      parameter name: :id, in: :path, type: :string, description: 'Project name'
+      parameter name: :tail_lines, in: :query, type: :integer, required: false, description: 'Lines per pod (max 500)'
+
+      response(200, 'successful') do
+        before do
+          allow(K8::PodLogs).to receive(:for_project).and_return([ { pod_name: 'web-abc', status: 'Running', logs: 'App started', events: [] } ])
+        end
+
+        schema type: :object, properties: { pods: { type: :array, items: { type: :object } } }, required: %w[pods]
+        run_test! do |response|
+          expect(JSON.parse(response.body)['pods'].first['logs']).to eq('App started')
+        end
+      end
+    end
+  end
 end

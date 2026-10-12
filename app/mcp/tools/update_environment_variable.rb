@@ -46,27 +46,21 @@ module Tools
           } ], error: true)
         end
 
-        env_var = project.environment_variables.find_or_initialize_by(name: name.strip.upcase)
-        is_new = env_var.new_record?
-        env_var.value = value.strip
-        env_var.storage_type = storage_type
-        env_var.current_user = user
+        result = Api::EnvironmentVariables::Upsert.execute(
+          project: project,
+          user: user,
+          params: { name: name, value: value, storage_type: storage_type }
+        )
 
-        if env_var.save
-          env_var.events.create!(
-            user: user,
-            event_action: is_new ? :create : :update,
-            project: project
-          )
-
+        if result.success?
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Environment variable '#{env_var.name}' #{is_new ? 'created' : 'updated'} for project '#{project.name}'. Redeploy the project for changes to take effect."
+            text: "Environment variable '#{result.environment_variable.name}' #{result.created ? 'created' : 'updated'} for project '#{project.name}'. Redeploy the project for changes to take effect."
           } ])
         else
           MCP::Tool::Response.new([ {
             type: "text",
-            text: "Failed to save environment variable: #{env_var.errors.full_messages.join(', ')}"
+            text: "Failed to save environment variable: #{result.message}"
           } ], error: true)
         end
       end
