@@ -98,8 +98,10 @@ module AgentComputers
       }
     end
 
-    # Selkies is unauthenticated, so block every in-cluster connection. Canine reaches the VM (Selkies, and SSH for
-    # setup) through kubectl port-forward, which isn't subject to NetworkPolicy.
+    # Selkies (the desktop stream) and the computer-use server (shell commands, the logged-in browser) are both
+    # unauthenticated and listen on the VM's interface, so block every in-cluster connection: without this, any pod
+    # in the cluster could drive the computer. Canine reaches the VM (both, and SSH for setup) through kubectl
+    # port-forward, which isn't subject to NetworkPolicy.
     def build_network_policy_yaml(agent_computer)
       {
         "apiVersion" => "networking.k8s.io/v1",
