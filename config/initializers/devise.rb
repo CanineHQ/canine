@@ -322,6 +322,10 @@ Devise.setup do |config|
   # up on your models and hooks.
   # TODO (chris): add digital ocean?
   config.omniauth :github, ENV["OMNIAUTH_GITHUB_PUBLIC_KEY"], ENV["OMNIAUTH_GITHUB_PRIVATE_KEY"], scope: "user,repo,write:packages,read:org"
+  if ENV["OMNIAUTH_GOOGLE_CLIENT_ID"].present?
+    config.omniauth :google_oauth2, ENV["OMNIAUTH_GOOGLE_CLIENT_ID"], ENV["OMNIAUTH_GOOGLE_CLIENT_SECRET"],
+                    scope: "email,profile", prompt: "select_account"
+  end
   config.omniauth :developer if Rails.env.test?
 
   # ==> Warden configuration
