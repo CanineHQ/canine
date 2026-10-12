@@ -30,6 +30,19 @@ python3 -m venv --system-site-packages ~/.local/share/canine/venv   # system-sit
 Run it inside the desktop session (it needs `WAYLAND_DISPLAY` and `HYPRLAND_INSTANCE_SIGNATURE`), e.g. as a systemd
 user service that's part of `graphical-session.target`. It has no authentication: keep the port private.
 
+## The agent's workspace
+
+The agent works on its own workspace (5; `CANINE_AGENT_WORKSPACE` changes it) so the person can keep using the
+desktop while it runs. Browse jobs open each page as a window there, terminal windows go there, and so does any window
+opened with a `workspace`. They open without switching the person's screen to them or taking focus, and keep from
+taking it later; switch to workspace 5 to watch. Hyprland's rules can only place a window as it opens, and nothing
+tells the agent's windows apart from the person's at that moment, so the server switches a placement rule on just
+while its own window opens (`agent_workspace.py`). Clicks at coordinates, typing and key presses (`/computer-use`) still
+go through the one shared mouse and keyboard, so those wait while the person is using the computer.
+
+`POST /agent_workspace/clear` closes everything on the agent's workspace and ends the agent's terminal sessions;
+Canine calls it as each run starts and once it's over.
+
 ## API
 
 JSON in, JSON out. Prefer commands and window operations, then the accessibility tree, then keys; clicking at
@@ -42,12 +55,12 @@ would then land in the wrong place. `zoom` returns its region at the monitor's f
 | `GET /status` | | `{"ok": true, "screen": {"width", "height"}}` |
 | `POST /computer-use` | an action, e.g. `{"action": "left_click", "coordinate": [640, 400]}` | the action's result (`screenshot` returns base64 PNG in `image`) |
 | `POST /run` | `{"command": "uname -a", "timeout": 30}` | `exit_code`, `stdout`, `stderr` (stdin closed; killed after the timeout) |
-| `POST /terminal/open` | `{"command": "claude", "cwd": "~/app", "show": true}` | a tmux session (and a window attached to it) |
+| `POST /terminal/open` | `{"command": "claude", "cwd": "~/app", "show": true}` | a tmux session (and a window attached to it, on the agent's workspace) |
 | `POST /terminal/send` | `{"session": "term1", "text": "ls", "enter": true, "keys": ["C-c"]}` | types into the session, whatever has focus |
 | `POST /terminal/read`, `/terminal/wait` | `{"session": "term1"}` / `{"session": "term1", "text": "$ "}` | the screen as text |
 | `GET /terminal`, `POST /terminal/close` | | the sessions; end one |
 | `GET /windows` | | the windows, with id, app, title, workspace and bounds |
-| `POST /windows/open_app` | `{"command": "nautilus", "workspace": 3}` | the app's new window |
+| `POST /windows/open_app` | `{"command": "nautilus", "workspace": 3}` | the app's new window (with a workspace, opened there without switching to it) |
 | `POST /windows/open_url` | `{"url": "https://example.com"}` | the new browser window |
 | `POST /windows/focus`, `/windows/close`, `/windows/maximize` | `{"id": "0x..."}` | (open_app and open_url also take `"maximize": true`) |
 | `POST /windows/move_to_workspace` | `{"id": "0x...", "workspace": 4}` | |

@@ -76,6 +76,14 @@ class AgentComputer < ApplicationRecord
     AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user), priority:)
   end
 
+  # Close every window on the agent's workspace (what a run left open), best-effort: a computer that's stopped or
+  # unreachable has nothing open to clear. Runs clear it as they start and once they've ended.
+  def clear_agent_workspace
+    computer_use.clear_agent_workspace if running?
+  rescue AgentComputers::ComputerUse::Error => e
+    Rails.logger.info("Couldn't clear the agent workspace on #{name}: #{e.message}")
+  end
+
   # The planning model a new task on this computer starts with: the machine's, or the global default.
   def default_model = planning_model.presence || AgentComputer::Task::DEFAULT_MODEL
 

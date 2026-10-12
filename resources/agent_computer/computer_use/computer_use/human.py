@@ -18,18 +18,19 @@ _lock = threading.Lock()
 
 
 # Requests that share the screen with the person, so wait while they have it. Computer-use actions that only look
-# are fine, and a terminal session only needs the screen if it opens a window.
+# are fine, and so is opening a window on a given workspace (a terminal's goes to the agent's): it opens there
+# without switching to it or taking focus (agent_workspace).
 NEEDS_SCREEN = {"/computer-use", "/windows/open_app", "/windows/open_url", "/windows/focus", "/windows/close",
                 "/windows/move_to_workspace", "/windows/switch_workspace", "/windows/maximize", "/accessibility/press",
-                "/accessibility/set_text", "/terminal/open"}
+                "/accessibility/set_text"}
 LOOK_ONLY_ACTIONS = {"screenshot", "zoom", "cursor_position", "wait"}
 
 
 def needs_screen(path, body):
     if path == "/computer-use":
         return body.get("action") not in LOOK_ONLY_ACTIONS
-    if path == "/terminal/open":
-        return bool(body.get("show", True))
+    if path in ("/windows/open_app", "/windows/open_url"):
+        return body.get("workspace") is None
     return path in NEEDS_SCREEN
 
 

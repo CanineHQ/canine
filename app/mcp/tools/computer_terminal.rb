@@ -11,7 +11,8 @@ module Tools
       Run interactive terminal programs on an agent computer (a shell, Claude Code, vim, installers that ask
       questions) and use them as text, no screenshots. Sessions run in tmux: read returns the screen as text, and send
       types into a session directly, whatever window has focus. open: start a command (default: a shell) in a new
-      session, with a terminal window the person can watch (show, default true). send: type text exactly, press keys
+      session, with a terminal window the person can watch (show, default true) on the agent's own workspace (5),
+      which opens without switching the person's screen to it or taking focus. send: type text exactly, press keys
       (tmux names: "Enter", "Escape", "Up", "Down", "Tab", "C-c"), and/or press Enter. read: the screen (plus
       scrollback lines). wait: until text appears on the screen, or without text until the screen stops changing; use
       it after send to see the result. list, close: the sessions. For one-off commands, computer_run is simpler.
@@ -26,7 +27,7 @@ module Tools
         command: { type: "string", description: "For open: what to run, e.g. \"claude\" (default: a shell)" },
         cwd: { type: "string", description: "For open: the directory to start in (default: home)" },
         show: { type: "boolean", description: "For open: also open a terminal window attached to the session (default true)" },
-        workspace: { type: "integer", description: "For open with show: the workspace for its window" },
+        workspace: { type: "integer", description: "For open with show: the workspace for its window (default 5, the agent's)" },
         text: { type: "string", description: "For send: text to type exactly. For wait: text to wait for" },
         keys: { type: "array", items: { type: "string" }, description: "For send: keys to press after the text" },
         enter: { type: "boolean", description: "For send: press Enter at the end" },

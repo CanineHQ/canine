@@ -62,6 +62,12 @@ module AgentComputers
       post("/windows/#{operation}", params)
     end
 
+    # Close every window on the agent's workspace (agent_workspace.py), once a run is over:
+    #   { "closed" => 3, "still_open" => [] }
+    def clear_agent_workspace
+      post("/agent_workspace/clear", {})
+    end
+
     def run(command, timeout: 30)
       post("/run", { command:, timeout: })
     end

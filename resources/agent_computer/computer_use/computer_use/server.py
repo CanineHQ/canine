@@ -23,6 +23,7 @@
     POST /windows/close               {"id": "0x5a906b225270"}
     POST /windows/move_to_workspace   {"id": "0x5a906b225270", "workspace": 4}  (the window moves; the view stays)
     POST /windows/switch_workspace    {"workspace": 3}
+    POST /agent_workspace/clear       {}  -> closes every window on the agent's workspace, ends the agent's terminal sessions (when a run ends)
     POST /windows/maximize            {"id": "0x5a906b225270"}  (fills the screen; open_app/open_url take "maximize": true)
     POST /accessibility/tree          {"app": "Chromium" or "window_id": "0x...", "max_depth": 8}  -> the UI as a tree
     POST /accessibility/find          {"role": "link", "name": "learn more", "window_id": "0x..."}  -> matching elements
@@ -42,7 +43,7 @@ import subprocess
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import accessibility, actions, browse, desktop, human, shell, terminal, windows
+from . import accessibility, actions, agent_workspace, browse, desktop, human, shell, terminal, windows
 
 log = logging.getLogger("computer_use")
 
@@ -84,6 +85,7 @@ ROUTES = {
     ("POST", "/windows/close"): lambda body: windows.close(body["id"]),
     ("POST", "/windows/move_to_workspace"): lambda body: windows.move_to_workspace(body["id"], body["workspace"]),
     ("POST", "/windows/switch_workspace"): lambda body: windows.switch_workspace(body["workspace"]),
+    ("POST", "/agent_workspace/clear"): lambda body: {**agent_workspace.clear(), **terminal.close_all()},
     ("POST", "/accessibility/tree"): lambda body: {"apps": accessibility.tree(body.get("app"), int(body.get("max_depth", 8)),
                                                                             int(body.get("max_elements", 500)),
                                                                             body.get("window_id"))},

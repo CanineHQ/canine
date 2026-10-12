@@ -13,7 +13,7 @@ import re
 import subprocess
 import time
 
-from . import windows
+from . import agent_workspace, windows
 
 SOCKET = "canine"   # tmux -L canine: the agent's own tmux server
 MAX_WAIT = 90       # seconds; Canine waits 120 for a reply
@@ -31,7 +31,8 @@ def list_sessions():
 
 def open_session(command=None, session=None, cwd=None, show=True, workspace=None):
     """Start `command` (default: a shell) in a new session, in the home directory or `cwd`. With `show`, also open a
-    terminal window attached to it, so the person can watch."""
+    terminal window attached to it, so the person can watch: on the agent's workspace unless `workspace` says
+    otherwise, without switching to it (agent_workspace)."""
     session = session or _free_name()
     if not re.fullmatch(r"[\w.-]+", session):
         raise ValueError("session names may only use letters, digits, '.', '_' and '-'")
@@ -41,7 +42,8 @@ def open_session(command=None, session=None, cwd=None, show=True, workspace=None
     _tmux("set-option", "-t", session, "remain-on-exit", "on")
     result = {"session": session}
     if show:
-        result["window"] = windows.open_app(f"foot -e tmux -L {SOCKET} attach -t {session}", workspace).get("window")
+        result["window"] = windows.open_app(f"foot -e tmux -L {SOCKET} attach -t {session}",
+                                            workspace or agent_workspace.WORKSPACE).get("window")
     return result
 
 
@@ -89,6 +91,14 @@ def close(session):
     _require(session)
     _tmux("kill-session", "-t", session)  # an attached terminal window closes with it
     return {}
+
+
+def close_all():
+    """End every one of the agent's sessions (when a run is over: see agent_workspace.clear)."""
+    sessions = [s["session"] for s in list_sessions()["sessions"]]
+    for session in sessions:
+        _tmux("kill-session", "-t", session, check=False)
+    return {"terminal_sessions_ended": len(sessions)}
 
 
 def _require(session):

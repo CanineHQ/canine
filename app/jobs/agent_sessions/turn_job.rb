@@ -32,6 +32,8 @@ module AgentSessions
       return session.finish!(:failed, error: "Add an OpenRouter key in Agent settings first.") unless key
       # Still in use: check again later (backing off), without spending a model call
       return wait_for_human(session, human_wait) if session.waiting_for_human? && person_has_screen?(session)
+      # A run starts from an empty workspace, whatever an earlier one left (or didn't get to clear: it crashed)
+      session.agent_computer.clear_agent_workspace if session.turns.zero?
 
       case AgentLoop::Turn.new(session, key).run
       when :continue then self.class.perform_later(session)
