@@ -1,0 +1,77 @@
+<%= project_layout(@project) do %>
+  <div class="space-y-6">
+    <div>
+      <%= link_to project_error_issues_path(@project, status: @error_issue.status), class: "text-sm link link-hover text-base-content/60" do %>
+        &larr; <%= @error_issue.status.humanize %> issues
+      <% end %>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <%= render "projects/error_issues/level", level: @error_issue.level %>
+          <span class="badge badge-sm"><%= @error_issue.status.humanize %></span>
+          <% if @error_issue.platform.present? %>
+            <span class="badge badge-sm badge-ghost"><%= @error_issue.platform %></span>
+          <% end %>
+        </div>
+        <h4 class="text-lg font-medium mt-2 break-words"><%= @error_issue.title %></h4>
+        <% if @error_issue.culprit.present? %>
+          <div class="text-sm text-base-content/60 font-mono break-all"><%= @error_issue.culprit %></div>
+        <% end %>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <% if @error_issue.unresolved? %>
+          <%= button_to "Resolve", project_error_issue_path(@project, @error_issue, status: "resolved"), method: :patch, class: "btn btn-sm btn-primary" %>
+          <%= button_to "Ignore", project_error_issue_path(@project, @error_issue, status: "ignored"), method: :patch, class: "btn btn-sm btn-ghost" %>
+        <% else %>
+          <%= button_to "Unresolve", project_error_issue_path(@project, @error_issue, status: "unresolved"), method: :patch, class: "btn btn-sm btn-outline" %>
+        <% end %>
+        <%= button_to "Delete", project_error_issue_path(@project, @error_issue), method: :delete, class: "btn btn-sm btn-ghost text-error",
+          form: { data: { turbo_confirm: "Delete this issue and all of its events?" } } %>
+      </div>
+    </div>
+
+    <div class="stats stats-vertical md:stats-horizontal border border-base-300 w-full">
+      <div class="stat">
+        <div class="stat-title">Events</div>
+        <div class="stat-value text-2xl"><%= number_with_delimiter(@error_issue.times_seen) %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">First seen</div>
+        <div class="stat-value text-base"><%= time_ago_in_words(@error_issue.first_seen_at) %> ago</div>
+        <div class="stat-desc"><%= @error_issue.first_seen_at.strftime("%b %d, %Y %H:%M:%S %Z") %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Last seen</div>
+        <div class="stat-value text-base"><%= time_ago_in_words(@error_issue.last_seen_at) %> ago</div>
+        <div class="stat-desc"><%= @error_issue.last_seen_at.strftime("%b %d, %Y %H:%M:%S %Z") %></div>
+      </div>
+    </div>
+
+    <% if @event.nil? %>
+      <p class="text-base-content/60">No events are stored for this issue (older events are pruned after <%= ErrorEvent::RETENTION.inspect %>).</p>
+    <% else %>
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-3 space-y-6 min-w-0">
+          <%= render "projects/error_issues/event", event: @event %>
+        </div>
+        <div>
+          <h5 class="font-medium mb-2">Recent events</h5>
+          <ul class="menu menu-sm bg-base-200 rounded-box p-1 max-h-[32rem] overflow-y-auto flex-nowrap">
+            <% @recent_events.each do |event| %>
+              <li>
+                <%= link_to project_error_issue_path(@project, @error_issue, event_id: event.id), class: ("active" if event == @event) do %>
+                  <div class="flex flex-col items-start">
+                    <span><%= event.occurred_at.strftime("%b %d, %H:%M:%S") %></span>
+                    <span class="text-xs opacity-60"><%= [ event.environment, event.release ].compact.join(" · ").presence || event.event_id.first(8) %></span>
+                  </div>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

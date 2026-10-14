@@ -1,0 +1,83 @@
+<%= project_layout(@project) do %>
+  <% dsn = @project.error_tracking_dsn(request.base_url) %>
+  <div class="space-y-6">
+    <div class="rounded-box border border-base-300 p-4 space-y-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <h4 class="font-medium">DSN</h4>
+          <p class="text-sm text-base-content/60">Point any Sentry SDK at this DSN to report errors to this project.</p>
+        </div>
+        <%= button_to "Regenerate DSN", regenerate_key_project_error_issues_path(@project),
+          class: "btn btn-sm btn-ghost",
+          form: { data: { turbo_confirm: "The current DSN will stop working immediately. Continue?" } } %>
+      </div>
+      <div class="cursor-pointer flex items-center gap-2 font-mono text-sm bg-base-200 rounded p-2 break-all" data-controller="clipboard" data-clipboard-text="<%= dsn %>">
+        <%= dsn %>
+        <iconify-icon icon="lucide:clipboard" height="16"></iconify-icon>
+      </div>
+      <details class="text-sm">
+        <summary class="cursor-pointer text-base-content/70">Setup instructions</summary>
+        <div class="mt-3 space-y-3">
+          <p>Set <code>SENTRY_DSN</code> as an <%= link_to "environment variable", project_environment_variables_path(@project), class: "link" %>, then install the Sentry SDK for your language — most SDKs read <code>SENTRY_DSN</code> automatically.</p>
+          <% {
+            "Ruby on Rails" => "# Gemfile\ngem \"sentry-ruby\"\ngem \"sentry-rails\"\n\n# config/initializers/sentry.rb\nSentry.init do |config|\n  config.dsn = ENV[\"SENTRY_DSN\"]\nend",
+            "Node.js" => "// npm install @sentry/node\nconst Sentry = require(\"@sentry/node\");\nSentry.init({ dsn: process.env.SENTRY_DSN });",
+            "Python" => "# pip install sentry-sdk\nimport sentry_sdk\nsentry_sdk.init(dsn=os.environ[\"SENTRY_DSN\"])",
+            "Browser" => "// npm install @sentry/browser\nimport * as Sentry from \"@sentry/browser\";\nSentry.init({ dsn: \"#{dsn}\" });"
+          }.each do |language, snippet| %>
+            <div>
+              <div class="font-medium mb-1"><%= language %></div>
+              <pre class="bg-base-200 rounded p-3 overflow-x-auto text-xs"><code><%= snippet %></code></pre>
+            </div>
+          <% end %>
+          <p class="text-base-content/60">Errors and messages are grouped into issues. Performance traces, sessions and attachments are accepted but ignored. Events are kept for <%= ErrorEvent::RETENTION.inspect %>.</p>
+        </div>
+      </details>
+    </div>
+
+    <div role="tablist" class="tabs tabs-boxed w-fit">
+      <% ErrorIssue.statuses.each_key do |status| %>
+        <%= link_to project_error_issues_path(@project, status:), role: "tab", class: "tab #{'tab-active' if status == @status}" do %>
+          <%= status.humanize %>
+          <span class="badge badge-sm ml-2"><%= @counts[status] || 0 %></span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @error_issues.empty? %>
+      <p class="text-base-content/60">No <%= @status %> issues.</p>
+    <% else %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Issue</th>
+            <th class="text-right">Events</th>
+            <th>Last seen</th>
+            <th>First seen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @error_issues.each do |issue| %>
+            <tr class="hover">
+              <td class="max-w-xl">
+                <%= link_to project_error_issue_path(@project, issue), class: "block" do %>
+                  <div class="flex items-center gap-2">
+                    <%= render "projects/error_issues/level", level: issue.level %>
+                    <span class="font-medium truncate"><%= issue.title %></span>
+                  </div>
+                  <% if issue.culprit.present? %>
+                    <div class="text-xs text-base-content/60 font-mono truncate mt-1"><%= issue.culprit %></div>
+                  <% end %>
+                <% end %>
+              </td>
+              <td class="text-right"><%= number_with_delimiter(issue.times_seen) %></td>
+              <td class="whitespace-nowrap"><%= time_ago_in_words(issue.last_seen_at) %> ago</td>
+              <td class="whitespace-nowrap"><%= time_ago_in_words(issue.first_seen_at) %> ago</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% end %>
+  </div>
+<% end %>

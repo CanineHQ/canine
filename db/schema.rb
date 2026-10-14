@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,147 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
     t.index ["cluster_id", "name"], name: "index_add_ons_on_cluster_id_and_name", unique: true
     t.index ["cluster_id"], name: "index_add_ons_on_cluster_id"
     t.index ["name"], name: "index_add_ons_on_name"
+  end
+
+  create_table "agent_computer_posts", force: :cascade do |t|
+    t.bigint "agent_computer_id", null: false
+    t.bigint "session_id", null: false
+    t.bigint "activity_id"
+    t.bigint "action_id"
+    t.string "kind", null: false
+    t.text "text", null: false
+    t.datetime "posted_at", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action_id"], name: "index_agent_computer_posts_on_action_id"
+    t.index ["activity_id"], name: "index_agent_computer_posts_on_activity_id"
+    t.index ["agent_computer_id", "posted_at"], name: "index_agent_computer_posts_on_agent_computer_id_and_posted_at"
+    t.index ["agent_computer_id"], name: "index_agent_computer_posts_on_agent_computer_id"
+    t.index ["session_id"], name: "index_agent_computer_posts_on_session_id"
+  end
+
+  create_table "agent_computer_session_actions", force: :cascade do |t|
+    t.bigint "session_id", null: false
+    t.bigint "activity_id", null: false
+    t.string "tool", null: false
+    t.string "tool_call_id"
+    t.jsonb "arguments", default: {}, null: false
+    t.jsonb "result"
+    t.integer "status", default: 0, null: false
+    t.datetime "started_at"
+    t.integer "duration_ms"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_agent_computer_session_actions_on_activity_id"
+    t.index ["session_id"], name: "index_agent_computer_session_actions_on_session_id"
+  end
+
+  create_table "agent_computer_session_activities", force: :cascade do |t|
+    t.bigint "session_id", null: false
+    t.integer "position", null: false
+    t.string "intent"
+    t.string "title", null: false
+    t.text "description"
+    t.text "outcome"
+    t.integer "first_message_position"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.datetime "tidied_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id"], name: "index_agent_computer_session_activities_on_session_id"
+  end
+
+  create_table "agent_computer_session_messages", force: :cascade do |t|
+    t.bigint "session_id", null: false
+    t.integer "position", null: false
+    t.string "role", null: false
+    t.jsonb "content"
+    t.jsonb "tool_calls"
+    t.string "tool_call_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["session_id", "position"], name: "idx_on_session_id_position_8c06d1dd5f", unique: true
+    t.index ["session_id"], name: "index_agent_computer_session_messages_on_session_id"
+  end
+
+  create_table "agent_computer_sessions", force: :cascade do |t|
+    t.bigint "agent_computer_id", null: false
+    t.bigint "task_id"
+    t.integer "trigger", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.string "model", null: false
+    t.datetime "window_from"
+    t.datetime "window_to"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.text "summary"
+    t.text "error"
+    t.text "notes"
+    t.integer "notes_through"
+    t.integer "turns", default: 0, null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.bigint "cached_tokens", default: 0, null: false
+    t.decimal "cost_usd", precision: 10, scale: 6, default: "0.0", null: false
+    t.string "provider"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "workspace"
+    t.index ["agent_computer_id"], name: "index_agent_computer_sessions_on_agent_computer_id"
+    t.index ["task_id", "status"], name: "index_agent_computer_sessions_on_task_id_and_status"
+    t.index ["task_id"], name: "index_agent_computer_sessions_on_task_id"
+  end
+
+  create_table "agent_computer_tasks", force: :cascade do |t|
+    t.bigint "agent_computer_id", null: false
+    t.string "name", null: false
+    t.text "instruction", null: false
+    t.string "schedule"
+    t.string "model", null: false
+    t.boolean "enabled", default: false, null: false
+    t.datetime "next_run_at"
+    t.integer "max_minutes", default: 45, null: false
+    t.decimal "max_cost_usd", precision: 10, scale: 2, default: "2.0", null: false
+    t.integer "max_turns", default: 120, null: false
+    t.string "time_zone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "workspace"
+    t.index ["agent_computer_id"], name: "index_agent_computer_tasks_on_agent_computer_id"
+    t.index ["enabled", "next_run_at"], name: "index_agent_computer_tasks_on_enabled_and_next_run_at"
+  end
+
+  create_table "agent_computers", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.bigint "account_user_id", null: false
+    t.bigint "cluster_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "namespace", null: false
+    t.string "desktop", default: "selkies", null: false
+    t.string "password"
+    t.text "ssh_private_key"
+    t.string "planning_model"
+    t.string "browse_model"
+    t.string "coding_model"
+    t.string "coding_agent"
+    t.string "computer_use_token"
+    t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
+    t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
+  end
+
+  create_table "agent_provider_keys", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "provider", default: "openrouter", null: false
+    t.string "name"
+    t.text "api_key", null: false
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_agent_provider_keys_on_account_id"
   end
 
   create_table "announcements", force: :cascade do |t|
@@ -278,6 +419,38 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
     t.integer "storage_type", default: 0, null: false
     t.index ["project_id", "name"], name: "index_environment_variables_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_environment_variables_on_project_id"
+  end
+
+  create_table "error_events", force: :cascade do |t|
+    t.bigint "error_issue_id", null: false
+    t.string "event_id", null: false
+    t.string "environment"
+    t.string "release"
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["error_issue_id", "occurred_at"], name: "index_error_events_on_error_issue_id_and_occurred_at"
+    t.index ["error_issue_id"], name: "index_error_events_on_error_issue_id"
+    t.index ["occurred_at"], name: "index_error_events_on_occurred_at"
+  end
+
+  create_table "error_issues", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "fingerprint", null: false
+    t.string "title", null: false
+    t.string "culprit"
+    t.string "level", default: "error", null: false
+    t.string "platform"
+    t.integer "status", default: 0, null: false
+    t.integer "times_seen", default: 0, null: false
+    t.datetime "first_seen_at", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "fingerprint"], name: "index_error_issues_on_project_id_and_fingerprint", unique: true
+    t.index ["project_id", "status", "last_seen_at"], name: "index_error_issues_on_project_id_and_status_and_last_seen_at"
+    t.index ["project_id"], name: "index_error_issues_on_project_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -636,8 +809,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
     t.bigint "current_deployment_id"
     t.string "repository_base_url"
     t.integer "provider_type", default: 0, null: false
+    t.string "error_tracking_key"
     t.index ["cluster_id"], name: "index_projects_on_cluster_id"
     t.index ["current_deployment_id"], name: "index_projects_on_current_deployment_id"
+    t.index ["error_tracking_key"], name: "index_projects_on_error_tracking_key", unique: true
     t.index ["name"], name: "index_projects_on_name"
     t.index ["slug"], name: "index_projects_on_slug", unique: true
   end
@@ -839,6 +1014,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "agent_computer_posts", "agent_computer_session_actions", column: "action_id", on_delete: :nullify
+  add_foreign_key "agent_computer_posts", "agent_computer_session_activities", column: "activity_id", on_delete: :nullify
+  add_foreign_key "agent_computer_posts", "agent_computer_sessions", column: "session_id"
+  add_foreign_key "agent_computer_posts", "agent_computers"
+  add_foreign_key "agent_computer_session_actions", "agent_computer_session_activities", column: "activity_id"
+  add_foreign_key "agent_computer_session_actions", "agent_computer_sessions", column: "session_id"
+  add_foreign_key "agent_computer_session_activities", "agent_computer_sessions", column: "session_id"
+  add_foreign_key "agent_computer_session_messages", "agent_computer_sessions", column: "session_id"
+  add_foreign_key "agent_computer_sessions", "agent_computer_tasks", column: "task_id"
+  add_foreign_key "agent_computer_sessions", "agent_computers"
+  add_foreign_key "agent_computer_tasks", "agent_computers"
+  add_foreign_key "agent_computers", "account_users"
+  add_foreign_key "agent_computers", "clusters"
+  add_foreign_key "agent_provider_keys", "accounts"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "build_clouds", "clusters"
   add_foreign_key "build_configurations", "build_clouds"
@@ -859,6 +1048,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
   add_foreign_key "development_environments", "users", column: "created_by_id"
   add_foreign_key "email_preferences", "users"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "error_events", "error_issues", on_delete: :cascade
+  add_foreign_key "error_issues", "projects", on_delete: :cascade
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
   add_foreign_key "notifiers", "projects"

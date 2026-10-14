@@ -9,6 +9,7 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
+#  error_tracking_key             :string
 #  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
 #  namespace                      :string           not null
@@ -32,6 +33,7 @@
 #
 #  index_projects_on_cluster_id             (cluster_id)
 #  index_projects_on_current_deployment_id  (current_deployment_id)
+#  index_projects_on_error_tracking_key     (error_tracking_key) UNIQUE
 #  index_projects_on_name                   (name)
 #  index_projects_on_slug                   (slug) UNIQUE
 #
@@ -66,6 +68,7 @@ class Project < ApplicationRecord
   has_many :events, dependent: :destroy
   has_many :volumes, dependent: :destroy
   has_many :notifiers, dependent: :destroy
+  has_many :error_issues, dependent: :delete_all
 
   has_one :project_credential_provider, dependent: :destroy
   has_one :build_configuration, dependent: :destroy
@@ -270,6 +273,19 @@ class Project < ApplicationRecord
 
   def show_development_environment_options?
     !development_environment? && git?
+  end
+
+  # Error tracking: a Sentry-compatible DSN, so any Sentry SDK can report errors to this project.
+  def error_tracking_dsn(base_url)
+    regenerate_error_tracking_key! if error_tracking_key.blank?
+    uri = URI.parse(base_url)
+    uri.userinfo = error_tracking_key
+    uri.path = "/#{id}"
+    uri.to_s
+  end
+
+  def regenerate_error_tracking_key!
+    update_column(:error_tracking_key, SecureRandom.hex(16))
   end
 
   def build_provider

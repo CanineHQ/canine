@@ -1,0 +1,106 @@
+<% payload = event.payload %>
+<div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+  <div><span class="text-base-content/60">Event</span> <span class="font-mono"><%= event.event_id %></span></div>
+  <div><span class="text-base-content/60">Occurred</span> <%= event.occurred_at.strftime("%b %d, %Y %H:%M:%S %Z") %></div>
+  <% { "Environment" => event.environment, "Release" => event.release, "Server" => payload["server_name"], "Transaction" => payload["transaction"] }.compact_blank.each do |label, value| %>
+    <div><span class="text-base-content/60"><%= label %></span> <span class="font-mono"><%= value %></span></div>
+  <% end %>
+</div>
+
+<% if event.message.present? && event.exceptions.empty? %>
+  <section>
+    <h5 class="font-medium mb-2">Message</h5>
+    <pre class="bg-base-200 rounded p-3 overflow-x-auto text-sm whitespace-pre-wrap"><%= event.message %></pre>
+  </section>
+<% end %>
+
+<% event.exceptions.each_with_index do |exception, index| %>
+  <section>
+    <h5 class="font-medium break-words">
+      <% if index > 0 %><span class="text-base-content/60 font-normal">Caused by</span><% end %>
+      <%= exception["type"] %>
+    </h5>
+    <% if exception["value"].present? %>
+      <pre class="text-sm whitespace-pre-wrap break-words mb-2"><%= exception["value"] %></pre>
+    <% end %>
+    <% if exception.dig("mechanism", "handled") == false %>
+      <span class="badge badge-sm badge-error badge-outline mb-2">unhandled</span>
+    <% end %>
+    <% frames = Array.wrap(exception.dig("stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }.reverse %>
+    <% if frames.any? %>
+      <div class="border border-base-300 rounded-box divide-y divide-base-300 overflow-hidden">
+        <% first_in_app = frames.index { |frame| frame["in_app"] } || 0 %>
+        <% frames.each_with_index do |frame, frame_index| %>
+          <% context = Array.wrap(frame["pre_context"]) + [ frame["context_line"] ].compact + Array.wrap(frame["post_context"]) %>
+          <details class="<%= frame['in_app'] ? '' : 'opacity-60' %>" <%= "open" if frame_index == first_in_app && index == 0 && context.any? %>>
+            <summary class="px-3 py-2 text-xs font-mono cursor-pointer break-all <%= 'bg-base-200' if frame['in_app'] %>">
+              <%= frame["filename"] || frame["abs_path"] || frame["module"] || "?" %><% if frame["lineno"] %>:<%= frame["lineno"] %><% end %>
+              <% if frame["function"].present? %><span class="text-base-content/60"> in </span><%= frame["function"] %><% end %>
+            </summary>
+            <% if context.any? %>
+              <% start_line = frame["lineno"].to_i - Array.wrap(frame["pre_context"]).size %>
+              <pre class="text-xs overflow-x-auto bg-base-300/40 py-2"><% context.each_with_index do |line, line_index| %><% current = line_index == Array.wrap(frame["pre_context"]).size %><div class="px-3 <%= 'bg-error/20' if current %>"><span class="inline-block w-12 text-right pr-3 text-base-content/40 select-none"><%= start_line + line_index if frame["lineno"] %></span><%= line %></div><% end %></pre>
+            <% end %>
+            <% if frame["vars"].is_a?(Hash) && frame["vars"].any? %>
+              <table class="table table-xs font-mono">
+                <% frame["vars"].each do |name, value| %>
+                  <tr><td class="w-1/4 align-top"><%= name %></td><td class="break-all"><%= value.is_a?(String) ? value : value.to_json %></td></tr>
+                <% end %>
+              </table>
+            <% end %>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+<% end %>
+
+<% if event.tags.any? %>
+  <section>
+    <h5 class="font-medium mb-2">Tags</h5>
+    <div class="flex flex-wrap gap-2">
+      <% event.tags.each do |key, value| %>
+        <span class="badge badge-outline gap-1 font-mono text-xs h-auto py-1"><span class="opacity-60"><%= key %></span> <%= value %></span>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<% { "Request" => payload["request"], "User" => payload["user"], "Contexts" => payload["contexts"], "Extra" => payload["extra"] }.each do |label, data| %>
+  <% next unless data.is_a?(Hash) && data.any? %>
+  <section>
+    <h5 class="font-medium mb-2"><%= label %></h5>
+    <table class="table table-xs font-mono">
+      <% data.each do |key, value| %>
+        <tr>
+          <td class="w-1/4 align-top"><%= key %></td>
+          <td class="break-all whitespace-pre-wrap"><%= value.is_a?(String) ? value : JSON.pretty_generate(value) %></td>
+        </tr>
+      <% end %>
+    </table>
+  </section>
+<% end %>
+
+<% if event.breadcrumbs.any? %>
+  <section>
+    <h5 class="font-medium mb-2">Breadcrumbs</h5>
+    <table class="table table-xs">
+      <thead><tr><th>Time</th><th>Category</th><th>Level</th><th>Message</th></tr></thead>
+      <tbody>
+        <% event.breadcrumbs.last(100).reverse_each do |crumb| %>
+          <tr>
+            <td class="whitespace-nowrap font-mono"><%= crumb["timestamp"].is_a?(Numeric) ? Time.zone.at(crumb["timestamp"]).strftime("%H:%M:%S.%L") : crumb["timestamp"].to_s.first(23) %></td>
+            <td><%= crumb["category"] || crumb["type"] %></td>
+            <td><%= crumb["level"] %></td>
+            <td class="font-mono break-all"><%= crumb["message"].presence || (crumb["data"].to_json if crumb["data"].present?) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </section>
+<% end %>
+
+<details>
+  <summary class="cursor-pointer font-medium">Raw event</summary>
+  <pre class="bg-base-200 rounded p-3 overflow-x-auto text-xs mt-2"><%= JSON.pretty_generate(payload) %></pre>
+</details>
