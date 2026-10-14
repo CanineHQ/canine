@@ -1,16 +1,16 @@
-# Stores one Sentry event: groups it into an issue by fingerprint (creating the issue on first sight, reopening a
+# Stores one Sentry event for a project's error tracking configuration: groups it into an issue by fingerprint (creating the issue on first sight, reopening a
 # resolved issue when it recurs) and saves the raw event for the error browser.
 module ErrorTracking
   class IngestEvent
     MAX_TITLE_LENGTH = 255
     DEFAULT_FINGERPRINT = "{{ default }}".freeze
 
-    def self.call(project, event)
-      new(project, event).call
+    def self.call(configuration, event)
+      new(configuration, event).call
     end
 
-    def initialize(project, event)
-      @project = project
+    def initialize(configuration, event)
+      @configuration = configuration
       @event = event
     end
 
@@ -19,7 +19,7 @@ module ErrorTracking
       occurred_at = parse_timestamp(@event["timestamp"]) || now
       occurred_at = now if occurred_at > now
 
-      issue = @project.error_issues.create_or_find_by!(fingerprint:) do |new_issue|
+      issue = @configuration.issues.create_or_find_by!(fingerprint:) do |new_issue|
         new_issue.title = title
         new_issue.culprit = culprit
         new_issue.level = level
@@ -28,13 +28,13 @@ module ErrorTracking
         new_issue.last_seen_at = occurred_at
       end
 
-      ErrorIssue.where(id: issue.id).update_all([
+      Issue.where(id: issue.id).update_all([
         "times_seen = times_seen + 1, last_seen_at = GREATEST(last_seen_at, :at), first_seen_at = LEAST(first_seen_at, :at), " \
         "level = :level, status = CASE WHEN status = :resolved THEN :unresolved ELSE status END, updated_at = :now",
-        { at: occurred_at, level:, resolved: ErrorIssue.statuses[:resolved], unresolved: ErrorIssue.statuses[:unresolved], now: }
+        { at: occurred_at, level:, resolved: Issue.statuses[:resolved], unresolved: Issue.statuses[:unresolved], now: }
       ])
 
-      issue.error_events.create!(
+      issue.events.create!(
         event_id:,
         environment: @event["environment"].to_s.first(255).presence,
         release: @event["release"].to_s.first(255).presence,
@@ -73,7 +73,7 @@ module ErrorTracking
     end
 
     def level
-      ErrorIssue::LEVELS.include?(@event["level"]) ? @event["level"] : "error"
+      Issue::LEVELS.include?(@event["level"]) ? @event["level"] : "error"
     end
 
     private

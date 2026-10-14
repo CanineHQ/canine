@@ -9,7 +9,6 @@
 #  container_registry_url         :string
 #  docker_build_context_directory :string           default("."), not null
 #  dockerfile_path                :string           default("./Dockerfile"), not null
-#  error_tracking_key             :string
 #  managed_namespace              :boolean          default(TRUE)
 #  name                           :string           not null
 #  namespace                      :string           not null
@@ -33,7 +32,6 @@
 #
 #  index_projects_on_cluster_id             (cluster_id)
 #  index_projects_on_current_deployment_id  (current_deployment_id)
-#  index_projects_on_error_tracking_key     (error_tracking_key) UNIQUE
 #  index_projects_on_name                   (name)
 #  index_projects_on_slug                   (slug) UNIQUE
 #

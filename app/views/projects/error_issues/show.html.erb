@@ -50,7 +50,7 @@
     </div>
 
     <% if @event.nil? %>
-      <p class="text-base-content/60">No events are stored for this issue (older events are pruned after <%= ErrorEvent::RETENTION.inspect %>).</p>
+      <p class="text-base-content/60">No events are stored for this issue (older events are pruned after <%= ErrorTracking::Event::RETENTION.inspect %>).</p>
     <% else %>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3 space-y-6 min-w-0">

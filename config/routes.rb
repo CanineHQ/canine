@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  # Sentry-compatible error tracking ingest (DSN: https://<key>@<host>/<project_id>)
-  scope "/api/:project_id", constraints: { project_id: /\d+/ }, module: :error_tracking, controller: :ingest do
+  # Sentry-compatible error tracking ingest (DSN: https://<public_key>@<host>/<error_tracking_configuration_id>)
+  scope "/api/:configuration_id", constraints: { configuration_id: /\d+/ }, module: :error_tracking, controller: :ingest do
     post :envelope, as: :error_tracking_envelope
     post :store, as: :error_tracking_store
     match "envelope", action: :preflight, via: :options
@@ -208,11 +208,10 @@ Rails.application.routes.draw do
       end
     end
     resources :metrics, only: [ :index ], module: :projects
-    resources :error_issues, only: %i[index show update destroy], module: :projects do
-      collection do
-        post :regenerate_key
-      end
+    resource :error_tracking_configuration, only: %i[create destroy], module: :projects do
+      post :regenerate_key
     end
+    resources :error_issues, only: %i[index show update destroy], module: :projects
     resources :project_add_ons, only: %i[create destroy], module: :projects
     resources :environment_variables, only: %i[index show create destroy], module: :projects do
       collection do

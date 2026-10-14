@@ -12,7 +12,7 @@ class MCPController < ActionController::API
   private
 
   def mcp_server
-    ctx = { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
+    ctx = { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id, base_url: request.base_url }
 
     server = MCP::Server.new(
       name: "canine_mcp_server",
@@ -51,6 +51,13 @@ class MCPController < ActionController::API
       # Environment Variables
       Tools::GetEnvironmentVariableValue,
       Tools::UpdateEnvironmentVariable,
+
+      # Error Tracking
+      Tools::EnableErrorTracking,
+      Tools::GetErrorTrackingDsn,
+      Tools::ListErrorIssues,
+      Tools::GetErrorIssue,
+      Tools::UpdateErrorIssue,
 
       # Add-ons
       Tools::SearchAddOns,

@@ -3,6 +3,6 @@ class Scheduled::FlushErrorEventsJob < ApplicationJob
 
   # Issues keep their counts and first/last seen times; only the stored event payloads expire.
   def perform
-    ErrorEvent.where("occurred_at < ?", ErrorEvent::RETENTION.ago).in_batches(of: 1000).delete_all
+    ErrorTracking::Event.where("occurred_at < ?", ErrorTracking::Event::RETENTION.ago).in_batches(of: 1000).delete_all
   end
 end

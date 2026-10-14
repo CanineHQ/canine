@@ -1,11 +1,11 @@
 # Sentry-compatible ingest endpoints, so official Sentry SDKs can report to a project using its DSN
-# (https://<error_tracking_key>@<host>/<project_id>).
+# (https://<public_key>@<host>/<error_tracking_configuration_id>).
 module ErrorTracking
   class IngestController < ActionController::API
     wrap_parameters false
 
     before_action :set_cors_headers
-    before_action :set_project, except: :preflight
+    before_action :set_configuration, except: :preflight
 
     rescue_from RequestBody::TooLarge, with: -> { render_error("Payload too large", :content_too_large) }
     rescue_from RequestBody::Invalid, with: ->(e) { render_error(e.message, :bad_request) }
@@ -14,7 +14,7 @@ module ErrorTracking
       envelope = Envelope.parse(body)
       authenticate!(envelope.headers["dsn"]) or return
 
-      event_ids = envelope.events.map { |event| IngestEvent.call(@project, event).event_id }
+      event_ids = envelope.events.map { |event| IngestEvent.call(@configuration, event).event_id }
       render json: { id: event_ids.first || envelope.headers["event_id"] }
     end
 
@@ -24,7 +24,7 @@ module ErrorTracking
       event = JSON.parse(body)
       return render_error("Invalid event", :bad_request) unless event.is_a?(Hash)
 
-      render json: { id: IngestEvent.call(@project, event).event_id }
+      render json: { id: IngestEvent.call(@configuration, event).event_id }
     rescue JSON::ParserError
       render_error("Invalid JSON", :bad_request)
     end
@@ -35,8 +35,8 @@ module ErrorTracking
 
     private
 
-    def set_project
-      @project = Project.find_by(id: request.path_parameters[:project_id])
+    def set_configuration
+      @configuration = ErrorTrackingConfiguration.find_by(id: request.path_parameters[:configuration_id])
     end
 
     def body
@@ -50,8 +50,7 @@ module ErrorTracking
       key = auth_header[/sentry_key=([^,\s]+)/, 1] || request.query_parameters["sentry_key"]
       key ||= (URI.parse(envelope_dsn).user if envelope_dsn.is_a?(String) rescue nil)
 
-      return true if @project&.error_tracking_key.present? && key.present? &&
-        ActiveSupport::SecurityUtils.secure_compare(key, @project.error_tracking_key)
+      return true if @configuration && key.present? && ActiveSupport::SecurityUtils.secure_compare(key, @configuration.public_key)
 
       render_error("Invalid DSN", :unauthorized)
       false

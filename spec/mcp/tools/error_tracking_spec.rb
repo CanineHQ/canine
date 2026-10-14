@@ -1,0 +1,66 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe 'Error tracking MCP tools' do
+  let(:project) { create(:project) }
+  let(:user) { create(:user) }
+  let(:context) { { user_id: user.id, base_url: 'https://canine.example' } }
+  let(:configuration) { project.create_error_tracking_configuration! }
+  let!(:event) do
+    ErrorTracking::IngestEvent.call(configuration, {
+      'event_id' => SecureRandom.hex(16), 'environment' => 'production', 'tags' => { 'tier' => 'gold' },
+      'exception' => { 'values' => [ {
+        'type' => 'NoMethodError', 'value' => "undefined method 'name' for nil",
+        'stacktrace' => { 'frames' => [
+          { 'filename' => 'gems/rack.rb', 'function' => 'call', 'lineno' => 1, 'in_app' => false },
+          { 'filename' => 'app/models/user.rb', 'function' => 'display', 'lineno' => 8, 'in_app' => true,
+            'pre_context' => [ 'def display' ], 'context_line' => '  owner.name', 'post_context' => [ 'end' ] }
+        ] }
+      } ] }
+    })
+  end
+  let(:issue) { event.issue }
+
+  def text(response) = response.content.first[:text]
+
+  before { create(:account_user, account: project.account, user: user) }
+
+  it 'gets the DSN, lists issues, shows the stack trace and resolves an issue' do
+    dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: project.id, server_context: context)))['dsn']
+    expect(dsn).to eq("https://#{configuration.public_key}@canine.example/#{configuration.id}")
+
+    issues = JSON.parse(text(Tools::ListErrorIssues.call(project_id: project.id, server_context: context)))
+    expect(issues.map { |i| i['title'] }).to eq([ "NoMethodError: undefined method 'name' for nil" ])
+
+    detail = JSON.parse(text(Tools::GetErrorIssue.call(project_id: project.id, issue_id: issue.id, server_context: context)))
+    frames = detail.dig('event', 'exceptions', 0, 'frames')
+    expect(frames.map { |f| f['filename'] }).to eq([ 'app/models/user.rb' ])
+    expect(frames.first['source']).to eq("7: def display\n8:   owner.name\n9: end")
+    expect(detail.dig('event', 'tags')).to eq('tier' => 'gold')
+    expect(detail.dig('event', 'exceptions', 0, 'omitted_frames')).to eq(1)
+
+    Tools::UpdateErrorIssue.call(project_id: project.id, issue_id: issue.id, status: 'resolved', server_context: context)
+    expect(issue.reload).to be_resolved
+    expect(Tools::ListErrorIssues.call(project_id: project.id, status: 'bogus', server_context: context).error?).to be true
+  end
+
+  it "does not expose another account's issues" do
+    outsider = create(:user)
+    create(:account_user, user: outsider)
+    response = Tools::GetErrorIssue.call(project_id: project.id, issue_id: issue.id, server_context: { user_id: outsider.id })
+
+    expect(response.error?).to be true
+  end
+
+  it 'enables error tracking for a project that does not have it' do
+    other = create(:project, cluster: project.cluster, account: project.account)
+    expect(Tools::GetErrorTrackingDsn.call(project_id: other.id, server_context: context).error?).to be true
+
+    2.times { Tools::EnableErrorTracking.call(project_id: other.id, server_context: context) }
+    dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: other.id, server_context: context)))['dsn']
+
+    expect(ErrorTrackingConfiguration.where(project: other).count).to eq(1)
+    expect(dsn).to eq(other.error_tracking_configuration.dsn('https://canine.example'))
+  end
+end
