@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Error tracking MCP tools' do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
-  let(:context) { { user_id: user.id, base_url: 'https://canine.example' } }
+  let(:context) { { user_id: user.id } }
   let(:configuration) { project.create_error_tracking_configuration! }
   let!(:event) do
     ErrorTracking::IngestEvent.call(configuration, {
@@ -28,7 +28,7 @@ RSpec.describe 'Error tracking MCP tools' do
 
   it 'gets the DSN, lists issues, shows the stack trace and resolves an issue' do
     dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: project.id, server_context: context)))['dsn']
-    expect(dsn).to eq("https://#{configuration.public_key}@canine.example/#{configuration.id}")
+    expect(dsn).to eq("https://#{configuration.public_key}@canine.example.com/#{configuration.id}")
 
     issues = JSON.parse(text(Tools::ListErrorIssues.call(project_id: project.id, server_context: context)))
     expect(issues.map { |i| i['title'] }).to eq([ "NoMethodError: undefined method 'name' for nil" ])
@@ -63,6 +63,7 @@ RSpec.describe 'Error tracking MCP tools' do
     dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: other.id, server_context: context)))['dsn']
 
     expect(ErrorTrackingConfiguration.where(project: other).count).to eq(1)
-    expect(dsn).to eq(other.error_tracking_configuration.dsn('https://canine.example'))
+    configuration = other.error_tracking_configuration
+    expect(dsn).to eq("https://#{configuration.public_key}@canine.example.com/#{configuration.id}") # from APP_HOST in .env.test
   end
 end

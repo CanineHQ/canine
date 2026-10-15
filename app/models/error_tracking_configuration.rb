@@ -28,9 +28,9 @@ class ErrorTrackingConfiguration < ApplicationRecord
 
   before_validation :generate_public_key, on: :create
 
-  # https://<public_key>@<host>/<id>; Sentry SDKs require the trailing project id to be numeric.
-  def dsn(base_url)
-    uri = URI.parse(base_url)
+  # https://<public_key>@<APP_HOST>/<id>; Sentry SDKs require the trailing project id to be numeric.
+  def dsn
+    uri = URI.parse(AppHost.url)
     uri.userinfo = public_key
     uri.path = "/#{id}"
     uri.to_s

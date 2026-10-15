@@ -1,6 +1,6 @@
 <% configuration = project.error_tracking_configuration %>
 <% if configuration %>
-  <% dsn = configuration.dsn(request.base_url) %>
+  <% dsn = configuration.dsn %>
   <div class="space-y-4">
     <p class="text-sm text-base-content/70">
       Point any Sentry SDK at this DSN. Reported errors show up on the

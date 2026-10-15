@@ -67,7 +67,7 @@ RSpec.describe "Error tracking", type: :request do
     post "/api/#{configuration.id}/envelope/", params: envelope(sentry_event), headers: { "X-Sentry-Auth" => "Sentry sentry_key=#{configuration.public_key}" }
     issue = configuration.issues.sole
 
-    dsn = "http://#{configuration.public_key}@www.example.com/#{configuration.id}"
+    dsn = "https://#{configuration.public_key}@canine.example.com/#{configuration.id}"
     get edit_project_path(project)
     expect(response.body).to include(dsn)
 

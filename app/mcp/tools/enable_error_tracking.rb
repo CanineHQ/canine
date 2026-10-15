@@ -37,7 +37,7 @@ module Tools
 
         MCP::Tool::Response.new([ {
           type: "text",
-          text: { dsn: configuration.dsn(server_context[:base_url]) }.to_json
+          text: { dsn: configuration.dsn }.to_json
         } ])
       end
     end

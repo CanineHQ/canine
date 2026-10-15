@@ -42,7 +42,7 @@ module Tools
 
         MCP::Tool::Response.new([ {
           type: "text",
-          text: { dsn: project.error_tracking_configuration.dsn(server_context[:base_url]) }.to_json
+          text: { dsn: project.error_tracking_configuration.dsn }.to_json
         } ])
       end
     end

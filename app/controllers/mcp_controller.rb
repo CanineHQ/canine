@@ -12,7 +12,7 @@ class MCPController < ActionController::API
   private
 
   def mcp_server
-    ctx = { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id, base_url: request.base_url }
+    ctx = { token: doorkeeper_token, user_id: doorkeeper_token.resource_owner_id }
 
     server = MCP::Server.new(
       name: "canine_mcp_server",
