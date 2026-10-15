@@ -19,33 +19,13 @@ module ErrorTracking
       occurred_at = parse_timestamp(@event["timestamp"]) || now
       occurred_at = now if occurred_at > now
 
-      # create_or_find_by! inserts in a savepoint, so a lost race also rolls back the number it took.
-      issue = @configuration.issues.create_or_find_by!(fingerprint:) do |new_issue|
-        new_issue.number = @configuration.next_issue_number!
-        new_issue.title = title
-        new_issue.culprit = culprit
-        new_issue.level = level
-        new_issue.platform = @event["platform"].to_s.first(64).presence
-        new_issue.first_seen_at = occurred_at
-        new_issue.last_seen_at = occurred_at
-      end
+      issue_id = record_occurrence(occurred_at, now) || create_issue(occurred_at, now)
 
-      # SET expressions read the row as it was before this update, so the release comparisons see the old seen times.
-      Issue.where(id: issue.id).update_all([
-        "times_seen = times_seen + 1, last_seen_at = GREATEST(last_seen_at, :at), first_seen_at = LEAST(first_seen_at, :at), " \
-        "last_release = CASE WHEN :at >= last_seen_at THEN COALESCE(:release, last_release) ELSE last_release END, " \
-        "first_release = CASE WHEN :at <= first_seen_at OR first_release IS NULL THEN COALESCE(:release, first_release) ELSE first_release END, " \
-        "level = :level, status = CASE WHEN status = :resolved THEN :unresolved ELSE status END, updated_at = :now",
-        { at: occurred_at, release:, level:, resolved: Issue.statuses[:resolved], unresolved: Issue.statuses[:unresolved], now: }
-      ])
-
-      issue.events.create!(
-        event_id:,
-        environment: @event["environment"].to_s.first(255).presence,
-        release:,
-        payload: @event,
-        occurred_at:
-      )
+      # insert skips the model's transaction and callbacks; the event is built from the same attributes.
+      attributes = { issue_id:, event_id:, environment: @event["environment"].to_s.first(255).presence, release:,
+                     payload: @event, occurred_at:, created_at: now, updated_at: now }
+      id = Event.insert!(attributes, returning: :id).rows.first.first
+      Event.instantiate(attributes.merge(id:).stringify_keys)
     end
 
     def event_id
@@ -57,6 +37,10 @@ module ErrorTracking
     end
 
     def fingerprint
+      @fingerprint ||= compute_fingerprint
+    end
+
+    def compute_fingerprint
       custom = Array.wrap(@event["fingerprint"]).map(&:to_s)
       parts = if custom.empty?
         default_fingerprint
@@ -86,6 +70,35 @@ module ErrorTracking
     end
 
     private
+
+    # Most events belong to an existing issue, so that path is one UPDATE that finds and counts it. SET expressions
+    # read the row as it was before this update, so the release comparisons see the old seen times.
+    def record_occurrence(occurred_at, now)
+      sql = Issue.sanitize_sql_array([
+        "UPDATE error_tracking_issues SET times_seen = times_seen + 1, " \
+        "last_seen_at = GREATEST(last_seen_at, :at), first_seen_at = LEAST(first_seen_at, :at), " \
+        "last_release = CASE WHEN :at >= last_seen_at THEN COALESCE(:release, last_release) ELSE last_release END, " \
+        "first_release = CASE WHEN :at <= first_seen_at OR first_release IS NULL THEN COALESCE(:release, first_release) ELSE first_release END, " \
+        "level = :level, status = CASE WHEN status = :resolved THEN :unresolved ELSE status END, updated_at = :now " \
+        "WHERE error_tracking_configuration_id = :configuration_id AND fingerprint = :fingerprint RETURNING id",
+        { at: occurred_at, release:, level:, resolved: Issue.statuses[:resolved], unresolved: Issue.statuses[:unresolved], now:,
+          configuration_id: @configuration.id, fingerprint: }
+      ])
+      Issue.connection.exec_query(sql).rows.first&.first
+    end
+
+    # The issue number is only taken here, in the same transaction as the insert, so it rolls back if another
+    # request created the issue first; that request's issue then records this occurrence.
+    def create_issue(occurred_at, now)
+      Issue.transaction(requires_new: true) do
+        @configuration.issues.create!(
+          fingerprint:, number: @configuration.next_issue_number!, title:, culprit:, level:, times_seen: 1, first_release: release, last_release: release,
+          platform: @event["platform"].to_s.first(64).presence, first_seen_at: occurred_at, last_seen_at: occurred_at
+        ).id
+      end
+    rescue ActiveRecord::RecordNotUnique
+      record_occurrence(occurred_at, now)
+    end
 
     # Group by exception type and the in-app call path. Line numbers, deploy paths, build hashes, package versions and
     # recursion depth are left out, so the same code keeps grouping together after unrelated edits and deploys.

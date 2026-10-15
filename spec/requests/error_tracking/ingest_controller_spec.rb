@@ -44,6 +44,12 @@ RSpec.describe "Error tracking", type: :request do
     post "/api/#{configuration.id}/store/?sentry_key=#{key}", params: other.to_json, headers: { "Content-Type" => "application/json" }
     expect(configuration.issues.order(:number).map(&:short_id)).to eq([ "#{project.name.upcase}-1", "#{project.name.upcase}-2" ])
 
+    # Two new issues in one request each take their own number (the query cache must not replay the counter update).
+    new_types = %w[TypeError NameError].map { |type| sentry_event.deep_merge(exception: { values: [ { type: } ] }) }
+    post "/api/#{configuration.id}/envelope/", params: envelope(*new_types), headers: auth
+    expect(response).to have_http_status(:ok)
+    expect(configuration.issues.order(:number).pluck(:number, :times_seen)).to eq([ [ 1, 3 ], [ 2, 1 ], [ 3, 1 ], [ 4, 1 ] ])
+
     post "/api/#{configuration.id}/store/?sentry_key=wrong", params: sentry_event.to_json, headers: { "Content-Type" => "application/json" }
     expect(response).to have_http_status(:unauthorized)
   end

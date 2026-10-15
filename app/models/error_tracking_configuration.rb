@@ -37,11 +37,12 @@ class ErrorTrackingConfiguration < ApplicationRecord
   end
 
   # Issues are numbered per project (HELLO-WORLD-1, HELLO-WORLD-2, ...). The increment locks this row until the
-  # surrounding transaction ends, so concurrent ingests never hand out the same number.
+  # surrounding transaction ends, so concurrent ingests never hand out the same number. exec_query bypasses the query
+  # cache, which would otherwise answer a repeat of this identical statement without running it.
   def next_issue_number!
-    self.class.connection.select_value(self.class.sanitize_sql_array([
+    self.class.connection.exec_query(self.class.sanitize_sql_array([
       "UPDATE error_tracking_configurations SET last_issue_number = last_issue_number + 1 WHERE id = ? RETURNING last_issue_number", id
-    ]))
+    ])).rows.first.first
   end
 
   def regenerate_public_key!
