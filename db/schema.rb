@@ -283,6 +283,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   create_table "error_tracking_configurations", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.string "public_key", null: false
+    t.integer "last_issue_number", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_error_tracking_configurations_on_project_id", unique: true
@@ -304,6 +305,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
 
   create_table "error_tracking_issues", force: :cascade do |t|
     t.bigint "error_tracking_configuration_id", null: false
+    t.integer "number", null: false
     t.string "fingerprint", null: false
     t.string "title", null: false
     t.string "culprit"
@@ -313,9 +315,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.integer "times_seen", default: 0, null: false
     t.datetime "first_seen_at", null: false
     t.datetime "last_seen_at", null: false
+    t.string "first_release"
+    t.string "last_release"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["error_tracking_configuration_id", "fingerprint"], name: "idx_on_error_tracking_configuration_id_fingerprint_af48550853", unique: true
+    t.index ["error_tracking_configuration_id", "number"], name: "idx_on_error_tracking_configuration_id_number_6218608132", unique: true
     t.index ["error_tracking_configuration_id", "status", "last_seen_at"], name: "idx_on_error_tracking_configuration_id_status_last__85f6cea452"
   end
 

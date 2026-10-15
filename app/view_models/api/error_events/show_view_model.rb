@@ -37,14 +37,14 @@ module Api
 
       # Frames are most recent call first. Library frames are dropped when the stack has any in-app frames.
       def exception_json(exception)
-        frames = Array.wrap(exception.dig("stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }.reverse
+        frames = Array.wrap(ErrorTracking.dig(exception, "stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }.reverse
         in_app = frames.select { |frame| frame["in_app"] }
         shown = (in_app.any? ? in_app : frames).first(MAX_FRAMES)
 
         {
           type: exception["type"],
           value: exception["value"],
-          handled: exception.dig("mechanism", "handled"),
+          handled: ErrorTracking.dig(exception, "mechanism", "handled"),
           frames: shown.map { |frame| frame_json(frame) },
           omitted_frames: frames.size - shown.size
         }.compact

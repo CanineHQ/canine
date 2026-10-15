@@ -33,6 +33,13 @@ module ErrorTracking
       head :ok
     end
 
+    # Bodies are binary (often gzip) and arrive with arbitrary Content-Types, so Rails must never parse them as
+    # params; that happens while logging the request, before any callback runs. raw_post still reads the body.
+    def process_action(*)
+      request.request_parameters = {}
+      super
+    end
+
     private
 
     def set_configuration

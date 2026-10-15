@@ -6,11 +6,11 @@ class Projects::ErrorTrackingConfigurationsController < Projects::BaseController
 
   def destroy
     @project.error_tracking_configuration&.destroy
-    redirect_to project_error_issues_path(@project), notice: "Error tracking disabled."
+    redirect_to edit_project_path(@project, anchor: "error-tracking"), notice: "Error tracking disabled."
   end
 
   def regenerate_key
     ErrorTrackingConfiguration.find_by!(project: @project).regenerate_public_key!
-    redirect_to project_error_issues_path(@project), notice: "DSN regenerated. Update your SDK configuration with the new DSN."
+    redirect_to edit_project_path(@project, anchor: "error-tracking"), notice: "DSN regenerated. Update your SDK configuration with the new DSN."
   end
 end

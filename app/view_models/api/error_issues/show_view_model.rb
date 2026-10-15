@@ -10,6 +10,7 @@ module Api
       def as_json
         {
           id: @issue.id,
+          short_id: @issue.short_id,
           title: @issue.title,
           culprit: @issue.culprit,
           level: @issue.level,

@@ -45,6 +45,13 @@
       <%= render "projects/notifiers/index", project: @project %>
     </div>
 
+    <div id="error-tracking">
+      <h2 class="text-2xl font-bold">Error Tracking</h2>
+      <hr class="mt-3 mb-4 border-t border-base-300" />
+
+      <%= render "projects/error_tracking_configurations/section", project: @project %>
+    </div>
+
     <div id="cluster-migration">
       <h2 class="text-2xl font-bold">Cluster Migration</h2>
       <hr class="mt-3 mb-4 border-t border-base-300" />

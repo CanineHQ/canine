@@ -211,7 +211,11 @@ Rails.application.routes.draw do
     resource :error_tracking_configuration, only: %i[create destroy], module: :projects do
       post :regenerate_key
     end
-    resources :error_issues, only: %i[index show update destroy], module: :projects
+    resources :error_issues, only: %i[index show update destroy], module: :projects do
+      collection do
+        patch :bulk
+      end
+    end
     resources :project_add_ons, only: %i[create destroy], module: :projects
     resources :environment_variables, only: %i[index show create destroy], module: :projects do
       collection do

@@ -1,24 +1,19 @@
 <%= project_layout(@project) do %>
+  <% type, value = @error_issue.title.split(": ", 2) %>
   <div class="space-y-6">
-    <div>
-      <%= link_to project_error_issues_path(@project, status: @error_issue.status), class: "text-sm link link-hover text-base-content/60" do %>
-        &larr; <%= @error_issue.status.humanize %> issues
-      <% end %>
-    </div>
-
     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-      <div class="min-w-0">
-        <div class="flex items-center gap-2">
-          <%= render "projects/error_issues/level", level: @error_issue.level %>
-          <span class="badge badge-sm"><%= @error_issue.status.humanize %></span>
-          <% if @error_issue.platform.present? %>
-            <span class="badge badge-sm badge-ghost"><%= @error_issue.platform %></span>
-          <% end %>
-        </div>
-        <h4 class="text-lg font-medium mt-2 break-words"><%= @error_issue.title %></h4>
-        <% if @error_issue.culprit.present? %>
-          <div class="text-sm text-base-content/60 font-mono break-all"><%= @error_issue.culprit %></div>
+      <div class="min-w-0 space-y-1">
+        <h4 class="text-lg font-semibold break-words"><%= value ? type : @error_issue.title %></h4>
+        <% if value %>
+          <p class="break-words text-base-content/80"><%= value %></p>
         <% end %>
+        <p class="text-sm text-base-content/60">
+          <span class="font-mono"><%= @error_issue.short_id %></span>
+          · <%= @error_issue.level %>
+          · <%= pluralize(number_with_delimiter(@error_issue.times_seen), "event") %>
+          · first seen <%= time_ago_in_words(@error_issue.first_seen_at) %> ago
+          · last seen <%= time_ago_in_words(@error_issue.last_seen_at) %> ago<%= " in #{@error_issue.last_release}" if @error_issue.last_release %>
+        </p>
       </div>
       <div class="flex gap-2 shrink-0">
         <% if @error_issue.unresolved? %>
@@ -32,45 +27,20 @@
       </div>
     </div>
 
-    <div class="stats stats-vertical md:stats-horizontal border border-base-300 w-full">
-      <div class="stat">
-        <div class="stat-title">Events</div>
-        <div class="stat-value text-2xl"><%= number_with_delimiter(@error_issue.times_seen) %></div>
-      </div>
-      <div class="stat">
-        <div class="stat-title">First seen</div>
-        <div class="stat-value text-base"><%= time_ago_in_words(@error_issue.first_seen_at) %> ago</div>
-        <div class="stat-desc"><%= @error_issue.first_seen_at.strftime("%b %d, %Y %H:%M:%S %Z") %></div>
-      </div>
-      <div class="stat">
-        <div class="stat-title">Last seen</div>
-        <div class="stat-value text-base"><%= time_ago_in_words(@error_issue.last_seen_at) %> ago</div>
-        <div class="stat-desc"><%= @error_issue.last_seen_at.strftime("%b %d, %Y %H:%M:%S %Z") %></div>
-      </div>
-    </div>
-
     <% if @event.nil? %>
-      <p class="text-base-content/60">No events are stored for this issue (older events are pruned after <%= ErrorTracking::Event::RETENTION.inspect %>).</p>
+      <p class="text-base-content/60">No events are stored for this issue (events are pruned after <%= ErrorTracking::Event::RETENTION.inspect %>).</p>
     <% else %>
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div class="lg:col-span-3 space-y-6 min-w-0">
-          <%= render "projects/error_issues/event", event: @event %>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between gap-2 text-sm text-base-content/60">
+          <span title="<%= @event.occurred_at.strftime("%b %d, %Y %H:%M:%S %Z") %>">
+            Event <%= number_with_delimiter(@event_position) %> of <%= number_with_delimiter(@events_count) %> · <%= time_ago_in_words(@event.occurred_at) %> ago
+          </span>
+          <div class="flex items-center gap-1">
+            <%= render "projects/error_issues/event_nav_button", label: "Newer event", target: @newer_event, icon: "lucide:chevron-left" %>
+            <%= render "projects/error_issues/event_nav_button", label: "Older event", target: @older_event, icon: "lucide:chevron-right" %>
+          </div>
         </div>
-        <div>
-          <h5 class="font-medium mb-2">Recent events</h5>
-          <ul class="menu menu-sm bg-base-200 rounded-box p-1 max-h-[32rem] overflow-y-auto flex-nowrap">
-            <% @recent_events.each do |event| %>
-              <li>
-                <%= link_to project_error_issue_path(@project, @error_issue, event_id: event.id), class: ("active" if event == @event) do %>
-                  <div class="flex flex-col items-start">
-                    <span><%= event.occurred_at.strftime("%b %d, %H:%M:%S") %></span>
-                    <span class="text-xs opacity-60"><%= [ event.environment, event.release ].compact.join(" · ").presence || event.event_id.first(8) %></span>
-                  </div>
-                <% end %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
+        <%= render "projects/error_issues/event", event: @event, full_stack: @full_stack %>
       </div>
     <% end %>
   </div>

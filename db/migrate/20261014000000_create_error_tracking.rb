@@ -3,12 +3,14 @@ class CreateErrorTracking < ActiveRecord::Migration[7.2]
     create_table :error_tracking_configurations do |t|
       t.references :project, null: false, foreign_key: { on_delete: :cascade }, index: { unique: true }
       t.string :public_key, null: false
+      t.integer :last_issue_number, null: false, default: 0
       t.timestamps
     end
     add_index :error_tracking_configurations, :public_key, unique: true
 
     create_table :error_tracking_issues do |t|
       t.references :error_tracking_configuration, null: false, foreign_key: { on_delete: :cascade }, index: false
+      t.integer :number, null: false
       t.string :fingerprint, null: false
       t.string :title, null: false
       t.string :culprit
@@ -18,9 +20,12 @@ class CreateErrorTracking < ActiveRecord::Migration[7.2]
       t.integer :times_seen, null: false, default: 0
       t.datetime :first_seen_at, null: false
       t.datetime :last_seen_at, null: false
+      t.string :first_release
+      t.string :last_release
       t.timestamps
     end
     add_index :error_tracking_issues, %i[error_tracking_configuration_id fingerprint], unique: true
+    add_index :error_tracking_issues, %i[error_tracking_configuration_id number], unique: true
     add_index :error_tracking_issues, %i[error_tracking_configuration_id status last_seen_at]
 
     create_table :error_tracking_events do |t|

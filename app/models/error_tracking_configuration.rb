@@ -2,11 +2,12 @@
 #
 # Table name: error_tracking_configurations
 #
-#  id         :bigint           not null, primary key
-#  public_key :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  project_id :bigint           not null
+#  id                :bigint           not null, primary key
+#  last_issue_number :integer          default(0), not null
+#  public_key        :string           not null
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  project_id        :bigint           not null
 #
 # Indexes
 #
@@ -33,6 +34,14 @@ class ErrorTrackingConfiguration < ApplicationRecord
     uri.userinfo = public_key
     uri.path = "/#{id}"
     uri.to_s
+  end
+
+  # Issues are numbered per project (HELLO-WORLD-1, HELLO-WORLD-2, ...). The increment locks this row until the
+  # surrounding transaction ends, so concurrent ingests never hand out the same number.
+  def next_issue_number!
+    self.class.connection.select_value(self.class.sanitize_sql_array([
+      "UPDATE error_tracking_configurations SET last_issue_number = last_issue_number + 1 WHERE id = ? RETURNING last_issue_number", id
+    ]))
   end
 
   def regenerate_public_key!

@@ -32,12 +32,14 @@ RSpec.describe 'Error tracking MCP tools' do
 
     issues = JSON.parse(text(Tools::ListErrorIssues.call(project_id: project.id, server_context: context)))
     expect(issues.map { |i| i['title'] }).to eq([ "NoMethodError: undefined method 'name' for nil" ])
+    expect(issues.first["short_id"]).to eq("#{project.name.upcase}-1")
 
     detail = JSON.parse(text(Tools::GetErrorIssue.call(project_id: project.id, issue_id: issue.id, server_context: context)))
     frames = detail.dig('event', 'exceptions', 0, 'frames')
     expect(frames.map { |f| f['filename'] }).to eq([ 'app/models/user.rb' ])
     expect(frames.first['source']).to eq("7: def display\n8:   owner.name\n9: end")
     expect(detail.dig('event', 'tags')).to eq('tier' => 'gold')
+    expect(detail.dig('summary', 'tags')).to include('environment' => { 'production' => 1 }, 'tier' => { 'gold' => 1 })
     expect(detail.dig('event', 'exceptions', 0, 'omitted_frames')).to eq(1)
 
     Tools::UpdateErrorIssue.call(project_id: project.id, issue_id: issue.id, status: 'resolved', server_context: context)

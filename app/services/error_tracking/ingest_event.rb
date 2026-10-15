@@ -19,7 +19,9 @@ module ErrorTracking
       occurred_at = parse_timestamp(@event["timestamp"]) || now
       occurred_at = now if occurred_at > now
 
+      # create_or_find_by! inserts in a savepoint, so a lost race also rolls back the number it took.
       issue = @configuration.issues.create_or_find_by!(fingerprint:) do |new_issue|
+        new_issue.number = @configuration.next_issue_number!
         new_issue.title = title
         new_issue.culprit = culprit
         new_issue.level = level
@@ -28,16 +30,19 @@ module ErrorTracking
         new_issue.last_seen_at = occurred_at
       end
 
+      # SET expressions read the row as it was before this update, so the release comparisons see the old seen times.
       Issue.where(id: issue.id).update_all([
         "times_seen = times_seen + 1, last_seen_at = GREATEST(last_seen_at, :at), first_seen_at = LEAST(first_seen_at, :at), " \
+        "last_release = CASE WHEN :at >= last_seen_at THEN COALESCE(:release, last_release) ELSE last_release END, " \
+        "first_release = CASE WHEN :at <= first_seen_at OR first_release IS NULL THEN COALESCE(:release, first_release) ELSE first_release END, " \
         "level = :level, status = CASE WHEN status = :resolved THEN :unresolved ELSE status END, updated_at = :now",
-        { at: occurred_at, level:, resolved: Issue.statuses[:resolved], unresolved: Issue.statuses[:unresolved], now: }
+        { at: occurred_at, release:, level:, resolved: Issue.statuses[:resolved], unresolved: Issue.statuses[:unresolved], now: }
       ])
 
       issue.events.create!(
         event_id:,
         environment: @event["environment"].to_s.first(255).presence,
-        release: @event["release"].to_s.first(255).presence,
+        release:,
         payload: @event,
         occurred_at:
       )
@@ -45,6 +50,10 @@ module ErrorTracking
 
     def event_id
       @event_id ||= @event["event_id"].to_s.delete("-").presence&.first(32) || SecureRandom.hex(16)
+    end
+
+    def release
+      @event["release"].to_s.first(255).presence
     end
 
     def fingerprint
@@ -78,33 +87,63 @@ module ErrorTracking
 
     private
 
-    # Group by exception type and the in-app call path, ignoring line numbers so unrelated edits don't split an issue.
+    # Group by exception type and the in-app call path. Line numbers, deploy paths, build hashes, package versions and
+    # recursion depth are left out, so the same code keeps grouping together after unrelated edits and deploys.
     def default_fingerprint
       if exception
-        frames = grouping_frames.map { |frame| [ frame["module"] || frame["filename"], frame["function"] ].join(":") }
-        frames.any? ? [ exception["type"], *frames ] : [ exception["type"], exception["value"] ]
+        frames = grouping_frames.map { |frame| frame_key(frame) }.slice_when { |a, b| a != b }.map(&:first)
+        frames.any? ? [ exception["type"], *frames ] : [ exception["type"], parameterize(exception["value"]) ]
       elsif message
-        [ "message", @event.dig("logentry", "message") || message ]
+        [ "message", ErrorTracking.dig(@event, "logentry", "message") || parameterize(message) ]
       else
         [ "event", event_id ]
       end
     end
 
+    def frame_key(frame)
+      location = frame["module"].presence || frame["filename"].presence || frame["abs_path"]
+      [ normalize_path(location), normalize_function(frame["function"]) ].join(":")
+    end
+
+    # "https://cdn.example.com/assets/app-3f2a9c1d.js", "app:///dist/x.js" and "/srv/releases/20261014/app/x.rb" all
+    # lose the parts that change between builds: URL host and query, deploy directories, package versions, file hashes.
+    def normalize_path(path)
+      path.to_s
+        .sub(%r{\A[a-z][\w+.-]*://[^/]*}i, "").sub(/[?#].*\z/, "")
+        .split(%r{/(?:releases/[^/]+|current|node_modules|site-packages|dist-packages|gems)/}).last.to_s
+        .gsub(%r{(?<=/|\A)(?:[0-9a-f]{8,}|\d[\d_-]{5,})(?=/)}i, "*")
+        .gsub(%r{[@-]v?\d+(?:\.\d+)+[\w.+-]*(?=/)}, "")
+        .sub(/[.-](?=[A-Za-z0-9_]*\d)[A-Za-z0-9_]{6,}(?=(?:\.\w+)+\z)/, ".*")
+        .delete_prefix("/").delete_prefix("./")
+    end
+
+    # Strips compiler-generated suffixes, e.g. ERB templates' "_app_views_x_html_erb__123_456" and JVM lambda ids.
+    def normalize_function(name)
+      name.to_s.sub(/_+-?\d+_\d+\z/, "").gsub(/0x\h+/, "0x").gsub(/\$\d+/, "$")
+    end
+
+    # Replaces the values that differ between occurrences of the same error ("User 42 not found").
+    def parameterize(text)
+      text.to_s
+        .gsub(/\h{8}-\h{4}-\h{4}-\h{4}-\h{12}/, "<uuid>")
+        .gsub(/[\w.+-]+@[\w-]+\.[\w.-]+/, "<email>")
+        .gsub(/\b\d{1,3}(?:\.\d{1,3}){3}\b/, "<ip>")
+        .gsub(/\b(?:0x\h+|(?=\h*\d)(?=\h*[a-f])\h{12,})\b/i, "<hex>")
+        .gsub(/\d+(?:\.\d+)?/, "<int>")
+    end
+
     def exception
-      @exception ||= begin
-        values = @event.dig("exception", "values") || @event["exception"]
-        Array.wrap(values).select { |value| value.is_a?(Hash) }.last
-      end
+      @exception ||= ErrorTracking.values(@event["exception"]).last
     end
 
     def grouping_frames
-      frames = Array.wrap(exception&.dig("stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }
+      frames = Array.wrap(ErrorTracking.dig(exception, "stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }
       in_app = frames.select { |frame| frame["in_app"] }
       in_app.any? ? in_app : frames
     end
 
     def message
-      @event.dig("logentry", "formatted") || @event.dig("logentry", "message") || (@event["message"] if @event["message"].is_a?(String))
+      ErrorTracking.dig(@event, "logentry", "formatted") || ErrorTracking.dig(@event, "logentry", "message") || (@event["message"] if @event["message"].is_a?(String))
     end
 
     def parse_timestamp(value)

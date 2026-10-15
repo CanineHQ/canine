@@ -37,11 +37,13 @@
       <iconify-icon icon="lucide:chart-line"></iconify-icon>
     </div>
   <% end %>
-  <%= link_to project_error_issues_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if request.path.start_with?(project_error_issues_path(project))}" do %>
-    <div class="flex items-center gap-2">
-      Errors
-      <iconify-icon icon="lucide:bug"></iconify-icon>
-    </div>
+  <% if project.error_tracking_configuration %>
+    <%= link_to project_error_issues_path(project), class: "tab hover:bg-base-content/15 #{'tab-active' if request.path.start_with?(project_error_issues_path(project))}" do %>
+      <div class="flex items-center gap-2">
+        Errors
+        <iconify-icon icon="lucide:bug"></iconify-icon>
+      </div>
+    <% end %>
   <% end %>
   <% unless project.development_environment? %>
     <% if @project.can_fork? %>

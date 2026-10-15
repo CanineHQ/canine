@@ -1,99 +1,108 @@
 <%= project_layout(@project) do %>
-  <% if @configuration.nil? %>
-    <div class="rounded-box border border-base-300 p-6 space-y-3 max-w-2xl">
-      <h4 class="font-medium flex items-center gap-2"><iconify-icon icon="lucide:bug"></iconify-icon> Error tracking</h4>
-      <p class="text-sm text-base-content/70">
-        Collect exceptions from your app with any Sentry SDK. Enabling error tracking gives this project a
-        Sentry-compatible DSN; errors reported to it are grouped into issues you can browse and resolve here.
-      </p>
-      <%= button_to "Enable error tracking", project_error_tracking_configuration_path(@project), class: "btn btn-primary btn-sm" %>
-    </div>
-  <% else %>
-    <% dsn = @configuration.dsn(request.base_url) %>
-    <div class="space-y-6">
-      <div class="rounded-box border border-base-300 p-4 space-y-3">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-          <div>
-            <h4 class="font-medium">DSN</h4>
-            <p class="text-sm text-base-content/60">Point any Sentry SDK at this DSN to report errors to this project.</p>
-          </div>
-          <div class="flex gap-2">
-            <%= button_to "Regenerate DSN", regenerate_key_project_error_tracking_configuration_path(@project),
-              class: "btn btn-sm btn-ghost",
-              form: { data: { turbo_confirm: "The current DSN will stop working immediately. Continue?" } } %>
-            <%= button_to "Disable", project_error_tracking_configuration_path(@project), method: :delete,
-              class: "btn btn-sm btn-ghost text-error",
-              form: { data: { turbo_confirm: "Disable error tracking? The DSN stops working and all issues and events are deleted." } } %>
-          </div>
-        </div>
-        <div class="cursor-pointer flex items-center gap-2 font-mono text-sm bg-base-200 rounded p-2 break-all" data-controller="clipboard" data-clipboard-text="<%= dsn %>">
-          <%= dsn %>
-          <iconify-icon icon="lucide:clipboard" height="16"></iconify-icon>
-        </div>
-        <details class="text-sm">
-          <summary class="cursor-pointer text-base-content/70">Setup instructions</summary>
-          <div class="mt-3 space-y-3">
-            <p>Set <code>SENTRY_DSN</code> as an <%= link_to "environment variable", project_environment_variables_path(@project), class: "link" %>, then install the Sentry SDK for your language — most SDKs read <code>SENTRY_DSN</code> automatically.</p>
-            <% {
-              "Ruby on Rails" => "# Gemfile\ngem \"sentry-ruby\"\ngem \"sentry-rails\"\n\n# config/initializers/sentry.rb\nSentry.init do |config|\n  config.dsn = ENV[\"SENTRY_DSN\"]\nend",
-              "Node.js" => "// npm install @sentry/node\nconst Sentry = require(\"@sentry/node\");\nSentry.init({ dsn: process.env.SENTRY_DSN });",
-              "Python" => "# pip install sentry-sdk\nimport sentry_sdk\nsentry_sdk.init(dsn=os.environ[\"SENTRY_DSN\"])",
-              "Browser" => "// npm install @sentry/browser\nimport * as Sentry from \"@sentry/browser\";\nSentry.init({ dsn: \"#{dsn}\" });"
-            }.each do |language, snippet| %>
-              <div>
-                <div class="font-medium mb-1"><%= language %></div>
-                <pre class="bg-base-200 rounded p-3 overflow-x-auto text-xs"><code><%= snippet %></code></pre>
-              </div>
-            <% end %>
-            <p class="text-base-content/60">Errors and messages are grouped into issues. Performance traces, sessions and attachments are accepted but ignored. Events are kept for <%= ErrorTracking::Event::RETENTION.inspect %>.</p>
-          </div>
-        </details>
-      </div>
-
+  <div class="space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
       <div role="tablist" class="tabs tabs-boxed w-fit">
         <% ErrorTracking::Issue.statuses.each_key do |status| %>
-          <%= link_to project_error_issues_path(@project, status:), role: "tab", class: "tab #{'tab-active' if status == @status}" do %>
+          <%= link_to project_error_issues_path(@project, status:, period: @period), role: "tab", class: "tab #{'tab-active' if status == @status}" do %>
             <%= status.humanize %>
             <span class="badge badge-sm ml-2"><%= @counts[status] || 0 %></span>
           <% end %>
         <% end %>
       </div>
-
-      <% if @error_issues.empty? %>
-        <p class="text-base-content/60">No <%= @status %> issues.</p>
-      <% else %>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Issue</th>
-              <th class="text-right">Events</th>
-              <th>Last seen</th>
-              <th>First seen</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @error_issues.each do |issue| %>
-              <tr class="hover">
-                <td class="max-w-xl">
-                  <%= link_to project_error_issue_path(@project, issue), class: "block" do %>
-                    <div class="flex items-center gap-2">
-                      <%= render "projects/error_issues/level", level: issue.level %>
-                      <span class="font-medium truncate"><%= issue.title %></span>
-                    </div>
-                    <% if issue.culprit.present? %>
-                      <div class="text-xs text-base-content/60 font-mono truncate mt-1"><%= issue.culprit %></div>
-                    <% end %>
-                  <% end %>
-                </td>
-                <td class="text-right"><%= number_with_delimiter(issue.times_seen) %></td>
-                <td class="whitespace-nowrap"><%= time_ago_in_words(issue.last_seen_at) %> ago</td>
-                <td class="whitespace-nowrap"><%= time_ago_in_words(issue.first_seen_at) %> ago</td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-        <%= render "shared/pagination", pagy: @pagy %>
-      <% end %>
+      <div role="tablist" class="tabs tabs-boxed tabs-sm w-fit">
+        <% Projects::ErrorIssuesController::TREND_PERIODS.each_key do |period| %>
+          <%= link_to period, project_error_issues_path(@project, status: @status, period:, page: params[:page]), role: "tab", class: "tab #{'tab-active' if period == @period}" %>
+        <% end %>
+      </div>
     </div>
-  <% end %>
+
+    <% if @error_issues.empty? %>
+      <p class="text-base-content/60">
+        No <%= @status %> issues.
+        <% if @counts.values.sum.zero? %>
+          Find the DSN and SDK setup instructions in
+          <%= link_to "Settings", edit_project_path(@project, anchor: "error-tracking"), class: "link" %>.
+        <% end %>
+      </p>
+    <% else %>
+      <%= form_with url: bulk_project_error_issues_path(@project), method: :patch, data: { controller: "bulk-select" } do |form| %>
+        <%= hidden_field_tag :status, @status %>
+        <%= hidden_field_tag :period, @period %>
+        <%= hidden_field_tag :all_matching, "0", data: { bulk_select_target: "allMatching" } %>
+
+        <div class="rounded-box border border-base-300 overflow-x-auto">
+          <div class="flex items-center justify-between gap-2 px-3 py-2 bg-base-200 border-b border-base-300">
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="checkbox" class="checkbox checkbox-sm mr-2" aria-label="Select all issues on this page"
+                data-bulk-select-target="all" data-action="bulk-select#toggleAll">
+              <% { "resolved" => "Mark resolved", "unresolved" => "Mark unresolved", "ignored" => "Mark ignored" }.each do |action, label| %>
+                <button type="submit" name="bulk_action" value="<%= action %>" class="btn btn-xs btn-outline" disabled
+                  data-bulk-select-target="action" data-current="<%= action == @status %>"><%= label %></button>
+              <% end %>
+              <button type="submit" name="bulk_action" value="delete" class="btn btn-xs btn-outline btn-error" disabled
+                data-bulk-select-target="action" data-turbo-confirm="Delete the selected issues and all of their events?">Delete</button>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-base-content/70 shrink-0">
+              <span><%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %></span>
+              <%= link_to_if @pagy.prev, tag.iconify_icon(icon: "lucide:chevron-left"), project_error_issues_path(@project, status: @status, period: @period, page: @pagy.prev), class: "btn btn-xs btn-ghost", aria: { label: "Previous page" } do %>
+                <span class="btn btn-xs btn-ghost btn-disabled"><iconify-icon icon="lucide:chevron-left"></iconify-icon></span>
+              <% end %>
+              <%= link_to_if @pagy.next, tag.iconify_icon(icon: "lucide:chevron-right"), project_error_issues_path(@project, status: @status, period: @period, page: @pagy.next), class: "btn btn-xs btn-ghost", aria: { label: "Next page" } do %>
+                <span class="btn btn-xs btn-ghost btn-disabled"><iconify-icon icon="lucide:chevron-right"></iconify-icon></span>
+              <% end %>
+            </div>
+          </div>
+
+          <% if @pagy.count > @error_issues.size %>
+            <div class="px-3 py-2 text-sm text-center bg-base-200/60 border-b border-base-300" data-bulk-select-target="banner" hidden>
+              <span data-bulk-select-target="offer">
+                All <%= @error_issues.size %> issues on this page are selected.
+                <button type="button" class="link link-primary" data-action="bulk-select#selectAllMatching">Select all <%= @pagy.count %> <%= @status %> issues</button>
+              </span>
+              <span data-bulk-select-target="selected" hidden>
+                All <%= @pagy.count %> <%= @status %> issues are selected.
+                <button type="button" class="link link-primary" data-action="bulk-select#clear">Clear selection</button>
+              </span>
+            </div>
+          <% end %>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="w-10"></th>
+                <th>Issue</th>
+                <th class="hidden md:table-cell">Trend <span class="font-normal text-base-content/50">(<%= @period %>)</span></th>
+                <th class="text-right">Events</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @error_issues.each do |issue| %>
+                <% stripe = { "fatal" => "border-l-error", "error" => "border-l-error", "warning" => "border-l-warning" }.fetch(issue.level, "border-l-info") %>
+                <tr class="hover">
+                  <td class="border-l-4 <%= stripe %>">
+                    <input type="checkbox" name="ids[]" value="<%= issue.id %>" class="checkbox checkbox-sm" aria-label="Select issue"
+                      data-bulk-select-target="row" data-action="bulk-select#update">
+                  </td>
+                  <td class="max-w-xl">
+                    <%= link_to project_error_issue_path(@project, issue), class: "block" do %>
+                      <div class="font-medium break-words line-clamp-2" title="<%= issue.title %>"><%= issue.title %></div>
+                      <div class="text-xs text-base-content/60 mt-1">
+                        <span class="font-mono"><%= issue.short_id %></span> ·
+                        <%= time_ago_in_words(issue.first_seen_at) %> old, seen <%= time_ago_in_words(issue.last_seen_at) %> ago
+                      </div>
+                    <% end %>
+                  </td>
+                  <td class="hidden md:table-cell">
+                    <%= render "projects/error_issues/trend", buckets: @trends[issue.id], period: @period %>
+                  </td>
+                  <td class="text-right tabular-nums"><%= number_with_delimiter(issue.times_seen) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% end %>
+  </div>
 <% end %>

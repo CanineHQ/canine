@@ -4,7 +4,7 @@ module Tools
   class GetErrorIssue < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Get an error tracking issue with its latest event (or a specific one): the exception chain, in-app stack frames with source context, tags, request, user and breadcrumbs, plus the issue's recent events."
+    description "Get an error tracking issue with a summary (users affected, first/last release, top tag values) and its latest event (or a specific one): the exception chain, in-app stack frames with source context, tags, request, user and breadcrumbs, plus the issue's recent events."
 
     input_schema(
       properties: {
@@ -59,11 +59,23 @@ module Tools
         MCP::Tool::Response.new([ {
           type: "text",
           text: Api::ErrorIssues::ShowViewModel.new(issue).as_json.merge(
+            summary: summary_json(ErrorTracking::IssueSummary.new(issue), issue),
             event: event && Api::ErrorEvents::ShowViewModel.new(event, raw: raw).as_json,
             recent_events: events.limit(10).map { |e| { id: e.id, occurred_at: e.occurred_at, environment: e.environment, release: e.release } }
           ).to_json
         } ])
       end
+    end
+
+    # Top values per tag (with event counts) show at a glance whether an error is tied to a release, environment,
+    # browser, etc.
+    def self.summary_json(summary, issue)
+      {
+        users_affected: summary.users_count,
+        first_release: issue.first_release,
+        last_release: issue.last_release,
+        tags: summary.tags.transform_values { |tag| tag[:values].first(3).to_h }
+      }.compact
     end
   end
 end

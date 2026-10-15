@@ -5,9 +5,12 @@
 #  id                              :bigint           not null, primary key
 #  culprit                         :string
 #  fingerprint                     :string           not null
+#  first_release                   :string
 #  first_seen_at                   :datetime         not null
+#  last_release                    :string
 #  last_seen_at                    :datetime         not null
 #  level                           :string           default("error"), not null
+#  number                          :integer          not null
 #  platform                        :string
 #  status                          :integer          default("unresolved"), not null
 #  times_seen                      :integer          default(0), not null
@@ -19,6 +22,7 @@
 # Indexes
 #
 #  idx_on_error_tracking_configuration_id_fingerprint_af48550853   (error_tracking_configuration_id,fingerprint) UNIQUE
+#  idx_on_error_tracking_configuration_id_number_6218608132        (error_tracking_configuration_id,number) UNIQUE
 #  idx_on_error_tracking_configuration_id_status_last__85f6cea452  (error_tracking_configuration_id,status,last_seen_at)
 #
 # Foreign Keys
@@ -33,6 +37,11 @@ module ErrorTracking
     enum :status, { unresolved: 0, resolved: 1, ignored: 2 }
 
     LEVELS = %w[fatal error warning info debug].freeze
+
+    # "HELLO-WORLD-12": the project name and the issue's number within the project.
+    def short_id
+      "#{error_tracking_configuration.project.name.upcase}-#{number}"
+    end
 
     def latest_event
       events.order(occurred_at: :desc).first
