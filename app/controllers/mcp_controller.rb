@@ -1,8 +1,8 @@
 class MCPController < ActionController::API
-  # Only tokens granted API access. Tokens from Canine's internal SSO (the auth proxies in front of deployed apps)
-  # carry just openid/profile/email and must not reach the API; stated explicitly rather than relying on the
-  # default :public scope.
-  before_action -> { doorkeeper_authorize! :read, :write }
+  # Requires the default :public scope, which every token from the MCP sign-in flow carries (clients such as Claude
+  # Code request no scope). Tokens from Canine's internal SSO, the auth proxies in front of deployed apps, carry only
+  # openid/profile/email and are rejected.
+  before_action :doorkeeper_authorize!
 
   def handle
     if params[:method] == "notifications/initialized"
@@ -56,8 +56,6 @@ class MCPController < ActionController::API
       Tools::UpdateEnvironmentVariable,
 
       # Error Tracking
-      Tools::EnableErrorTracking,
-      Tools::GetErrorTrackingDsn,
       Tools::ListErrorIssues,
       Tools::GetErrorIssue,
       Tools::UpdateErrorIssue,

@@ -15,7 +15,7 @@ RSpec.describe "MCP", type: :request do
     Doorkeeper::AccessToken.create!(application:, resource_owner_id: user.id, scopes:)
   end
 
-  it "requires an API-scoped token and serves tools and resources" do
+  it "accepts tokens from the MCP sign-in flow, rejects internal SSO tokens, and serves tools and resources" do
     post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json, headers: { "Content-Type" => "application/json" }
     expect(response).to have_http_status(:unauthorized)
 
@@ -23,11 +23,17 @@ RSpec.describe "MCP", type: :request do
     mcp(token("openid profile email"), "tools/list")
     expect(response).to have_http_status(:forbidden)
 
-    api = token("public read write")
+    # Clients such as Claude Code request no scope, so their tokens carry only the default public scope.
+    api = token("public")
     expect(mcp(api, "initialize", protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "spec", version: "1" })
       .dig("result", "serverInfo", "name")).to eq("canine_mcp_server")
     expect(mcp(api, "tools/list").dig("result", "tools").map { |tool| tool["name"] }).to include("update_project", "get_error_issue")
     expect(mcp(api, "resources/read", uri: "canine://accounts").dig("result", "contents", 0, "text")).to include(account_user.account.name)
+
+    project = create(:project, cluster: create(:cluster, account: account_user.account), account: account_user.account)
+    build = create(:build, project:)
+    builds = mcp(api, "resources/read", uri: "canine://accounts/#{account_user.account.id}/projects/#{project.id}/builds")
+    expect(JSON.parse(builds.dig("result", "contents", 0, "text")).map { |b| b["id"] }).to eq([ build.id ])
   end
 
   it "only hands out kubeconfigs for clusters the user's teams can reach" do
