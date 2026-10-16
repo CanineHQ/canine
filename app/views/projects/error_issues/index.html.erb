@@ -1,33 +1,69 @@
 <%= project_layout(@project) do %>
-  <div class="space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <div role="tablist" class="tabs tabs-boxed w-fit">
-        <% ErrorTracking::Issue.statuses.each_key do |status| %>
-          <%= link_to project_error_issues_path(@project, status:, period: @period), role: "tab", class: "tab #{'tab-active' if status == @status}" do %>
-            <%= status.humanize %>
-            <span class="badge badge-sm ml-2"><%= @counts[status] || 0 %></span>
+  <%# The project layout scrolls its content horizontally, which clips the dropdown menus on short lists. %>
+  <div class="space-y-4 min-h-80">
+    <div class="flex flex-wrap items-center gap-2">
+      <details class="dropdown">
+        <summary class="btn btn-outline border-base-content/20 font-normal">
+          <span class="font-semibold">Sort by:</span> <%= Projects::ErrorIssuesController::SORTS[@sort][:label] %>
+          <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+        </summary>
+        <ul class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+          <% Projects::ErrorIssuesController::SORTS.each do |sort, option| %>
+            <li><%= link_to option[:label], project_error_issues_path(@project, @list_params.merge(sort:)), class: ("active" if sort == @sort) %></li>
           <% end %>
+        </ul>
+      </details>
+
+      <div class="flex flex-1 min-w-64 max-w-2xl">
+        <details class="dropdown">
+          <summary class="btn btn-outline border-base-content/20 !rounded-r-none">
+            <%= @status.humanize %>
+            <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+          </summary>
+          <ul class="dropdown-content menu z-10 mt-1 w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+            <% ErrorTracking::Issue.statuses.each_key do |status| %>
+              <li>
+                <%= link_to project_error_issues_path(@project, @list_params.merge(status:)), class: ("active" if status == @status) do %>
+                  <%= status.humanize %>
+                  <span class="badge badge-sm ml-auto"><%= @counts[status] || 0 %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </details>
+        <%= form_with url: project_error_issues_path(@project), method: :get, class: "flex-1" do %>
+          <% @list_params.except(:q).each do |name, value| %>
+            <%= hidden_field_tag name, value, id: nil %>
+          <% end %>
+          <label class="input input-bordered focus-within:outline-offset-0 !rounded-l-none !border-l-0 flex items-center gap-2 w-full">
+            <iconify-icon icon="lucide:search" width="16" height="16" class="opacity-70"></iconify-icon>
+            <%= search_field_tag :q, @query, placeholder: "Search issues", title: "Search by title, culprit or short ID (#{@project.name.upcase}-42)", class: "grow min-w-0 border-0 bg-transparent p-0 shadow-none focus:outline-none focus:ring-0 [&::-webkit-search-cancel-button]:hidden", aria: { label: "Search issues" } %>
+            <% if @query.present? %>
+              <%= link_to project_error_issues_path(@project, @list_params.except(:q)), class: "btn btn-ghost btn-xs btn-circle", aria: { label: "Clear search" } do %>
+                <iconify-icon icon="lucide:x" width="16" height="16"></iconify-icon>
+              <% end %>
+            <% end %>
+          </label>
         <% end %>
       </div>
-      <div role="tablist" class="tabs tabs-boxed tabs-sm w-fit">
-        <% Projects::ErrorIssuesController::TREND_PERIODS.each_key do |period| %>
-          <%= link_to period, project_error_issues_path(@project, status: @status, period:, page: params[:page]), role: "tab", class: "tab #{'tab-active' if period == @period}" %>
-        <% end %>
-      </div>
+
     </div>
 
     <% if @error_issues.empty? %>
       <p class="text-base-content/60">
-        No <%= @status %> issues.
-        <% if @counts.values.sum.zero? %>
+        No <%= @status %> issues<%= " matching \u201C#{@query}\u201D" if @query.present? %>.
+        <% if @query.present? %>
+          <%= link_to "Clear search", project_error_issues_path(@project, @list_params.except(:q)), class: "link" %>
+        <% elsif @counts.values.sum.zero? %>
           Find the DSN and SDK setup instructions in
           <%= link_to "Settings", edit_project_path(@project, anchor: "error-tracking"), class: "link" %>.
         <% end %>
       </p>
     <% else %>
       <%= form_with url: bulk_project_error_issues_path(@project), method: :patch, data: { controller: "bulk-select" } do |form| %>
-        <%= hidden_field_tag :status, @status %>
-        <%= hidden_field_tag :period, @period %>
+        <% @list_params.each do |name, value| %>
+          <%= hidden_field_tag name, value, id: nil %>
+        <% end %>
         <%= hidden_field_tag :all_matching, "0", data: { bulk_select_target: "allMatching" } %>
 
         <div class="rounded-box border border-base-300 overflow-x-auto">
@@ -44,10 +80,10 @@
             </div>
             <div class="flex items-center gap-2 text-sm text-base-content/70 shrink-0">
               <span><%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %></span>
-              <%= link_to_if @pagy.prev, tag.iconify_icon(icon: "lucide:chevron-left"), project_error_issues_path(@project, status: @status, period: @period, page: @pagy.prev), class: "btn btn-xs btn-ghost", aria: { label: "Previous page" } do %>
+              <%= link_to_if @pagy.prev, tag.iconify_icon(icon: "lucide:chevron-left"), project_error_issues_path(@project, @list_params.merge(page: @pagy.prev)), class: "btn btn-xs btn-ghost", aria: { label: "Previous page" } do %>
                 <span class="btn btn-xs btn-ghost btn-disabled"><iconify-icon icon="lucide:chevron-left"></iconify-icon></span>
               <% end %>
-              <%= link_to_if @pagy.next, tag.iconify_icon(icon: "lucide:chevron-right"), project_error_issues_path(@project, status: @status, period: @period, page: @pagy.next), class: "btn btn-xs btn-ghost", aria: { label: "Next page" } do %>
+              <%= link_to_if @pagy.next, tag.iconify_icon(icon: "lucide:chevron-right"), project_error_issues_path(@project, @list_params.merge(page: @pagy.next)), class: "btn btn-xs btn-ghost", aria: { label: "Next page" } do %>
                 <span class="btn btn-xs btn-ghost btn-disabled"><iconify-icon icon="lucide:chevron-right"></iconify-icon></span>
               <% end %>
             </div>
@@ -57,10 +93,10 @@
             <div class="px-3 py-2 text-sm text-center bg-base-200/60 border-b border-base-300" data-bulk-select-target="banner" hidden>
               <span data-bulk-select-target="offer">
                 All <%= @error_issues.size %> issues on this page are selected.
-                <button type="button" class="link link-primary" data-action="bulk-select#selectAllMatching">Select all <%= @pagy.count %> <%= @status %> issues</button>
+                <button type="button" class="link link-primary" data-action="bulk-select#selectAllMatching">Select all <%= @pagy.count %> <%= @status %> issues<%= " matching \u201C#{@query}\u201D" if @query.present? %></button>
               </span>
               <span data-bulk-select-target="selected" hidden>
-                All <%= @pagy.count %> <%= @status %> issues are selected.
+                All <%= @pagy.count %> <%= @status %> issues<%= " matching \u201C#{@query}\u201D" if @query.present? %> are selected.
                 <button type="button" class="link link-primary" data-action="bulk-select#clear">Clear selection</button>
               </span>
             </div>
@@ -71,7 +107,7 @@
               <tr>
                 <th class="w-10"></th>
                 <th>Issue</th>
-                <th class="hidden md:table-cell">Trend <span class="font-normal text-base-content/50">(<%= @period %>)</span></th>
+                <th class="hidden md:table-cell">Trend <span class="font-normal text-base-content/50">(24h)</span></th>
                 <th class="text-right">Events</th>
               </tr>
             </thead>
@@ -93,7 +129,7 @@
                     <% end %>
                   </td>
                   <td class="hidden md:table-cell">
-                    <%= render "projects/error_issues/trend", buckets: @trends[issue.id], period: @period %>
+                    <%= render "projects/error_issues/trend", buckets: @trends[issue.id] %>
                   </td>
                   <td class="text-right tabular-nums"><%= number_with_delimiter(issue.times_seen) %></td>
                 </tr>

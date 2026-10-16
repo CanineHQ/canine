@@ -1,9 +1,8 @@
 <% peak = buckets.map(&:last).max.to_i %>
-<% label_format = period == "24h" ? "%b %d %H:00" : "%b %d" %>
 <div class="flex items-end gap-[2px] h-6" aria-label="Event trend">
   <% buckets.each do |start, count| %>
     <% height = count.zero? ? 3 : 6 + (18.0 * count / peak).round %>
     <div class="w-[3px] rounded-sm <%= count.zero? ? 'bg-base-content/15' : 'bg-error/80' %>"
-      style="height: <%= height %>px" title="<%= pluralize(count, 'event') %> · <%= start.strftime(label_format) %>"></div>
+      style="height: <%= height %>px" title="<%= pluralize(count, 'event') %> · <%= start.strftime("%b %d %H:00") %>"></div>
   <% end %>
 </div>
