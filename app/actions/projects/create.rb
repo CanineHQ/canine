@@ -44,6 +44,7 @@ class Projects::Create
       Projects::BuildBuildConfiguration,
       Projects::ValidateGitRepository,
       Projects::Create::ToNamespaced,
+      Namespaced::ValidateClusterAccess,
       Projects::BuildDeploymentConfiguration,
       Namespaced::SetUpNamespace,
       Namespaced::ValidateNamespace,

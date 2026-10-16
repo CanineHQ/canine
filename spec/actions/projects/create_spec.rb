@@ -5,6 +5,7 @@ RSpec.describe Projects::Create do
   let(:user) { create(:user) }
   let(:provider) { create(:provider, :github, user:) }
   let(:cluster) { create(:cluster) }
+  let!(:account_user) { create(:account_user, user:, account: cluster.account) }
   let(:params) do
     ActionController::Parameters.new({
       project: {
@@ -170,6 +171,22 @@ RSpec.describe Projects::Create do
     end
   end
 
+  describe 'cluster access' do
+    it "refuses a cluster outside the user's accounts or teams" do
+      other_cluster = create(:cluster)
+      params[:project][:cluster_id] = other_cluster.id
+      result = described_class.call(params, user)
+      expect(result).to be_failure
+      expect(result.project.errors[:cluster]).to include('not found')
+
+      team = create(:team, account: cluster.account)
+      create(:team_resource, team:, resourceable: create(:cluster, account: cluster.account))
+      params[:project][:cluster_id] = cluster.id
+      expect(described_class.call(params, user)).to be_failure
+      expect(Project.count).to eq(0)
+    end
+  end
+
   describe '.steps' do
     it 'returns the expected action pipeline' do
       expect(described_class.steps).to eq([
@@ -177,6 +194,7 @@ RSpec.describe Projects::Create do
         Projects::BuildBuildConfiguration,
         Projects::ValidateGitRepository,
         Projects::Create::ToNamespaced,
+        Namespaced::ValidateClusterAccess,
         Projects::BuildDeploymentConfiguration,
         Namespaced::SetUpNamespace,
         Namespaced::ValidateNamespace,

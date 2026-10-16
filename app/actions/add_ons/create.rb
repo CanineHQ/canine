@@ -33,6 +33,7 @@ class AddOns::Create
   def self.call(add_on, user)
     with(add_on:, user:).reduce(
       AddOns::Create::ToNamespaced,
+      Namespaced::ValidateClusterAccess,
       Namespaced::SetUpNamespace,
       Namespaced::ValidateNamespace,
       AddOns::ApplyTemplateToValues,
