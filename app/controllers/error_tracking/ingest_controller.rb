@@ -8,18 +8,20 @@ module ErrorTracking
     before_action :set_configuration, except: :preflight
 
     rescue_from RequestBody::TooLarge, with: -> { render_error("Payload too large", :content_too_large) }
-    rescue_from RequestBody::Invalid, with: ->(e) { render_error(e.message, :bad_request) }
+    rescue_from RequestBody::Invalid, Envelope::Invalid, with: ->(e) { render_error(e.message, :bad_request) }
 
+    # A key sent in a header or the query string is checked before the body is decompressed or parsed. Only a
+    # tunnelled request, whose key is solely in the envelope's DSN header, has that header line parsed first; its
+    # items are still parsed only after the key matches.
     def envelope
-      envelope = Envelope.parse(body)
-      authenticate!(envelope.headers["dsn"]) or return
+      authenticate!(request_key || envelope_dsn_key) or return
 
-      event_ids = envelope.events.map { |event| IngestEvent.call(@configuration, event).event_id }
-      render json: { id: event_ids.first || envelope.headers["event_id"] }
+      event_ids = parsed_envelope.events.map { |event| IngestEvent.call(@configuration, event).event_id }
+      render json: { id: event_ids.first || parsed_envelope.headers["event_id"] }
     end
 
     def store
-      authenticate! or return
+      authenticate!(request_key) or return
 
       event = JSON.parse(body)
       return render_error("Invalid event", :bad_request) unless event.is_a?(Hash)
@@ -47,16 +49,31 @@ module ErrorTracking
     end
 
     def body
-      RequestBody.decode(request.raw_post, request.headers["Content-Encoding"])
+      @body ||= RequestBody.decode(request.raw_post, request.headers["Content-Encoding"])
     end
 
-    # The key can arrive in X-Sentry-Auth, a legacy Authorization header, the sentry_key query param (browser SDKs),
-    # or the envelope's own DSN header (tunnelled browser requests).
-    def authenticate!(envelope_dsn = nil)
-      auth_header = request.headers["X-Sentry-Auth"].presence || request.headers["Authorization"].to_s
-      key = auth_header[/sentry_key=([^,\s]+)/, 1] || request.query_parameters["sentry_key"]
-      key ||= (URI.parse(envelope_dsn).user if envelope_dsn.is_a?(String) rescue nil)
+    def parsed_envelope
+      @parsed_envelope ||= Envelope.parse(body)
+    end
 
+    # The key can arrive in X-Sentry-Auth, a legacy Authorization header, or the sentry_key query param (browser SDKs).
+    def request_key
+      auth_header = request.headers["X-Sentry-Auth"].presence || request.headers["Authorization"].to_s
+      auth_header[/sentry_key=([^,\s]+)/, 1] || request.query_parameters["sentry_key"]
+    end
+
+    # Tunnelled browser requests carry the key only in the envelope header's DSN. Nothing is decoded for an unknown
+    # configuration.
+    def envelope_dsn_key
+      return unless @configuration
+
+      dsn = parsed_envelope.headers["dsn"]
+      URI.parse(dsn).user if dsn.is_a?(String)
+    rescue URI::InvalidURIError
+      nil
+    end
+
+    def authenticate!(key)
       return true if @configuration && key.present? && ActiveSupport::SecurityUtils.secure_compare(key, @configuration.public_key)
 
       render_error("Invalid DSN", :unauthorized)

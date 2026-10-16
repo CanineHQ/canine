@@ -54,6 +54,29 @@ RSpec.describe "Error tracking", type: :request do
     expect(response).to have_http_status(:unauthorized)
   end
 
+  it "rejects malformed envelopes without hanging, and parses items only after the key matches" do
+    Timeout.timeout(5) do
+      post "/api/#{configuration.id}/envelope/", params: "{}\n{\"length\":-15}\n", headers: auth
+      expect(response).to have_http_status(:bad_request)
+
+      post "/api/#{configuration.id}/envelope/", params: "{}\n" + ([ { type: "event" }.to_json, "{}" ] * 101).join("\n"), headers: auth
+      expect(response).to have_http_status(:bad_request)
+
+      # Without a key nothing is parsed: an unknown configuration, or a DSN header for the wrong key, is rejected first.
+      post "/api/0/envelope/", params: "{}\n{\"length\":-15}\n"
+      expect(response).to have_http_status(:unauthorized)
+      wrong_dsn = { dsn: "https://wrong@canine.example.com/#{configuration.id}" }.to_json
+      post "/api/#{configuration.id}/envelope/", params: "#{wrong_dsn}\n{\"length\":-15}\n"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    # Tunnelled browser requests authenticate with the DSN in the envelope header alone.
+    dsn = { dsn: "https://#{key}@canine.example.com/#{configuration.id}" }.to_json
+    post "/api/#{configuration.id}/envelope/", params: [ dsn, { type: "event" }.to_json, sentry_event.to_json ].join("\n")
+    expect(response).to have_http_status(:ok)
+    expect(configuration.issues.count).to eq(1)
+  end
+
   it "enables error tracking, then shows the DSN and the issue browser" do
     sign_in account.owner
     get project_error_issues_path(project)
@@ -99,6 +122,10 @@ RSpec.describe "Error tracking", type: :request do
 
     patch bulk_project_error_issues_path(project), params: { status: "resolved", bulk_action: "delete", all_matching: "1" }
     expect(configuration.issues.pluck(:id)).to contain_exactly(issues.last.id, ignored.id)
+
+    patch bulk_project_error_issues_path(project), params: { status: "unresolved", bulk_action: "merge", all_matching: "1" }
+    expect(flash[:alert]).to eq("Unknown action.")
+    expect(issues.last.reload).to be_unresolved
   end
 
   it "accepts and renders events whose interfaces are bare lists, as the JavaScript SDKs send them" do
