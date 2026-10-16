@@ -24,9 +24,7 @@ module Tools
 
     def self.call(cluster_id:, server_context:)
       with_account_users(server_context: server_context) do |_user, account_users|
-        cluster = account_users.lazy.filter_map { |au|
-          au.account.clusters.find_by(id: cluster_id)
-        }.first
+        cluster = find_cluster(cluster_id, account_users)
 
         unless cluster
           return MCP::Tool::Response.new([ {

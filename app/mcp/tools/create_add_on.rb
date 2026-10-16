@@ -48,9 +48,7 @@ module Tools
 
     def self.call(name:, chart_url:, version:, repository_url:, cluster_id:, values_yaml: nil, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        account = account_user.account
-
-        cluster = account.clusters.find_by(id: cluster_id)
+        cluster = find_cluster(cluster_id, [ account_user ])
         unless cluster
           return MCP::Tool::Response.new([ {
             type: "text",
