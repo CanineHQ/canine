@@ -40,11 +40,11 @@ class Projects::Create
 
   def self.steps
     [
+      Projects::Create::ToNamespaced,
+      Namespaced::ValidateClusterAccess,
       Projects::ConfigureSource,
       Projects::BuildBuildConfiguration,
       Projects::ValidateGitRepository,
-      Projects::Create::ToNamespaced,
-      Namespaced::ValidateClusterAccess,
       Projects::BuildDeploymentConfiguration,
       Namespaced::SetUpNamespace,
       Namespaced::ValidateNamespace,

@@ -190,11 +190,11 @@ RSpec.describe Projects::Create do
   describe '.steps' do
     it 'returns the expected action pipeline' do
       expect(described_class.steps).to eq([
+        Projects::Create::ToNamespaced,
+        Namespaced::ValidateClusterAccess,
         Projects::ConfigureSource,
         Projects::BuildBuildConfiguration,
         Projects::ValidateGitRepository,
-        Projects::Create::ToNamespaced,
-        Namespaced::ValidateClusterAccess,
         Projects::BuildDeploymentConfiguration,
         Namespaced::SetUpNamespace,
         Namespaced::ValidateNamespace,
