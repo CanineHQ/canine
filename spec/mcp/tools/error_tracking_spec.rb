@@ -26,9 +26,10 @@ RSpec.describe 'Error tracking MCP tools' do
 
   before { create(:account_user, account: project.account, user: user) }
 
-  it 'gets the DSN, lists issues, shows the stack trace and resolves an issue' do
-    dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: project.id, server_context: context)))['dsn']
-    expect(dsn).to eq("https://#{configuration.public_key}@canine.example.com/#{configuration.id}")
+  it 'shows the DSN on the project resource, lists issues, shows the stack trace and resolves an issue' do
+    resource = Resources::Router.call("canine://accounts/#{project.account.id}/projects/#{project.id}", context)
+    dsn = JSON.parse(resource.first[:text])['error_tracking_dsn']
+    expect(dsn).to eq("https://#{configuration.public_key}@canine.example.com/#{configuration.id}") # APP_HOST from .env.test
 
     issues = JSON.parse(text(Tools::ListErrorIssues.call(project_id: project.id, server_context: context)))
     expect(issues.map { |i| i['title'] }).to eq([ "NoMethodError: undefined method 'name' for nil" ])
@@ -53,17 +54,5 @@ RSpec.describe 'Error tracking MCP tools' do
     response = Tools::GetErrorIssue.call(project_id: project.id, issue_id: issue.id, server_context: { user_id: outsider.id })
 
     expect(response.error?).to be true
-  end
-
-  it 'enables error tracking for a project that does not have it' do
-    other = create(:project, cluster: project.cluster, account: project.account)
-    expect(Tools::GetErrorTrackingDsn.call(project_id: other.id, server_context: context).error?).to be true
-
-    2.times { Tools::EnableErrorTracking.call(project_id: other.id, server_context: context) }
-    dsn = JSON.parse(text(Tools::GetErrorTrackingDsn.call(project_id: other.id, server_context: context)))['dsn']
-
-    expect(ErrorTrackingConfiguration.where(project: other).count).to eq(1)
-    configuration = other.error_tracking_configuration
-    expect(dsn).to eq("https://#{configuration.public_key}@canine.example.com/#{configuration.id}") # from APP_HOST in .env.test
   end
 end

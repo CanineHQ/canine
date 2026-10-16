@@ -45,7 +45,7 @@ module Tools
         unless project.error_tracking_configuration
           return MCP::Tool::Response.new([ {
             type: "text",
-            text: "Error tracking is not enabled for this project. Use enable_error_tracking to turn it on."
+            text: "Error tracking is not enabled for this project. Turn it on with update_project (error_tracking: true)."
           } ], error: true)
         end
 
