@@ -5,6 +5,6 @@ class AddOns::Update
 
   executed do |context|
     add_on = context.add_on
-    add_on.save
+    context.fail_and_return!(add_on.errors.full_messages.to_sentence) unless add_on.save
   end
 end
