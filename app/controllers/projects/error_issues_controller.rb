@@ -3,7 +3,6 @@ class Projects::ErrorIssuesController < Projects::BaseController
     "24h" => { buckets: 24, step: 1.hour, unit: "hour" },
     "14d" => { buckets: 14, step: 1.day, unit: "day" }
   }.freeze
-  BULK_ACTIONS = %w[resolved unresolved ignored delete].freeze
 
   before_action :set_configuration
   before_action :set_error_issue, only: %i[show update destroy]
@@ -38,13 +37,12 @@ class Projects::ErrorIssuesController < Projects::BaseController
   def bulk
     status = ErrorTracking::Issue.statuses.key?(params[:status]) ? params[:status] : "unresolved"
     action = params[:bulk_action]
-    return redirect_to(project_error_issues_path(@project, status:), alert: "Unknown action.") unless BULK_ACTIONS.include?(action)
+    result = ErrorIssues::BulkUpdate.execute(
+      configuration: @configuration, status:, bulk_action: action, ids: params[:ids], all_matching: params[:all_matching] == "1"
+    )
+    return redirect_to(project_error_issues_path(@project, status:), alert: result.message) if result.failure?
 
-    scope = @configuration.issues.where(status:)
-    scope = scope.where(id: Array(params[:ids])) unless params[:all_matching] == "1"
-    count = action == "delete" ? scope.delete_all : scope.update_all(status: action, updated_at: Time.current)
-
-    message = "#{count} #{'issue'.pluralize(count)} #{action == 'delete' ? 'deleted' : "marked #{action}"}."
+    message = "#{result.updated_count} #{'issue'.pluralize(result.updated_count)} #{action == 'delete' ? 'deleted' : "marked #{action}"}."
     redirect_to project_error_issues_path(@project, status:, period: params[:period]), notice: message
   end
 
