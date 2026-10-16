@@ -127,6 +127,12 @@ class MCPController < ActionController::API
         mime_type: "application/json"
       ),
       MCP::ResourceTemplate.new(
+        uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds/{build_id}",
+        name: "project-build",
+        description: "One build in detail, including its deployment and log output",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
         uri_template: "canine://accounts/{account_id}/projects/{project_id}/environment_variables",
         name: "project-environment-variables",
         description: "List all environment variable names and storage types for a project (values are not included)",
