@@ -18,7 +18,9 @@ module Api
           platform: @issue.platform,
           times_seen: @issue.times_seen,
           first_seen_at: @issue.first_seen_at,
-          last_seen_at: @issue.last_seen_at
+          last_seen_at: @issue.last_seen_at,
+          first_release: @issue.first_release,
+          last_release: @issue.last_release
         }
       end
     end
