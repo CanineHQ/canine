@@ -13,9 +13,9 @@ module ErrorTracking
     def users_count
       @users_count ||= select_value(<<~SQL).to_i
         SELECT COUNT(DISTINCT COALESCE(
-          NULLIF(payload #>> '{user,id}', ''), NULLIF(payload #>> '{user,email}', ''),
-          NULLIF(payload #>> '{user,ip_address}', ''), NULLIF(payload #>> '{user,username}', '')))
-        FROM sample WHERE jsonb_typeof(payload -> 'user') = 'object'
+          NULLIF(user_data ->> 'id', ''), NULLIF(user_data ->> 'email', ''),
+          NULLIF(user_data ->> 'ip_address', ''), NULLIF(user_data ->> 'username', '')))
+        FROM sample WHERE jsonb_typeof(user_data) = 'object'
       SQL
     end
 
@@ -27,13 +27,13 @@ module ErrorTracking
           SELECT key, value, COUNT(DISTINCT id) FROM (
             SELECT id, 'environment' AS key, environment AS value FROM sample
             UNION ALL SELECT id, 'release', release FROM sample
-            UNION ALL SELECT id, 'server_name', payload ->> 'server_name' FROM sample
-            UNION ALL SELECT id, 'url', payload #>> '{request,url}' FROM sample WHERE jsonb_typeof(payload -> 'request') = 'object'
+            UNION ALL SELECT id, 'server_name', server_name FROM sample
+            UNION ALL SELECT id, 'url', request ->> 'url' FROM sample WHERE jsonb_typeof(request) = 'object'
             #{%w[browser os runtime].map { |name| context_tag_sql(name) }.join("\n")}
-            UNION ALL SELECT sample.id, tag.key, tag.value FROM sample, jsonb_each_text(payload -> 'tags') tag
-              WHERE jsonb_typeof(payload -> 'tags') = 'object'
-            UNION ALL SELECT sample.id, pair ->> 0, pair ->> 1 FROM sample, jsonb_array_elements(payload -> 'tags') pair
-              WHERE jsonb_typeof(payload -> 'tags') = 'array' AND jsonb_typeof(pair) = 'array'
+            UNION ALL SELECT sample.id, tag.key, tag.value FROM sample, jsonb_each_text(tags) tag
+              WHERE jsonb_typeof(tags) = 'object'
+            UNION ALL SELECT sample.id, pair ->> 0, pair ->> 1 FROM sample, jsonb_array_elements(tags) pair
+              WHERE jsonb_typeof(tags) = 'array' AND jsonb_typeof(pair) = 'array'
           ) tag_rows
           WHERE key IS NOT NULL AND value IS NOT NULL AND value <> ''
           GROUP BY key, value
@@ -50,13 +50,18 @@ module ErrorTracking
 
     # Contexts such as browser/os/runtime become "Chrome 141.0.0"-style tag values.
     def context_tag_sql(name)
-      "UNION ALL SELECT id, '#{name}', concat_ws(' ', payload #>> '{contexts,#{name},name}', payload #>> '{contexts,#{name},version}') " \
-        "FROM sample WHERE jsonb_typeof(payload #> '{contexts,#{name}}') = 'object' AND payload #>> '{contexts,#{name},name}' IS NOT NULL"
+      "UNION ALL SELECT id, '#{name}', concat_ws(' ', contexts #>> '{#{name},name}', contexts #>> '{#{name},version}') " \
+        "FROM sample WHERE jsonb_typeof(contexts -> '#{name}') = 'object' AND contexts #>> '{#{name},name}' IS NOT NULL"
     end
 
+    # Payloads are large and stored compressed, and every reference to one decompresses it again. jsonb_to_record
+    # reads each payload once and keeps only the small fields the queries above need.
     def sample_cte
-      "WITH sample AS (SELECT id, environment, release, payload FROM error_tracking_events " \
-        "WHERE issue_id = :issue_id ORDER BY occurred_at DESC LIMIT :limit)"
+      "WITH sample AS MATERIALIZED (" \
+        "SELECT event.id, event.environment, event.release, fields.server_name, fields.request, fields.contexts, " \
+        "fields.tags, fields.user AS user_data FROM (SELECT id, environment, release, payload FROM error_tracking_events " \
+        "WHERE issue_id = :issue_id ORDER BY occurred_at DESC LIMIT :limit) event, " \
+        "jsonb_to_record(event.payload) AS fields(server_name text, request jsonb, contexts jsonb, tags jsonb, \"user\" jsonb))"
     end
 
     def select_value(sql)
