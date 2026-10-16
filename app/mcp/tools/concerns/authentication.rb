@@ -60,13 +60,6 @@ module Tools
           }.first
         end
 
-        # Team-scoped like the web UI: members of an account with teams only reach their teams' clusters.
-        def find_cluster(cluster_id, account_users)
-          account_users.lazy.filter_map { |au|
-            ::Clusters::VisibleToUser.execute(account_user: au).clusters.find_by(id: cluster_id)
-          }.first
-        end
-
         def find_add_on(add_on_id, account_users)
           account_users.lazy.filter_map { |au|
             ::AddOns::VisibleToUser.execute(account_user: au).add_ons.find_by(id: add_on_id)

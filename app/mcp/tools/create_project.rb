@@ -58,7 +58,9 @@ module Tools
                   dockerfile_path: "./Dockerfile", docker_build_context_directory: ".",
                   predeploy_command: nil, account_id: nil, server_context:)
       with_account_user(server_context: server_context, account_id: account_id) do |user, account_user|
-        cluster = find_cluster(cluster_id, [ account_user ])
+        account = account_user.account
+
+        cluster = account.clusters.find_by(id: cluster_id)
         unless cluster
           return MCP::Tool::Response.new([ {
             type: "text",
