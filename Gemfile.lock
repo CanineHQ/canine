@@ -375,7 +375,7 @@ GEM
       net-smtp
     marcel (1.2.1)
     matrix (0.4.3)
-    mcp (1.7.0)
+    mcp (1.8.0)
       json_schemer (>= 2.4)
     meta-tags (2.23.0)
       actionpack (>= 6.0.0)
@@ -796,7 +796,7 @@ DEPENDENCIES
   kubeclient (~> 4.12)
   letter_opener
   light-service (~> 0.21.0)
-  mcp (~> 1.7.0)
+  mcp (~> 1.8.0)
   name_of_person!
   net-ldap (~> 0.20.0)
   noticed (~> 2.9)
