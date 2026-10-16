@@ -32,6 +32,7 @@ class AddOns::Create
 
   def self.call(add_on, user)
     with(add_on:, user:).reduce(
+      AddOns::VerifyPermissions,
       AddOns::Create::ToNamespaced,
       Namespaced::SetUpNamespace,
       Namespaced::ValidateNamespace,
