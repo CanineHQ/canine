@@ -13,7 +13,7 @@ import re
 import subprocess
 import time
 
-from . import agent_workspace, windows
+from . import windows
 
 SOCKET = "canine"   # tmux -L canine: the agent's own tmux server
 MAX_WAIT = 90       # seconds; Canine waits 120 for a reply
@@ -22,17 +22,19 @@ IDLE_SECONDS = 3    # `wait` with no text: the screen hasn't changed for this lo
 
 def list_sessions():
     sessions = []
-    for line in _tmux("list-sessions", "-F", "#{session_name}\t#{pane_current_command}\t#{pane_dead}",
+    for line in _tmux("list-sessions", "-F", "#{session_name}\t#{pane_current_command}\t#{pane_dead}\t#{@workspace}",
                       check=False).splitlines():
-        name, command, dead = line.split("\t")
-        sessions.append({"session": name, "running": command, "finished": dead == "1"})
+        name, command, dead, workspace = line.split("\t")
+        sessions.append({"session": name, "running": command, "finished": dead == "1",
+                         "workspace": int(workspace) if workspace.isdigit() else None})
     return {"sessions": sessions}
 
 
 def open_session(command=None, session=None, cwd=None, show=True, workspace=None):
     """Start `command` (default: a shell) in a new session, in the home directory or `cwd`. With `show`, also open a
-    terminal window attached to it, so the person can watch: on the agent's workspace unless `workspace` says
-    otherwise, without switching to it (agent_workspace)."""
+    terminal window attached to it, so the person can watch: on `workspace` (or one chosen), without switching to it
+    (see workspaces). The session belongs to that workspace (shown or not, when one's given), so clearing the
+    workspace ends it, and only it: runs side by side each clear their own."""
     session = session or _free_name()
     if not re.fullmatch(r"[\w.-]+", session):
         raise ValueError("session names may only use letters, digits, '.', '_' and '-'")
@@ -42,8 +44,12 @@ def open_session(command=None, session=None, cwd=None, show=True, workspace=None
     _tmux("set-option", "-t", session, "remain-on-exit", "on")
     result = {"session": session}
     if show:
-        result["window"] = windows.open_app(f"foot -e tmux -L {SOCKET} attach -t {session}",
-                                            workspace or agent_workspace.WORKSPACE).get("window")
+        opened = windows.open_app(f"foot -e tmux -L {SOCKET} attach -t {session}", workspace)
+        result.update(window=opened.get("window"), workspace=opened["workspace"])
+    elif workspace is not None:
+        result["workspace"] = int(workspace)
+    if result.get("workspace") is not None:
+        _tmux("set-option", "-t", session, "@workspace", str(result["workspace"]))
     return result
 
 
@@ -93,9 +99,9 @@ def close(session):
     return {}
 
 
-def close_all():
-    """End every one of the agent's sessions (when a run is over: see agent_workspace.clear)."""
-    sessions = [s["session"] for s in list_sessions()["sessions"]]
+def close_workspace(workspace):
+    """End the sessions that belong to `workspace` (when the run there is over: see workspaces.clear)."""
+    sessions = [s["session"] for s in list_sessions()["sessions"] if s["workspace"] == int(workspace)]
     for session in sessions:
         _tmux("kill-session", "-t", session, check=False)
     return {"terminal_sessions_ended": len(sessions)}

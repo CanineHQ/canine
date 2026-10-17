@@ -11,7 +11,9 @@ require_relative "kubevirt_vnc_relay"
 #
 # Paths:
 #   /agent_computers/:id/proxy/*         — Selkies desktop (HTTP + /websockets WebSocket)
-#   /agent_computers/:id/computer-use/*  — the computer-use server (HTTP; see resources/agent_computer/computer_use)
+#   /agent_computers/:id/computer-use/human/*  — who has the screen, from the computer-use server (HTTP; see
+#                                               resources/agent_computer/computer_use/human.py). Only that part of
+#                                               its API: the rest runs commands on the computer, for Canine alone.
 #   /agent_computers/:id/vnc             — the VM's own screen via KubeVirt's VNC subresource (WebSocket)
 class AgentComputerProxy
   # Mirrors AgentComputer::DESKTOP_PORT and COMPUTER_USE_PORT; app models aren't autoloadable when middleware loads
@@ -39,7 +41,9 @@ class AgentComputerProxy
       remote_port = TARGET_PORTS.fetch(match[2])
       subpath = match[3] || ""
 
-      if websocket?(env)
+      if match[2] == "computer-use" && !subpath.start_with?("human/")
+        [ 404, {}, [ "Not found" ] ]
+      elsif websocket?(env)
         handle_websocket(env, request, sandbox_id, remote_port, subpath)
       else
         handle_http(env, request, sandbox_id, remote_port, subpath)
@@ -238,6 +242,7 @@ class AgentComputerProxy
     # Forward relevant headers
     upstream_request["Accept"] = env["HTTP_ACCEPT"] if env["HTTP_ACCEPT"]
     upstream_request["Content-Type"] = env["CONTENT_TYPE"] if env["CONTENT_TYPE"]
+    upstream_request["Authorization"] = "Bearer #{sandbox.computer_use_token}" if remote_port == TARGET_PORTS["computer-use"]
 
     response = http.request(upstream_request)
 

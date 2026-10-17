@@ -14,6 +14,7 @@ class AgentComputer::Omarchy
   ISO_DISK_SIZE = "8Gi" # the ISO is ~6.2GB
   SETUP_SCRIPT = Rails.root.join("resources/agent_computer/omarchy-setup.sh")
   COMPUTER_USE_SERVER = Rails.root.join("resources/agent_computer/computer_use")
+  BIGARROW = Rails.root.join("resources/agent_computer/bigarrow") # draws on browse screenshots what was clicked, and where
   # Pinned Selkies build for Arch, installed by the setup script
   SELKIES_PACKAGE_URL = "https://github.com/selkies-project/selkies/releases/download/2.0.0/selkies-2.0.0-x86_64.pkg.tar.zst"
   SELKIES_PACKAGE_SHA256 = "39d195ac7acb2924f57cfa564aa97f2ede0d6a5f3c92720c1906142c824a8f74"
@@ -94,6 +95,7 @@ class AgentComputer::Omarchy
       "SETUP_PASSWORD" => @computer.password,
       "DESKTOP_PORT" => AgentComputer::DESKTOP_PORT.to_s,
       "COMPUTER_USE_PORT" => AgentComputer::COMPUTER_USE_PORT.to_s,
+      "COMPUTER_USE_TOKEN" => @computer.computer_use_token,
       "SELKIES_PACKAGE_URL" => SELKIES_PACKAGE_URL,
       "SELKIES_PACKAGE_SHA256" => SELKIES_PACKAGE_SHA256
     }.merge(turn_environment)
@@ -109,11 +111,12 @@ class AgentComputer::Omarchy
     { "CLOUDFLARE_TURN_TOKEN_ID" => id, "CLOUDFLARE_TURN_API_TOKEN" => token }
   end
 
-  # The computer-use server's Python project (pyproject.toml and the package) as a .tar.gz, which the setup unpacks
-  # into ~/.local/share/canine/computer_use and pip-installs
+  # The Python projects the computer runs, the computer-use server and bigarrow, as one .tar.gz, which the setup
+  # unpacks into ~/.local/share/canine/{computer_use,bigarrow} and pip-installs
   def self.computer_use_archive
     archive, status = Open3.capture2("tar", "-czf", "-", "--exclude=__pycache__", "--exclude=build", "--exclude=*.egg-info",
-                                     "-C", COMPUTER_USE_SERVER.dirname.to_s, COMPUTER_USE_SERVER.basename.to_s, binmode: true)
+                                     "-C", COMPUTER_USE_SERVER.dirname.to_s, COMPUTER_USE_SERVER.basename.to_s, BIGARROW.basename.to_s,
+                                     binmode: true)
     raise "Couldn't archive #{COMPUTER_USE_SERVER}" unless status.success?
 
     archive

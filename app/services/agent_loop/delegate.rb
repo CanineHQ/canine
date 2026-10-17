@@ -45,7 +45,8 @@ module AgentLoop
       SH
       computer_use.run("mkdir -p #{dir} && echo #{Base64.strict_encode64(args["instructions"].to_s)} | base64 -d > #{dir}/prompt && " \
                        "echo #{Base64.strict_encode64(script)} | base64 -d > #{dir}/run.sh")
-      computer_use.terminal(:open, session: id, command: "bash #{dir}/run.sh", show: false)
+      # In the run's workspace (no window), so clearing the workspace when the run's over ends it too
+      computer_use.terminal(:open, session: id, command: "bash #{dir}/run.sh", show: false, workspace: session.workspace)
       AgentSessions::DelegateWatchJob.set(wait: AgentSessions::DelegateWatchJob::CHECK_EVERY).perform_later(session, id)
       Tools::Result.new(text: "Started the coding agent (terminal session #{id}). You'll get its output when it finishes.",
                         signal: :waiting_for_tool)

@@ -2,9 +2,9 @@
 # Turns a fresh Omarchy install into an agent computer: streams the Hyprland session to the browser with Selkies.
 # AgentComputers::ProvisionJob runs it over SSH as the desktop user once the unattended install has finished, with
 # SETUP_PASSWORD (the generated password, for sudo until it's removed below), DESKTOP_PORT, COMPUTER_USE_PORT,
-# SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
+# COMPUTER_USE_TOKEN, SELKIES_PACKAGE_URL and SELKIES_PACKAGE_SHA256 set. Safe to run again.
 set -euo pipefail
-: "${SETUP_PASSWORD:?}" "${DESKTOP_PORT:?}" "${COMPUTER_USE_PORT:?}" "${SELKIES_PACKAGE_URL:?}" "${SELKIES_PACKAGE_SHA256:?}"
+: "${SETUP_PASSWORD:?}" "${DESKTOP_PORT:?}" "${COMPUTER_USE_PORT:?}" "${COMPUTER_USE_TOKEN:?}" "${SELKIES_PACKAGE_URL:?}" "${SELKIES_PACKAGE_SHA256:?}"
 as_root() { printf '%s\n' "$SETUP_PASSWORD" | sudo -S -p '' "$@"; }
 
 # --- Selkies ---------------------------------------------------------------------------------------------------------
@@ -114,50 +114,11 @@ touch ~/.local/state/omarchy/toggles/screensaver-off
 
 # --- Computer use: lets agents see and drive the desktop ------------------------------------------------------------
 # The server is a Python package (resources/agent_computer/computer_use), copied to ~/.local/share/canine/computer_use
-# before this ran. It goes in its own venv; --system-site-packages lets it use Omarchy's PyGObject for AT-SPI.
+# before this ran, with bigarrow next to it (it marks on browse screenshots what was clicked). They go in their own venv;
+# --system-site-packages lets them use Omarchy's PyGObject (AT-SPI, Pango) and pycairo. The server's own `setup`
+# command gets the desktop ready for it and installs its service, once sudo stops asking (below).
 python3 -m venv --system-site-packages ~/.local/share/canine/venv
-~/.local/share/canine/venv/bin/pip install --quiet --disable-pip-version-check ~/.local/share/canine/computer_use
-
-# It clicks and presses keys through a virtual input device, which the desktop user (in wheel) may create.
-echo uinput > /tmp/canine-uinput.conf
-as_root install -m 644 /tmp/canine-uinput.conf /etc/modules-load.d/canine-uinput.conf
-echo 'KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", GROUP="wheel", MODE="0660"' > /tmp/60-canine-uinput.rules
-as_root install -m 644 /tmp/60-canine-uinput.rules /etc/udev/rules.d/60-canine-uinput.rules
-rm /tmp/canine-uinput.conf /tmp/60-canine-uinput.rules
-as_root modprobe uinput
-
-# Apps only publish their accessibility tree (what agents read and press by name) when asked: GTK through this
-# setting, Qt through QT_ACCESSIBILITY, Chromium through a flag
-gsettings set org.gnome.desktop.interface toolkit-accessibility true
-mkdir -p ~/.config/environment.d
-echo QT_ACCESSIBILITY=1 > ~/.config/environment.d/60-canine-accessibility.conf
-grep -qx -- --force-renderer-accessibility ~/.config/chromium-flags.conf 2>/dev/null ||
-  echo --force-renderer-accessibility >> ~/.config/chromium-flags.conf
-
-# browse (browser-use) drives Chromium over the DevTools protocol on a port that listens only inside the VM. The
-# open-source Chromium Arch ships allows this on the normal profile (Google Chrome-branded builds would not: they
-# need a non-default --user-data-dir). Restart Chromium after adding the flag for it to take effect.
-grep -qx -- --remote-debugging-port=9222 ~/.config/chromium-flags.conf 2>/dev/null ||
-  echo --remote-debugging-port=9222 >> ~/.config/chromium-flags.conf
-
-cat > ~/.config/systemd/user/canine-computer-use.service <<UNIT
-[Unit]
-Description=Canine computer-use server
-After=graphical-session.target
-PartOf=graphical-session.target
-
-[Service]
-ExecStart=%h/.local/share/canine/venv/bin/canine-computer-use --port ${COMPUTER_USE_PORT}
-Restart=always
-RestartSec=2
-# Restarting the server (a deploy) mustn't take the terminal sessions it started with it: tmux runs in this unit
-KillMode=process
-
-[Install]
-WantedBy=graphical-session.target
-UNIT
-ln -sf ../canine-computer-use.service ~/.config/systemd/user/graphical-session.target.wants/canine-computer-use.service
-as_root ufw allow "${COMPUTER_USE_PORT}/tcp" comment "Computer use (Canine)" >/dev/null
+~/.local/share/canine/venv/bin/pip install --quiet --disable-pip-version-check ~/.local/share/canine/computer_use ~/.local/share/canine/bigarrow
 
 # The computer-use tools for agent harnesses running on this computer (scheduled tasks), as a standard mcpServers
 # config; AgentComputerTask's commands point at it with $CANINE_MCP_CONFIG
@@ -223,6 +184,12 @@ polkit.addRule(function(action, subject) {
 RULES
 sudo install -m 644 /tmp/49-canine-nopasswd.rules /etc/polkit-1/rules.d/49-canine-nopasswd.rules
 rm /tmp/49-canine-nopasswd.rules
+
+# The computer-use server's setup (virtual input device, accessibility, Chromium's debugging port, its token, its user
+# service). It listens on the VM's interface for kubectl port-forward and takes requests with Canine's token
+# (COMPUTER_USE_TOKEN, from the environment); a NetworkPolicy blocks the rest of the cluster as well.
+COMPUTER_USE_TOKEN="$COMPUTER_USE_TOKEN" ~/.local/share/canine/venv/bin/canine-computer-use setup --host 0.0.0.0 --port "${COMPUTER_USE_PORT}" --open-firewall
+
 # Idle locking off. Omarchy's "stay awake" flag does this, but omarchy-update deletes it when it finishes, so also set
 # the idle timeouts as long as Omarchy's timers allow (~23 days; 0 would mean "immediately").
 mkdir -p ~/.local/state/omarchy/indicators

@@ -42,6 +42,7 @@ class AgentComputer::Session::Action < ApplicationRecord
 
   after_create_commit lambda {
     broadcast_append_to session, target: dom_id(activity, :actions), partial: "agent_sessions/action", locals: { action: self, animate: true } unless look_only?
+    broadcast_running_card
   }
   after_update_commit :broadcast_changes
 
@@ -52,7 +53,7 @@ class AgentComputer::Session::Action < ApplicationRecord
 
   def label
     return "browse: #{arguments["task"].to_s.truncate(70)}" if tool == "browse"
-    return arguments["goal"].to_s.truncate(80).presence || "browser step" if tool == "browse_step"
+    return browse_step_label if tool == "browse_step"
 
     args = arguments.except("agent_computer_id", "intent")
     detail = args.slice("action", "operation").values.first
@@ -60,15 +61,30 @@ class AgentComputer::Session::Action < ApplicationRecord
     [ tool.delete_prefix("computer_"), detail, target.presence && "“#{target.to_s.truncate(60)}”" ].compact.join(" ")
   end
 
+  # Where its screenshot was taken: "before" what it says it did (the screen it decided from), or "after"
+  def screenshot_moment
+    tool == "browse_step" && arguments["marked"] != "after" ? "before" : "after"
+  end
+
   private
+
+  # What the step did ("Clicked “Pay invoice”"); steps from before those were recorded say what it was trying to do
+  def browse_step_label
+    did = Array(arguments["did"]) - [ "Finished" ]
+    did.any? ? did.join(" · ").truncate(120) : arguments["goal"].to_s.truncate(80).presence || "browser step"
+  end
 
   def broadcast_changes
     broadcast_replace_to session, target: dom_id(self), partial: "agent_sessions/action", locals: { action: self } unless look_only?
+    broadcast_running_card # (with its thumbnail: what's on screen now)
     return unless screenshot.attached?
 
     broadcast_replace_to session, target: dom_id(session, :screen), partial: "agent_sessions/screen", locals: { action: self }
     broadcast_replace_to session, target: dom_id(activity, :shots), partial: "agent_sessions/shots", locals: { activity: }
-    # Keep the feed's live run thumbnail current with what's on screen now.
+  end
+
+  # The feed's card for the run in progress: what it's doing, and when it last moved
+  def broadcast_running_card
     broadcast_replace_to [ session.agent_computer, :feed ], target: dom_id(session, :running), partial: "agent_posts/running", locals: { session: } if session.active?
   end
 end

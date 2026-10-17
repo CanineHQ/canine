@@ -3,7 +3,7 @@
 The desktop treats it like any other plugged-in device, so its key presses reach Hyprland's shortcuts exactly like a
 real keyboard's (by physical key code), and its clicks go wherever the cursor is.
 
-/dev/uinput is opened as the desktop user; omarchy-setup.sh gives the wheel group access to it.
+/dev/uinput is opened as the desktop user; setup.py gives the user's group access to it.
 """
 
 import fcntl

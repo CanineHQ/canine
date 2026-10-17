@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_10_110130) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_13_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -174,6 +174,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_110130) do
     t.string "provider"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "workspace"
     t.index ["agent_computer_id"], name: "index_agent_computer_sessions_on_agent_computer_id"
     t.index ["task_id", "status"], name: "index_agent_computer_sessions_on_task_id_and_status"
     t.index ["task_id"], name: "index_agent_computer_sessions_on_task_id"
@@ -193,6 +194,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_110130) do
     t.string "time_zone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "workspace"
     t.index ["agent_computer_id"], name: "index_agent_computer_tasks_on_agent_computer_id"
     t.index ["enabled", "next_run_at"], name: "index_agent_computer_tasks_on_enabled_and_next_run_at"
   end
@@ -212,6 +214,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_110130) do
     t.string "browse_model"
     t.string "coding_model"
     t.string "coding_agent"
+    t.string "computer_use_token"
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end

@@ -11,9 +11,8 @@ import json
 import shlex
 import subprocess
 import time
-from contextlib import nullcontext
 
-from . import agent_workspace, cdp, desktop
+from . import cdp, desktop, workspaces
 
 OPEN_TIMEOUT = 15  # seconds to wait for a new window to appear
 
@@ -24,36 +23,34 @@ def list_windows():
 
 def open_app(command, workspace=None, maximize=False):
     """Start an app the way Omarchy's shortcuts do (uwsm-app, so it lives in its own systemd scope, not in this
-    server), and return its new window. `command` is a program and arguments, e.g. "nautilus ~/Downloads". With a
-    `workspace`, the window opens there without switching to it or taking focus (see agent_workspace), so the person
-    can keep working; without one, it opens on the workspace they're looking at. With `maximize`, the window fills
-    the screen (see maximize)."""
+    server), and return its new window and the workspace it's on. `command` is a program and arguments, e.g.
+    "nautilus ~/Downloads". The window opens on `workspace` (or one chosen: see workspaces.choose) without switching
+    to it or taking focus, so the person can keep working. With `maximize`, the window fills the screen."""
+    workspace = workspaces.resolve(workspace)
     before = {w["id"] for w in desktop.windows()}
     # The placement rule catches whatever opens next, the person's windows too, so it's only on until the app's first
     # window appears; any it opens after that are moved over below
-    with agent_workspace.placing(workspace) if workspace is not None else nullcontext():
+    with workspaces.placing(workspace):
         subprocess.Popen(["uwsm-app", "--", *shlex.split(command)], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                          stderr=subprocess.DEVNULL, start_new_session=True)
-        if workspace is not None:
-            agent_workspace.wait_for_new(before, timeout=OPEN_TIMEOUT)
+        workspaces.wait_for_new(before, timeout=OPEN_TIMEOUT)
     new = _wait_for_new_windows(before)
-    if workspace is not None:
-        agent_workspace.tag([w["id"] for w in new])
+    workspaces.tag([w["id"] for w in new])
     if not new:
-        return {"window": None, "note": f"No new window within {OPEN_TIMEOUT}s. It may still be starting (check list), "
-                                        "or it reused an existing window (some apps open a tab in their running window)."}
-    if workspace is not None:
-        # Apps that are already running (a browser) may open next to their existing window instead: move them over
-        for w in new:
-            if w["workspace"] != int(workspace):
-                _dispatch("hl.dsp.window.move", workspace=str(int(workspace)), window=f"address:{w['id']}", follow=False)
-                w["workspace"] = int(workspace)
+        return {"window": None, "workspace": workspace,
+                "note": f"No new window within {OPEN_TIMEOUT}s. It may still be starting (check list), "
+                        "or it reused an existing window (some apps open a tab in their running window)."}
+    # Apps that are already running may open next to their existing window instead: move them over
+    for w in new:
+        if w["workspace"] != workspace:
+            _dispatch("hl.dsp.window.move", workspace=str(workspace), window=f"address:{w['id']}", follow=False)
+            w["workspace"] = workspace
     # The focused one is the app's main window or its first dialog; list the rest (e.g. a welcome dialog) too
     window = next((w for w in new if w["focused"]), new[-1])
     if maximize:
         maximize_window(window["id"])
         window = next((w for w in desktop.windows() if w["id"] == window["id"]), window)
-    return {"window": window, "other_new_windows": [w for w in new if w["id"] != window["id"]]}
+    return {"window": window, "workspace": workspace, "other_new_windows": [w for w in new if w["id"] != window["id"]]}
 
 
 def _wait_for_new_windows(before):
@@ -72,23 +69,22 @@ def _wait_for_new_windows(before):
 
 
 def open_url(url, workspace=None, maximize=False):
-    """Open a URL in a new browser window. (Without --new-window, a browser that's already running opens it as a tab
-    in the person's own window.) With a `workspace`, the window is made over Chromium's debugging port instead: the
-    command line makes the running browser activate the window the person used last, taking their focus."""
-    if workspace is None:
-        return open_app(f"omarchy-launch-browser --new-window {shlex.quote(url)}", workspace, maximize)
+    """Open a URL in a new browser window, on `workspace` (or one chosen), and return it. The window is made over
+    Chromium's debugging port: from the command line, the running browser would activate the window the person used
+    last, taking their focus (and without --new-window, open a tab in it)."""
+    workspace = workspaces.resolve(workspace)
     before = {w["id"] for w in desktop.windows()}
-    with agent_workspace.placing(workspace):
+    with workspaces.placing(workspace):
         with cdp.connect() as call:
             call("Target.createTarget", {"url": url, "newWindow": True, "background": True})
-        agent_workspace.tag(agent_workspace.wait_for_new(before))
+        workspaces.tag(workspaces.wait_for_new(before))
     new = [w for w in desktop.windows() if w["id"] not in before]
     if not new:
-        return {"window": None, "note": "No new browser window appeared."}
+        return {"window": None, "workspace": workspace, "note": "No new browser window appeared."}
     if maximize:
         maximize_window(new[0]["id"])
         new = [w for w in desktop.windows() if w["id"] == new[0]["id"]]
-    return {"window": new[0], "other_new_windows": new[1:]}
+    return {"window": new[0], "workspace": workspace, "other_new_windows": new[1:]}
 
 
 def focus(id):
@@ -118,7 +114,7 @@ def maximize_window(id):
     address = _address(id)
     if next(w for w in desktop.windows() if w["id"] == id)["maximized"]:
         return {"maximized": True}
-    # Addressed directly rather than focused first, so a window on the agent's workspace doesn't pull the person there
+    # Addressed directly rather than focused first, so a window on another workspace doesn't pull the person there
     _dispatch("hl.dsp.window.fullscreen", mode="maximized", window=address)
     return {"maximized": next((w["maximized"] for w in desktop.windows() if w["id"] == id), False)}
 

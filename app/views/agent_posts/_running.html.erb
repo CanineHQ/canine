@@ -6,22 +6,31 @@
     <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
       <div class="flex flex-col gap-3">
         <% waiting = session.waiting_in_queue? %>
-        <header class="flex items-center gap-3">
+        <% progress = session.last_progress_at %>
+        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (stalled_controller.js); waiting
+            for the person isn't stalling %>
+        <header class="flex items-center gap-3" data-controller="stalled" data-stalled-since-value="<%= progress.iso8601 %>"
+                data-stalled-after-value="<%= waiting || session.waiting_for_human? ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
             <% if waiting %>
               <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
+            <% elsif session.waiting_for_human? %>
+              <iconify-icon icon="lucide:hand" height="16" class="text-info"></iconify-icon>
             <% else %>
-              <span class="loading loading-spinner loading-sm text-primary"></span>
+              <span data-stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
+              <iconify-icon data-stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>
             <% end %>
           </span>
           <div class="min-w-0 flex-1 leading-tight">
             <div class="truncate text-sm font-semibold"><%= session.task&.name || "Agent run" %></div>
             <div class="truncate text-xs text-base-content/50">
               <% if waiting %>
-                Queued · will run after the current session
+                Queued · starts when a run going now finishes
               <% else %>
-                Working… · started
-                <time datetime="<%= session.created_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(session.created_at) %> ago</time>
+                <span data-stalled-target="working"><%= agent_session_doing(session) %> · last step
+                  <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time></span>
+                <span data-stalled-target="stuck" class="hidden text-warning">No progress since
+                  <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time> · may be stuck</span>
               <% end %>
             </div>
           </div>

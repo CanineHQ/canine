@@ -84,7 +84,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       # Stays on the feed, where the running session shows at the top.
       expect(response).to redirect_to(agent_computer_agent_posts_path(computer))
       get agent_computer_agent_posts_path(computer)
-      expect(response.body).to include("Working…")
+      expect(response.body).to include("Starting · last step")
 
       # Schedule: a preset becomes a cron, enabled, and no session starts now.
       expect {
@@ -110,21 +110,22 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       expect(flash[:alert]).to match(/must be running/)
     end
 
-    it "queues a run behind the one already going, and starts it when that finishes" do
+    it "starts runs side by side, and queues one once the computer has as many going as it takes" do
       post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "first", every: "now" }
-      first = computer.sessions.sole
+      expect(flash[:notice]).to match(/On it/)
+      computer.sessions.sole.update!(status: :running, workspace: 2)
 
       expect {
         post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "second", every: "now" }
-      }.to change { computer.sessions.count }.by(1)
-      second = computer.sessions.order(:created_at).last
-      expect(second).to be_queued
-      expect(second.waiting_in_queue?).to be(true)
+      }.to have_enqueued_job(AgentSessions::TurnJob)
+      expect(flash[:notice]).to match(/On it/) # alongside the first
+
+      stub_const("AgentComputer::PARALLEL_RUNS", 1)
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "third", every: "now" }
+      expect(computer.sessions.order(:created_at).last.waiting_in_queue?).to be(true)
       expect(flash[:notice]).to match(/Queued/)
       get agent_computer_agent_posts_path(computer)
       expect(response.body).to include("Queued")
-
-      expect { first.finish!(:succeeded, summary: "done") }.to have_enqueued_job(AgentSessions::TurnJob).with(second)
     end
   end
   describe "machine model settings" do

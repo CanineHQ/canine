@@ -35,8 +35,14 @@ module AgentSessions
       else
         finished(session, parent, task, done)
       end
-    rescue AgentComputers::ComputerUse::Error
-      self.class.set(wait: 10.seconds).perform_later(session, job_id, task, cursor) # the computer is briefly unreachable
+    rescue AgentComputers::ComputerUse::Error => e
+      lost = e.message.start_with?("No browse job") # the server restarted, and the job with it
+      if lost || should_stop?(session)
+        reason = lost ? "the browser job was lost (the computer-use server restarted)" : "the computer stopped answering"
+        finished(session, session.actions.running.where(tool: "browse").last, task, { "kind" => "error", "message" => reason })
+      else
+        self.class.set(wait: 10.seconds).perform_later(session, job_id, task, cursor) # the computer is briefly unreachable
+      end
     end
 
     private
@@ -70,13 +76,16 @@ module AgentSessions
       end
     end
 
-    # One browser-use step on the timeline: what it was trying to do, what it did, and the screen it ended on. A step
-    # that still can't be stored is logged and skipped, never fatal to the watch loop.
+    # One browser-use step on the timeline: what it was trying to do, what it did ("did": "Clicked “Pay invoice”"), and
+    # its screenshot, with those marked on it where they happened ("marked": the screen it decided from, or the one after
+    # the step; see the computer-use server's marks.py). A step that still can't be stored is logged and skipped, never
+    # fatal to the watch loop.
     def record_step(session, parent, event)
       activity = parent&.activity || session.current_activity
       action = session.actions.create!(activity:, tool: "browse_step",
                                         arguments: { "goal" => event["goal"], "step" => event["step"], "url" => event["url"],
-                                                    "actions" => Array(event["actions"]) },
+                                                    "actions" => Array(event["actions"]), "did" => Array(event["did"]),
+                                                    "marked" => event["marked"] },
                                         status: event["error"].present? ? :failed : :done,
                                         result: { "text" => step_text(event) }, started_at: Time.current,
                                         duration_ms: ((event["seconds"] || 0) * 1000).round)
@@ -87,7 +96,7 @@ module AgentSessions
 
     def step_text(event)
       [ event["evaluation"].presence && "Before: #{event["evaluation"]}",
-        event["actions"].present? && "Did: #{Array(event["actions"]).join("; ")}",
+        (event["did"].presence || event["actions"]).present? && "Did: #{Array(event["did"].presence || event["actions"]).join("; ")}",
         event["results"].present? && "Result: #{Array(event["results"]).join("; ")}",
         event["error"].presence && "Error: #{event["error"]}" ].select { |x| x }.join("\n").presence || "(step)"
     end
@@ -108,7 +117,8 @@ module AgentSessions
         return "The browse task “#{task}” didn't finish: #{reason}. You can try again, or carry on another way."
       end
       visited = Array(done["visited"]).last(8).join(" → ")
-      [ "The browse task finished#{done["success"] == false ? " (reported unsuccessful)" : ""}.",
+      where = done["workspace"] ? " (on workspace #{done["workspace"]})" : ""
+      [ "The browse task finished#{where}#{done["success"] == false ? " (reported unsuccessful)" : ""}.",
         done["result"].presence && "Result: #{done["result"]}",
         visited.present? && "Pages visited: #{visited}" ].select { |x| x }.join("\n")
     end

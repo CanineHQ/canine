@@ -4,7 +4,7 @@ Each element has a role ("button", "link", "entry"...), a name, and a position. 
 button" by role and name, and press it through its accessibility action, without guessing coordinates from a
 screenshot.
 
-Apps only publish their UI when accessibility is on; omarchy-setup.sh turns it on for the session.
+Apps only publish their UI when accessibility is on; setup.py turns it on for the session.
 
 Positions need care. On Wayland an app doesn't know where its window is, so it reports positions relative to its
 window, and we add the window's position from Hyprland. The units differ too: GTK apps (and Chromium's own tabs and

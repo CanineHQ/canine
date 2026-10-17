@@ -1,8 +1,8 @@
 module AgentSessions
   # After a session ends, write its summary if it stopped without one (AgentLoop::Wrapup): stopped at a limit,
-  # cancelled, or failed. Then clear the agent's workspace on the computer, closing what the run left open there (its
-  # browser and terminal windows) — unless the next run on the computer has started already, which clears it as it
-  # starts (TurnJob) and may have opened its own windows since.
+  # cancelled, or failed. Then clear the run's workspace on the computer, closing what it left open there (its browser
+  # and terminal windows) — unless another run there has started already, which clears it as it starts
+  # (Session#claim_workspace!) and may have opened its own windows since.
   class WrapupJob < ApplicationJob
     queue_as :agent
 
@@ -10,7 +10,9 @@ module AgentSessions
       AgentLoop::Trace.session(session, "wrap-up") do
         AgentLoop::Wrapup.call(session)
         computer = session.agent_computer
-        computer.clear_agent_workspace unless computer.sessions.active.where.not(id: session.id).exists?
+        unless computer.sessions.active.where(workspace: session.workspace).where.not(id: session.id).exists?
+          computer.clear_workspace(session.workspace)
+        end
       end
       AgentLoop::Trace.finish(session.reload) # the session's own span, with its summary, tops the trace
     end

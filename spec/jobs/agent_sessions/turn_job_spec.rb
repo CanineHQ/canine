@@ -25,9 +25,10 @@ RSpec.describe AgentSessions::TurnJob do
 
     expect { described_class.perform_now(session) }.to have_enqueued_job(described_class).with(session, 2)
     expect(session.reload).to be_running
-    expect(@pushed.last.error.message).to eq("kubectl port-forward to desk didn't start") # the retried turn shows as failed
+    expect(@pushed.last.error.message).to include("kubectl port-forward to desk didn't start") # the retried turn shows as failed
 
     described_class.perform_now(session, described_class::RETRIES)
-    expect(session.reload).to have_attributes(status: "failed", error: "kubectl port-forward to desk didn't start")
+    expect(session.reload).to be_failed
+    expect(session.error).to include("kubectl port-forward to desk didn't start")
   end
 end

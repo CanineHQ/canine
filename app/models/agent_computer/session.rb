@@ -20,6 +20,7 @@
 #  turns             :integer          default(0), not null
 #  window_from       :datetime
 #  window_to         :datetime
+#  workspace         :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  agent_computer_id :bigint           not null
@@ -59,28 +60,31 @@ class AgentComputer::Session < ApplicationRecord
   after_update_commit :broadcast_changes
 
   # A new session for a task, covering what arrived since its last successful run (window_from: nil covers everything
-  # up to now, for one-off tasks with no "since last run" dimension). One session runs per computer at a time: if the
-  # computer is free this starts its first turn now, otherwise it sits queued and start_next_queued runs it when the
-  # current one finishes.
+  # up to now, for one-off tasks with no "since last run" dimension). Sessions on a computer run side by side, each on
+  # a workspace of its own (claim_workspace!); one that can't get a workspace yet waits, queued, until one frees up.
   def self.start!(task, trigger:, window_from: task.next_window_from)
-    computer = task.agent_computer
-    computer.with_lock do
-      busy = computer.sessions.active.exists?
-      session = computer.sessions.create!(task:, trigger:, model: task.model,
-                                                window_from:, window_to: Time.current)
-      task.update!(next_run_at: task.cron.next_time.to_t) if trigger.to_s == "scheduled"
-      AgentSessions::TurnJob.perform_later(session) unless busy
-      session
-    end
+    session = task.agent_computer.sessions.create!(task:, trigger:, model: task.model, window_from:, window_to: Time.current)
+    task.update!(next_run_at: task.cron.next_time.to_t) if trigger.to_s == "scheduled"
+    AgentSessions::TurnJob.perform_later(session)
+    session
   end
 
   def active?
     status.in?(ACTIVE)
   end
 
-  # Queued behind another run on the same computer (rather than queued and about to start).
+  # Queued until a workspace frees up (rather than queued and about to start): the computer has as many runs going as
+  # it takes at once.
   def waiting_in_queue?
-    queued? && agent_computer.sessions.active.where("created_at < ?", created_at).exists?
+    queued? && workspace.nil? && agent_computer.sessions.active.where.not(workspace: nil).count >= AgentComputer::PARALLEL_RUNS
+  end
+
+  # A run in progress that's done nothing for this long is probably stuck (its card says so)
+  STALLED_AFTER = 10.minutes
+
+  # When the run last moved: it started, took an action or a browser step, or the model said something
+  def last_progress_at
+    [ started_at || created_at, actions.maximum(:updated_at), messages.maximum(:created_at) ].compact.max
   end
 
   def current_activity
@@ -121,6 +125,35 @@ class AgentComputer::Session < ApplicationRecord
     resumed
   end
 
+  # The workspace this run's windows open on, claimed before its first turn: its task's, or a free one — not the one
+  # the person is looking at, nothing of theirs on it, and no other run on it (empty ones first). Under a lock on the
+  # computer, so two runs starting together can't take the same one. Cleared first, of anything an earlier run left
+  # there. nil while none is free, or the computer already has PARALLEL_RUNS going: the run waits until one is.
+  # Raises ComputerUse::Error if the computer can't be reached.
+  def claim_workspace!
+    return workspace if workspace
+
+    listing = agent_computer.computer_use(priority: manual?).workspaces["workspaces"] unless task&.workspace
+    picked = agent_computer.with_lock do
+      taken = agent_computer.sessions.active.where.not(id:).where.not(workspace: nil).pluck(:workspace)
+      choice = if taken.size >= AgentComputer::PARALLEL_RUNS then nil
+      elsif task&.workspace then task.workspace unless taken.include?(task.workspace)
+      else self.class.free_workspace(listing, taken)
+      end
+      update!(workspace: choice) if choice
+      choice
+    end
+    agent_computer.clear_workspace(picked) if picked
+    picked
+  end
+
+  def self.free_workspace(listing, taken)
+    usable = listing.select do |w|
+      w["workspace"].between?(1, 10) && !w["visible"] && taken.exclude?(w["workspace"]) && w["windows"].all? { |window| window["agent"] }
+    end
+    (usable.find { |w| w["windows"].empty? } || usable.first)&.dig("workspace")
+  end
+
   def finish!(status, summary: nil, error: nil)
     update!(status:, summary:, error:, finished_at: Time.current)
     current_activity&.finish!
@@ -128,17 +161,6 @@ class AgentComputer::Session < ApplicationRecord
     AgentSessions::WrapupJob.perform_later(self) # a summary if it has none, and close the windows it opened
     AgentSessions::PostJob.set(wait: AgentSessions::PostJob::WAIT).perform_later(self) # what it did, for the feed
     broadcast_thinking(false)
-    start_next_queued
-  end
-
-  # The computer is free now, so start the oldest run waiting on it (one session runs at a time).
-  def start_next_queued
-    agent_computer.with_lock do
-      return if agent_computer.sessions.where(status: %i[running waiting_for_tool waiting_for_human]).exists?
-
-      next_up = agent_computer.sessions.queued.order(:created_at).first
-      AgentSessions::TurnJob.perform_later(next_up) if next_up
-    end
   end
 
   # The "thinking" indicator while a model call is in flight

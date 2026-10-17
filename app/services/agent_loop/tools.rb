@@ -90,6 +90,8 @@ module AgentLoop
       computer = session.agent_computer
       allowed = tool.input_schema_value.to_h[:properties].keys.map(&:to_s) - [ "agent_computer_id" ]
       kwargs = args.slice(*allowed).transform_keys(&:to_sym)
+      # Windows it opens go on the run's workspace, unless the model names another
+      kwargs[:workspace] ||= session.workspace if allowed.include?("workspace") && session.workspace
       response = tool.call(agent_computer_id: computer.id, server_context: { user_id: computer.user.id, computer_use: }, **kwargs)
 
       text = response.content.select { |part| part[:type] == "text" }.map { |part| part[:text] }.join("\n")

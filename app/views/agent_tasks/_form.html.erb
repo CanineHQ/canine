@@ -27,6 +27,10 @@
             { include_blank: "Not set (the computer's clock is UTC)" }, class: "select select-bordered w-full" %>
     <% end %>
 
+    <%= render(FormFieldComponent.new(label: "Workspace", description: "Where its windows open on the computer, without switching your screen to it. A free one is picked for each run if you leave it: one you're not on, with nothing of yours on it. Everything on it is closed before and after each run.")) do %>
+      <%= form.select :workspace, (1..10).to_a, { include_blank: "Any free one" }, class: "select select-bordered w-full" %>
+    <% end %>
+
     <%= render(FormFieldComponent.new(label: "Limits per run", description: "Canine stops a run at whichever it reaches first, warning the agent to wrap up at 75%.")) do %>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <label class="form-control">

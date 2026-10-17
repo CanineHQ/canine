@@ -13,6 +13,7 @@
 #  next_run_at       :datetime
 #  schedule          :string
 #  time_zone         :string
+#  workspace         :integer
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  agent_computer_id :bigint           not null
@@ -43,6 +44,8 @@ class AgentComputer::Task < ApplicationRecord
   # Canine stops a run at whichever of these it reaches first (AgentLoop::Policy)
   validates :max_minutes, :max_turns, numericality: { only_integer: true, greater_than: 0 }
   validates :max_cost_usd, numericality: { greater_than: 0 }
+  # Its runs' windows open on this Hyprland workspace (Omarchy's are 1-10), or a free one when it's blank
+  validates :workspace, numericality: { only_integer: true, in: 1..10 }, allow_nil: true
   validate :time_zone_is_known
   validate :schedule_is_cron
   validate :enabled_needs_a_schedule

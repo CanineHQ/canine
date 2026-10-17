@@ -1,17 +1,21 @@
-"""The agent's own workspace, so the person can keep working on theirs while it runs.
+"""Workspaces, and opening windows on one without disturbing the person.
 
-Windows the agent opens (its browser windows, terminal windows) go to WORKSPACE without switching to it and without
-taking focus, and keep from taking it later. The person sees them only by switching there to watch.
+The agent works on a workspace of its own, so the person can keep using the computer on theirs. Every call that
+opens a window (open_app, open_url, a terminal's window, a browse job's pages) takes a `workspace`; without one, the
+server chooses: one the person isn't looking at, with nothing of theirs on it (`choose`). Replies say which it used,
+and `listing` shows what's on each, so the agent always knows where its windows are.
 
-Hyprland places a window by its window rules, and a rule only gets one chance: when the window opens. Nothing tells
-the agent's windows apart from the person's at that moment (Chromium's windows all share a class, and a new one has
-no title yet), so `placing` switches a rule on just while the agent's window opens: "the next window goes to
-workspace N, silently". The rules are added at runtime (hyprctl eval) and only switched on and off after that;
-reloading Hyprland's config drops them, so they're re-added whenever they're missing.
+Windows open there without switching to it or taking focus, and keep from taking it later. Hyprland places a window
+by its window rules, and a rule only gets one chance: when the window opens. Nothing tells the agent's windows apart
+from the person's at that moment (Chromium's windows all share a class, and a new one has no title yet), so
+`placing` switches a rule on just while the agent's window opens: "the next window goes to workspace N, silently".
+The rules are added at runtime (hyprctl eval) and only switched on and off after that; reloading Hyprland's config
+drops them, so they're re-added whenever they're missing.
 
 Each window that opens is tagged canine-agent, which a second rule keeps from taking focus when its app asks for it
 (Chromium asks whenever the agent clicks in a page) and keeps rendering while it's out of sight (otherwise a page on a
-hidden workspace gets no animation frames).
+hidden workspace gets no animation frames). The tag is also how `choose` tells the agent's leftovers from the person's
+windows.
 """
 
 import logging
@@ -25,15 +29,53 @@ from . import cdp, desktop
 
 log = logging.getLogger("computer_use")
 
-WORKSPACE = int(os.environ.get("CANINE_AGENT_WORKSPACE", "5"))
+WORKSPACES = range(1, 11)  # Omarchy's: Super+1 to Super+0
 TAG = "canine-agent"
 OPEN_TIMEOUT = 5  # seconds to wait for the window, once its app has been told to open one
 
 _lock = threading.Lock()  # one window opens at a time, so each lands where its caller asked
 
 
+def listing():
+    """Each workspace with its windows (the agent's marked), which one the person is looking at, and the one `choose`
+    would pick."""
+    visible = _visible()
+    clients = desktop.hyprctl_json("clients")
+    workspaces = []
+    for number in sorted(set(WORKSPACES) | {c["workspace"]["id"] for c in clients if c["workspace"]["id"] > 0}):
+        windows = [{"id": c["address"], "app": c["class"], "title": c["title"], "agent": _is_agents(c)}
+                   for c in clients if c["workspace"]["id"] == number]
+        workspaces.append({"workspace": number, "visible": number == visible, "windows": windows})
+    try:
+        free = choose()
+    except LookupError:
+        free = None
+    return {"workspaces": workspaces, "free": free}
+
+
+def choose():
+    """A workspace for the agent: the first the person isn't looking at that's empty, or else holds only the agent's
+    leftovers (which the caller should clear). Never one with the person's windows."""
+    visible = _visible()
+    clients = desktop.hyprctl_json("clients")
+    candidates = [n for n in WORKSPACES if n != visible]
+    on = {n: [c for c in clients if c["workspace"]["id"] == n] for n in candidates}
+    for number in candidates:
+        if not on[number]:
+            return number
+    for number in candidates:
+        if all(_is_agents(c) for c in on[number]):
+            return number
+    raise LookupError("Every workspace has the person's windows on it; name one to use.")
+
+
+def resolve(workspace):
+    """The workspace asked for, or one chosen when none was."""
+    return choose() if workspace is None else int(workspace)
+
+
 @contextmanager
-def placing(workspace=WORKSPACE):
+def placing(workspace):
     """Inside the block, the next window to open goes to `workspace` silently: start the app (or ask the browser for
     a window) and wait for its window in the block, then tag it."""
     armed = arm(workspace)
@@ -43,7 +85,7 @@ def placing(workspace=WORKSPACE):
         disarm(armed)
 
 
-def arm(workspace=WORKSPACE):
+def arm(workspace):
     """`placing`, split in two for code that awaits in between (a browse job): returns what disarm takes. Holds the
     lock until disarm, which may run on another thread."""
     workspace = int(workspace)
@@ -83,9 +125,10 @@ def tag(window_addresses):
         desktop.hyprctl("dispatch", f'hl.dsp.window.tag({{ tag = "+{TAG}", window = "address:{address}" }})')
 
 
-def clear(workspace=WORKSPACE, grace=3):
-    """Close every window on the agent's workspace: what's left of a run, cleared when it ends (and again as the next
-    one starts; the server ends the agent's terminal sessions with it). Each window is asked to close like its close button.
+def clear(workspace, grace=3):
+    """Close every window on `workspace`: what's left of a run, cleared when it ends (and again as the next one starts
+    there; the server ends the agent's terminal sessions with it). Always named, never chosen: it closes the
+    person's windows there too. Each window is asked to close like its close button.
     One still open after `grace` seconds is closed harder: a browser window held open by a page's "Leave site?" prompt
     has its tabs closed over the debugging port, which skips the prompt, and any other window has its process ended,
     if that process has no windows anywhere else. A browser's process never is: Chromium runs all its windows in one,
@@ -152,6 +195,15 @@ def _still_open(windows, timeout):
         if not left or time.monotonic() >= deadline:
             return left
         time.sleep(0.1)
+
+
+def _visible():
+    return desktop.hyprctl_json("monitors")[0]["activeWorkspace"]["id"]
+
+
+def _is_agents(client):
+    # The static tag `tag` sets; a rule's tags show with a "*" and aren't ours
+    return TAG in client.get("tags", [])
 
 
 def _ensure_rules(workspace):

@@ -1,4 +1,4 @@
-"""Browser-level commands over Chromium's debugging port (omarchy-setup.sh), for the few made outside browse jobs:
+"""Browser-level commands over Chromium's debugging port (set up by setup.py), for the few made outside browse jobs:
 opening a window on the agent's workspace, and closing what's left there.
 
     with cdp.connect() as call:

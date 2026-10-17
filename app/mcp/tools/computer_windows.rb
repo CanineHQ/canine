@@ -5,15 +5,19 @@ module Tools
     include Tools::Concerns::Authentication
     include Tools::Concerns::AgentComputerAccess
 
-    OPERATIONS = %w[list open_app open_url focus close maximize move_to_workspace switch_workspace].freeze
+    OPERATIONS = %w[list workspaces open_app open_url focus close maximize move_to_workspace switch_workspace].freeze
 
     description <<~TEXT.squish
       Manage an agent computer's windows through the window manager (Hyprland), without clicking. list: the windows,
-      with ids, apps, titles, workspaces and bounds. open_app: start an app (e.g. "nautilus", "foot") and get its new
-      window. open_url: open a URL in a new browser window. focus: a window by id. close: ask a window to close, like its
+      with ids, apps, titles, workspaces and bounds. workspaces: what's on each workspace (the agent's windows marked),
+      the one the person is looking at, and a free one. open_app: start an app (e.g. "nautilus", "foot") and get its
+      new window. open_url: open a URL in a new browser window. Both open on workspace (or a free one, with nothing of
+      the person's on it) without switching the person's screen to it or taking focus, and reply with the workspace
+      used. focus: a window by id. close: ask a window to close, like its
       close button; says whether it closed or the app is asking something first (e.g. to save). maximize: make a
       window fill the screen (open_app and open_url take maximize: true to open that way). move_to_workspace: move a
-      window by id to workspace 1-9 (the view stays). switch_workspace: show workspace 1-9. Windows are always
+      window by id to workspace 1-10 (the view stays). switch_workspace: show workspace 1-10 (it changes the person's
+      screen). Windows are always
       addressed by the id from list or open_app. #{Tools::Concerns::AgentComputerAccess::PREFERENCE}
     TEXT
 
@@ -25,7 +29,7 @@ module Tools
         maximize: { type: "boolean", description: "For open_app and open_url: make the new window fill the screen" },
         command: { type: "string", description: "For open_app: the program and its arguments" },
         url: { type: "string", description: "For open_url" },
-        workspace: { type: "integer", description: "For switch_workspace and move_to_workspace; optionally, where open_app and open_url open" }
+        workspace: { type: "integer", description: "For switch_workspace and move_to_workspace; for open_app and open_url, where they open (default: a free one)" }
       },
       required: %w[agent_computer_id operation]
     )
@@ -34,7 +38,12 @@ module Tools
 
     def self.call(agent_computer_id:, operation:, server_context:, **params)
       with_agent_computer(agent_computer_id, server_context:) do |computer_use|
-        result_response(operation == "list" ? computer_use.windows : computer_use.window(operation, params))
+        result = case operation
+        when "list" then computer_use.windows
+        when "workspaces" then computer_use.workspaces
+        else computer_use.window(operation, params)
+        end
+        result_response(result)
       end
     end
   end

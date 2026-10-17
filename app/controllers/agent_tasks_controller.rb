@@ -109,9 +109,9 @@ class AgentTasksController < ApplicationController
   def run_now_and_redirect(task)
     session = AgentComputer::Session.start!(task, trigger: :manual)
 
-    # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer is busy it queues
-    # behind the current run and starts when that finishes.
-    to_feed(notice: session.waiting_in_queue? ? "Queued — it'll run after the current session." : "On it — watch it run below.")
+    # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer has as many runs
+    # going as it takes, it queues and starts when one finishes.
+    to_feed(notice: session.waiting_in_queue? ? "Queued — it'll start when one of the runs going now finishes." : "On it — watch it run below.")
   end
 
   def to_feed(**flash)
@@ -127,6 +127,6 @@ class AgentTasksController < ApplicationController
   end
 
   def task_params
-    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :time_zone, :max_minutes, :max_cost_usd, :max_turns)
+    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :time_zone, :workspace, :max_minutes, :max_cost_usd, :max_turns)
   end
 end

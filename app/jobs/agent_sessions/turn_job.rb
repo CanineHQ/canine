@@ -16,6 +16,8 @@ module AgentSessions
     # A turn that couldn't reach the model or the computer is tried again, waiting 20s, 40s, 60s, 80s: on a flaky
     # connection (plane wifi) outages of a minute or more were common, and each one ended its session
     RETRIES = 5
+    # A run waiting for a free workspace (the computer has as many going as it takes) checks again this often
+    RETRY_FOR_WORKSPACE = 15.seconds
 
     def perform(session, attempt = 1, human_wait: 0)
       AgentLoop::Trace.session(session, "turn #{session.turns + 1}") { turn(session, attempt, human_wait) }
@@ -32,8 +34,9 @@ module AgentSessions
       return session.finish!(:failed, error: "Add an OpenRouter key in Agent settings first.") unless key
       # Still in use: check again later (backing off), without spending a model call
       return wait_for_human(session, human_wait) if session.waiting_for_human? && person_has_screen?(session)
-      # A run starts from an empty workspace, whatever an earlier one left (or didn't get to clear: it crashed)
-      session.agent_computer.clear_agent_workspace if session.turns.zero?
+      # Before the first turn, so the system prompt can say where its windows open (and that workspace starts empty).
+      # Runs go side by side, each on its own; with none free, this one waits, queued
+      return self.class.set(wait: RETRY_FOR_WORKSPACE).perform_later(session) unless session.claim_workspace!
 
       case AgentLoop::Turn.new(session, key).run
       when :continue then self.class.perform_later(session)
@@ -42,9 +45,9 @@ module AgentSessions
         wait_for_human(session, human_wait)
       when :waiting_for_tool then session.waiting_for_tool!
       end
-    rescue Llm::OpenRouter::Error, AgentComputers::PortForward::Error => e
-      # A provider hiccup, or no tunnel to the computer (it's opened before the turn does anything): the turn's
-      # messages weren't saved, so trying the same turn again is safe
+    rescue Llm::OpenRouter::Error, AgentComputers::PortForward::Error, AgentComputers::ComputerUse::Error => e
+      # A provider hiccup, or the computer out of reach (the tunnel's opened, and the workspace claimed, before the turn
+      # does anything): the turn's messages weren't saved, so trying the same turn again is safe
       AgentLoop::Trace.job_failed(e)
       if attempt >= RETRIES
         return session.finish!(:failed, error: e.is_a?(Llm::OpenRouter::Error) ? "The model failed: #{e.message}" : e.message)

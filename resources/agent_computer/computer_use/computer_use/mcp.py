@@ -1,7 +1,7 @@
 """`canine-computer-use mcp`: the computer-use tools as a local MCP server, for any agent harness running on this
 computer (Claude Code, Codex, opencode, Gemini CLI, goose...). It speaks MCP over stdio, which they all support, and
-passes each tool call to the computer-use server on this machine, so the same rules apply (the human lock, one
-action at a time).
+passes each tool call to the computer-use server on this machine, with its token (auth.py), so the same rules apply
+(the human lock, one action at a time).
 
     {"mcpServers": {"computer": {"command": "~/.local/share/canine/venv/bin/canine-computer-use", "args": ["mcp"]}}}
 """
@@ -10,6 +10,8 @@ import json
 import sys
 import urllib.error
 import urllib.request
+
+from . import auth
 
 SERVER = "http://127.0.0.1:8000"
 
@@ -44,24 +46,28 @@ TOOLS = {
         _schema({"command": {"type": "string"}, "timeout_seconds": {"type": "integer"}}, ["command"]),
         lambda args: ("POST", "/run", {"command": args["command"], "timeout": args.get("timeout_seconds", 30)})),
     "computer_terminal": (
-        "Interactive terminal programs as text, in tmux sessions. operation: list, open (command, cwd, show), send "
+        "Interactive terminal programs as text, in tmux sessions. operation: list, open (command, cwd, show, "
+        "workspace), send "
         "(session, text, keys like \"Enter\"/\"C-c\", enter), read (session, scrollback), wait (session, text, "
         "timeout_seconds), close (session). " + PREFERENCE,
         _schema({"operation": {"type": "string", "enum": ["list", "open", "send", "read", "wait", "close"]},
                  "session": {"type": "string"}, "command": {"type": "string"}, "cwd": {"type": "string"},
-                 "show": {"type": "boolean"}, "text": {"type": "string"},
+                 "show": {"type": "boolean"}, "workspace": {"type": "integer"}, "text": {"type": "string"},
                  "keys": {"type": "array", "items": {"type": "string"}}, "enter": {"type": "boolean"},
                  "scrollback": {"type": "integer"}, "timeout_seconds": {"type": "integer"}}, ["operation"]),
         lambda args: _terminal_request(args)),
     "computer_windows": (
-        "Windows, through the window manager: list, open_app (command), open_url (url), focus/close/maximize (id), "
-        "move_to_workspace (id, workspace), switch_workspace (workspace). open_app and open_url take maximize: true. "
-        "Windows are addressed by id. " + PREFERENCE,
-        _schema({"operation": {"type": "string", "enum": ["list", "open_app", "open_url", "focus", "close", "maximize",
-                                                           "move_to_workspace", "switch_workspace"]},
+        "Windows, through the window manager: list, workspaces (what's on each, the one the person sees, and a free "
+        "one), open_app (command), open_url (url), focus/close/maximize (id), move_to_workspace (id, workspace), "
+        "switch_workspace (workspace). open_app and open_url take maximize: true, and a workspace: they open there "
+        "(or on a free one) without switching the person's view, and reply with the workspace used. Windows are "
+        "addressed by id. " + PREFERENCE,
+        _schema({"operation": {"type": "string", "enum": ["list", "workspaces", "open_app", "open_url", "focus", "close",
+                                                           "maximize", "move_to_workspace", "switch_workspace"]},
                  "id": {"type": "string"}, "command": {"type": "string"}, "url": {"type": "string"},
                  "workspace": {"type": "integer"}, "maximize": {"type": "boolean"}}, ["operation"]),
         lambda args: ("GET", "/windows", None) if args["operation"] == "list"
+        else ("GET", "/workspaces", None) if args["operation"] == "workspaces"
         else ("POST", f"/windows/{args['operation']}", _without(args, "operation"))),
     "computer_accessibility": (
         "Apps' UI as structure (AT-SPI): tree, find (role, name, window_id, within, limit; a browser's own controls "
@@ -101,7 +107,7 @@ def call_tool(name, args):
     """MCP content for one tool call: screenshots as images, everything else as JSON text."""
     method, path, body = TOOLS[name][2](args)
     request = urllib.request.Request(SERVER + path, method=method, data=json.dumps(body).encode() if body else None,
-                                     headers={"Content-Type": "application/json"})
+                                     headers={"Content-Type": "application/json", "Authorization": f"Bearer {auth.token()}"})
     try:
         with urllib.request.urlopen(request, timeout=120) as response:
             result, is_error = json.loads(response.read()), False

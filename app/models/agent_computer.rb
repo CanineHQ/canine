@@ -2,21 +2,22 @@
 #
 # Table name: agent_computers
 #
-#  id              :bigint           not null, primary key
-#  browse_model    :string
-#  coding_agent    :string
-#  coding_model    :string
-#  desktop         :string           default("selkies"), not null
-#  name            :string           not null
-#  namespace       :string           not null
-#  password        :string
-#  planning_model  :string
-#  ssh_private_key :text
-#  status          :integer          default("pending"), not null
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  account_user_id :bigint           not null
-#  cluster_id      :bigint           not null
+#  id                 :bigint           not null, primary key
+#  browse_model       :string
+#  coding_agent       :string
+#  coding_model       :string
+#  computer_use_token :string
+#  desktop            :string           default("selkies"), not null
+#  name               :string           not null
+#  namespace          :string           not null
+#  password           :string
+#  planning_model     :string
+#  ssh_private_key    :text
+#  status             :integer          default("pending"), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  account_user_id    :bigint           not null
+#  cluster_id         :bigint           not null
 #
 # Indexes
 #
@@ -44,6 +45,9 @@ class AgentComputer < ApplicationRecord
   # The desktop idles at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past
   # 4GiB, where the VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
   MEMORY = "8Gi"
+  # Runs at once, each on a workspace of its own (the person keeps one of Omarchy's 10): each browses in its own
+  # Chromium windows, and more than a few at a time would run the VM out of memory
+  PARALLEL_RUNS = 3
   DISK_SIZE = "60Gi"
 
   # A pickable option in the machine's model settings: id is the value stored (blank means "inherit"), name and note
@@ -76,12 +80,12 @@ class AgentComputer < ApplicationRecord
     AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user), priority:)
   end
 
-  # Close every window on the agent's workspace (what a run left open), best-effort: a computer that's stopped or
-  # unreachable has nothing open to clear. Runs clear it as they start and once they've ended.
-  def clear_agent_workspace
-    computer_use.clear_agent_workspace if running?
+  # Close every window on a run's workspace (what it left open), best-effort: a computer that's stopped or unreachable
+  # has nothing open to clear. Runs clear theirs as they start and once they've ended.
+  def clear_workspace(workspace)
+    computer_use.clear_workspace(workspace) if running? && workspace
   rescue AgentComputers::ComputerUse::Error => e
-    Rails.logger.info("Couldn't clear the agent workspace on #{name}: #{e.message}")
+    Rails.logger.info("Couldn't clear workspace #{workspace} on #{name}: #{e.message}")
   end
 
   # The planning model a new task on this computer starts with: the machine's, or the global default.
@@ -108,10 +112,12 @@ class AgentComputer < ApplicationRecord
   private
 
   # The Omarchy installer needs a password for the desktop user; omarchy-setup.sh uses it once for sudo, then deletes
-  # it (Canine is the only way in). The key is how Canine logs in to run that setup.
+  # it (Canine is the only way in). The key is how Canine logs in to run that setup, and the token how it authenticates
+  # to the computer-use server.
   def generate_guest_credentials
     self.password ||= SecureRandom.alphanumeric(16)
     self.ssh_private_key ||= OpenSSL::PKey::EC.generate("prime256v1").to_pem
+    self.computer_use_token ||= SecureRandom.urlsafe_base64(32)
   end
 
   def assign_namespace

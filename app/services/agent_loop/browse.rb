@@ -15,11 +15,12 @@ module AgentLoop
       model = session.agent_computer.browse_model.presence || session.model
       response = session.computer_use.browse_start(
         task: args["task"], url: args["url"].presence, model:, api_key: key.api_key,
-        files: Array(args["files"]).presence, max_steps: MAX_STEPS
+        files: Array(args["files"]).presence, max_steps: MAX_STEPS, workspace: session.workspace
       )
       # A short wait so the turn has committed waiting_for_tool! before the watch job's first poll (as DelegateWatchJob)
       AgentSessions::BrowseWatchJob.set(wait: 5.seconds).perform_later(session, response["id"], args["task"].to_s)
-      Tools::Result.new(text: "Started browsing (job #{response["id"]}): #{args["task"]}. You'll get the result when it finishes.",
+      Tools::Result.new(text: "Started browsing (job #{response["id"]}, in a window on workspace #{response["workspace"]}): " \
+                              "#{args["task"]}. You'll get the result when it finishes.",
                         signal: :waiting_for_tool)
     rescue AgentComputers::ComputerUse::Error => e
       Tools::Result.new(text: "Couldn't start browsing: #{e.message}", error: true)

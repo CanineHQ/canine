@@ -41,10 +41,10 @@ class HumanTest(unittest.TestCase):
         self.assertTrue(human.needs_screen("/accessibility/press", {}))
         self.assertFalse(human.needs_screen("/accessibility/find", {}))
         self.assertFalse(human.needs_screen("/run", {}))
-        # A window opened on a given workspace (a terminal's goes to the agent's) doesn't take the person's screen
+        # Opening a window doesn't take the person's screen: it opens on a workspace of the agent's
         self.assertFalse(human.needs_screen("/terminal/open", {}))
-        self.assertFalse(human.needs_screen("/windows/open_app", {"command": "foot", "workspace": 5}))
-        self.assertTrue(human.needs_screen("/windows/open_app", {"command": "foot"}))
+        self.assertFalse(human.needs_screen("/windows/open_app", {"command": "foot"}))
+        self.assertTrue(human.needs_screen("/windows/focus", {"id": "0x1"}))
         self.assertFalse(human.needs_screen("/terminal/send", {}))
 
 

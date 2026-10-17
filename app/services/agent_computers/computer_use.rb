@@ -62,10 +62,15 @@ module AgentComputers
       post("/windows/#{operation}", params)
     end
 
-    # Close every window on the agent's workspace (agent_workspace.py), once a run is over:
-    #   { "closed" => 3, "still_open" => [] }
-    def clear_agent_workspace
-      post("/agent_workspace/clear", {})
+    # What's on each workspace, the one the person is looking at, and a free one for a run (workspaces.py):
+    #   { "workspaces" => [{ "workspace" => 1, "visible" => true, "windows" => [...] }, ...], "free" => 2 }
+    def workspaces
+      get("/workspaces")
+    end
+
+    # Close every window on a workspace, and end the agent's terminal sessions: { "closed" => 3, "still_open" => [] }
+    def clear_workspace(workspace)
+      post("/workspaces/clear", { workspace: })
     end
 
     def run(command, timeout: 30)
@@ -113,6 +118,7 @@ module AgentComputers
     end
 
     def request(http_request)
+      http_request["Authorization"] = "Bearer #{@computer.computer_use_token}"
       http_request["X-Agent-Priority"] = "1" if @priority
       started_at = Time.current
       response = begin

@@ -14,6 +14,16 @@ module AgentSessionsHelper
     end
   end
 
+  # What a run in progress is doing now, for its card in the feed
+  def agent_session_doing(session)
+    case session.status
+    when "queued" then "Starting"
+    when "running" then "Thinking"
+    when "waiting_for_human" then "Waiting for you: you're using the computer"
+    else agent_session_status_label(session).upcase_first
+    end
+  end
+
   # Markdown from the model (a session's summary) as HTML. The text can quote emails and web pages, so raw HTML is
   # dropped, links must be http(s) or mailto, and the result is sanitized as well.
   def agent_markdown(text)

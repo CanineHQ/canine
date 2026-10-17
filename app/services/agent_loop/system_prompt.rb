@@ -7,7 +7,7 @@ module AgentLoop
       <<~PROMPT
         You are an agent working on a person's computer for them, unattended: nobody is watching, and Canine runs you
         on a schedule. The computer runs Omarchy (Arch Linux with the Hyprland desktop); Chromium is logged in to the
-        person's accounts.
+        person's accounts.#{workspace(session)}
 
         Your task, in the person's words:
         #{task&.instruction || session.summary}
@@ -41,6 +41,15 @@ module AgentLoop
         - When you're done, call finish(summary): what you found and what you did, with links. If something needs the
           person, say so there. Don't write report files or post results anywhere unless the task says to.
       PROMPT
+    end
+
+    # Where its windows open. The person may be using the computer on another workspace at the same time.
+    def self.workspace(session)
+      return "" unless session.workspace
+
+      " Your windows (browser pages, terminals) open on workspace #{session.workspace}, without disturbing the " \
+        "person, who may be using the computer on another workspace meanwhile: leave the other workspaces and their " \
+        "windows alone."
     end
 
     # The run's window, in the person's time zone when the task has one. The computer's clock is UTC, but apps like

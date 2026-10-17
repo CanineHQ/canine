@@ -11,6 +11,9 @@
     </div>
     <div class="text-xs text-base-content/60 mt-1 flex flex-wrap gap-x-3">
       <span><%= session.trigger.humanize %> · <%= session.model %></span>
+      <% if session.workspace %>
+        <span title="Its windows open here on the computer; switch to it to watch">workspace <%= session.workspace %></span>
+      <% end %>
       <% if session.started_at %>
         <span data-controller="elapsed" data-elapsed-from-value="<%= session.started_at.iso8601 %>"
               data-elapsed-to-value="<%= session.finished_at&.iso8601 %>"></span>

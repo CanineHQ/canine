@@ -39,4 +39,16 @@ RSpec.describe "Agent feed", type: :request do
         headers: { "Turbo-Frame" => "agent_feed_after_#{last.id}" }
     expect(response.body).to include("Post 2", "That's everything")
   end
+
+  it "says what a run in progress is doing and when it last moved, and arms the stuck warning" do
+    session = computer.sessions.create!(task:, trigger: :scheduled, model: "test/model", status: :waiting_for_tool, workspace: 2,
+                                        started_at: 40.minutes.ago)
+    activity = session.activities.create!(position: 1, intent: "Reading Slack", title: "Reading Slack")
+    session.actions.create!(activity:, tool: "browse", arguments: {}, status: :running, started_at: 31.minutes.ago,
+                            created_at: 31.minutes.ago, updated_at: 31.minutes.ago)
+    get agent_computer_agent_posts_path(computer)
+
+    expect(response.body).to include("Browsing the web · last step", "31 minutes ago", "may be stuck", 'data-stalled-after-value="600"')
+    expect(response.body).not_to include("Working…")
+  end
 end
