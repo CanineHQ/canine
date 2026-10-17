@@ -14,7 +14,7 @@
           · last seen <%= time_ago_in_words(@error_issue.last_seen_at) %> ago<%= " in #{@error_issue.last_release}" if @error_issue.last_release %>
         </p>
       </div>
-      <div class="flex items-center gap-4 shrink-0">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shrink-0">
         <div title="Events in the last 24 hours"><%= render "projects/error_issues/trend", buckets: @trend %></div>
         <div class="flex gap-2">
           <% if @error_issue.unresolved? %>
