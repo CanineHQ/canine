@@ -7,7 +7,7 @@
         <span class="text-base-content/40">/</span>
       <% end %>
       <span class="font-semibold">Run <%= session.created_at.strftime("%b %-d, %H:%M") %></span>
-      <%= render "agent_sessions/status_badge", session: session %>
+      <%= render "agent_computers/sessions/status_badge", session: session %>
     </div>
     <div class="text-xs text-base-content/60 mt-1 flex flex-wrap gap-x-3">
       <span><%= session.trigger.humanize %> · <%= session.model %></span>
@@ -15,8 +15,8 @@
         <span title="Its windows open here on the computer; switch to it to watch">workspace <%= session.workspace %></span>
       <% end %>
       <% if session.started_at %>
-        <span data-controller="elapsed" data-elapsed-from-value="<%= session.started_at.iso8601 %>"
-              data-elapsed-to-value="<%= session.finished_at&.iso8601 %>"></span>
+        <span data-controller="agent-computers--elapsed" data-agent-computers--elapsed-from-value="<%= session.started_at.iso8601 %>"
+              data-agent-computers--elapsed-to-value="<%= session.finished_at&.iso8601 %>"></span>
       <% end %>
       <span><%= session.turns %> turns · <%= number_with_delimiter(session.input_tokens + session.output_tokens) %> tokens · $<%= format("%.4f", session.cost_usd) %></span>
       <% if session.window_from %>

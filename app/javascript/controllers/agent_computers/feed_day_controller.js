@@ -10,7 +10,7 @@ export default class extends Controller {
   connect() {
     const day = this.dayOf(new Date(this.atValue))
     this.element.dataset.day = day.toDateString()
-    const headings = [...document.querySelectorAll("[data-controller~='feed-day']")]
+    const headings = [...document.querySelectorAll("[data-controller~='agent-computers--feed-day']")]
     const previous = headings[headings.indexOf(this.element) - 1]
     if (previous && previous.dataset.day === this.element.dataset.day) return
 

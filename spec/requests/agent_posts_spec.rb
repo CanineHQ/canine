@@ -16,7 +16,7 @@ RSpec.describe "Agent feed", type: :request do
   end
 
   it "shows a computer's posts newest first, with day headings, the header linking to the task, and pages on" do
-    stub_const("AgentPostsController::PER_PAGE", 2)
+    stub_const("AgentComputers::PostsController::PER_PAGE", 2)
     [ 0, 1, 1 ].each_with_index do |days_ago, i|
       session = computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :succeeded)
       step = session.activities.create!(position: 1, intent: "Adding", title: "Adding")
@@ -29,7 +29,7 @@ RSpec.describe "Agent feed", type: :request do
     other_session.posts.create!(agent_computer: other, kind: "done", text: "Other computer post", posted_at: Time.current) # stays out
     get agent_computer_agent_posts_path(computer)
 
-    expect(response.body).to include("Post 0", "Post 1", "I did that", "agent_feed_after_", "data-feed-day-at-value")
+    expect(response.body).to include("Post 0", "Post 1", "I did that", "agent_feed_after_", "data-agent-computers--feed-day-at-value")
     expect(response.body).not_to include("Other computer post") # scoped to this computer
     expect(response.body).not_to include("Post 2") # on the next page
     expect(response.body).to include(agent_computer_agent_task_path(computer, task)) # header links to the task
@@ -48,7 +48,17 @@ RSpec.describe "Agent feed", type: :request do
                             created_at: 31.minutes.ago, updated_at: 31.minutes.ago)
     get agent_computer_agent_posts_path(computer)
 
-    expect(response.body).to include("Browsing the web · last step", "31 minutes ago", "may be stuck", 'data-stalled-after-value="600"')
+    expect(response.body).to include("Browsing the web · last step", "31 minutes ago", "may be stuck", 'data-agent-computers--stalled-after-value="600"')
     expect(response.body).not_to include("Working…")
+  end
+
+  it "loads a finished activity's actions when it's opened on the session page" do
+    session = computer.sessions.create!(task:, trigger: :manual, model: "test/model", status: :succeeded)
+    activity = session.activities.create!(position: 1, intent: "Paying", title: "Paying", finished_at: Time.current)
+    session.actions.create!(activity:, tool: "browse_step", arguments: { "did" => [ "Clicked “Pay invoice”" ] }, status: :done)
+    get agent_computer_agent_session_activity_path(computer, session, activity)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Clicked “Pay invoice”")
   end
 end

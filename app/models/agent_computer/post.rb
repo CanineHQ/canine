@@ -42,7 +42,7 @@ class AgentComputer::Post < ApplicationRecord
   validates :text, presence: true
 
   # Show up live at the top of the computer's feed when written.
-  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_posts", partial: "agent_posts/post", locals: { post: self } }
+  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_posts", partial: "agent_computers/posts/post", locals: { post: self } }
 
   # Newest first; posts from one run keep the order they were written in
   scope :newest_first, -> { order(posted_at: :desc, id: :asc) } # (a run's posts share a time, and are saved in order)

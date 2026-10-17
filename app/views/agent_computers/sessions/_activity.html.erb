@@ -25,7 +25,7 @@
       <iconify-icon icon="lucide:chevron-down" class="mt-1 shrink-0 text-base-content/40 transition-transform group-open:rotate-180"></iconify-icon>
     </summary>
     <% if current %>
-      <%= render "agent_sessions/activity_body", activity: activity, reveal_from: local_assigns[:reveal_from] %>
+      <%= render "agent_computers/sessions/activity_body", activity: activity, reveal_from: local_assigns[:reveal_from] %>
     <% else %>
       <%= turbo_frame_tag dom_id(activity, :body), loading: :lazy,
             src: agent_computer_agent_session_activity_path(activity.session.agent_computer, activity.session, activity) do %>

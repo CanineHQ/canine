@@ -33,7 +33,7 @@
 
       <% if (shot = post.screenshot) %>
         <button type="button" class="group relative block shrink-0 overflow-hidden rounded-lg border border-base-300" title="Open screenshot"
-                data-action="lightbox#open" data-lightbox-id="<%= post.action.id %>"
+                data-action="agent-computers--lightbox#open" data-lightbox-id="<%= post.action.id %>"
                 data-lightbox-url="<%= screenshots_agent_computer_agent_session_path(post.agent_computer, post.session) %>">
           <%= image_tag rails_representation_path(shot.variant(:medium)), loading: "lazy",
                 class: "h-40 w-56 bg-base-200 object-cover object-top sm:w-72 lg:w-80", alt: "Screenshot after #{post.action.label}" %>

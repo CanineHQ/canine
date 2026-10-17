@@ -14,7 +14,7 @@
         <pre class="bg-base-200 rounded p-2 text-xs whitespace-pre-wrap break-words max-h-48 overflow-y-auto"><%= action.result["text"] %></pre>
       <% end %>
       <% if action.screenshot.attached? %>
-        <button type="button" data-action="lightbox#open" data-lightbox-id="<%= action.id %>" class="block">
+        <button type="button" data-action="agent-computers--lightbox#open" data-lightbox-id="<%= action.id %>" class="block">
           <%= image_tag rails_representation_path(action.screenshot.variant(:medium)), class: "rounded border border-base-content/10 w-full max-w-lg hover:border-primary", loading: "lazy" %>
         </button>
       <% end %>

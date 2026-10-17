@@ -1,9 +1,6 @@
 # Tasks the agent loop runs on an agent computer on a schedule (AgentComputer::Task). A new task starts from the person's
 # instruction, which `draft` compiles into a name, schedule and limits for them to review before saving.
-class AgentTasksController < ApplicationController
-  include AgentTasksFeature
-
-  before_action :set_agent_computer
+class AgentComputers::TasksController < AgentComputers::BaseController
   before_action :set_task, only: %i[show edit update destroy run_now]
 
   def index
@@ -116,10 +113,6 @@ class AgentTasksController < ApplicationController
 
   def to_feed(**flash)
     redirect_to agent_computer_agent_posts_path(@agent_computer), **flash
-  end
-
-  def set_agent_computer
-    @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
   end
 
   def set_task

@@ -1,13 +1,10 @@
 # One agent computer's feed: what its agents did, found and left for the person, newest first (AgentComputer::Post, written
 # after each run by AgentLoop::Posts). It scrolls on forever: each page ends with a lazy frame that loads the next.
 # The browser groups posts under the day they're from, in its own time zone (feed_day_controller.js).
-class AgentPostsController < ApplicationController
-  include AgentTasksFeature
-
+class AgentComputers::PostsController < AgentComputers::BaseController
   PER_PAGE = 15
 
   def index
-    @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
     @scheduled = @agent_computer.tasks.where(enabled: true).order(Arel.sql("next_run_at ASC NULLS LAST"))
     @active = @agent_computer.sessions.active.order(created_at: :desc).includes(:task)
     posts = @agent_computer.posts.newest_first
@@ -16,7 +13,7 @@ class AgentPostsController < ApplicationController
     @posts = posts.limit(PER_PAGE + 1).to_a
     @more = @posts.size > PER_PAGE
     @posts = @posts.first(PER_PAGE)
-    render partial: "agent_posts/page", locals: { posts: @posts, more: @more, agent_computer: @agent_computer } if turbo_frame_request?
+    render partial: "agent_computers/posts/page", locals: { posts: @posts, more: @more, agent_computer: @agent_computer } if turbo_frame_request?
   end
 
   private

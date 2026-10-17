@@ -7,18 +7,18 @@
       <div class="flex flex-col gap-3">
         <% waiting = session.waiting_in_queue? %>
         <% progress = session.last_progress_at %>
-        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (stalled_controller.js); waiting
+        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (agent_computers/stalled_controller.js); waiting
             for the person isn't stalling %>
-        <header class="flex items-center gap-3" data-controller="stalled" data-stalled-since-value="<%= progress.iso8601 %>"
-                data-stalled-after-value="<%= waiting || session.waiting_for_human? ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
+        <header class="flex items-center gap-3" data-controller="agent-computers--stalled" data-agent-computers--stalled-since-value="<%= progress.iso8601 %>"
+                data-agent-computers--stalled-after-value="<%= waiting || session.waiting_for_human? ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
             <% if waiting %>
               <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
             <% elsif session.waiting_for_human? %>
               <iconify-icon icon="lucide:hand" height="16" class="text-info"></iconify-icon>
             <% else %>
-              <span data-stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
-              <iconify-icon data-stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>
+              <span data-agent-computers--stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
+              <iconify-icon data-agent-computers--stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>
             <% end %>
           </span>
           <div class="min-w-0 flex-1 leading-tight">
@@ -27,9 +27,9 @@
               <% if waiting %>
                 Queued · starts when a run going now finishes
               <% else %>
-                <span data-stalled-target="working"><%= agent_session_doing(session) %> · last step
+                <span data-agent-computers--stalled-target="working"><%= agent_session_doing(session) %> · last step
                   <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time></span>
-                <span data-stalled-target="stuck" class="hidden text-warning">No progress since
+                <span data-agent-computers--stalled-target="stuck" class="hidden text-warning">No progress since
                   <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time> · may be stuck</span>
               <% end %>
             </div>

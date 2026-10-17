@@ -55,8 +55,8 @@ class AgentComputer::Session < ApplicationRecord
   ACTIVE = %w[queued running waiting_for_human waiting_for_tool].freeze
   scope :active, -> { where(status: ACTIVE) }
 
-  after_create_commit -> { broadcast_prepend_to [ task, :runs ], target: dom_id(task, :runs), partial: "agent_tasks/run", locals: { session: self, animate: true } if task }
-  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_active", partial: "agent_posts/running", locals: { session: self } }
+  after_create_commit -> { broadcast_prepend_to [ task, :runs ], target: dom_id(task, :runs), partial: "agent_computers/tasks/run", locals: { session: self, animate: true } if task }
+  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_active", partial: "agent_computers/posts/running", locals: { session: self } }
   after_update_commit :broadcast_changes
 
   # A new session for a task, covering what arrived since its last successful run (window_from: nil covers everything
@@ -166,22 +166,22 @@ class AgentComputer::Session < ApplicationRecord
   # The "thinking" indicator while a model call is in flight
   # The chapters and the progress strip, re-drawn after tidying (activities themselves stream in one by one)
   def broadcast_timeline
-    broadcast_replace_to self, target: dom_id(self, :timeline), partial: "agent_sessions/timeline", locals: { session: self }
+    broadcast_replace_to self, target: dom_id(self, :timeline), partial: "agent_computers/sessions/timeline", locals: { session: self }
   end
 
   def broadcast_thinking(thinking)
-    broadcast_replace_to self, target: dom_id(self, :thinking), partial: "agent_sessions/thinking", locals: { session: self, thinking: }
+    broadcast_replace_to self, target: dom_id(self, :thinking), partial: "agent_computers/sessions/thinking", locals: { session: self, thinking: }
   end
 
   private
 
   def broadcast_changes
-    broadcast_replace_to self, target: dom_id(self, :header), partial: "agent_sessions/header", locals: { session: self }
-    broadcast_replace_to [ task, :runs ], target: dom_id(self), partial: "agent_tasks/run", locals: { session: self } if task
+    broadcast_replace_to self, target: dom_id(self, :header), partial: "agent_computers/sessions/header", locals: { session: self }
+    broadcast_replace_to [ task, :runs ], target: dom_id(self), partial: "agent_computers/tasks/run", locals: { session: self } if task
     # Keep the feed's live run card in step; it renders empty once the run leaves an active state, so it drops out.
-    broadcast_replace_to [ agent_computer, :feed ], target: dom_id(self, :running), partial: "agent_posts/running", locals: { session: self } if saved_change_to_status?
+    broadcast_replace_to [ agent_computer, :feed ], target: dom_id(self, :running), partial: "agent_computers/posts/running", locals: { session: self } if saved_change_to_status?
     if summary_previously_changed? || error_previously_changed?
-      broadcast_replace_to self, target: dom_id(self, :outcome), partial: "agent_sessions/outcome", locals: { session: self }
+      broadcast_replace_to self, target: dom_id(self, :outcome), partial: "agent_computers/sessions/outcome", locals: { session: self }
     end
   end
 end

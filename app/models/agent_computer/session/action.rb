@@ -41,7 +41,7 @@ class AgentComputer::Session::Action < ApplicationRecord
   LOOK_ONLY_ACTIONS = %w[screenshot zoom cursor_position wait].freeze
 
   after_create_commit lambda {
-    broadcast_append_to session, target: dom_id(activity, :actions), partial: "agent_sessions/action", locals: { action: self, animate: true } unless look_only?
+    broadcast_append_to session, target: dom_id(activity, :actions), partial: "agent_computers/sessions/action", locals: { action: self, animate: true } unless look_only?
     broadcast_running_card
   }
   after_update_commit :broadcast_changes
@@ -75,16 +75,16 @@ class AgentComputer::Session::Action < ApplicationRecord
   end
 
   def broadcast_changes
-    broadcast_replace_to session, target: dom_id(self), partial: "agent_sessions/action", locals: { action: self } unless look_only?
+    broadcast_replace_to session, target: dom_id(self), partial: "agent_computers/sessions/action", locals: { action: self } unless look_only?
     broadcast_running_card # (with its thumbnail: what's on screen now)
     return unless screenshot.attached?
 
-    broadcast_replace_to session, target: dom_id(session, :screen), partial: "agent_sessions/screen", locals: { action: self }
-    broadcast_replace_to session, target: dom_id(activity, :shots), partial: "agent_sessions/shots", locals: { activity: }
+    broadcast_replace_to session, target: dom_id(session, :screen), partial: "agent_computers/sessions/screen", locals: { action: self }
+    broadcast_replace_to session, target: dom_id(activity, :shots), partial: "agent_computers/sessions/shots", locals: { activity: }
   end
 
   # The feed's card for the run in progress: what it's doing, and when it last moved
   def broadcast_running_card
-    broadcast_replace_to [ session.agent_computer, :feed ], target: dom_id(session, :running), partial: "agent_posts/running", locals: { session: } if session.active?
+    broadcast_replace_to [ session.agent_computer, :feed ], target: dom_id(session, :running), partial: "agent_computers/posts/running", locals: { session: } if session.active?
   end
 end

@@ -4,7 +4,7 @@
 <div id="<%= dom_id(session, :timeline) %>">
   <ol id="<%= dom_id(session, :activities) %>" class="space-y-2">
     <% activities.each do |activity| %>
-      <%= render "agent_sessions/activity", activity: activity %>
+      <%= render "agent_computers/sessions/activity", activity: activity %>
     <% end %>
   </ol>
 </div>

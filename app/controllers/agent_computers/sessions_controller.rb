@@ -1,10 +1,6 @@
 # Agent sessions on an agent computer: the list, and one session's live timeline (it updates over Turbo Streams as
 # the session runs; see the broadcasts in AgentComputer::Session and its steps and actions).
-class AgentSessionsController < ApplicationController
-  include AgentTasksFeature
-
-  before_action :set_agent_computer
-
+class AgentComputers::SessionsController < AgentComputers::BaseController
   # Runs are listed on their task's page
   def index
     redirect_to agent_computer_agent_tasks_path(@agent_computer)
@@ -28,11 +24,5 @@ class AgentSessionsController < ApplicationController
     session = @agent_computer.sessions.find(params[:id])
     session.finish!(:cancelled, error: "Cancelled by #{current_user.email}.") if session.active?
     redirect_to agent_computer_agent_session_path(@agent_computer, session)
-  end
-
-  private
-
-  def set_agent_computer
-    @agent_computer = current_account.agent_computers.find(params[:agent_computer_id])
   end
 end

@@ -32,10 +32,10 @@ class AgentComputer::Session::Activity < ApplicationRecord
 
   # New activities slide in; an updated one only types out the new part of its description
   after_create_commit lambda {
-    broadcast_append_to session, target: dom_id(session, :activities), partial: "agent_sessions/activity", locals: { activity: self, animate: true }
+    broadcast_append_to session, target: dom_id(session, :activities), partial: "agent_computers/sessions/activity", locals: { activity: self, animate: true }
   }
   after_update_commit lambda {
-    broadcast_replace_to session, target: dom_id(self), partial: "agent_sessions/activity",
+    broadcast_replace_to session, target: dom_id(self), partial: "agent_computers/sessions/activity",
                                   locals: { activity: self, reveal_from: description_previously_changed? ? description_previously_was.to_s.length : nil }
   }
 
