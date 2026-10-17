@@ -43,6 +43,17 @@ module ErrorTracking
       "#{error_tracking_configuration.project.name.upcase}-#{number}"
     end
 
+    # Exception titles are "Type: message". Split them only when the prefix looks like a class name (no spaces), so a
+    # log message such as "Slow query: 512ms" stays whole.
+    def error_type
+      type, value = title.split(": ", 2)
+      type if value && type.match?(/\A[^\s]+\z/)
+    end
+
+    def error_value
+      error_type ? title.delete_prefix("#{error_type}: ") : title
+    end
+
     def latest_event
       events.order(occurred_at: :desc).first
     end

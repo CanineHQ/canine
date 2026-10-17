@@ -115,12 +115,22 @@
                     <input type="checkbox" name="ids[]" value="<%= issue.id %>" class="checkbox checkbox-sm" aria-label="Select issue"
                       data-bulk-select-target="row" data-action="bulk-select#update">
                   </td>
-                  <td class="max-w-xl">
-                    <%= link_to project_error_issue_path(@project, issue), class: "block" do %>
-                      <div class="font-medium break-words line-clamp-2" title="<%= issue.title %>"><%= issue.title %></div>
-                      <div class="text-xs text-base-content/60 mt-1">
-                        <span class="font-mono"><%= issue.short_id %></span> ·
-                        <%= time_ago_in_words(issue.first_seen_at) %> old, seen <%= time_ago_in_words(issue.last_seen_at) %> ago
+                  <td>
+                    <%= link_to project_error_issue_path(@project, issue), class: "grid gap-x-6 gap-y-1 md:grid-cols-3", title: issue.title do %>
+                      <div class="min-w-0">
+                        <div class="font-semibold text-primary truncate"><%= issue.error_type || issue.level.humanize %></div>
+                        <div class="text-xs text-base-content/60 truncate"><%= issue.culprit %></div>
+                      </div>
+                      <div class="min-w-0 md:col-span-2">
+                        <div class="truncate"><%= issue.error_value %></div>
+                        <div class="flex items-center gap-3 text-xs text-base-content/60 mt-1">
+                          <%= error_platform_icon(issue.platform) %>
+                          <span class="font-mono"><%= issue.short_id %></span>
+                          <span class="flex items-center gap-1" title="First seen <%= time_ago_in_words(issue.first_seen_at) %> ago">
+                            <iconify-icon icon="lucide:clock" width="12" height="12"></iconify-icon>
+                            <%= time_ago_in_words(issue.last_seen_at) %> ago
+                          </span>
+                        </div>
                       </div>
                     <% end %>
                   </td>

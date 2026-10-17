@@ -1,11 +1,10 @@
 <%= project_layout(@project) do %>
-  <% type, value = @error_issue.title.split(": ", 2) %>
   <div class="space-y-6">
     <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
       <div class="min-w-0 space-y-1">
-        <h4 class="text-lg font-semibold break-words"><%= value ? type : @error_issue.title %></h4>
-        <% if value %>
-          <p class="break-words text-base-content/80"><%= value %></p>
+        <h4 class="text-lg font-semibold break-words"><%= @error_issue.error_type || @error_issue.title %></h4>
+        <% if @error_issue.error_type %>
+          <p class="break-words text-base-content/80"><%= @error_issue.error_value %></p>
         <% end %>
         <p class="text-sm text-base-content/60">
           <span class="font-mono"><%= @error_issue.short_id %></span>
