@@ -43,6 +43,9 @@ module Canine
     config.autoload_paths << Rails.root.join("lib")
     config.eager_load_paths << Rails.root.join("lib")
 
+    require_relative "../lib/agent_computer_proxy"
+    config.middleware.insert_after Warden::Manager, AgentComputerProxy
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

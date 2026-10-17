@@ -1,0 +1,6 @@
+<% colors = { "queued" => "badge-ghost", "running" => "badge-info", "waiting_for_human" => "badge-warning", "waiting_for_tool" => "badge-info",
+              "succeeded" => "badge-success", "failed" => "badge-error", "cancelled" => "badge-ghost" } %>
+<span class="badge badge-sm <%= colors[session.status] %> gap-1">
+  <% if session.running? || session.waiting_for_tool? %><span class="loading loading-spinner loading-xs"></span><% end %>
+  <%= agent_session_status_label(session) %>
+</span>

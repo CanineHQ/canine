@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bigarrow-wayland"
+version = "0.1.0"
+description = "Lets AI agents draw big arrows, boxes and signs on a Wayland screen, to show people where to look"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+# PyGObject and pycairo usually come from the distribution (Arch: python-gobject, python-cairo), with GTK 4 and
+# gtk4-layer-shell; a venv made with --system-site-packages picks them up.
+dependencies = ["PyGObject>=3.42", "pycairo>=1.20"]
+
+[project.scripts]
+bigarrow = "bigarrow.__main__:cli"
+
+[tool.setuptools]
+packages = ["bigarrow"]

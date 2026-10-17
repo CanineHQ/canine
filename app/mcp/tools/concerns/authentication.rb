@@ -60,6 +60,10 @@ module Tools
           }.first
         end
 
+        def find_agent_computer(agent_computer_id, account_users)
+          AgentComputer.joins(:account_user).where(account_users: { account_id: account_users.map(&:account_id) }).find_by(id: agent_computer_id)
+        end
+
         def find_add_on(add_on_id, account_users)
           account_users.lazy.filter_map { |au|
             ::AddOns::VisibleToUser.execute(account_user: au).add_ons.find_by(id: add_on_id)

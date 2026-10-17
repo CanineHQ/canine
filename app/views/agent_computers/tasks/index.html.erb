@@ -1,0 +1,102 @@
+<%= agent_computer_layout(@agent_computer) do %>
+  <div class="flex items-center justify-end mb-3">
+    <%= link_to new_agent_computer_agent_task_path(@agent_computer), class: "btn btn-primary btn-sm" do %>
+      <iconify-icon icon="lucide:plus" height="14"></iconify-icon>
+      New task
+    <% end %>
+  </div>
+
+  <% if @tasks.empty? %>
+    <% has_key = current_account.agent_provider_keys.exists?(provider: "openrouter") %>
+    <div class="mx-auto max-w-xl py-8">
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body items-center gap-2 p-6 text-center">
+          <span class="flex h-11 w-11 items-center justify-center rounded-full bg-base-200 text-primary">
+            <iconify-icon icon="lucide:calendar-clock" height="22"></iconify-icon>
+          </span>
+          <h3 class="text-base font-semibold">Create your first task</h3>
+          <p class="max-w-md text-sm text-base-content/60">
+            Tasks run on a schedule while nobody's using the computer. Describe what you want in plain English —
+            the agent figures out the steps and posts what it got done to the feed.
+          </p>
+
+          <% unless has_key %>
+            <div class="mt-2 w-full rounded-lg bg-warning/10 p-3 text-left text-xs text-base-content/70">
+              First, add your <%= link_to "OpenRouter key", agent_provider_keys_path, class: "link link-primary font-medium" %>
+              in Agent settings — tasks need it to run models.
+            </div>
+          <% end %>
+
+          <div class="mt-3 flex w-full flex-col gap-2 text-left">
+            <% [
+                 "Every hour, check Slack and email for feature requests to the akula codebase, and implement the straightforward ones.",
+                 "Every weekday at 8am, summarize my unread email and flag anything that needs a reply.",
+                 "Twice a day, check the repo's open issues and open a draft PR for any small, well-specified bug."
+               ].each do |example| %>
+              <%= link_to new_agent_computer_agent_task_path(@agent_computer, instruction: example),
+                    class: "group flex items-start gap-2 rounded-lg border border-base-content/10 p-3 text-sm hover:border-primary hover:bg-base-200/50" do %>
+                <iconify-icon icon="lucide:sparkles" height="16" class="mt-0.5 shrink-0 text-base-content/40 group-hover:text-primary"></iconify-icon>
+                <span class="text-base-content/80">"<%= example %>"</span>
+              <% end %>
+            <% end %>
+          </div>
+
+          <%= link_to new_agent_computer_agent_task_path(@agent_computer), class: "btn btn-primary btn-sm mt-4" do %>
+            <iconify-icon icon="lucide:plus" height="14"></iconify-icon>
+            New task from scratch
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="overflow-x-auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th><span class="text-sm font-medium text-base-content/80">Task</span></th>
+          <th><span class="text-sm font-medium text-base-content/80">Last result</span></th>
+          <th><span class="text-sm font-medium text-base-content/80">Last run</span></th>
+          <th><span class="text-sm font-medium text-base-content/80">Next run</span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tasks.each do |task| %>
+          <tr>
+            <td>
+              <%= link_to task.name, agent_computer_agent_task_path(@agent_computer, task), class: "font-medium link link-hover" %>
+              <div class="text-xs text-base-content/50"><%= schedule_in_words(task.schedule) %></div>
+            </td>
+            <% last = task.last_session %>
+            <td>
+              <% if last %>
+                <%= link_to agent_computer_agent_session_path(@agent_computer, last), class: "flex items-center gap-2" do %>
+                  <%= render "projects/services/jobs/status", status: last.as_run.status %>
+                <% end %>
+              <% else %>
+                <span class="text-sm text-base-content/40">Never</span>
+              <% end %>
+            </td>
+            <td>
+              <% if last %>
+                <div role="tooltip" data-tip="<%= last.created_at.strftime("%B %d, %Y %H:%M %p") %>" class="tooltip">
+                  <div class="text-sm"><%= time_ago_in_words(last.created_at) %> ago</div>
+                </div>
+              <% else %>
+                <span class="text-sm text-base-content/40">—</span>
+              <% end %>
+            </td>
+            <td class="text-sm"><%= task.enabled? && task.next_run_at ? "in #{time_ago_in_words(task.next_run_at)}" : "not enabled" %></td>
+            <td class="text-right whitespace-nowrap">
+              <%= button_to "Run now", run_now_agent_computer_agent_task_path(@agent_computer, task), class: "btn btn-ghost btn-xs", form: { class: "inline" } %>
+              <%= link_to "Edit", edit_agent_computer_agent_task_path(@agent_computer, task), class: "btn btn-ghost btn-xs" %>
+              <%= button_to "Delete", agent_computer_agent_task_path(@agent_computer, task), method: :delete, class: "btn btn-ghost btn-xs text-error",
+                form: { class: "inline", data: { turbo_confirm: "Delete #{task.name} and its sessions?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+  <% end %>
+<% end %>

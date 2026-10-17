@@ -173,6 +173,29 @@ Rails.application.routes.draw do
     post :upload, on: :member
   end
   resource :portainer_token, only: %i[update destroy], controller: 'providers/portainer_tokens'
+  resources :agent_computers, only: %i[index show new create edit update destroy] do
+    member do
+      get :connect
+      get :stats
+      post :stop
+      post :start
+    end
+    scope module: :agent_computers do
+      resources :agent_tasks, path: "tasks", controller: "tasks", only: %i[index show new create edit update destroy] do
+        post :draft, on: :collection
+        post :compose, on: :collection
+        post :run_now, on: :member
+      end
+      resources :agent_sessions, path: "sessions", controller: "sessions", only: %i[index show] do
+        post :cancel, on: :member
+        get :screenshots, on: :member
+        resources :activities, only: :show
+      end
+      resources :agent_posts, path: "feed", controller: "posts", only: :index
+    end
+  end
+  resources :agent_provider_keys, only: %i[index create destroy]
+
   resources :projects do
     member do
       post :restart

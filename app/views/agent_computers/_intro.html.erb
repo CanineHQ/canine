@@ -1,0 +1,72 @@
+<%# First-run intro, shown on the computers page when the account has none yet. Explains what an agent computer is and
+    points to creating the first one (or to the cluster prerequisite). The promo video is a scaffolded slot: drop a
+    Loom/YouTube embed URL or a self-hosted mp4 into `promo_url` below and it renders in place of the placeholder. %>
+<% promo_url = nil # TODO: set to a video URL (YouTube/Loom embed, or a self-hosted .mp4) to show the promo. %>
+<% eligible_cluster = current_account.clusters.running.with_agent_computer.exists? %>
+<% a_cluster = current_account.clusters.running.first || current_account.clusters.first %>
+
+<div class="mx-auto max-w-3xl py-8 text-center">
+  <h2 class="text-2xl font-semibold">A computer your agents can use</h2>
+  <p class="mx-auto mt-3 max-w-xl text-base-content/70">
+    A real cloud Linux desktop — watch it, take control any time, or hand it tasks. It browses the web, runs a
+    terminal, and writes and runs code the way a person would.
+  </p>
+
+  <%# Promo video slot (16:9). %>
+  <div class="mt-7 overflow-hidden rounded-xl border border-base-content/10 bg-base-200">
+    <div class="relative aspect-video">
+      <% if promo_url %>
+        <iframe src="<%= promo_url %>" class="absolute inset-0 h-full w-full" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen title="Agent computers demo"></iframe>
+      <% else %>
+        <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-base-200 to-base-300 text-base-content/50">
+          <span class="flex h-14 w-14 items-center justify-center rounded-full bg-base-100/80 shadow-sm">
+            <iconify-icon icon="lucide:play" height="24" class="text-primary"></iconify-icon>
+          </span>
+          <span class="text-xs font-medium uppercase tracking-wide">Demo video coming soon</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Three value props. %>
+  <div class="mt-8 grid gap-4 text-left sm:grid-cols-3">
+    <% [
+         ["lucide:monitor", "A real desktop", "Watch the screen live and take over whenever you want — it's a full computer, not a chatbox."],
+         ["lucide:bot", "Does real work", "Agents browse the web, run a terminal, and hand coding jobs to a coding agent."],
+         ["lucide:calendar-clock", "Set and forget", "Give it tasks on a schedule. It works while you're away and shows you what it accomplished."]
+       ].each do |icon, title, body| %>
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body gap-1 p-4">
+          <iconify-icon icon="<%= icon %>" height="20" class="text-primary"></iconify-icon>
+          <div class="mt-1 text-sm font-semibold"><%= title %></div>
+          <p class="text-xs text-base-content/60"><%= body %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# CTA — create the first computer, or guide to the cluster prerequisite. %>
+  <div class="mt-8">
+    <% if eligible_cluster %>
+      <%= link_to new_agent_computer_path, class: "btn btn-primary" do %>
+        <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+        Create your first computer
+      <% end %>
+      <p class="mt-2 text-xs text-base-content/50">Takes a few minutes to provision.</p>
+    <% elsif a_cluster %>
+      <%= link_to cluster_path(a_cluster), class: "btn btn-primary" do %>
+        <iconify-icon icon="lucide:boxes" height="16"></iconify-icon>
+        Install KubeVirt on a cluster
+      <% end %>
+      <p class="mt-2 text-xs text-base-content/50">Agent computers need the KubeVirt package on a running cluster.</p>
+    <% else %>
+      <%= link_to clusters_path, class: "btn btn-primary" do %>
+        <iconify-icon icon="lucide:boxes" height="16"></iconify-icon>
+        Set up a cluster first
+      <% end %>
+      <p class="mt-2 text-xs text-base-content/50">Agent computers run on your own Kubernetes cluster.</p>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<%# The compose box at the top of the feed: describe a task and run it now, or pick a recurring schedule. Posts to
+    AgentComputers::TasksController#compose, which creates the task and either starts a session or schedules it. %>
+<% has_key = current_account.agent_provider_keys.exists?(provider: "openrouter") %>
+<div class="card border border-base-content/20 bg-base-100 mb-5"
+     data-controller="agent-computers--compose"
+     data-agent-computers--compose-labels-value='<%= { now: "Run now", "10m": "Every 10 minutes", "30m": "Every 30 minutes", "1h": "Every hour", "6h": "Every 6 hours" }.to_json %>'>
+  <div class="card-body gap-3 p-4">
+    <%= form_with url: compose_agent_computer_agent_tasks_path(@agent_computer), method: :post do |f| %>
+      <%= text_area_tag :instruction, nil, rows: 2, required: true,
+            data: { controller: "textarea-autogrow", "agent-computers--compose-target": "instruction" },
+            placeholder: "What should your agent do? e.g. Check my email and summarize anything that needs a reply.",
+            class: "w-full resize-none border-0 bg-transparent px-1 text-[15px] leading-relaxed placeholder:text-base-content/40 focus:border-0 focus:outline-none focus:ring-0" %>
+
+      <input type="hidden" name="every" value="now" data-agent-computers--compose-target="every">
+
+      <%# The "daily at" time, shown only when the daily preset is chosen. %>
+      <div class="hidden" data-agent-computers--compose-target="dailyRow">
+        <label class="flex items-center gap-2 text-sm text-base-content/70">
+          Run daily at
+          <input type="time" name="daily_time" value="09:00" data-agent-computers--compose-target="dailyTime"
+                 data-action="agent-computers--compose#dailyChanged" class="input input-bordered input-sm w-32">
+        </label>
+      </div>
+
+      <div class="flex items-center justify-between border-t border-base-300 pt-3">
+        <div class="flex items-center gap-1">
+          <%# When-to-run picker. %>
+          <details class="dropdown" data-agent-computers--compose-target="menu">
+            <summary class="btn btn-ghost btn-sm gap-1 font-normal text-base-content/70">
+              <iconify-icon icon="lucide:clock" height="15"></iconify-icon>
+              <span data-agent-computers--compose-target="label">Run now</span>
+              <iconify-icon icon="lucide:chevron-down" height="14"></iconify-icon>
+            </summary>
+            <ul class="dropdown-content menu z-10 mt-1 w-52 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+              <% [["now", "Run now"], ["10m", "Every 10 minutes"], ["30m", "Every 30 minutes"], ["1h", "Every hour"], ["6h", "Every 6 hours"], ["daily", "Daily at…"]].each do |key, label| %>
+                <li><a data-key="<%= key %>" data-action="agent-computers--compose#choose"><%= label %></a></li>
+              <% end %>
+            </ul>
+          </details>
+
+          <%# Advanced editor: the full task form (name, schedule, model, details) in a modal. %>
+          <button type="button" class="btn btn-ghost btn-sm gap-1 font-normal text-base-content/70"
+                  data-action="agent-computers--compose#openAdvanced" title="Open the full task editor">
+            <iconify-icon icon="lucide:sliders-horizontal" height="15"></iconify-icon>
+            Advanced
+          </button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-sm" data-agent-computers--compose-target="submit">Run</button>
+      </div>
+
+      <% unless has_key %>
+        <p class="text-xs text-base-content/50">
+          <iconify-icon icon="lucide:info" height="13"></iconify-icon>
+          Add your <%= link_to "OpenRouter key", agent_provider_keys_path, class: "link link-primary" %> to run tasks.
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# The advanced editor — the full task form (same as /tasks/new) in a modal. Opened from "Advanced" above;
+      whatever's typed in the compose box is carried into its instruction field. Saving posts to create and
+      leaves the feed for the task, exactly like the standalone page. %>
+  <dialog class="modal" aria-label="New task" data-agent-computers--compose-target="dialog">
+    <div class="modal-box w-11/12 max-w-5xl bg-base-300">
+      <form method="dialog">
+        <button aria-label="Close" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+          <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+        </button>
+      </form>
+      <h3 class="mb-6 text-lg font-semibold">New task</h3>
+      <%= render "agent_computers/tasks/form",
+            task: @agent_computer.tasks.new(model: @agent_computer.default_model),
+            in_modal: true %>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+</div>
