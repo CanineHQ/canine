@@ -115,7 +115,7 @@ RSpec.describe "Error tracking", type: :request do
     ignored = ErrorTracking::IngestEvent.call(configuration, { "message" => "noise" }).issue.tap(&:ignored!)
 
     get project_error_issues_path(project)
-    expect(response.body).to include("E0", "Mark resolved", "1 event")
+    expect(response.body).to include("E0", "Mark resolved", issues.first.short_id)
 
     patch bulk_project_error_issues_path(project), params: { status: "unresolved", bulk_action: "resolved", ids: issues.first(2).map(&:id) }
     expect(issues.map { |i| i.reload.status }).to eq(%w[resolved resolved unresolved])
