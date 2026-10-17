@@ -3,9 +3,10 @@
   <div class="space-y-4 min-h-80">
     <div class="flex flex-wrap items-center gap-2">
       <details class="dropdown">
-        <summary class="btn btn-outline border-base-content/20 font-normal">
-          <span class="font-semibold">Sort by:</span> <%= Projects::ErrorIssuesController::SORTS[@sort][:label] %>
-          <iconify-icon icon="lucide:chevron-down"></iconify-icon>
+        <summary class="btn btn-outline border-base-content/20 font-normal px-3 sm:px-4" aria-label="Sort issues">
+          <iconify-icon icon="lucide:arrow-up-down" class="sm:hidden"></iconify-icon>
+          <span class="hidden sm:inline"><span class="font-semibold">Sort by:</span> <%= Projects::ErrorIssuesController::SORTS[@sort][:label] %></span>
+          <iconify-icon icon="lucide:chevron-down" class="hidden sm:inline"></iconify-icon>
         </summary>
         <ul class="dropdown-content menu z-10 mt-1 w-44 rounded-box border border-base-300 bg-base-100 p-1 shadow">
           <% Projects::ErrorIssuesController::SORTS.each do |sort, option| %>
@@ -14,9 +15,9 @@
         </ul>
       </details>
 
-      <div class="flex flex-1 min-w-64 max-w-2xl">
+      <div class="flex flex-1 min-w-0 max-w-2xl">
         <details class="dropdown">
-          <summary class="btn btn-outline border-base-content/20 !rounded-r-none">
+          <summary class="btn btn-outline border-base-content/20 !rounded-r-none flex-nowrap whitespace-nowrap">
             <%= @status.humanize %>
             <iconify-icon icon="lucide:chevron-down"></iconify-icon>
           </summary>
@@ -28,11 +29,11 @@
             <% end %>
           </ul>
         </details>
-        <%= form_with url: project_error_issues_path(@project), method: :get, class: "flex-1" do %>
+        <%= form_with url: project_error_issues_path(@project), method: :get, class: "flex-1 min-w-0" do %>
           <% @list_params.except(:q).each do |name, value| %>
             <%= hidden_field_tag name, value, id: nil %>
           <% end %>
-          <label class="input input-bordered focus-within:outline-offset-0 !rounded-l-none !border-l-0 flex items-center gap-2 w-full">
+          <label class="input input-bordered min-w-0 focus-within:outline-offset-0 !rounded-l-none !border-l-0 flex items-center gap-2 w-full">
             <iconify-icon icon="lucide:search" width="16" height="16" class="opacity-70"></iconify-icon>
             <%= search_field_tag :q, @query, placeholder: "Search issues", title: "Search by title, culprit or short ID (#{@project.name.upcase}-42)", class: "grow min-w-0 border-0 bg-transparent p-0 shadow-none focus:outline-none focus:ring-0 [&::-webkit-search-cancel-button]:hidden", aria: { label: "Search issues" } %>
             <% if @query.present? %>
@@ -65,17 +66,21 @@
 
         <div class="rounded-box border border-base-300 overflow-x-auto">
           <div class="flex items-center justify-between gap-2 px-3 py-2 bg-base-200 border-b border-base-300">
-            <div class="flex flex-wrap items-center gap-2">
-              <input type="checkbox" class="checkbox checkbox-sm mr-2" aria-label="Select all issues on this page"
+            <div class="flex items-center gap-1 sm:gap-2">
+              <input type="checkbox" class="checkbox checkbox-sm mr-1 sm:mr-2" aria-label="Select all issues on this page"
                 data-bulk-select-target="all" data-action="bulk-select#toggleAll">
-              <% { "resolved" => "Mark resolved", "unresolved" => "Mark unresolved", "ignored" => "Mark ignored" }.each do |action, label| %>
-                <button type="submit" name="bulk_action" value="<%= action %>" class="btn btn-xs btn-outline" disabled
-                  data-bulk-select-target="action" data-current="<%= action == @status %>"><%= label %></button>
+              <% { "resolved" => ["Mark resolved", "lucide:circle-check"], "unresolved" => ["Mark unresolved", "lucide:rotate-ccw"], "ignored" => ["Mark ignored", "lucide:eye-off"] }.each do |action, (label, icon)| %>
+                <button type="submit" name="bulk_action" value="<%= action %>" class="btn btn-xs btn-outline" disabled title="<%= label %>" aria-label="<%= label %>"
+                  data-bulk-select-target="action" data-current="<%= action == @status %>">
+                  <iconify-icon icon="<%= icon %>" class="sm:hidden"></iconify-icon><span class="hidden sm:inline"><%= label %></span>
+                </button>
               <% end %>
-              <button type="submit" name="bulk_action" value="delete" class="btn btn-xs btn-outline btn-error" disabled
-                data-bulk-select-target="action" data-turbo-confirm="Delete the selected issues and all of their events?">Delete</button>
+              <button type="submit" name="bulk_action" value="delete" class="btn btn-xs btn-outline btn-error" disabled title="Delete" aria-label="Delete"
+                data-bulk-select-target="action" data-turbo-confirm="Delete the selected issues and all of their events?">
+                <iconify-icon icon="lucide:trash-2" class="sm:hidden"></iconify-icon><span class="hidden sm:inline">Delete</span>
+              </button>
             </div>
-            <div class="flex items-center gap-2 text-sm text-base-content/70 shrink-0">
+            <div class="flex items-center gap-1 sm:gap-2 text-sm text-base-content/70 shrink-0">
               <span><%= @pagy.from %>–<%= @pagy.to %> of <%= @pagy.count %></span>
               <%= link_to_if @pagy.prev, tag.iconify_icon(icon: "lucide:chevron-left"), project_error_issues_path(@project, @list_params.merge(page: @pagy.prev)), class: "btn btn-xs btn-ghost", aria: { label: "Previous page" } do %>
                 <span class="btn btn-xs btn-ghost btn-disabled"><iconify-icon icon="lucide:chevron-left"></iconify-icon></span>
@@ -123,12 +128,13 @@
                       </div>
                       <div class="min-w-0 md:col-span-2">
                         <div class="truncate"><%= issue.error_value %></div>
-                        <div class="flex items-center gap-3 text-xs text-base-content/60 mt-1">
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-base-content/60 mt-1 whitespace-nowrap">
                           <%= error_platform_icon(issue.platform) %>
                           <span class="font-mono"><%= issue.short_id %></span>
-                          <span class="flex items-center gap-1" title="First seen <%= time_ago_in_words(issue.first_seen_at) %> ago">
+                          <span class="flex items-center gap-1" title="Last seen <%= time_ago_in_words(issue.last_seen_at) %> ago, first seen <%= time_ago_in_words(issue.first_seen_at) %> ago">
                             <iconify-icon icon="lucide:clock" width="12" height="12"></iconify-icon>
-                            <%= time_ago_in_words(issue.last_seen_at) %> ago
+                            <span class="sm:hidden"><%= short_time_ago(issue.last_seen_at) %></span>
+                            <span class="hidden sm:inline"><%= time_ago_in_words(issue.last_seen_at) %> ago</span>
                           </span>
                         </div>
                       </div>
