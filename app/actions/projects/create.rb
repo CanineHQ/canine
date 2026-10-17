@@ -40,6 +40,7 @@ class Projects::Create
 
   def self.steps
     [
+      Projects::VerifyPermissions,
       Projects::ConfigureSource,
       Projects::BuildBuildConfiguration,
       Projects::ValidateGitRepository,

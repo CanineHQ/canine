@@ -4,7 +4,8 @@ module Tools
   class UpdateProject < MCP::Tool
     include Tools::Concerns::Authentication
 
-    description "Update a project's settings including name, branch, build configuration, and more. Redeploy the project afterwards for changes to take effect."
+    description "Update a project's settings including name, branch, build configuration, and more, or turn on error tracking " \
+                "(the response includes the Sentry DSN). Redeploy the project afterwards for setting changes to take effect."
 
     input_schema(
       properties: {
@@ -43,6 +44,12 @@ module Tools
         context_directory: {
           type: "string",
           description: "Docker build context directory (e.g. '.')"
+        },
+        error_tracking: {
+          type: "boolean",
+          description: "Set to true to turn on Sentry-compatible error tracking; the response includes the DSN to configure " \
+                       "a Sentry SDK with (SENTRY_DSN). Safe to repeat. Turning it off deletes all collected errors, so it " \
+                       "can only be done from the project's settings page."
         }
       },
       required: [ "project_id" ]
@@ -56,7 +63,7 @@ module Tools
 
     def self.call(project_id:, name: nil, repository_url: nil, branch: nil, autodeploy: nil,
                   predeploy_command: nil, image_repository: nil, dockerfile_path: nil,
-                  context_directory: nil, server_context:)
+                  context_directory: nil, error_tracking: nil, server_context:)
       with_account_users(server_context: server_context) do |user, account_users|
         project = find_project(project_id, account_users)
 
@@ -64,6 +71,13 @@ module Tools
           return MCP::Tool::Response.new([ {
             type: "text",
             text: "Project not found or you don't have access to it"
+          } ], error: true)
+        end
+
+        if error_tracking == false
+          return MCP::Tool::Response.new([ {
+            type: "text",
+            text: "Error tracking can't be turned off here: it deletes all collected errors. Disable it from the project's settings page."
           } ], error: true)
         end
 
@@ -79,28 +93,36 @@ module Tools
         build_config_attrs[:dockerfile_path] = dockerfile_path if dockerfile_path.present?
         build_config_attrs[:context_directory] = context_directory if context_directory.present?
 
-        params = ActionController::Parameters.new(
-          project: project_attrs.merge(
-            build_configuration: build_config_attrs
+        messages = []
+        if project_attrs.any? || build_config_attrs.any?
+          params = ActionController::Parameters.new(
+            project: project_attrs.merge(
+              build_configuration: build_config_attrs
+            )
           )
-        )
 
-        result = ::Projects::Update.call(project, params, user)
+          result = ::Projects::Update.call(project, params, user)
 
-        if result.success?
-          changes = project_attrs.except(:build_configuration).map { |k, v| "#{k}=#{v}" }
-          changes += build_config_attrs.map { |k, v| "#{k}=#{v}" }
+          unless result.success?
+            return MCP::Tool::Response.new([ {
+              type: "text",
+              text: "Failed to update project: #{result.message}"
+            } ], error: true)
+          end
 
-          MCP::Tool::Response.new([ {
-            type: "text",
-            text: "Project '#{project.reload.name}' updated successfully (#{changes.join(', ')}). Redeploy the project for changes to take effect."
-          } ])
-        else
-          MCP::Tool::Response.new([ {
-            type: "text",
-            text: "Failed to update project: #{result.message}"
-          } ], error: true)
+          changes = project_attrs.map { |k, v| "#{k}=#{v}" } + build_config_attrs.map { |k, v| "#{k}=#{v}" }
+          messages << "Project '#{project.reload.name}' updated successfully (#{changes.join(', ')}). Redeploy the project for changes to take effect."
         end
+
+        if error_tracking
+          configuration = project.error_tracking_configuration || project.create_error_tracking_configuration!
+          messages << "Error tracking is enabled. Configure a Sentry SDK with this DSN (e.g. as SENTRY_DSN): #{configuration.dsn}"
+        end
+
+        MCP::Tool::Response.new([ {
+          type: "text",
+          text: messages.presence&.join("\n") || "Nothing to update."
+        } ])
       end
     end
   end

@@ -1,0 +1,5 @@
+<% if target %>
+  <%= link_to tag.iconify_icon(icon:), project_error_issue_path(@project, @error_issue, event_id: target.id, frames: params[:frames]), class: "btn btn-xs btn-ghost btn-square", title: label, aria: { label: } %>
+<% else %>
+  <span class="btn btn-xs btn-ghost btn-square btn-disabled" aria-hidden="true"><iconify-icon icon="<%= icon %>"></iconify-icon></span>
+<% end %>

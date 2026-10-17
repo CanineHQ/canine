@@ -11,7 +11,7 @@ module Resources
 
       def self.call(uri:, user:, account_users:)
         account_user = account_users.first
-        clusters = account_user.account.clusters.order(:name)
+        clusters = ::Clusters::VisibleToUser.execute(account_user: account_user).clusters.order(:name)
         json(uri, clusters.map { |c| Api::Clusters::ShowViewModel.new(c).as_json })
       end
     end
