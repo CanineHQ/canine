@@ -1,6 +1,17 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  # A <time> the local-time JS rewrites into the browser's time zone (strftime format, see LocalTime.strftime for the
+  # supported directives) and titles with the full local date. The UTC text shows until the JS runs.
+  def local_time(time, format = "%b %-d, %Y %l:%M%P")
+    time_tag(time, time.utc.strftime(format), data: { local: "time", format: })
+  end
+
+  # Like local_time, but the text is relative ("5 minutes ago", "yesterday at 3:14pm") and kept current by the JS.
+  def local_time_ago(time)
+    time_tag(time, "#{time_ago_in_words(time)} ago", data: { local: "time-ago" })
+  end
+
   def custom_pagy_nav(pagy)
     html = '<div class="flex items-center gap-2">'
     html << pagy_nav_prev(pagy) if pagy.prev

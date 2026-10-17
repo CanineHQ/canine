@@ -9,6 +9,15 @@ module ErrorIssuesHelper
     tag.iconify_icon(icon: "devicon:#{PLATFORM_ICON_ALIASES.fetch(platform, platform)}", width: 14, height: 14, title: platform)
   end
 
+  # Sentry SDKs send breadcrumb timestamps as epoch seconds or ISO 8601 strings; nil when it is neither.
+  def breadcrumb_time(timestamp)
+    return Time.zone.at(timestamp) if timestamp.is_a?(Numeric)
+
+    Time.zone.iso8601(timestamp.to_s)
+  rescue ArgumentError
+    nil
+  end
+
   # A compact relative time for dense lists: "now", "5m", "14h", "3d", "2mo", "1y".
   def short_time_ago(time)
     seconds = (Time.current - time).to_i

@@ -49,7 +49,7 @@
         <table class="table table-xs">
           <% data.last(100).reverse_each do |crumb| %>
             <tr>
-              <td class="whitespace-nowrap font-mono text-base-content/60"><%= crumb["timestamp"].is_a?(Numeric) ? Time.zone.at(crumb["timestamp"]).strftime("%H:%M:%S") : crumb["timestamp"].to_s[11, 8] %></td>
+              <td class="whitespace-nowrap font-mono text-base-content/60"><% crumb_time = breadcrumb_time(crumb["timestamp"]) %><%= crumb_time ? local_time(crumb_time, "%H:%M:%S") : crumb["timestamp"] %></td>
               <td><%= crumb["category"] || crumb["type"] %></td>
               <td class="font-mono break-all"><%= crumb["message"].presence || (crumb["data"].to_json if crumb["data"].present?) %></td>
             </tr>

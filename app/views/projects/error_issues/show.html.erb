@@ -14,8 +14,8 @@
           · last seen <%= time_ago_in_words(@error_issue.last_seen_at) %> ago<%= " in #{@error_issue.last_release}" if @error_issue.last_release %>
         </p>
       </div>
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shrink-0">
-        <div title="Events in the last 24 hours"><%= render "projects/error_issues/trend", buckets: @trend %></div>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 shrink-0">
+        <%= render "projects/error_issues/trend", buckets: @trend %>
         <div class="flex gap-2">
           <% if @error_issue.unresolved? %>
             <%= button_to "Resolve", project_error_issue_path(@project, @error_issue, status: "resolved"), method: :patch, class: "btn btn-sm btn-primary" %>
@@ -34,8 +34,8 @@
     <% else %>
       <div class="space-y-4">
         <div class="flex items-center justify-between gap-2 text-sm text-base-content/60">
-          <span title="<%= @event.occurred_at.strftime("%b %d, %Y %H:%M:%S %Z") %>">
-            Event <%= number_with_delimiter(@event_position) %> of <%= number_with_delimiter(@events_count) %> · <%= time_ago_in_words(@event.occurred_at) %> ago
+          <span>
+            Event <%= number_with_delimiter(@event_position) %> of <%= number_with_delimiter(@events_count) %> · <%= local_time_ago(@event.occurred_at) %>
           </span>
           <div class="flex items-center gap-1">
             <%= render "projects/error_issues/event_nav_button", label: "Newer event", target: @newer_event, icon: "lucide:chevron-left" %>
