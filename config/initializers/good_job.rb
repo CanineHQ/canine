@@ -53,10 +53,10 @@ Rails.application.configure do
         description: "Cleanup stale shell sessions and expired tokens every 10 minutes"
       },
       check_for_new_commits: {
-        # Run in cloud mode every 5 minutes, in local mode every minute
-        cron: Rails.application.config.cloud_mode ? "*/5 * * * *" : "* * * * *",
+        # Run in cloud mode every 30 minutes (pushes there arrive by webhook), in local mode every minute
+        cron: Rails.application.config.cloud_mode ? "*/30 * * * *" : "* * * * *",
         class: "Scheduled::CheckForNewCommitsJob",
-        description: "Check for new commits every minute"
+        description: "Check autodeploy projects for new commits"
       },
       reset_demo_projects: {
         cron: "*/5 * * * *",
