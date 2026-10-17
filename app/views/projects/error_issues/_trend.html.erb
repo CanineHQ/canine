@@ -1,8 +1,18 @@
 <% peak = buckets.map(&:last).max.to_i %>
-<div class="flex items-end gap-[2px] h-6" aria-label="Event trend">
-  <% buckets.each do |start, count| %>
-    <% height = count.zero? ? 3 : 6 + (18.0 * count / peak).round %>
-    <div class="w-[3px] rounded-sm <%= count.zero? ? 'bg-base-content/15' : 'bg-error/80' %>"
-      style="height: <%= height %>px" title="<%= pluralize(count, 'event') %> · <%= start.strftime("%b %d %H:00") %>"></div>
-  <% end %>
+<div class="w-full sm:w-56" data-controller="trend" data-action="mouseleave->trend#reset focusout->trend#reset">
+  <div class="flex items-end h-10 sm:h-8" role="group" aria-label="Events per hour in the last 24 hours">
+    <% buckets.each do |start, count| %>
+      <% height = count.zero? ? 8 : 20 + (80.0 * count / peak).round %>
+      <% label = "#{pluralize(count, 'event')} · #{start.strftime('%b %-d %H:00')} UTC" %>
+      <button type="button" class="group flex-1 h-full flex items-end px-px rounded-sm cursor-pointer hover:bg-base-content/15 aria-pressed:bg-base-content/15 focus:outline-none focus-visible:bg-base-content/15"
+        aria-label="<%= label %>" aria-pressed="false" data-trend-target="bar" data-count="<%= pluralize(count, 'event') %>" data-time="<%= start.iso8601 %>"
+        data-action="mouseenter->trend#show focus->trend#show click->trend#show">
+        <span class="block w-full rounded-sm <%= count.zero? ? 'bg-base-content/15' : 'bg-error/70 group-hover:bg-error group-aria-pressed:bg-error' %>"
+          style="height: <%= height %>%"></span>
+      </button>
+    <% end %>
+  </div>
+  <div class="mt-1 text-xs text-base-content/60 tabular-nums" data-trend-target="caption" aria-live="polite">
+    <%= pluralize(number_with_delimiter(buckets.sum(&:last)), "event") %> in the last 24 hours
+  </div>
 </div>
