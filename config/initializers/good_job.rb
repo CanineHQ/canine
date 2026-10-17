@@ -27,6 +27,11 @@ Rails.application.configure do
         class: "Scheduled::FlushMetricsJob",
         description: "Flush metrics daily at midnight"
       },
+      flush_error_events: {
+        cron: "30 0 * * *",
+        class: "Scheduled::FlushErrorEventsJob",
+        description: "Prune error tracking events past retention daily"
+      },
       cancel_hanging_builds: {
         cron: "0 * * * *",
         class: "Scheduled::CancelHangingBuildsJob",

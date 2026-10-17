@@ -1,0 +1,61 @@
+# == Schema Information
+#
+# Table name: error_tracking_issues
+#
+#  id                              :bigint           not null, primary key
+#  culprit                         :string
+#  fingerprint                     :string           not null
+#  first_release                   :string
+#  first_seen_at                   :datetime         not null
+#  last_release                    :string
+#  last_seen_at                    :datetime         not null
+#  level                           :string           default("error"), not null
+#  number                          :integer          not null
+#  platform                        :string
+#  status                          :integer          default("unresolved"), not null
+#  times_seen                      :integer          default(0), not null
+#  title                           :string           not null
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  error_tracking_configuration_id :bigint           not null
+#
+# Indexes
+#
+#  idx_on_error_tracking_configuration_id_fingerprint_af48550853   (error_tracking_configuration_id,fingerprint) UNIQUE
+#  idx_on_error_tracking_configuration_id_number_6218608132        (error_tracking_configuration_id,number) UNIQUE
+#  idx_on_error_tracking_configuration_id_status_last__85f6cea452  (error_tracking_configuration_id,status,last_seen_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (error_tracking_configuration_id => error_tracking_configurations.id) ON DELETE => cascade
+#
+module ErrorTracking
+  class Issue < ApplicationRecord
+    belongs_to :error_tracking_configuration
+    has_many :events, dependent: :delete_all
+
+    enum :status, { unresolved: 0, resolved: 1, ignored: 2 }
+
+    LEVELS = %w[fatal error warning info debug].freeze
+
+    # "HELLO-WORLD-12": the project name and the issue's number within the project.
+    def short_id
+      "#{error_tracking_configuration.project.name.upcase}-#{number}"
+    end
+
+    # Exception titles are "Type: message". Split them only when the prefix looks like a class name (no spaces), so a
+    # log message such as "Slow query: 512ms" stays whole.
+    def error_type
+      type, value = title.split(": ", 2)
+      type if value && type.match?(/\A[^\s]+\z/)
+    end
+
+    def error_value
+      error_type ? title.delete_prefix("#{error_type}: ") : title
+    end
+
+    def latest_event
+      events.order(occurred_at: :desc).first
+    end
+  end
+end

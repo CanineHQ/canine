@@ -6,9 +6,9 @@ module Resources
       "canine://accounts"
     end
 
+    # account_users holds only the accounts that allow MCP (see Router).
     def self.call(uri:, user:, account_users:)
-      accounts = user.accounts.includes(:clusters, clusters: [ :projects, :add_ons ])
-      json(uri, accounts.map { |a| Api::Accounts::ShowViewModel.new(a).as_json })
+      json(uri, account_users.map { |account_user| Api::Accounts::ShowViewModel.new(account_user).as_json })
     end
   end
 end

@@ -1,0 +1,71 @@
+<% payload = event.payload %>
+<% if event.message.present? && event.exceptions.empty? %>
+  <pre class="bg-base-200 rounded-box p-3 overflow-x-auto text-sm whitespace-pre-wrap"><%= event.message %></pre>
+<% end %>
+
+<% event.exceptions.each_with_index do |exception, index| %>
+  <% all_frames = Array.wrap(ErrorTracking.dig(exception, "stacktrace", "frames")).select { |frame| frame.is_a?(Hash) }.reverse %>
+  <% in_app = all_frames.select { |frame| frame["in_app"] } %>
+  <% frames = full_stack || in_app.empty? ? all_frames : in_app %>
+  <section class="space-y-2">
+    <% if index > 0 %>
+      <p class="text-sm break-words"><span class="text-base-content/60">Caused by</span> <span class="font-medium"><%= exception["type"] %></span><%= ": #{exception['value']}" if exception["value"].present? %></p>
+    <% end %>
+    <% if frames.any? %>
+      <div class="rounded-box border border-base-300 divide-y divide-base-300 overflow-hidden">
+        <% frames.each_with_index do |frame, frame_index| %>
+          <% context = Array.wrap(frame["pre_context"]) + [ frame["context_line"] ].compact + Array.wrap(frame["post_context"]) %>
+          <details class="<%= 'text-base-content/50' unless frame['in_app'] %>" <%= "open" if frame_index.zero? && index.zero? && context.any? %>>
+            <summary class="px-3 py-2 text-xs font-mono cursor-pointer break-all">
+              <%= frame["filename"] || frame["abs_path"] || frame["module"] || "?" %><% if frame["lineno"] %>:<%= frame["lineno"] %><% end %>
+              <% if frame["function"].present? %><span class="text-base-content/50"> in </span><%= frame["function"] %><% end %>
+            </summary>
+            <% if context.any? %>
+              <% start_line = frame["lineno"].to_i - Array.wrap(frame["pre_context"]).size %>
+              <pre class="text-xs overflow-x-auto bg-base-200 py-2"><% context.each_with_index do |line, line_index| %><div class="px-3 <%= 'bg-error/15' if line_index == Array.wrap(frame["pre_context"]).size %>"><span class="inline-block w-12 text-right pr-3 text-base-content/40 select-none"><%= start_line + line_index if frame["lineno"] %></span><%= line %></div><% end %></pre>
+            <% end %>
+          </details>
+        <% end %>
+      </div>
+    <% end %>
+    <% if index.zero? && in_app.any? && in_app.size < all_frames.size %>
+      <%= link_to full_stack ? "Hide library frames" : "Show #{pluralize(all_frames.size - in_app.size, 'library frame')}",
+        project_error_issue_path(@project, @error_issue, event_id: event.id, frames: ("full" unless full_stack)), class: "link text-xs text-base-content/60" %>
+    <% end %>
+  </section>
+<% end %>
+
+<% sections = {
+  "Tags" => event.tags.to_h.presence,
+  "Request" => (payload["request"] if payload["request"].is_a?(Hash)),
+  "User" => (payload["user"] if payload["user"].is_a?(Hash)),
+  "Breadcrumbs" => event.breadcrumbs.presence
+}.compact_blank %>
+<div class="rounded-box border border-base-300 divide-y divide-base-300">
+  <% sections.each do |label, data| %>
+    <details>
+      <summary class="px-3 py-2 text-sm cursor-pointer"><%= label %></summary>
+      <% if label == "Breadcrumbs" %>
+        <table class="table table-xs">
+          <% data.last(100).reverse_each do |crumb| %>
+            <tr>
+              <td class="whitespace-nowrap font-mono text-base-content/60"><%= crumb["timestamp"].is_a?(Numeric) ? Time.zone.at(crumb["timestamp"]).strftime("%H:%M:%S") : crumb["timestamp"].to_s[11, 8] %></td>
+              <td><%= crumb["category"] || crumb["type"] %></td>
+              <td class="font-mono break-all"><%= crumb["message"].presence || (crumb["data"].to_json if crumb["data"].present?) %></td>
+            </tr>
+          <% end %>
+        </table>
+      <% else %>
+        <table class="table table-xs font-mono">
+          <% data.each do |key, value| %>
+            <tr><td class="w-1/4 align-top text-base-content/60"><%= key %></td><td class="break-all whitespace-pre-wrap"><%= value.is_a?(String) ? value : JSON.pretty_generate(value) %></td></tr>
+          <% end %>
+        </table>
+      <% end %>
+    </details>
+  <% end %>
+  <details>
+    <summary class="px-3 py-2 text-sm cursor-pointer">Raw event</summary>
+    <pre class="bg-base-200 p-3 overflow-x-auto text-xs"><%= JSON.pretty_generate(payload) %></pre>
+  </details>
+</div>

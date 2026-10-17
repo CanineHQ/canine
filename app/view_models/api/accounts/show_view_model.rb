@@ -3,8 +3,12 @@
 module Api
   module Accounts
     class ShowViewModel
-      def initialize(account)
-        @account = account
+      # Clusters and counts are limited to what the account user can see, so team restrictions apply.
+      def initialize(account_user)
+        @account = account_user.account
+        @clusters = ::Clusters::VisibleToUser.execute(account_user:).clusters.order(:name)
+        @project_counts = ::Projects::VisibleToUser.execute(account_user:).projects.group("projects.cluster_id").count
+        @add_on_counts = ::AddOns::VisibleToUser.execute(account_user:).add_ons.group("add_ons.cluster_id").count
       end
 
       def as_json
@@ -12,19 +16,19 @@ module Api
           id: @account.id,
           name: @account.name,
           slug: @account.slug,
-          clusters: @account.clusters.map do |cluster|
+          clusters: @clusters.map do |cluster|
             {
               id: cluster.id,
               name: cluster.name,
               cluster_type: cluster.cluster_type,
-              projects_count: cluster.projects.size,
-              add_ons_count: cluster.add_ons.size
+              projects_count: @project_counts.fetch(cluster.id, 0),
+              add_ons_count: @add_on_counts.fetch(cluster.id, 0)
             }
           end,
           totals: {
-            clusters: @account.clusters.size,
-            projects: @account.clusters.sum { |c| c.projects.size },
-            add_ons: @account.clusters.sum { |c| c.add_ons.size }
+            clusters: @clusters.size,
+            projects: @project_counts.values.sum,
+            add_ons: @add_on_counts.values.sum
           }
         }
       end

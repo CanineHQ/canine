@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -278,6 +278,50 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
     t.integer "storage_type", default: 0, null: false
     t.index ["project_id", "name"], name: "index_environment_variables_on_project_id_and_name", unique: true
     t.index ["project_id"], name: "index_environment_variables_on_project_id"
+  end
+
+  create_table "error_tracking_configurations", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.string "public_key", null: false
+    t.integer "last_issue_number", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_error_tracking_configurations_on_project_id", unique: true
+    t.index ["public_key"], name: "index_error_tracking_configurations_on_public_key", unique: true
+  end
+
+  create_table "error_tracking_events", force: :cascade do |t|
+    t.bigint "issue_id", null: false
+    t.string "event_id", null: false
+    t.string "environment"
+    t.string "release"
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["issue_id", "occurred_at"], name: "index_error_tracking_events_on_issue_id_and_occurred_at"
+    t.index ["occurred_at"], name: "index_error_tracking_events_on_occurred_at"
+  end
+
+  create_table "error_tracking_issues", force: :cascade do |t|
+    t.bigint "error_tracking_configuration_id", null: false
+    t.integer "number", null: false
+    t.string "fingerprint", null: false
+    t.string "title", null: false
+    t.string "culprit"
+    t.string "level", default: "error", null: false
+    t.string "platform"
+    t.integer "status", default: 0, null: false
+    t.integer "times_seen", default: 0, null: false
+    t.datetime "first_seen_at", null: false
+    t.datetime "last_seen_at", null: false
+    t.string "first_release"
+    t.string "last_release"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["error_tracking_configuration_id", "fingerprint"], name: "idx_on_error_tracking_configuration_id_fingerprint_af48550853", unique: true
+    t.index ["error_tracking_configuration_id", "number"], name: "idx_on_error_tracking_configuration_id_number_6218608132", unique: true
+    t.index ["error_tracking_configuration_id", "status", "last_seen_at"], name: "idx_on_error_tracking_configuration_id_status_last__85f6cea452"
   end
 
   create_table "events", force: :cascade do |t|
@@ -859,6 +903,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_152959) do
   add_foreign_key "development_environments", "users", column: "created_by_id"
   add_foreign_key "email_preferences", "users"
   add_foreign_key "environment_variables", "projects"
+  add_foreign_key "error_tracking_configurations", "projects", on_delete: :cascade
+  add_foreign_key "error_tracking_events", "error_tracking_issues", column: "issue_id", on_delete: :cascade
+  add_foreign_key "error_tracking_issues", "error_tracking_configurations", on_delete: :cascade
   add_foreign_key "favorites", "accounts"
   add_foreign_key "favorites", "users"
   add_foreign_key "notifiers", "projects"

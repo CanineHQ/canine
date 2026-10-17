@@ -15,6 +15,8 @@ module Api
           dockerfile_path: @project.dockerfile_path,
           docker_build_context_directory: @project.docker_build_context_directory,
           predeploy_command: @project.predeploy_command,
+          # Sentry-compatible DSN when error tracking is enabled; enable it with the update_project MCP tool.
+          error_tracking_dsn: @project.error_tracking_configuration&.dsn,
           postdeploy_command: @project.postdeploy_command,
           services: @project.services.map do |s|
             {
