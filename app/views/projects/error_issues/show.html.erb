@@ -15,15 +15,18 @@
           · last seen <%= time_ago_in_words(@error_issue.last_seen_at) %> ago<%= " in #{@error_issue.last_release}" if @error_issue.last_release %>
         </p>
       </div>
-      <div class="flex gap-2 shrink-0">
-        <% if @error_issue.unresolved? %>
-          <%= button_to "Resolve", project_error_issue_path(@project, @error_issue, status: "resolved"), method: :patch, class: "btn btn-sm btn-primary" %>
-          <%= button_to "Ignore", project_error_issue_path(@project, @error_issue, status: "ignored"), method: :patch, class: "btn btn-sm btn-ghost" %>
-        <% else %>
-          <%= button_to "Unresolve", project_error_issue_path(@project, @error_issue, status: "unresolved"), method: :patch, class: "btn btn-sm btn-outline" %>
-        <% end %>
-        <%= button_to "Delete", project_error_issue_path(@project, @error_issue), method: :delete, class: "btn btn-sm btn-ghost text-error",
-          form: { data: { turbo_confirm: "Delete this issue and all of its events?" } } %>
+      <div class="flex items-center gap-4 shrink-0">
+        <div title="Events in the last 24 hours"><%= render "projects/error_issues/trend", buckets: @trend %></div>
+        <div class="flex gap-2">
+          <% if @error_issue.unresolved? %>
+            <%= button_to "Resolve", project_error_issue_path(@project, @error_issue, status: "resolved"), method: :patch, class: "btn btn-sm btn-primary" %>
+            <%= button_to "Ignore", project_error_issue_path(@project, @error_issue, status: "ignored"), method: :patch, class: "btn btn-sm btn-ghost" %>
+          <% else %>
+            <%= button_to "Unresolve", project_error_issue_path(@project, @error_issue, status: "unresolved"), method: :patch, class: "btn btn-sm btn-outline" %>
+          <% end %>
+          <%= button_to "Delete", project_error_issue_path(@project, @error_issue), method: :delete, class: "btn btn-sm btn-ghost text-error",
+            form: { data: { turbo_confirm: "Delete this issue and all of its events?" } } %>
+        </div>
       </div>
     </div>
 

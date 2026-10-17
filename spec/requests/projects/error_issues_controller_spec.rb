@@ -24,6 +24,9 @@ RSpec.describe Projects::ErrorIssuesController, type: :request do
 
     get project_error_issues_path(project, sort: "events")
     expect(response.body.index("Redis connection refused")).to be < response.body.index("Timeout talking to Stripe")
+
+    get project_error_issue_path(project, stripe)
+    expect(response.body).to include("1 event · #{stripe.events.first.occurred_at.utc.beginning_of_hour.strftime('%b %d %H:00')}")
   end
 
   it "searches issues and limits select-all bulk actions to the search" do

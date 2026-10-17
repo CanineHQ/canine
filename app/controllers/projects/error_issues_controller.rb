@@ -14,10 +14,7 @@ class Projects::ErrorIssuesController < Projects::BaseController
     @sort = SORTS.key?(params[:sort]) ? params[:sort] : "last_seen"
     # Carried through every link on the page so changing one control keeps the others.
     @list_params = { status: @status, sort: @sort, q: @query.presence }.compact
-    issues = search_issues
-    @counts = issues.group(:status).count
-    @pagy, @error_issues = pagy(issues.where(status: @status).order(SORTS[@sort][:order]))
-    @trends = trends(@error_issues)
+    @pagy, @error_issues = pagy(search_issues.where(status: @status).order(SORTS[@sort][:order]))
   end
 
   def show
@@ -25,6 +22,7 @@ class Projects::ErrorIssuesController < Projects::BaseController
     newest_first = events.order(occurred_at: :desc, id: :desc)
     @event = params[:event_id].present? ? events.find(params[:event_id]) : newest_first.first
     @full_stack = params[:frames] == "full"
+    @trend = trend(@error_issue)
     set_event_navigation(events, newest_first) if @event
   end
 
@@ -78,16 +76,13 @@ class Projects::ErrorIssuesController < Projects::BaseController
     @events_count = events.count
   end
 
-  # { issue_id => [[hour_start, count], ...] } for the last 24 hours, oldest first, for the issues on this page.
-  def trends(issues)
+  # [[hour_start, count], ...] for the issue's last 24 hours, oldest first.
+  def trend(issue)
     current = Time.current.utc.beginning_of_hour
     starts = Array.new(24) { |i| current - (23 - i).hours }
-    counts = ErrorTracking::Event
-      .where(issue_id: issues.map(&:id), occurred_at: starts.first..)
-      .group(:issue_id, Arel.sql("date_trunc('hour', occurred_at)"))
-      .count
-      .each_with_object(Hash.new { |h, k| h[k] = {} }) { |((issue_id, bucket), count), h| h[issue_id][bucket.to_i] = count }
+    counts = issue.events.where(occurred_at: starts.first..).group(Arel.sql("date_trunc('hour', occurred_at)")).count
+      .transform_keys(&:to_i)
 
-    issues.to_h { |issue| [ issue.id, starts.map { |start| [ start, counts[issue.id][start.to_i] || 0 ] } ] }
+    starts.map { |start| [ start, counts[start.to_i] || 0 ] }
   end
 end

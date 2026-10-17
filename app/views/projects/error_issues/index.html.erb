@@ -23,10 +23,7 @@
           <ul class="dropdown-content menu z-10 mt-1 w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow">
             <% ErrorTracking::Issue.statuses.each_key do |status| %>
               <li>
-                <%= link_to project_error_issues_path(@project, @list_params.merge(status:)), class: ("active" if status == @status) do %>
-                  <%= status.humanize %>
-                  <span class="badge badge-sm ml-auto"><%= @counts[status] || 0 %></span>
-                <% end %>
+                <%= link_to status.humanize, project_error_issues_path(@project, @list_params.merge(status:)), class: ("active" if status == @status) %>
               </li>
             <% end %>
           </ul>
@@ -54,7 +51,7 @@
         No <%= @status %> issues<%= " matching \u201C#{@query}\u201D" if @query.present? %>.
         <% if @query.present? %>
           <%= link_to "Clear search", project_error_issues_path(@project, @list_params.except(:q)), class: "link" %>
-        <% elsif @counts.values.sum.zero? %>
+        <% elsif @configuration.issues.none? %>
           Find the DSN and SDK setup instructions in
           <%= link_to "Settings", edit_project_path(@project, anchor: "error-tracking"), class: "link" %>.
         <% end %>
@@ -107,7 +104,6 @@
               <tr>
                 <th class="w-10"></th>
                 <th>Issue</th>
-                <th class="hidden md:table-cell">Trend <span class="font-normal text-base-content/50">(24h)</span></th>
                 <th class="text-right">Events</th>
               </tr>
             </thead>
@@ -127,9 +123,6 @@
                         <%= time_ago_in_words(issue.first_seen_at) %> old, seen <%= time_ago_in_words(issue.last_seen_at) %> ago
                       </div>
                     <% end %>
-                  </td>
-                  <td class="hidden md:table-cell">
-                    <%= render "projects/error_issues/trend", buckets: @trends[issue.id] %>
                   </td>
                   <td class="text-right tabular-nums"><%= number_with_delimiter(issue.times_seen) %></td>
                 </tr>
