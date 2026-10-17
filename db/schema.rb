@@ -130,7 +130,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.string "title", null: false
     t.text "description"
     t.text "outcome"
-    t.integer "first_message_position"
     t.datetime "started_at"
     t.datetime "finished_at"
     t.datetime "tidied_at"
@@ -207,7 +206,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "namespace", null: false
-    t.string "desktop", default: "selkies", null: false
     t.string "password"
     t.text "ssh_private_key"
     t.string "planning_model"

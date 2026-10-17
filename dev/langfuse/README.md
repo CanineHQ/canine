@@ -2,8 +2,7 @@
 
 Canine sends everything that goes in and out of an agent session to Langfuse, so it can be browsed and improved:
 
-- every call to OpenRouter, for the model's turns and Jev's decisions: the full request, the full response, tokens
-  and cost;
+- every call to OpenRouter, for the model's turns: the full request, the full response, tokens and cost;
 - every request to the computer-use server in the VM, with its exact body and reply. Screenshots show as images.
 
 Each job is one trace (`turn 7`, `tidy`, `wrap-up`), grouped by the agent session (`agent-session-<id>`). Langfuse's

@@ -4,7 +4,6 @@ require "socket"
 require "digest/sha1"
 require "shellwords"
 require "net/http"
-require_relative "kubevirt_vnc_relay"
 
 # Rack middleware that reverse-proxies HTTP and WebSocket requests to an agent computer's VM
 # via kubectl port-forward. Authenticates via Rails session.
@@ -14,12 +13,11 @@ require_relative "kubevirt_vnc_relay"
 #   /agent_computers/:id/computer-use/human/*  — who has the screen, from the computer-use server (HTTP; see
 #                                               resources/agent_computer/computer_use/human.py). Only that part of
 #                                               its API: the rest runs commands on the computer, for Canine alone.
-#   /agent_computers/:id/vnc             — the VM's own screen via KubeVirt's VNC subresource (WebSocket)
 class AgentComputerProxy
   # Mirrors AgentComputer::DESKTOP_PORT and COMPUTER_USE_PORT; app models aren't autoloadable when middleware loads
   TARGET_PORTS = { "proxy" => 8080, "computer-use" => 8000 }.freeze
   FORWARD_PORT_RANGE = (18000..19000)
-  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|computer-use|vnc)(?:/(.*))?}
+  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|computer-use)(?:/(.*))?}
 
   AUTH_CACHE_TTL = 60 # seconds
 
@@ -34,9 +32,7 @@ class AgentComputerProxy
     request = Rack::Request.new(env)
     match = request.path_info.match(PATH_PATTERN)
 
-    if match && match[2] == "vnc"
-      handle_vnc(env, match[1].to_i)
-    elsif match
+    if match
       sandbox_id = match[1].to_i
       remote_port = TARGET_PORTS.fetch(match[2])
       subpath = match[3] || ""
@@ -54,18 +50,6 @@ class AgentComputerProxy
   end
 
   private
-
-  # No port-forward: KubevirtVncRelay talks to the cluster API directly
-  def handle_vnc(env, sandbox_id)
-    return [ 400, {}, [ "WebSocket required" ] ] unless websocket?(env)
-
-    sandbox = authenticate_sandbox(sandbox_id, env)
-    return [ 401, {}, [ "Unauthorized" ] ] unless sandbox
-
-    connection = K8::Connection.new(sandbox.cluster, sandbox.user)
-    KubevirtVncRelay.new(namespace: sandbox.namespace, vm: sandbox.name, kubeconfig: connection.kubeconfig,
-                         skip_tls_verify: true).call(env)
-  end
 
   def log(msg)
     Rails.logger.info("[AgentComputerProxy] #{msg}")

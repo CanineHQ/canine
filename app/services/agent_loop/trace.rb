@@ -5,9 +5,8 @@ module AgentLoop
   #   ▾ <task> · session 94          the session: instruction in, summary out (written by the wrap-up)
   #     ▾ turn 1                     one TurnJob
   #        ◆ openrouter chat         the model call: the conversation as sent, the reply and its tool calls
-  #        ▾ computer_accessibility.act    one tool call: arguments in, result and screenshot out
-  #           ◆ openrouter jev decide      Jev picking the element
-  #           · computer-use POST /accessibility/press
+  #        ▾ computer_terminal.send  one tool call: arguments in, result out
+  #           · computer-use POST /terminal/send
   #     ▸ turn 2 … ▸ tidy ▸ wrap-up
   #
   # The trace id comes from the session id, so every job of a session (each turn is its own job) joins the same

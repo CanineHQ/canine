@@ -12,7 +12,6 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.timestamps
       t.string :namespace, null: false
       # How the Desktop tab shows the computer: "selkies" (stream from inside the guest) or "vnc" (the VM's own screen)
-      t.string :desktop, null: false, default: "selkies"
       # The desktop login password (lock screen, sudo) and the key Canine uses to finish setting up the VM over SSH
       t.string :password
       t.text :ssh_private_key
@@ -93,7 +92,6 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.string :title, null: false
       t.text :description
       t.text :outcome
-      t.integer :first_message_position
       t.datetime :started_at
       t.datetime :finished_at
       t.datetime :tidied_at

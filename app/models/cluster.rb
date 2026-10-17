@@ -79,10 +79,6 @@ class Cluster < ApplicationRecord
     options&.dig("in_cluster") == true
   end
 
-  def agent_computer_enabled?
-    cluster_packages.exists?(name: "kubevirt", status: :installed)
-  end
-
   scope :with_agent_computer, -> { where(id: ClusterPackage.where(name: "kubevirt", status: :installed).select(:cluster_id)) }
 
   private

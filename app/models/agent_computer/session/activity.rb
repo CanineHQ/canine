@@ -5,7 +5,6 @@
 #  id                     :bigint           not null, primary key
 #  description            :text
 #  finished_at            :datetime
-#  first_message_position :integer
 #  intent                 :string
 #  outcome                :text
 #  position               :integer          not null

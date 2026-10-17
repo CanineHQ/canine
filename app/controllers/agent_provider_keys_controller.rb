@@ -1,6 +1,6 @@
 # API keys for the models agents use (OpenRouter), per account. Shown masked, never in full.
-class AgentProviderKeysController < ApplicationController
-  include AgentTasksFeature
+class AgentProviderKeysController < AgentComputers::BaseController
+  skip_before_action :set_agent_computer # the account's keys, not one computer's
 
   def index
     @keys = current_account.agent_provider_keys.order(:created_at)

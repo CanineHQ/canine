@@ -65,7 +65,7 @@ class AgentComputer::Omarchy
               "memory" => { "guest" => AgentComputer::MEMORY },
               "devices" => {
                 "video" => { "type" => "virtio" },
-                # An absolute pointer, so the VNC view's clicks land where you click
+                # An absolute pointer, for KubeVirt's console (virtctl vnc) when debugging a VM
                 "inputs" => [ { "type" => "tablet", "bus" => "usb", "name" => "tablet" } ],
                 "logSerialConsole" => true,
                 # Empty on first boot, so the firmware falls through to the ISO; the installed system boots after that

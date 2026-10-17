@@ -218,8 +218,7 @@ module AgentLoop
 
       current&.finish!
       @session.activities.create!(position: @session.activities.unscope(:order).maximum(:position).to_i + 1, intent: intent.presence || "Working",
-                                  title: intent.presence || "Working", started_at: Time.current,
-                                  first_message_position: @session.messages.unscope(:order).maximum(:position))
+                                  title: intent.presence || "Working", started_at: Time.current)
     end
 
     def narrate(text)

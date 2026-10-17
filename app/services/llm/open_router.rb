@@ -8,7 +8,6 @@ module Llm
   #   reply.usage    # => { input_tokens:, output_tokens:, cost_usd:, cached_tokens:, provider: }
   class OpenRouter
     URL = URI("https://openrouter.ai/api/v1/chat/completions")
-    DECISIONS_URL = URI("https://openrouter.ai/api/v1/systemone")
     TIMEOUT = 180 # seconds; a turn with screenshots on a slow provider can take a while
 
     class Error < StandardError; end
@@ -49,27 +48,6 @@ module Llm
       # read timeout, and the trace showed only a long turn with nothing in it
       AgentLoop::Trace.record("openrouter chat", started_at:, request: body, model:, input: traced_input(messages, tools), error:) if started_at
       raise error
-    end
-
-    # A decision model (TypeSafe's Jev): typed questions about a state, answered with calibrated probabilities
-    # (https://docs.typesafe.ai/api.md). Returns Reply(answers, usage).
-    #   decide(model: "typesafe/jev-1.13", state: "…", questions: { pick: { type: "choice", instructions: "…", criteria: { … } } })
-    def decide(model:, state:, questions:)
-      started_at = Time.current
-      response = Net::HTTP.start(DECISIONS_URL.host, DECISIONS_URL.port, use_ssl: true, read_timeout: 30, open_timeout: 15) do |http|
-        http.post(DECISIONS_URL.path, { model:, state:, questions: }.to_json,
-                  "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json")
-      end
-      json = JSON.parse(response.body)
-      AgentLoop::Trace.record("openrouter jev decide", started_at:, request: { model:, state:, questions: }, response: json, model:,
-                              usage: { input_tokens: json.dig("usage", "input_tokens").to_i, output_tokens: json.dig("usage", "output_tokens").to_i,
-                                       cost_usd: json.dig("usage", "cost").to_f })
-      raise Error, json.dig("error", "message") || "HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess) && json["answers"]
-
-      Reply.new(json["answers"], { input_tokens: json.dig("usage", "input_tokens").to_i, cost_usd: json.dig("usage", "cost").to_f })
-    rescue JSON::ParserError, SystemCallError, SocketError, IOError, OpenSSL::SSL::SSLError, Net::OpenTimeout, Net::ReadTimeout,
-           Net::HTTPBadResponse => e
-      raise Error, "Couldn't reach OpenRouter: #{e.message}"
     end
 
     private

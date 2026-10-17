@@ -7,7 +7,6 @@
 #  coding_agent       :string
 #  coding_model       :string
 #  computer_use_token :string
-#  desktop            :string           default("selkies"), not null
 #  name               :string           not null
 #  namespace          :string           not null
 #  password           :string
