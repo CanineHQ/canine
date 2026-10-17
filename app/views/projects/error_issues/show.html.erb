@@ -1,7 +1,8 @@
 <%= project_layout(@project) do %>
   <div class="space-y-6">
-    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-      <div class="min-w-0 space-y-1">
+    <%# Wraps the trend and actions below the title whenever the title would get narrower than 20rem beside them. %>
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="min-w-0 grow basis-80 space-y-1">
         <h4 class="text-lg font-semibold break-words"><%= @error_issue.error_type || @error_issue.title %></h4>
         <% if @error_issue.error_type %>
           <p class="break-words text-base-content/80"><%= @error_issue.error_value %></p>
@@ -14,7 +15,7 @@
           · last seen <%= time_ago_in_words(@error_issue.last_seen_at) %> ago<%= " in #{@error_issue.last_release}" if @error_issue.last_release %>
         </p>
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 shrink-0">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 shrink-0 w-full sm:w-auto">
         <%= render "projects/error_issues/trend", buckets: @trend %>
         <div class="flex gap-2">
           <% if @error_issue.unresolved? %>
