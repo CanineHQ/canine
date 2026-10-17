@@ -23,6 +23,7 @@ SwaggerSchemas::PROJECT_DETAIL = {
     docker_build_context_directory: { type: :string, example: '.', nullable: true },
     predeploy_command: { type: :string, example: 'bundle exec rails db:migrate', nullable: true },
     postdeploy_command: { type: :string, example: nil, nullable: true },
+    error_tracking_dsn: { type: :string, example: 'https://0123456789abcdef0123456789abcdef@canine.example.com/1', nullable: true, description: 'Sentry-compatible DSN; null when error tracking is disabled' },
     services: {
       type: :array,
       items: {

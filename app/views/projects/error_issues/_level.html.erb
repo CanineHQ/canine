@@ -1,0 +1,2 @@
+<% badge = { "fatal" => "badge-error", "error" => "badge-error", "warning" => "badge-warning", "info" => "badge-info" }.fetch(level, "badge-ghost") %>
+<span class="badge badge-sm badge-outline <%= badge %>"><%= level %></span>

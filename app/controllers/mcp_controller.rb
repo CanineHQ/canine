@@ -1,4 +1,7 @@
 class MCPController < ActionController::API
+  # Requires the default :public scope, which every token from the MCP sign-in flow carries (clients such as Claude
+  # Code request no scope). Tokens from Canine's internal SSO, the auth proxies in front of deployed apps, carry only
+  # openid/profile/email and are rejected.
   before_action :doorkeeper_authorize!
 
   def handle
@@ -51,6 +54,11 @@ class MCPController < ActionController::API
       # Environment Variables
       Tools::GetEnvironmentVariableValue,
       Tools::UpdateEnvironmentVariable,
+
+      # Error Tracking
+      Tools::ListErrorIssues,
+      Tools::GetErrorIssue,
+      Tools::UpdateErrorIssue,
 
       # Add-ons
       Tools::SearchAddOns,
@@ -116,6 +124,12 @@ class MCPController < ActionController::API
         uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds",
         name: "project-builds",
         description: "List builds for a specific project",
+        mime_type: "application/json"
+      ),
+      MCP::ResourceTemplate.new(
+        uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds/{build_id}",
+        name: "project-build",
+        description: "One build in detail, including its deployment and log output",
         mime_type: "application/json"
       ),
       MCP::ResourceTemplate.new(

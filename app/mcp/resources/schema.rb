@@ -17,6 +17,7 @@ module Resources
           { uri_template: "canine://accounts/{account_id}/projects", description: "List all projects for an account (lightweight — no services or builds)." },
           { uri_template: "canine://accounts/{account_id}/projects/{project_id}", description: "Full project details including services, domains, volumes, and recent builds." },
           { uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds", description: "Build history for a project. Each build includes its deployment and status." },
+          { uri_template: "canine://accounts/{account_id}/projects/{project_id}/builds/{build_id}", description: "One build in detail, including its deployment and log output." },
           { uri_template: "canine://accounts/{account_id}/projects/{project_id}/environment_variables", description: "Environment variable names and storage types for a project. Values are not included — use the get_environment_variable_value tool to read a specific value." },
           { uri_template: "canine://accounts/{account_id}/add_ons", description: "List all add-ons for an account (databases, caches, third-party Helm charts)." },
           { uri_template: "canine://accounts/{account_id}/add_ons/{add_on_id}", description: "Full add-on details including endpoints, internal connection URLs, and pod status." }

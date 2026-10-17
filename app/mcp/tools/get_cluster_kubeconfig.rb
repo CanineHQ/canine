@@ -24,8 +24,9 @@ module Tools
 
     def self.call(cluster_id:, server_context:)
       with_account_users(server_context: server_context) do |_user, account_users|
+        # Team-scoped like the web UI's cluster pages: a member of an account with teams only gets their teams' clusters.
         cluster = account_users.lazy.filter_map { |au|
-          au.account.clusters.find_by(id: cluster_id)
+          ::Clusters::VisibleToUser.execute(account_user: au).clusters.find_by(id: cluster_id)
         }.first
 
         unless cluster

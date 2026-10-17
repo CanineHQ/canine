@@ -37,6 +37,18 @@ RSpec.describe Tools::UpdateProject do
     expect(build_config.context_directory).to eq('apps/web')
   end
 
+  it 'turns on error tracking and returns the DSN, but refuses to turn it off' do
+    2.times { described_class.call(project_id: project.id, error_tracking: true, server_context: { user_id: user.id }) }
+    configuration = project.reload.error_tracking_configuration
+    response = described_class.call(project_id: project.id, error_tracking: true, server_context: { user_id: user.id })
+    expect(response.content.first[:text]).to include(configuration.dsn)
+    expect(ErrorTrackingConfiguration.where(project:).count).to eq(1)
+
+    response = described_class.call(project_id: project.id, error_tracking: false, server_context: { user_id: user.id })
+    expect(response.error?).to be true
+    expect(project.reload.error_tracking_configuration).to be_present
+  end
+
   it 'returns error for inaccessible project' do
     other_project = create(:project)
 

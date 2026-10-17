@@ -19,6 +19,7 @@ RSpec.describe Resources::Schema do
       "canine://accounts/{account_id}/projects",
       "canine://accounts/{account_id}/projects/{project_id}",
       "canine://accounts/{account_id}/projects/{project_id}/builds",
+      "canine://accounts/{account_id}/projects/{project_id}/builds/{build_id}",
       "canine://accounts/{account_id}/projects/{project_id}/environment_variables",
       "canine://accounts/{account_id}/add_ons",
       "canine://accounts/{account_id}/add_ons/{add_on_id}"
