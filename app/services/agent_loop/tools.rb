@@ -1,7 +1,7 @@
 module AgentLoop
   # The tools the model can call. It works through text and jobs, never the screen: the terminal (computer_run,
-  # computer_terminal, Canine's MCP tools called directly, so the access checks and the human lock are the same as
-  # for Claude Code), the browser (browse -> browser-use), a coding agent (delegate), and finish. Every call except
+  # computer_terminal, Canine's MCP tools called directly, so the access checks are the same as for Claude
+  # Code), the browser (browse -> browser-use), a coding agent (delegate), and finish. Every call except
   # finish carries an `intent`, which groups the timeline into activities (AgentLoop::Turn).
   module Tools
     COMPUTER_TOOLS = [ ::Tools::ComputerRun, ::Tools::ComputerTerminal ].index_by(&:name_value).freeze
@@ -56,10 +56,9 @@ module AgentLoop
       ]
     }.freeze
 
-    # What the model gets back from one call. `signal` tells the loop to stop: :finish, :waiting_for_tool, :human
+    # What the model gets back from one call. `signal` tells the loop to stop: :finish, :waiting_for_tool
     Result = Struct.new(:text, :image, :error, :signal, keyword_init: true)
 
-    HUMAN_HAS_SCREEN = /\AThe person (is using|has taken over)/
 
     def self.definitions
       computer = COMPACT.map do |name, (description, properties, required)|
@@ -95,8 +94,7 @@ module AgentLoop
       response = tool.call(agent_computer_id: computer.id, server_context: { user_id: computer.user.id, computer_use: }, **kwargs)
 
       text = response.content.select { |part| part[:type] == "text" }.map { |part| part[:text] }.join("\n")
-      signal = :human if response.error? && text.match?(HUMAN_HAS_SCREEN)
-      Result.new(text: text.presence || "Done.", error: response.error?, signal:)
+      Result.new(text: text.presence || "Done.", error: response.error?)
     rescue ArgumentError => e
       Result.new(text: "Bad arguments for #{tool.name_value}: #{e.message}", error: true)
     end

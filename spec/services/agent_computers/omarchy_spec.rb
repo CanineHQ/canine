@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe AgentComputer::Omarchy do
+RSpec.describe AgentComputers::Omarchy do
   let(:account_user) { create(:account_user) }
   let(:cluster) { create(:cluster, account: account_user.account) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster:, account_user:) }

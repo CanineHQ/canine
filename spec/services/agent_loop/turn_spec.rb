@@ -60,18 +60,6 @@ RSpec.describe AgentLoop::Turn do
     expect(session.messages.last.content).to include("Started browsing")
   end
 
-  it "pauses when the person is using the computer" do
-    allow(Tools::ComputerRun).to receive(:call).and_return(
-      MCP::Tool::Response.new([ { type: "text", text: "The person is using this computer. It's free once they've been idle for 20s." } ], error: true)
-    )
-    allow(client).to receive(:chat).and_return(reply(nil, [ "computer_run", { intent: "Checking", command: "ls" } ],
-                                                          [ "computer_run", { intent: "Checking", command: "pwd" } ]))
-
-    expect(described_class.new(session, key).run).to eq(:waiting_for_human)
-    expect(session.messages.last(2).map(&:content)).to eq([ "The person is using this computer. It's free once they've been idle for 20s.",
-                                                            "Not run: an earlier tool call ended this turn." ])
-  end
-
   it "doesn't run a call whose arguments were cut off, and tells the model why" do
     cut = Llm::OpenRouter::Reply.new({ "role" => "assistant", "content" => nil, "tool_calls" => [
       { "id" => "call_0", "type" => "function", "function" => { "name" => "computer_run", "arguments" => '{"intent": "x", "command": "ls' } }

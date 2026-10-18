@@ -8,23 +8,25 @@ require "net/http"
 # Rack middleware that reverse-proxies HTTP and WebSocket requests to an agent computer's VM
 # via kubectl port-forward. Authenticates via Rails session.
 #
-# Paths:
-#   /agent_computers/:id/proxy/*         — Selkies desktop (HTTP + /websockets WebSocket)
-#   /agent_computers/:id/computer-use/human/*  — who has the screen, from the computer-use server (HTTP; see
-#                                               resources/agent_computer/computer_use/human.py). Only that part of
-#                                               its API: the rest runs commands on the computer, for Canine alone.
+#   /agent_computers/:id/proxy/*  — Selkies desktop (HTTP + its signaling WebSocket). The computer-use server isn't
+#                                   reachable this way: it runs commands on the computer, for Canine alone.
 class AgentComputerProxy
-  # Mirrors AgentComputer::DESKTOP_PORT and COMPUTER_USE_PORT; app models aren't autoloadable when middleware loads
-  TARGET_PORTS = { "proxy" => 8080, "computer-use" => 8000 }.freeze
+  # Mirrors AgentComputer::DESKTOP_PORT; app models aren't autoloadable when middleware loads
+  DESKTOP_PORT = 8080
   FORWARD_PORT_RANGE = (18000..19000)
-  PATH_PATTERN = %r{\A/agent_computers/(\d+)/(proxy|computer-use)(?:/(.*))?}
+  PATH_PATTERN = %r{\A/agent_computers/(\d+)/proxy(?:/(.*))?}
 
   AUTH_CACHE_TTL = 60 # seconds
+  # A tunnel is a kubectl process plus a kubeconfig tempfile, so one nobody uses is closed: none of its WebSockets open
+  # (an open desktop always has Selkies' signaling one) and no request through it for this long. Checked every
+  # SWEEP_EVERY. Closing one that's still wanted only costs the next request a new port-forward.
+  IDLE_TUNNEL_TTL = 10 * 60 # seconds
+  SWEEP_EVERY = 60 # seconds
 
   def initialize(app)
     @app = app
-    @port_forwards = {} # "sandbox_id:remote_port" => { pid:, port:, kubeconfig:, last_used: }
-    @auth_cache = {}    # "user_id:sandbox_id" => { sandbox:, expires_at: }
+    @port_forwards = {} # "sandbox_id:remote_port" => { pid:, port:, kubeconfig:, last_used:, websockets: }
+    @auth_cache = {}    # "<session key>:sandbox_id" => { sandbox:, expires_at: }
     @mutex = Mutex.new
   end
 
@@ -34,12 +36,10 @@ class AgentComputerProxy
 
     if match
       sandbox_id = match[1].to_i
-      remote_port = TARGET_PORTS.fetch(match[2])
-      subpath = match[3] || ""
+      remote_port = DESKTOP_PORT
+      subpath = match[2] || ""
 
-      if match[2] == "computer-use" && !subpath.start_with?("human/")
-        [ 404, {}, [ "Not found" ] ]
-      elsif websocket?(env)
+      if websocket?(env)
         handle_websocket(env, request, sandbox_id, remote_port, subpath)
       else
         handle_http(env, request, sandbox_id, remote_port, subpath)
@@ -63,17 +63,19 @@ class AgentComputerProxy
     env["HTTP_UPGRADE"]&.casecmp("websocket")&.zero?
   end
 
+  # Opening the desktop sends many requests through here (Selkies' page and assets, its WebSocket, the health check),
+  # so a check is cached for AUTH_CACHE_TTL. The cache key is Devise's session entry (the user's id and password salt),
+  # read from the cookie, so a cached request doesn't load the user at all; signing out removes the entry.
   def authenticate_sandbox(sandbox_id, env)
+    signed_in_as = env["rack.session"]&.[]("warden.user.user.key")
+    cache_key = "#{signed_in_as.inspect}:#{sandbox_id}" if signed_in_as
+    cached = cache_key && @auth_cache[cache_key]
+    return cached[:sandbox] if cached && cached[:expires_at] > Time.current
+
     user = env["warden"]&.user
     unless user
       log_error "No authenticated user"
       return nil
-    end
-
-    cache_key = "#{user.id}:#{sandbox_id}"
-    cached = @auth_cache[cache_key]
-    if cached && cached[:expires_at] > Time.current
-      return cached[:sandbox]
     end
 
     sandbox = AgentComputer.find_by(id: sandbox_id)
@@ -88,17 +90,23 @@ class AgentComputerProxy
       return nil
     end
 
-    @auth_cache[cache_key] = { sandbox: sandbox, expires_at: Time.current + AUTH_CACHE_TTL }
+    @auth_cache[cache_key] = { sandbox: sandbox, expires_at: Time.current + AUTH_CACHE_TTL } if cache_key
     sandbox
   end
 
   def get_local_port(sandbox, remote_port)
+    tunnel(sandbox, remote_port)&.fetch(:port)
+  end
+
+  # The open tunnel to the computer's port, or a new one; nil if one couldn't be opened
+  def tunnel(sandbox, remote_port)
     key = "#{sandbox.id}:#{remote_port}"
     @mutex.synchronize do
+      @sweeper ||= Thread.new { sweep_loop } # in the process serving requests, so after Puma forks its workers
       entry = @port_forwards[key]
       if entry && port_alive?(entry[:port])
         entry[:last_used] = Time.current
-        return entry[:port]
+        return entry
       end
 
       # Clean up old entry if exists
@@ -111,10 +119,33 @@ class AgentComputerProxy
           pid: Thread.current[:pf_pid],
           port: port,
           kubeconfig: Thread.current[:pf_kubeconfig],
-          last_used: Time.current
+          last_used: Time.current,
+          websockets: 0
         }
       end
-      port
+    end
+  end
+
+  def sweep_loop
+    loop do
+      sleep SWEEP_EVERY
+      sweep_idle_tunnels
+    end
+  rescue StandardError => e
+    log_error "Tunnel sweep stopped: #{e.class} #{e.message}"
+    @sweeper = nil # the next request starts another
+  end
+
+  def sweep_idle_tunnels
+    idle_since = Time.current - IDLE_TUNNEL_TTL
+    @mutex.synchronize do
+      @port_forwards.delete_if do |key, entry|
+        next false if entry[:websockets].positive? || entry[:last_used] > idle_since
+
+        log "Closing idle tunnel #{key}"
+        cleanup_entry(entry)
+        true
+      end
     end
   end
 
@@ -165,10 +196,11 @@ class AgentComputerProxy
     end
 
     local_port = rand(FORWARD_PORT_RANGE)
-    cmd = "KUBECONFIG=#{Shellwords.shellescape(kubeconfig_file.path)} kubectl port-forward -n #{Shellwords.shellescape(sandbox.namespace)} #{Shellwords.shellescape(pod_name)} #{local_port}:#{remote_port}"
-    log "Spawning: #{cmd}"
+    # kubectl itself, not a shell around it, so killing the pid ends the tunnel
+    cmd = %W[kubectl port-forward -n #{sandbox.namespace} #{pod_name} #{local_port}:#{remote_port}]
+    log "Spawning: #{cmd.shelljoin}"
 
-    pid = spawn(cmd, out: "/dev/null", err: "/dev/null")
+    pid = spawn({ "KUBECONFIG" => kubeconfig_file.path }, *cmd, out: "/dev/null", err: "/dev/null")
     Process.detach(pid)
     Thread.current[:pf_pid] = pid
     Thread.current[:pf_kubeconfig] = kubeconfig_file
@@ -226,7 +258,6 @@ class AgentComputerProxy
     # Forward relevant headers
     upstream_request["Accept"] = env["HTTP_ACCEPT"] if env["HTTP_ACCEPT"]
     upstream_request["Content-Type"] = env["CONTENT_TYPE"] if env["CONTENT_TYPE"]
-    upstream_request["Authorization"] = "Bearer #{sandbox.computer_use_token}" if remote_port == TARGET_PORTS["computer-use"]
 
     response = http.request(upstream_request)
 
@@ -251,8 +282,9 @@ class AgentComputerProxy
     sandbox = authenticate_sandbox(sandbox_id, env)
     return [ 401, {}, [ "Unauthorized" ] ] unless sandbox
 
-    local_port = get_local_port(sandbox, remote_port)
-    return [ 502, {}, [ "Failed to connect to sandbox" ] ] unless local_port
+    forward = tunnel(sandbox, remote_port)
+    return [ 502, {}, [ "Failed to connect to sandbox" ] ] unless forward
+    local_port = forward[:port]
 
     log "WebSocket proxy to localhost:#{local_port}/#{subpath}"
 
@@ -319,12 +351,17 @@ class AgentComputerProxy
 
     log "WebSocket passthrough established"
 
-    # Transparent bidirectional proxy — no frame rewriting
+    # Transparent bidirectional proxy — no frame rewriting. While it's open the tunnel isn't idle, however quiet it is.
+    @mutex.synchronize { forward[:websockets] += 1 }
     Thread.new do
       proxy_bidirectional(client_socket, upstream)
     ensure
       client_socket.close rescue nil
       upstream.close rescue nil
+      @mutex.synchronize do
+        forward[:websockets] -= 1
+        forward[:last_used] = Time.current
+      end
     end
 
     [ -1, {}, [] ]

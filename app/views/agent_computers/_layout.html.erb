@@ -58,6 +58,16 @@
   </div>
 </div>
 
+<% if agent_computer.failed? && agent_computer.failure.present? %>
+  <div role="alert" class="alert alert-error mb-4 items-start">
+    <iconify-icon icon="lucide:circle-alert" height="20"></iconify-icon>
+    <div>
+      <div class="font-medium">Something went wrong with this computer</div>
+      <div class="text-sm whitespace-pre-line break-words"><%= agent_computer.failure %></div>
+    </div>
+  </div>
+<% end %>
+
 <div class="md:card md:card-bordered md:bg-base-100">
   <div class="md:card-body">
     <%= render "agent_computers/sidebar", agent_computer: agent_computer %>

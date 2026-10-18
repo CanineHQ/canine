@@ -7,10 +7,12 @@
 #  coding_agent       :string
 #  coding_model       :string
 #  computer_use_token :string
+#  failure            :text
 #  name               :string           not null
 #  namespace          :string           not null
 #  password           :string
 #  planning_model     :string
+#  provision_stage    :integer          default(0), not null
 #  ssh_private_key    :text
 #  status             :integer          default("pending"), not null
 #  created_at         :datetime         not null
@@ -32,10 +34,11 @@ require "net/ssh" # adds ssh_type/to_blob to OpenSSL keys
 
 class AgentComputer < ApplicationRecord
   include Namespaced
+  include Loggable # provisioning's progress, shown on the computer's page as it happens
 
   NAMESPACE_PREFIX = "computer-"
   # Each agent computer is a KubeVirt VM running Omarchy (Arch Linux + Hyprland), installed unattended from the
-  # Omarchy ISO and streamed to the browser by Selkies. See AgentComputer::Omarchy and ProvisionJob.
+  # Omarchy ISO and streamed to the browser by Selkies. See AgentComputers::Omarchy and ProvisionJob.
   DESKTOP_USER = "omarchy"
   DESKTOP_PORT = 8080
   COMPUTER_USE_PORT = 8000 # resources/agent_computer/computer_use
@@ -48,6 +51,9 @@ class AgentComputer < ApplicationRecord
   # Chromium windows, and more than a few at a time would run the VM out of memory
   PARALLEL_RUNS = 3
   DISK_SIZE = "60Gi"
+  # What ProvisionJob is doing, in order (provision_stage indexes it). Usually 15-25 minutes in all, most of it the
+  # ISO download and the unattended install.
+  PROVISION_STAGES = [ "Creating the VM", "Downloading Omarchy", "Installing Omarchy", "Setting up the desktop", "Starting the stream" ].freeze
 
   # A pickable option in the machine's model settings: id is the value stored (blank means "inherit"), name and note
   # are shown, recommended flags the ones we've seen work well. planning_model/browse_model/coding_model and
@@ -75,8 +81,8 @@ class AgentComputer < ApplicationRecord
   has_one :account, through: :account_user
 
   # The client for the computer-use server in this computer's VM (AgentComputers::ComputerUse)
-  def computer_use(priority: false)
-    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user), priority:)
+  def computer_use
+    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user))
   end
 
   # Close every window on a run's workspace (what it left open), best-effort: a computer that's stopped or unreachable
@@ -92,6 +98,13 @@ class AgentComputer < ApplicationRecord
 
   enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
 
+  # Why the last provision, start, stop or destroy failed, shown on the computer's pages until it's tried again
+  before_save { self.failure = nil if status_changed? && !failed? }
+  after_update_commit do
+    broadcast_replace_later_to [ self, :provision_progress ], target: ActionView::RecordIdentifier.dom_id(self, :provision_progress),
+                                                              partial: "agent_computers/provision_progress", locals: { agent_computer: self }
+  end
+
   # Namespace names are capped at 63 characters, including the prefix
   validates :name, presence: true,
                    length: { maximum: 63 - NAMESPACE_PREFIX.length },
@@ -101,6 +114,11 @@ class AgentComputer < ApplicationRecord
   before_create :generate_guest_credentials
 
   scope :for_account, ->(account) { joins(:account_user).where(account_users: { account_id: account.id }) }
+
+  # A job couldn't bring the VM where it was going
+  def fail!(error)
+    update!(status: :failed, failure: error.message)
+  end
 
   # OpenSSH authorized_keys line for the key Canine uses to reach the guest
   def ssh_public_key

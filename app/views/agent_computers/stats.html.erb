@@ -50,20 +50,12 @@
         </div>
       </div>
       <div>
-        <div class="text-xs uppercase tracking-wide text-base-content/50">In Control</div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Agents</div>
         <div class="mt-1">
-          <% human = stats.human %>
-          <% if human.nil? %>
-            <span class="badge badge-sm badge-ghost" title="The computer-use server didn't answer">Unknown</span>
-          <% elsif human["taken_over"] %>
-            <span class="badge badge-sm badge-warning gap-1"><iconify-icon icon="lucide:hand"></iconify-icon>Person (taken over)</span>
-          <% elsif human["has_screen"] %>
-            <span class="badge badge-sm badge-warning gap-1"><iconify-icon icon="lucide:hand"></iconify-icon>Person</span>
-            <span class="text-xs text-base-content/50">free in <%= human["free_in_seconds"] %>s if idle</span>
-          <% elsif @agent_computer.sessions.active.exists? %>
-            <span class="badge badge-sm badge-info gap-1"><iconify-icon icon="lucide:bot"></iconify-icon>Agent</span>
+          <% if @agent_computer.sessions.active.exists? %>
+            <span class="badge badge-sm badge-info gap-1"><iconify-icon icon="lucide:bot"></iconify-icon>Running</span>
           <% else %>
-            <span class="badge badge-sm badge-ghost">Nobody</span>
+            <span class="badge badge-sm badge-ghost">Idle</span>
           <% end %>
         </div>
       </div>

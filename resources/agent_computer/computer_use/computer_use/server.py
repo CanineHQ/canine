@@ -1,11 +1,7 @@
 """The HTTP API. JSON in, JSON out; errors come back as {"error": "..."} with a 4xx/5xx status.
 
     GET  /docs                        this reference, rendered (Swagger UI; GET /openapi.json for the OpenAPI spec)
-    GET  /status                      {"ok": true, "screen": {"width": ..., "height": ...}, "human": {...}}
-    GET  /human                       whether the person has the screen (see human.py)
-    POST /human/activity              the person did something (Canine's desktop page reports this)
-    POST /human/take_over             pause the agent until /human/hand_back
-    POST /human/hand_back             let the agent use the screen again now
+    GET  /status                      {"ok": true, "screen": {"width": ..., "height": ...}}
     POST /computer-use                one computer-use action, e.g. {"action": "screenshot"} (see actions.py)
     POST /run                         {"command": "uname -a", "timeout": 30}  -> exit code, stdout, stderr
     POST /browse/start                {"task": "...", "url": "...", "model": "x/y", "api_key": "...", "workspace": 5}  -> {"id": "...", "workspace": 5}
@@ -47,7 +43,7 @@ import subprocess
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import accessibility, actions, auth, browse, desktop, docs, human, shell, terminal, windows, workspaces
+from . import accessibility, actions, auth, browse, desktop, docs, shell, terminal, windows, workspaces
 
 log = logging.getLogger("computer_use")
 
@@ -55,19 +51,14 @@ log = logging.getLogger("computer_use")
 # and terminal sessions don't touch the mouse or keyboard, and can take a while, so they don't wait for (or hold) it.
 _lock = threading.Lock()
 UNLOCKED = {("POST", "/run"), ("GET", "/terminal"), ("POST", "/terminal/send"), ("POST", "/terminal/read"),
-            ("POST", "/terminal/wait"), ("POST", "/terminal/close"), ("GET", "/human"), ("POST", "/human/activity"),
-            ("POST", "/human/take_over"), ("POST", "/human/hand_back"),
+            ("POST", "/terminal/wait"), ("POST", "/terminal/close"),
             # browse runs browser-use in its own thread and drives the browser over CDP, not the mouse; /browse/events
             # blocks waiting for the next event, so none of these may hold the action lock
             ("POST", "/browse/start"), ("POST", "/browse/events"), ("POST", "/browse/stop")}
 
 
 ROUTES = {
-    ("GET", "/status"): lambda body: {"ok": True, "screen": desktop.screen_size(), "human": human.status()},
-    ("GET", "/human"): lambda body: human.status(),
-    ("POST", "/human/activity"): lambda body: human.activity(),
-    ("POST", "/human/take_over"): lambda body: human.take_over(),
-    ("POST", "/human/hand_back"): lambda body: human.hand_back(),
+    ("GET", "/status"): lambda body: {"ok": True, "screen": desktop.screen_size()},
     ("POST", "/computer-use"): actions.perform,
     ("POST", "/run"): lambda body: shell.run(body["command"], body.get("timeout", 30)),
     ("POST", "/browse/start"): browse.start,
@@ -135,18 +126,12 @@ class Handler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("Content-Length") or 0)
             body = json.loads(self.rfile.read(length) or b"{}") if length else {}
-            if method == "POST" and human.needs_screen(path, body):
-                # X-Agent-Priority marks a run the person started themselves: it goes through while they're only
-                # present, but human.check still blocks it if they've taken over (see human.check).
-                human.check(self.headers.get("X-Agent-Priority") == "1")
             if (method, path) in UNLOCKED:
                 result = route(body)
             else:
                 with _lock:
                     result = route(body)
             self._reply(200, result)
-        except human.HumanHasScreen as error:
-            self._reply(423, {"error": str(error), "human": human.status()})
         except KeyError as error:
             self._reply(400, {"error": f"Missing field {error}"})
         except (actions.ActionError, LookupError, ValueError) as error:

@@ -4,8 +4,7 @@
 <div class="relative h-screen w-screen bg-base-300"
      data-controller="agent-computers--desktop"
      data-agent-computers--desktop-url-value="<%= "/agent_computers/#{@agent_computer.id}/proxy/" %>"
-     data-agent-computers--desktop-watch-value="<%= watching %>"
-     data-agent-computers--desktop-human-url-value="<%= "/agent_computers/#{@agent_computer.id}/computer-use/human/" %>">
+     data-agent-computers--desktop-watch-value="<%= watching %>">
   <iframe
     data-agent-computers--desktop-target="frame"
     class="absolute inset-0 w-full h-full border-0"
@@ -33,21 +32,13 @@
       <div class="card-body items-center text-center">
         <iconify-icon icon="lucide:monitor-off" height="32"></iconify-icon>
         <h2 class="card-title">Opened in another tab</h2>
-        <p class="text-sm text-base-content/70">A desktop can be controlled from one tab at a time. Take it back here, or keep watching without controlling it.</p>
+        <p class="text-sm text-base-content/70">A desktop can be controlled from one tab at a time. Use it here instead, or keep watching without controlling it.</p>
         <div class="card-actions mt-2">
-          <button type="button" data-action="agent-computers--desktop#takeOver" class="btn btn-primary btn-sm">Take over here</button>
+          <button type="button" data-action="agent-computers--desktop#reconnect" class="btn btn-primary btn-sm">Use it here</button>
           <%= link_to "Watch instead", connect_agent_computer_path(@agent_computer, watch: 1), class: "btn btn-ghost btn-sm" %>
         </div>
       </div>
     </div>
-  </div>
-
-  <%# While the person uses the desktop, agents are paused (agent_computers/desktop_controller.js) %>
-  <div data-agent-computers--desktop-target="human" class="hidden absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-full bg-base-100/90 px-3 py-1 text-xs shadow">
-    <iconify-icon icon="lucide:hand"></iconify-icon>
-    <span data-agent-computers--desktop-target="humanText"></span>
-    <button type="button" data-agent-computers--desktop-target="takeOverButton" data-action="agent-computers--desktop#takeOver" class="link link-primary">Take over</button>
-    <button type="button" data-action="agent-computers--desktop#handBack" class="link link-primary">Hand back</button>
   </div>
 
   <% if watching %>

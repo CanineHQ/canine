@@ -1,4 +1,20 @@
 <%= agent_computer_layout(@agent_computer) do %>
+  <% if @agent_computer.pending? || @agent_computer.provisioning? || (@agent_computer.failed? && @agent_computer.log_outputs.exists?) %>
+    <div class="mb-6">
+      <% unless @agent_computer.failed? %>
+        <%= render "shared/partials/wizard_animation" %>
+        <%= turbo_stream_from [@agent_computer, :provision_progress] %>
+        <%= render "agent_computers/provision_progress", agent_computer: @agent_computer %>
+      <% end %>
+      <details class="collapse collapse-arrow" <%= "open" if @agent_computer.failed? %>>
+        <summary class="collapse-title p-0 min-h-0 underline text-sm">Show setup logs</summary>
+        <div class="collapse-content p-0 mt-2">
+          <%= render "log_outputs/logs", loggable: @agent_computer %>
+        </div>
+      </details>
+    </div>
+    <div class="divider"></div>
+  <% end %>
   <div class="grid gap-4 md:grid-cols-3">
     <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Status</div>
@@ -20,7 +36,7 @@
     </div>
     <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Machine</div>
-      <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputer::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
+      <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputers::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
     </div>
     <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Last Updated</div>

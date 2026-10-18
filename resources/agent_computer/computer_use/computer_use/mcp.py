@@ -1,7 +1,7 @@
 """`canine-computer-use mcp`: the computer-use tools as a local MCP server, for any agent harness running on this
 computer (Claude Code, Codex, opencode, Gemini CLI, goose...). It speaks MCP over stdio, which they all support, and
 passes each tool call to the computer-use server on this machine, with its token (auth.py), so the same rules apply
-(the human lock, one action at a time).
+(one action at a time).
 
     {"mcpServers": {"computer": {"command": "~/.local/share/canine/venv/bin/canine-computer-use", "args": ["mcp"]}}}
 """

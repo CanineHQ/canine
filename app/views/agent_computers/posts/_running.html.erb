@@ -7,15 +7,12 @@
       <div class="flex flex-col gap-3">
         <% waiting = session.waiting_in_queue? %>
         <% progress = session.last_progress_at %>
-        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (agent_computers/stalled_controller.js); waiting
-            for the person isn't stalling %>
+        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (agent_computers/stalled_controller.js) %>
         <header class="flex items-center gap-3" data-controller="agent-computers--stalled" data-agent-computers--stalled-since-value="<%= progress.iso8601 %>"
-                data-agent-computers--stalled-after-value="<%= waiting || session.waiting_for_human? ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
+                data-agent-computers--stalled-after-value="<%= waiting ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
             <% if waiting %>
               <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
-            <% elsif session.waiting_for_human? %>
-              <iconify-icon icon="lucide:hand" height="16" class="text-info"></iconify-icon>
             <% else %>
               <span data-agent-computers--stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
               <iconify-icon data-agent-computers--stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>

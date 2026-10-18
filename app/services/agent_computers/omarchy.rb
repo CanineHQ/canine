@@ -8,7 +8,7 @@ require "open3"
 # drive. On first boot the empty root disk falls through to the ISO; after the install the VM reboots from the disk.
 # Our public key goes in authorized_keys, which also makes the installer enable sshd, so ProvisionJob can log in and
 # run resources/agent_computer/omarchy-setup.sh to add the Selkies stream.
-class AgentComputer::Omarchy
+class AgentComputers::Omarchy
   VERSION = "4.0.4"
   ISO_URL = "https://iso.omarchy.org/omarchy-#{VERSION}.iso"
   ISO_DISK_SIZE = "8Gi" # the ISO is ~6.2GB

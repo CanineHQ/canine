@@ -20,16 +20,7 @@ TAGS = [
 
 # (method, path): (tag, summary, description, example request body or None)
 ENDPOINTS = {
-    ("GET", "/status"): ("Status", "Server status", "The screen's size, and who has it (see GET /human).", None),
-    ("GET", "/human"): ("Status", "Who has the screen",
-                        "While the person is active (and for 20 s after), or has taken over, requests that use the "
-                        "mouse, keyboard or focus get a 423. Looking (screenshots, the accessibility tree) and shell "
-                        "commands still work.", None),
-    ("POST", "/human/activity"): ("Status", "The person did something",
-                                  "Called by whatever shows the person the desktop, on every key, click or mouse move.",
-                                  None),
-    ("POST", "/human/take_over"): ("Status", "Pause the agent", "Until POST /human/hand_back.", None),
-    ("POST", "/human/hand_back"): ("Status", "Let the agent use the screen again", None, None),
+    ("GET", "/status"): ("Status", "Server status", "The screen's size.", None),
     ("POST", "/computer-use"): ("Computer use", "Perform one computer-use action",
                                 "The actions and fields of Anthropic's computer-use tool, so an agent loop can pass "
                                 "its model's actions through unchanged. Coordinates are screenshot pixels: screenshots "
@@ -114,7 +105,6 @@ def openapi():
             "200": {"description": "The result, as JSON"},
             "400": {"description": "A missing or wrong field: `{\"error\": \"...\"}`"},
             "401": {"description": "Missing or wrong token"},
-            "423": {"description": "The person is using the computer: try again later"},
         }}
         if description:
             operation["description"] = description

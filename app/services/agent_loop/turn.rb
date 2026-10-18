@@ -5,7 +5,6 @@ module AgentLoop
   # itself. Returns what should happen next:
   #   :continue            another turn (AgentSessions::TurnJob enqueues it)
   #   :finished            the model called finish (or answered without tools)
-  #   :waiting_for_human   the person is using the computer: try again later
   #   :waiting_for_tool    a browse or delegate job is running (its watch job resumes the session)
   #   :stopped             the session was cancelled while the turn ran
   class Turn
@@ -30,9 +29,6 @@ module AgentLoop
 
     def run_turn
       start if @session.messages.empty?
-      if @session.waiting_for_human?
-        append(role: "user", content: "The person has finished using the computer. Carry on where you left off.")
-      end
       @session.running! unless @session.running?
 
       Trace.job_input(news)
@@ -162,7 +158,6 @@ module AgentLoop
         append(role: "tool", tool_call_id: call["id"], content: result.text)
         case result.signal
         when :finish then outcome, summary = :finished, args["summary"]
-        when :human then outcome = :waiting_for_human
         when :waiting_for_tool then outcome = :waiting_for_tool
         end
       end
@@ -242,9 +237,8 @@ module AgentLoop
       {}
     end
 
-    # A manual run (the person asked for it) gets through while they're merely at the computer; a scheduled one yields.
     def computer_use
-      @computer_use ||= @computer.computer_use(priority: @session.manual?)
+      @computer_use ||= @computer.computer_use
     end
   end
 end

@@ -33,18 +33,29 @@ module AgentComputers
     end
 
     # Runs a command (optionally feeding stdin) and returns its combined output; raises unless it exits 0. The
-    # environment can hold secrets, so errors name only the command.
-    def run(command, stdin: nil, env: {})
+    # environment can hold secrets, so errors name only the command. A block gets each line of output as it comes.
+    def run(command, stdin: nil, env: {}, &on_line)
       label = command
       command = "#{env.map { |k, v| "#{k}=#{Shellwords.escape(v)}" }.join(" ")} #{command}".strip
       output = +""
+      pending = +"" # output not yet passed to the block: the start of a line
+      receive = lambda do |data|
+        output << data
+        next unless on_line
+
+        pending << data
+        while (line = pending.slice!(/\A.*?\n/))
+          line = line.chomp.split("\r").last.to_s # a progress bar redraws its line with \r: keep where it got to
+          on_line.call(line) if line.strip.present?
+        end
+      end
       status = nil
       @ssh.open_channel do |channel|
         channel.exec(command) do |_, success|
           raise Error, "couldn't start `#{label}`" unless success
 
-          channel.on_data { |_, data| output << data }
-          channel.on_extended_data { |_, _, data| output << data }
+          channel.on_data { |_, data| receive.(data) }
+          channel.on_extended_data { |_, _, data| receive.(data) }
           channel.on_request("exit-status") { |_, data| status = data.read_long }
           if stdin
             channel.send_data(stdin)
@@ -53,6 +64,7 @@ module AgentComputers
         end
       end
       @ssh.loop
+      on_line.call(pending) if on_line && pending.strip.present?
       raise CommandFailed, "`#{label}` exited #{status}:\n#{output.lines.last(40).join}" unless status&.zero?
 
       output

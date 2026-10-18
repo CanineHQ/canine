@@ -20,7 +20,7 @@ module AgentComputers
       end
       raise "Agent computer VM didn't shut down within #{TIMEOUT.inspect}"
     rescue StandardError => e
-      agent_computer.failed!
+      agent_computer.fail!(e)
       Rails.logger.error("Failed to stop agent computer #{agent_computer.id}: #{e.message}")
       raise
     end

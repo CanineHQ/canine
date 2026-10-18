@@ -50,9 +50,9 @@ class AgentComputer::Session < ApplicationRecord
   has_many :posts, dependent: :delete_all
 
   enum :trigger, { scheduled: 0, manual: 1 }
-  enum :status, { queued: 0, running: 1, waiting_for_human: 2, waiting_for_tool: 3, succeeded: 4, failed: 5, cancelled: 6 }
+  enum :status, { queued: 0, running: 1, waiting_for_tool: 3, succeeded: 4, failed: 5, cancelled: 6 }
 
-  ACTIVE = %w[queued running waiting_for_human waiting_for_tool].freeze
+  ACTIVE = %w[queued running waiting_for_tool].freeze
   scope :active, -> { where(status: ACTIVE) }
 
   after_create_commit -> { broadcast_prepend_to [ task, :runs ], target: dom_id(task, :runs), partial: "agent_computers/tasks/run", locals: { session: self, animate: true } if task }
@@ -133,7 +133,7 @@ class AgentComputer::Session < ApplicationRecord
   def claim_workspace!
     return workspace if workspace
 
-    listing = agent_computer.computer_use(priority: manual?).workspaces["workspaces"] unless task&.workspace
+    listing = agent_computer.computer_use.workspaces["workspaces"] unless task&.workspace
     picked = agent_computer.with_lock do
       taken = agent_computer.sessions.active.where.not(id:).where.not(workspace: nil).pluck(:workspace)
       choice = if taken.size >= AgentComputer::PARALLEL_RUNS then nil

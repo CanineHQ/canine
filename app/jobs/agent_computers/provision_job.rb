@@ -1,5 +1,5 @@
 module AgentComputers
-  # Creates an agent computer: a KubeVirt VM that installs Omarchy unattended from its ISO (AgentComputer::Omarchy),
+  # Creates an agent computer: a KubeVirt VM that installs Omarchy unattended from its ISO (AgentComputers::Omarchy),
   # then, once the installed system is up, logs in over SSH, copies in the computer-use server, and runs
   # omarchy-setup.sh to stream it with Selkies.
   class ProvisionJob < ApplicationJob
@@ -12,45 +12,59 @@ module AgentComputers
     FAILURE_GRACE = 3.minutes
 
     def perform(agent_computer)
-      agent_computer.provisioning!
+      agent_computer.update!(status: :provisioning, provision_stage: 0)
+      agent_computer.log_outputs.delete_all # a retry starts a fresh log
 
-      cluster = agent_computer.cluster
-      connection = K8::Connection.new(cluster, agent_computer.user)
-      kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(cluster))
-      omarchy = AgentComputer::Omarchy.new(agent_computer)
+      connection = K8::Connection.new(agent_computer.cluster, agent_computer.user)
+      kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(agent_computer))
+      omarchy = AgentComputers::Omarchy.new(agent_computer)
 
       kubectl.apply_yaml(K8::Namespace.new(agent_computer).to_yaml)
       kubectl.apply_yaml(build_network_policy_yaml(agent_computer))
       kubectl.apply_yaml(omarchy.cidata_config_map_yaml)
       kubectl.apply_yaml(omarchy.virtual_machine_yaml(labels(agent_computer)))
 
+      stage(agent_computer, 1, "Downloading the Omarchy ISO (#{AgentComputers::Omarchy::ISO_DISK_SIZE}) and starting the VM...")
       wait_until_running(agent_computer, K8::Kubectl.new(connection))
-      cluster.info("Installing Omarchy on #{agent_computer.name} (usually 5-10 minutes)...", color: :yellow)
+      stage(agent_computer, 2, "Installing Omarchy (usually 5-10 minutes)...")
       wait_until_installed(agent_computer, connection)
-      cluster.info("Setting up the desktop stream on #{agent_computer.name}...", color: :yellow)
+      stage(agent_computer, 3, "Setting up the desktop stream and the computer-use server...")
       GuestShell.open(agent_computer, connection) do |shell|
         shell.run("rm -rf ~/.local/share/canine/computer_use ~/.local/share/canine/bigarrow && mkdir -p ~/.local/share/canine && tar -xzf - -C ~/.local/share/canine",
-                  stdin: AgentComputer::Omarchy.computer_use_archive)
-        shell.run("bash -s", stdin: AgentComputer::Omarchy::SETUP_SCRIPT.read, env: omarchy.setup_environment)
+                  stdin: AgentComputers::Omarchy.computer_use_archive)
+        shell.run("bash -s", stdin: AgentComputers::Omarchy::SETUP_SCRIPT.read, env: omarchy.setup_environment) { |line| agent_computer.info(line) }
       end
+      stage(agent_computer, 4, "Waiting for the desktop stream...")
       wait_until_streaming(agent_computer, connection)
 
       agent_computer.running!
-      cluster.success("Agent computer #{agent_computer.name} is ready")
+      agent_computer.success("#{agent_computer.name} is ready")
     rescue StandardError => e
-      agent_computer.failed!
+      agent_computer.error(e.message)
+      agent_computer.fail!(e)
       Rails.logger.error("Failed to provision agent computer #{agent_computer.id}: #{e.message}")
       raise
     end
 
     private
 
+    def stage(agent_computer, index, line)
+      agent_computer.update!(provision_stage: index)
+      agent_computer.info(line, color: :yellow)
+    end
+
     # Covers importing the ISO and booting; KubeVirt reports problems like a failed import as a Failure condition
     def wait_until_running(agent_computer, kubectl)
       started = Time.current
+      reported = nil
       until Time.current > started + BOOT_TIMEOUT
         vm = JSON.parse(kubectl.(%W[get vm #{agent_computer.name} -n #{agent_computer.namespace} -o json]))
         return if vm.dig("status", "printableStatus") == "Running"
+
+        reported = report_download(agent_computer, kubectl, reported)
+        if (unschedulable = Unschedulable.reason(vm))
+          raise unschedulable
+        end
 
         # A failure can be stale from an earlier attempt, so give KubeVirt's backoff time to retry before trusting it
         failure = vm.dig("status", "conditions")&.find { |c| c["type"] == "Failure" && c["status"] == "True" }
@@ -59,6 +73,17 @@ module AgentComputers
         sleep POLL_INTERVAL
       end
       raise "Agent computer VM wasn't running after #{BOOT_TIMEOUT.inspect}"
+    end
+
+    # The ISO's import progress (CDI reports e.g. "42.17%"), logged every 10%; returns the last one logged
+    def report_download(agent_computer, kubectl, reported)
+      progress = kubectl.(%W[get dv #{agent_computer.name}-iso -n #{agent_computer.namespace} -o jsonpath={.status.progress}]).to_f.floor(-1)
+      return reported if progress.zero? || progress == reported
+
+      agent_computer.info("Downloaded #{progress.to_i}% of the ISO")
+      progress
+    rescue Cli::CommandFailedError
+      reported # the DataVolume isn't there yet
     end
 
     # The live ISO also runs sshd, so SSH answering isn't enough: the install is done when our key logs in as the

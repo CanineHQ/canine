@@ -213,6 +213,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.string "coding_model"
     t.string "coding_agent"
     t.string "computer_use_token"
+    t.text "failure"
+    t.integer "provision_stage", default: 0, null: false
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end

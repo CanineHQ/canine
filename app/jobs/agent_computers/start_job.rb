@@ -16,12 +16,15 @@ module AgentComputers
       deadline = TIMEOUT.from_now
       until Time.current > deadline
         return agent_computer.running! if desktop_streaming?(kubectl, agent_computer)
+        if (unschedulable = Unschedulable.reason(JSON.parse(kubectl.(%W[get vm #{agent_computer.name} -n #{agent_computer.namespace} -o json]))))
+          raise unschedulable
+        end
 
         sleep POLL_INTERVAL
       end
       raise "Agent computer desktop wasn't back within #{TIMEOUT.inspect}"
     rescue StandardError => e
-      agent_computer.failed!
+      agent_computer.fail!(e)
       Rails.logger.error("Failed to start agent computer #{agent_computer.id}: #{e.message}")
       raise
     end

@@ -14,7 +14,7 @@ module AgentComputers
 
       agent_computer.destroy!
     rescue StandardError => e
-      agent_computer.failed!
+      agent_computer.fail!(e)
       Rails.logger.error("Failed to destroy agent computer #{agent_computer.id}: #{e.message}")
       raise
     end

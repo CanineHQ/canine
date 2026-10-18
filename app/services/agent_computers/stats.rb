@@ -15,7 +15,7 @@ module AgentComputers
       "computer-use" => AgentComputer::COMPUTER_USE_PORT
     }.freeze
 
-    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services, :human
+    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services
 
     def initialize(agent_computer, user)
       @agent_computer = agent_computer
@@ -38,7 +38,7 @@ module AgentComputers
       fetch_cpu(namespace)
       fetch_disk(namespace)
       probe_services(namespace)
-      @human, @memory_used, @memory_total = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
+      @memory_used, @memory_total = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
       self
     end
 
@@ -59,22 +59,17 @@ module AgentComputers
 
     private
 
-    # From inside the guest, over one tunnel: who has the screen (human.py: { "has_screen", "taken_over",
-    # "free_in_seconds" }), and memory in use as Linux counts it, total minus available, so page cache it would drop on
+    # From inside the guest: memory in use as Linux counts it, total minus available, so page cache it would drop on
     # demand doesn't count. (The pod's working set counts all the guest RAM QEMU has ever touched, so it sits near the
     # VM's size even when the guest has plenty free: no sign of pressure.) Nils if the server didn't answer.
     def fetch_guest(computer_use)
-      human = meminfo = nil
-      computer_use.connected do
-        human = computer_use.human
-        meminfo = computer_use.run("cat /proc/meminfo")["stdout"].to_s
-      end
+      meminfo = computer_use.run("cat /proc/meminfo")["stdout"].to_s
       bytes = ->(key) { meminfo[/^#{key}:\s+(\d+) kB/, 1]&.to_i&.*(1024) }
       total, available = bytes.("MemTotal"), bytes.("MemAvailable")
-      [ human, total && available && total - available, total ]
+      [ total && available && total - available, total ]
     rescue StandardError => e
       Rails.logger.info("Couldn't read computer #{@agent_computer.id}'s guest stats: #{e.message}")
-      [ nil, nil, nil ]
+      [ nil, nil ]
     end
 
     def condition?(type)

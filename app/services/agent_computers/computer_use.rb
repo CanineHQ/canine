@@ -18,12 +18,9 @@ module AgentComputers
     WINDOW_OPERATIONS = %w[open_app open_url focus close maximize move_to_workspace switch_workspace].freeze
     TERMINAL_OPERATIONS = %w[open send read wait close].freeze
 
-    # priority: mark requests so the computer-use server lets them through while the person is merely present (a run
-    # the person started themselves). "Take over" still pauses them. See human.py.
-    def initialize(agent_computer, connection, priority: false)
+    def initialize(agent_computer, connection)
       @computer = agent_computer
       @connection = connection
-      @priority = priority
     end
 
     # One tunnel for everything in the block, instead of a new kubectl port-forward (about half a second) per request:
@@ -49,11 +46,6 @@ module AgentComputers
 
     def windows
       get("/windows")
-    end
-
-    # Whether the person has the screen (see human.py in the computer-use server): { "has_screen" => true, ... }
-    def human
-      get("/human")
     end
 
     def window(operation, params = {})
@@ -119,7 +111,6 @@ module AgentComputers
 
     def request(http_request)
       http_request["Authorization"] = "Bearer #{@computer.computer_use_token}"
-      http_request["X-Agent-Priority"] = "1" if @priority
       started_at = Time.current
       response = begin
         send_request(@port, http_request) if @port

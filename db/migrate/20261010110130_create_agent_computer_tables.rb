@@ -11,7 +11,6 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.references :cluster, null: false, foreign_key: true, index: false
       t.timestamps
       t.string :namespace, null: false
-      # How the Desktop tab shows the computer: "selkies" (stream from inside the guest) or "vnc" (the VM's own screen)
       # The desktop login password (lock screen, sudo) and the key Canine uses to finish setting up the VM over SSH
       t.string :password
       t.text :ssh_private_key
@@ -21,6 +20,8 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.string :browse_model
       t.string :coding_model
       t.string :coding_agent
+      t.text :failure # why the last provision, start, stop or destroy failed
+      t.integer :provision_stage, null: false, default: 0 # where provisioning is, in AgentComputer::PROVISION_STAGES
       t.index %i[cluster_id name], unique: true
     end
 

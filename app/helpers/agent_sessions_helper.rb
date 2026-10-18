@@ -3,7 +3,6 @@ module AgentSessionsHelper
   # coding agent) rather than always saying "coding agent".
   def agent_session_status_label(session)
     case session.status
-    when "waiting_for_human" then "paused: you're using the computer"
     when "waiting_for_tool"
       case session.actions.last&.tool
       when "delegate" then "coding agent working"
@@ -19,7 +18,6 @@ module AgentSessionsHelper
     case session.status
     when "queued" then "Starting"
     when "running" then "Thinking"
-    when "waiting_for_human" then "Waiting for you: you're using the computer"
     else agent_session_status_label(session).upcase_first
     end
   end
