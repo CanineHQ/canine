@@ -47,7 +47,8 @@ class ClusterPackage < ApplicationRecord
     "metrics-server" => "ClusterPackage::Installer::MetricsServer",
     "telepresence" => "ClusterPackage::Installer::Telepresence",
     "cloudflared" => "ClusterPackage::Installer::Cloudflared",
-    "fluent-bit" => "ClusterPackage::Installer::FluentBit"
+    "fluent-bit" => "ClusterPackage::Installer::FluentBit",
+    "kubevirt" => "ClusterPackage::Installer::KubeVirt"
   }.freeze
 
   def definition
@@ -65,6 +66,11 @@ class ClusterPackage < ApplicationRecord
 
   def self.definitions
     DEFINITIONS
+  end
+
+  # The packages an account can install: KubeVirt only runs agent computers, so it's offered only with them
+  def self.definitions_for(account)
+    AgentComputer.enabled_for?(account) ? DEFINITIONS : DEFINITIONS.reject { |d| d["name"] == "kubevirt" }
   end
 
   def self.default_package_names

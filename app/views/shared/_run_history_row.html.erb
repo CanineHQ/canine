@@ -1,0 +1,14 @@
+<%# One row of shared/_run_history %>
+<tr id="<%= local_assigns[:id] %>" class="hover:bg-base-300">
+  <td class="text-sm"><%= run.started_at ? "#{time_ago_in_words(run.started_at)} ago" : "N/A" %></td>
+  <td class="text-sm"><%= run.duration ? distance_of_time_in_words(run.duration) : "..." %></td>
+  <td class="text-sm font-medium max-w-md truncate">
+    <% if local_assigns[:href] %>
+      <%= link_to run.name, href, class: "link link-hover" %>
+    <% else %>
+      <%= run.name %>
+    <% end %>
+  </td>
+  <td><%= render "projects/services/jobs/status", status: run.status %></td>
+  <td><%= local_assigns[:actions] %></td>
+</tr>

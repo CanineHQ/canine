@@ -1,0 +1,51 @@
+<%# A live card for an in-progress run, at the top of the feed. It's replaced as the session updates; once the run is
+    no longer active the card renders empty, so it drops out and the result posts take its place. %>
+<div id="<%= dom_id(session, :running) %>">
+  <% if session.active? %>
+    <% shot = session.actions.joins(:screenshot_attachment).order(:id).last %>
+    <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
+      <div class="flex flex-col gap-3">
+        <% waiting = session.waiting_in_queue? %>
+        <% progress = session.last_progress_at %>
+        <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (agent_computers/stalled_controller.js) %>
+        <header class="flex items-center gap-3" data-controller="agent-computers--stalled" data-agent-computers--stalled-since-value="<%= progress.iso8601 %>"
+                data-agent-computers--stalled-after-value="<%= waiting ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
+            <% if waiting %>
+              <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
+            <% else %>
+              <span data-agent-computers--stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
+              <iconify-icon data-agent-computers--stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>
+            <% end %>
+          </span>
+          <div class="min-w-0 flex-1 leading-tight">
+            <div class="truncate text-sm font-semibold"><%= session.task.name %></div>
+            <div class="truncate text-xs text-base-content/50">
+              <% if waiting %>
+                Queued · starts when a run going now finishes
+              <% else %>
+                <span data-agent-computers--stalled-target="working"><%= agent_session_doing(session) %> · last step
+                  <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time></span>
+                <span data-agent-computers--stalled-target="stuck" class="hidden text-warning">No progress since
+                  <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time> · may be stuck</span>
+              <% end %>
+            </div>
+          </div>
+          <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
+                class: "btn btn-ghost btn-xs text-base-content/60" do %>
+            Watch <iconify-icon icon="lucide:arrow-right" height="13"></iconify-icon>
+          <% end %>
+        </header>
+
+        <%# A small live thumbnail of what's on screen right now, swapped in as new screenshots arrive. %>
+        <% if shot&.screenshot&.attached? %>
+          <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
+                class: "block w-40 overflow-hidden rounded-md border border-base-300 hover:border-primary" do %>
+            <%= image_tag rails_representation_path(shot.screenshot.variant(:thumb)),
+                  class: "aspect-video w-full object-cover object-top agent-fade", alt: "What the agent is doing now" %>
+          <% end %>
+        <% end %>
+      </div>
+    </article>
+  <% end %>
+</div>

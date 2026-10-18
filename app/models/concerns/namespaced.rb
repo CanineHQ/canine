@@ -9,7 +9,7 @@ module Namespaced
   ]
 
   def name_is_unique_to_cluster
-    if cluster.namespaces.include?(namespace)
+    if cluster&.namespaces&.include?(namespace) # no cluster is its own error (belongs_to)
       errors.add(:name, "must be unique to this cluster")
     end
   end

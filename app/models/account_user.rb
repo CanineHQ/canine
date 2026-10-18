@@ -23,6 +23,8 @@ class AccountUser < ApplicationRecord
   belongs_to :user
   belongs_to :account
 
+  has_many :agent_computers, dependent: :destroy
+
   enum :role, { owner: 0, admin: 1, member: 2 }
 
   def admin_or_owner?
