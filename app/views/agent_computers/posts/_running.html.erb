@@ -19,7 +19,7 @@
             <% end %>
           </span>
           <div class="min-w-0 flex-1 leading-tight">
-            <div class="truncate text-sm font-semibold"><%= session.task&.name || "Agent run" %></div>
+            <div class="truncate text-sm font-semibold"><%= session.task.name %></div>
             <div class="truncate text-xs text-base-content/50">
               <% if waiting %>
                 Queued · starts when a run going now finishes

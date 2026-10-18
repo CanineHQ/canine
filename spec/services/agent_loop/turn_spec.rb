@@ -6,7 +6,7 @@ RSpec.describe AgentLoop::Turn do
   let(:task) do
     computer.tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model")
   end
-  let(:session) { computer.sessions.create!(task: task, trigger: :manual, model: "test/model") }
+  let(:session) { task.sessions.create!(trigger: :manual, model: "test/model") }
   let(:key) { account_user.account.agent_provider_keys.create!(api_key: "sk-or-test") }
   let(:client) { instance_double(Llm::OpenRouter) }
   let(:computer_use) { instance_double(AgentComputers::ComputerUse) }

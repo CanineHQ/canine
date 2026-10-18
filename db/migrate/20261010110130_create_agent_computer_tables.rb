@@ -14,6 +14,8 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       # The desktop login password (lock screen, sudo) and the key Canine uses to finish setting up the VM over SSH
       t.string :password
       t.text :ssh_private_key
+      # The bearer token Canine sends the computer-use server in the VM (resources/agent_computer/computer_use/auth.py)
+      t.string :computer_use_token
       # Machine-level model defaults; runs inherit them (a task picks its own planning model). Null means "inherit":
       # planning falls back to the global default, browse and coding to the planning model.
       t.string :planning_model
@@ -47,13 +49,15 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.decimal :max_cost_usd, precision: 10, scale: 2, null: false, default: 2.0
       t.integer :max_turns, null: false, default: 120
       t.string :time_zone # the person's, e.g. "America/New_York": run times are shown and given to the agent in it
+      # The Hyprland workspace its runs must use, or null (usual) for any free one; each run records the one it got
+      t.integer :pinned_workspace
       t.timestamps
       t.index %i[enabled next_run_at]
     end
 
+    # Each table stores only its direct parent: computer ─< task ─< session ─< activity ─< action, and session ─< post
     create_table :agent_computer_sessions do |t|
-      t.references :agent_computer, null: false, foreign_key: true
-      t.references :task, null: true, foreign_key: { to_table: :agent_computer_tasks }
+      t.references :task, null: false, foreign_key: { to_table: :agent_computer_tasks } # "run now" makes a one-off task
       t.integer :trigger, null: false, default: 0
       t.integer :status, null: false, default: 0
       t.string :model, null: false
@@ -71,6 +75,7 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.bigint :cached_tokens, null: false, default: 0
       t.decimal :cost_usd, precision: 10, scale: 6, null: false, default: 0
       t.string :provider
+      t.integer :workspace # the Hyprland workspace this run's windows open on
       t.timestamps
       t.index %i[task_id status]
     end
@@ -99,8 +104,8 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       t.timestamps
     end
 
+    # A tool call. Its session is its activity's: tidying only moves actions between activities of one session
     create_table :agent_computer_session_actions do |t|
-      t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
       t.references :activity, null: false, foreign_key: { to_table: :agent_computer_session_activities }
       t.string :tool, null: false
       t.string :tool_call_id
@@ -113,17 +118,17 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
     end
 
     create_table :agent_computer_posts do |t|
-      t.references :agent_computer, null: false, foreign_key: true
       t.references :session, null: false, foreign_key: { to_table: :agent_computer_sessions }
-      # tidying merges activities away
+      # The step it's about (tidying moves posts along when it merges that step into another), or null for a run that
+      # stopped before taking any; and the screenshot shown with it, if any.
       t.references :activity, null: true, foreign_key: { to_table: :agent_computer_session_activities, on_delete: :nullify }
-      t.references :action, null: true, foreign_key: { to_table: :agent_computer_session_actions, on_delete: :nullify }
+      t.references :screenshot_action, null: true, foreign_key: { to_table: :agent_computer_session_actions, on_delete: :nullify }
       t.string :kind, null: false
       t.text :text, null: false
       t.datetime :posted_at, null: false
       t.integer :position, null: false, default: 0
       t.timestamps
-      t.index %i[agent_computer_id posted_at]
+      t.index :posted_at # the feed pages by it, across the computer's sessions
     end
   end
 end

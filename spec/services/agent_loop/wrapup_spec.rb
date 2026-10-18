@@ -5,7 +5,7 @@ RSpec.describe AgentLoop::Wrapup do
     account_user = create(:account_user)
     computer = AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running)
     account_user.account.agent_provider_keys.create!(api_key: "sk-or-test")
-    session = computer.sessions.create!(trigger: :manual, model: "test/model", status: :failed, error: "Stopped after 5 minutes.",
+    session = computer.tasks.create!(name: "Task", instruction: "Do it", model: "test/model").sessions.create!(trigger: :manual, model: "test/model", status: :failed, error: "Stopped after 5 minutes.",
                                               notes: "Found: the newest email is from Chris.")
     session.messages.create!(position: 0, role: "system", content: "You are an agent")
     client = instance_double(Llm::OpenRouter)

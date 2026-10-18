@@ -82,8 +82,8 @@ class AgentComputer < ApplicationRecord
   belongs_to :account_user
   belongs_to :cluster
   has_many :tasks, dependent: :destroy
-  has_many :sessions, dependent: :destroy
-  has_many :posts, dependent: :delete_all
+  has_many :sessions, through: :tasks # (tasks delete their sessions, and sessions their posts)
+  has_many :posts, through: :sessions
 
   has_one :user, through: :account_user
   has_one :account, through: :account_user

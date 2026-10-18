@@ -134,7 +134,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       expect(task.model).to eq("openai/gpt-5-mini")
 
       # Delegate runs the machine's coding agent on its coding model.
-      session = computer.sessions.create!(task: task, trigger: :manual, model: task.model)
+      session = task.sessions.create!(trigger: :manual, model: task.model)
       run = AgentLoop::Delegate.command(session, "~/x").first
       expect(run).to include("deepseek/deepseek-v4.1-flash").and include("pi ")
     end

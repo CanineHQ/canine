@@ -2,10 +2,8 @@
 <div id="<%= dom_id(session, :header) %>" class="flex flex-wrap items-center justify-between gap-3">
   <div>
     <div class="flex items-center gap-2">
-      <% if session.task %>
-        <%= link_to session.task.name, agent_computer_agent_task_path(session.agent_computer, session.task), class: "link text-sm" %>
-        <span class="text-base-content/40">/</span>
-      <% end %>
+      <%= link_to session.task.name, agent_computer_agent_task_path(session.agent_computer, session.task), class: "link text-sm" %>
+      <span class="text-base-content/40">/</span>
       <span class="font-semibold">Run <%= session.created_at.strftime("%b %-d, %H:%M") %></span>
       <%= render "agent_computers/sessions/status_badge", session: session %>
     </div>

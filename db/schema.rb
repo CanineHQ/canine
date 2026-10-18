@@ -90,25 +90,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   end
 
   create_table "agent_computer_posts", force: :cascade do |t|
-    t.bigint "agent_computer_id", null: false
     t.bigint "session_id", null: false
     t.bigint "activity_id"
-    t.bigint "action_id"
+    t.bigint "screenshot_action_id"
     t.string "kind", null: false
     t.text "text", null: false
     t.datetime "posted_at", null: false
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["action_id"], name: "index_agent_computer_posts_on_action_id"
     t.index ["activity_id"], name: "index_agent_computer_posts_on_activity_id"
-    t.index ["agent_computer_id", "posted_at"], name: "index_agent_computer_posts_on_agent_computer_id_and_posted_at"
-    t.index ["agent_computer_id"], name: "index_agent_computer_posts_on_agent_computer_id"
+    t.index ["posted_at"], name: "index_agent_computer_posts_on_posted_at"
+    t.index ["screenshot_action_id"], name: "index_agent_computer_posts_on_screenshot_action_id"
     t.index ["session_id"], name: "index_agent_computer_posts_on_session_id"
   end
 
   create_table "agent_computer_session_actions", force: :cascade do |t|
-    t.bigint "session_id", null: false
     t.bigint "activity_id", null: false
     t.string "tool", null: false
     t.string "tool_call_id"
@@ -120,7 +117,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["activity_id"], name: "index_agent_computer_session_actions_on_activity_id"
-    t.index ["session_id"], name: "index_agent_computer_session_actions_on_session_id"
   end
 
   create_table "agent_computer_session_activities", force: :cascade do |t|
@@ -152,8 +148,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   end
 
   create_table "agent_computer_sessions", force: :cascade do |t|
-    t.bigint "agent_computer_id", null: false
-    t.bigint "task_id"
+    t.bigint "task_id", null: false
     t.integer "trigger", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.string "model", null: false
@@ -171,10 +166,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.bigint "cached_tokens", default: 0, null: false
     t.decimal "cost_usd", precision: 10, scale: 6, default: "0.0", null: false
     t.string "provider"
+    t.integer "workspace"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "workspace"
-    t.index ["agent_computer_id"], name: "index_agent_computer_sessions_on_agent_computer_id"
     t.index ["task_id", "status"], name: "index_agent_computer_sessions_on_task_id_and_status"
     t.index ["task_id"], name: "index_agent_computer_sessions_on_task_id"
   end
@@ -191,9 +185,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.decimal "max_cost_usd", precision: 10, scale: 2, default: "2.0", null: false
     t.integer "max_turns", default: 120, null: false
     t.string "time_zone"
+    t.integer "pinned_workspace"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "workspace"
     t.index ["agent_computer_id"], name: "index_agent_computer_tasks_on_agent_computer_id"
     t.index ["enabled", "next_run_at"], name: "index_agent_computer_tasks_on_enabled_and_next_run_at"
   end
@@ -208,11 +202,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.string "namespace", null: false
     t.string "password"
     t.text "ssh_private_key"
+    t.string "computer_use_token"
     t.string "planning_model"
     t.string "browse_model"
     t.string "coding_model"
     t.string "coding_agent"
-    t.string "computer_use_token"
     t.text "failure"
     t.integer "provision_stage", default: 0, null: false
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
@@ -1024,16 +1018,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
-  add_foreign_key "agent_computer_posts", "agent_computer_session_actions", column: "action_id", on_delete: :nullify
+  add_foreign_key "agent_computer_posts", "agent_computer_session_actions", column: "screenshot_action_id", on_delete: :nullify
   add_foreign_key "agent_computer_posts", "agent_computer_session_activities", column: "activity_id", on_delete: :nullify
   add_foreign_key "agent_computer_posts", "agent_computer_sessions", column: "session_id"
-  add_foreign_key "agent_computer_posts", "agent_computers"
   add_foreign_key "agent_computer_session_actions", "agent_computer_session_activities", column: "activity_id"
-  add_foreign_key "agent_computer_session_actions", "agent_computer_sessions", column: "session_id"
   add_foreign_key "agent_computer_session_activities", "agent_computer_sessions", column: "session_id"
   add_foreign_key "agent_computer_session_messages", "agent_computer_sessions", column: "session_id"
   add_foreign_key "agent_computer_sessions", "agent_computer_tasks", column: "task_id"
-  add_foreign_key "agent_computer_sessions", "agent_computers"
   add_foreign_key "agent_computer_tasks", "agent_computers"
   add_foreign_key "agent_computers", "account_users"
   add_foreign_key "agent_computers", "clusters"

@@ -5,7 +5,7 @@ RSpec.describe AgentLoop::Posts do
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let(:task) { computer.tasks.create!(name: "Inbox", instruction: "Handle access requests", schedule: "0 * * * *", model: "test/model") }
   let(:session) do
-    computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :succeeded,
+    task.sessions.create!(trigger: :manual, model: "test/model", status: :succeeded,
                                     summary: "Added Sean to Persona.", finished_at: Time.current)
   end
   let(:client) { instance_double(Llm::OpenRouter) }
@@ -21,10 +21,10 @@ RSpec.describe AgentLoop::Posts do
       session.activities.create!(position:, intent: title, title:, started_at: 1.minute.ago, finished_at: Time.current)
     end
     shots = [ slack, persona ].map do |activity|
-      session.actions.create!(activity:, tool: "computer_accessibility", arguments: { "operation" => "press" }, status: :done)
+      activity.actions.create!(tool: "computer_accessibility", arguments: { "operation" => "press" }, status: :done)
              .tap { |a| a.screenshot.attach(io: StringIO.new(png), filename: "shot.png", content_type: "image/png") }
     end
-    session.posts.create!(agent_computer: computer, kind: "done", text: "old", posted_at: 1.day.ago)
+    session.posts.create!(kind: "done", text: "old", posted_at: 1.day.ago)
     allow(client).to receive(:chat).and_return(Llm::OpenRouter::Reply.new({ "content" => { posts: [
       { kind: "done", text: "I noticed Sean asked to be added to Persona, so [I added him].", activity_id: persona.id, screenshot_id: nil },
       { kind: "needs_you", text: "Dan wants a CSV export; [I left it for you].", activity_id: slack.id, screenshot_id: shots.first.id },
@@ -34,9 +34,9 @@ RSpec.describe AgentLoop::Posts do
     described_class.call(session)
     posts = session.posts.reload.newest_first.to_a
     expect(posts.map(&:kind)).to eq(%w[done needs_you])
-    expect(posts.first).to have_attributes(activity: persona, action: shots.last) # no screenshot chosen: the step's last
+    expect(posts.first).to have_attributes(activity: persona, screenshot_action: shots.last) # no screenshot chosen: the step's last
     expect(posts.first.parts).to eq([ "I noticed Sean asked to be added to Persona, so ", "I added him", "." ])
-    expect(posts.second.action).to eq(shots.first)
+    expect(posts.second.screenshot_action).to eq(shots.first)
     expect(session.reload.cost_usd).to eq(0.0002)
   end
 

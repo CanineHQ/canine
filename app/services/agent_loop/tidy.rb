@@ -88,6 +88,7 @@ module AgentLoop
 
     def self.merge(activity, into:)
       activity.actions.update_all(activity_id: into.id)
+      AgentComputer::Post.where(activity:).update_all(activity_id: into.id)
       into.update!(finished_at: [ into.finished_at, activity.finished_at ].compact.max,
                    description: [ into.description, activity.description ].compact.join("\n\n").truncate(4000).presence)
       activity.actions.reset # they belong to `into` now: don't let destroy! delete them from a stale list

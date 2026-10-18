@@ -12,24 +12,21 @@
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #  activity_id  :bigint           not null
-#  session_id   :bigint           not null
 #  tool_call_id :string
 #
 # Indexes
 #
 #  index_agent_computer_session_actions_on_activity_id  (activity_id)
-#  index_agent_computer_session_actions_on_session_id   (session_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (activity_id => agent_computer_session_activities.id)
-#  fk_rails_...  (session_id => agent_computer_sessions.id)
 #
 class AgentComputer::Session::Action < ApplicationRecord
   include ActionView::RecordIdentifier
 
-  belongs_to :session
   belongs_to :activity
+  has_one :session, through: :activity
   # Small versions for the timeline, made in the background as each screenshot is saved; the lightbox shows the original
   has_one_attached :screenshot do |attachable|
     attachable.variant :thumb, resize_to_limit: [ 240, 135 ], format: :webp, preprocessed: true

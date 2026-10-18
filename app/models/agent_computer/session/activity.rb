@@ -2,18 +2,18 @@
 #
 # Table name: agent_computer_session_activities
 #
-#  id                     :bigint           not null, primary key
-#  description            :text
-#  finished_at            :datetime
-#  intent                 :string
-#  outcome                :text
-#  position               :integer          not null
-#  started_at             :datetime
-#  tidied_at              :datetime
-#  title                  :string           not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  session_id             :bigint           not null
+#  id          :bigint           not null, primary key
+#  description :text
+#  finished_at :datetime
+#  intent      :string
+#  outcome     :text
+#  position    :integer          not null
+#  started_at  :datetime
+#  tidied_at   :datetime
+#  title       :string           not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  session_id  :bigint           not null
 #
 # Indexes
 #

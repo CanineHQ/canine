@@ -125,6 +125,6 @@ class AgentComputers::TasksController < AgentComputers::BaseController
   end
 
   def task_params
-    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :time_zone, :workspace, :max_minutes, :max_cost_usd, :max_turns)
+    params.require(:agent_task).permit(:name, :instruction, :schedule, :model, :enabled, :time_zone, :pinned_workspace, :max_minutes, :max_cost_usd, :max_turns)
   end
 end

@@ -8,7 +8,7 @@ class AgentComputers::PostsController < AgentComputers::BaseController
     @scheduled = @agent_computer.tasks.where(enabled: true).order(Arel.sql("next_run_at ASC NULLS LAST"))
     @active = @agent_computer.sessions.active.order(created_at: :desc).includes(:task)
     posts = @agent_computer.posts.newest_first
-                           .includes(:activity, session: :task, action: { screenshot_attachment: :blob })
+                           .includes(:activity, session: { task: :agent_computer }, screenshot_action: { screenshot_attachment: :blob })
     posts = after_cursor(posts) if params[:before_at]
     @posts = posts.limit(PER_PAGE + 1).to_a
     @more = @posts.size > PER_PAGE

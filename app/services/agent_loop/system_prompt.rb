@@ -10,7 +10,7 @@ module AgentLoop
         person's accounts.#{workspace(session)}
 
         Your task, in the person's words:
-        #{task&.instruction || session.summary}
+        #{task.instruction}
 
         #{times(session)}
 
@@ -56,7 +56,7 @@ module AgentLoop
     # Slack and Google Calendar show the person's own time zone, and agents mixed the two up (reading "today" as
     # tomorrow, or a window as five hours off).
     def self.times(session)
-      zone = session.task&.zone
+      zone = session.task.zone
       at = ->(time) { time && (zone ? time.in_time_zone(zone).strftime("%a %-d %b %Y %-l:%M %p %Z") : time.utc.iso8601) }
       clock = if zone
         "The person's time zone is #{zone.tzinfo.name}: it's #{at.(Time.current)} for them."

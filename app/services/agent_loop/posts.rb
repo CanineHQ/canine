@@ -56,11 +56,12 @@ module AgentLoop
         posts.grep(Hash).each_with_index do |post, i|
           next if post["text"].blank? || !post["kind"].in?(AgentComputer::Post::KINDS)
 
-          activity = by_id[post["activity_id"].to_i]
+          # The step the model named, or the last one if it named none of this run's (none if the run took no steps)
+          activity = by_id[post["activity_id"].to_i] || activities.last
           # The chosen screenshot if it's one of this run's, else the last one of the step it links to
           shot = shots[post["screenshot_id"].to_i] || activity&.actions&.reverse&.find { |a| a.screenshot.attached? }
-          session.posts.create!(agent_computer: session.agent_computer, kind: post["kind"], text: post["text"].to_s.strip.truncate(600),
-                                activity:, action: shot, posted_at: session.finished_at || Time.current, position: i)
+          session.posts.create!(kind: post["kind"], text: post["text"].to_s.strip.truncate(600),
+                                activity:, screenshot_action: shot, posted_at: session.finished_at || Time.current, position: i)
         end
       end
     end
@@ -68,7 +69,7 @@ module AgentLoop
     def self.log(session, activities)
       task = session.task
       <<~LOG
-        Task: #{task&.name} — #{task&.instruction}
+        Task: #{task.name} — #{task.instruction}
         Run: #{session.status}#{" (#{session.error})" if session.error.present?}
 
         Summary:

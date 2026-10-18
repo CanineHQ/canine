@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe AgentLoop::Context do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
-  let(:session) { computer.sessions.create!(trigger: :manual, model: "test/model", status: :running) }
+  let(:session) { computer.tasks.create!(name: "Task", instruction: "Do it", model: "test/model").sessions.create!(trigger: :manual, model: "test/model", status: :running) }
 
   it "shortens old results and their calls' arguments in blocks, and caps recent ones" do
     position = 0

@@ -82,7 +82,9 @@ module AgentSessions
     # fatal to the watch loop.
     def record_step(session, parent, event)
       activity = parent&.activity || session.current_activity
-      action = session.actions.create!(activity:, tool: "browse_step",
+      return Rails.logger.warn("Skipped a browse step for session #{session.id}: no activity to put it under") unless activity
+
+      action = activity.actions.create!(tool: "browse_step",
                                         arguments: { "goal" => event["goal"], "step" => event["step"], "url" => event["url"],
                                                     "actions" => Array(event["actions"]), "did" => Array(event["did"]),
                                                     "marked" => event["marked"] },

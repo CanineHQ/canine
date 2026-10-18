@@ -6,7 +6,7 @@ RSpec.describe AgentLoop::Tidy do
   let(:task) do
     computer.tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model")
   end
-  let(:session) { computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running) }
+  let(:session) { task.sessions.create!(trigger: :manual, model: "test/model", status: :running) }
   let(:client) { instance_double(Llm::OpenRouter) }
 
   before do
@@ -16,7 +16,7 @@ RSpec.describe AgentLoop::Tidy do
 
   def activity(position, intent)
     session.activities.create!(position:, intent:, title: intent, started_at: Time.current, finished_at: Time.current).tap do |a|
-      session.actions.create!(activity: a, tool: "computer_run", arguments: { "command" => "ls" }, status: :done, result: { "text" => "ok" })
+      a.actions.create!(tool: "computer_run", arguments: { "command" => "ls" }, status: :done, result: { "text" => "ok" })
     end
   end
 

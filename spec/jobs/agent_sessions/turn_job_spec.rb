@@ -9,7 +9,7 @@ RSpec.describe AgentSessions::TurnJob do
   end
 
   it "stops a session that has run past its task's limit, without calling the model" do
-    session = computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running, started_at: 21.minutes.ago)
+    session = task.sessions.create!(trigger: :manual, model: "test/model", status: :running, started_at: 21.minutes.ago)
     expect(Llm::OpenRouter).not_to receive(:new)
 
     described_class.perform_now(session)
@@ -17,7 +17,7 @@ RSpec.describe AgentSessions::TurnJob do
   end
 
   it "tries a turn again when the computer can't be reached, and gives up after the last try" do
-    session = computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running)
+    session = task.sessions.create!(trigger: :manual, model: "test/model", status: :running)
     computer.account.agent_provider_keys.create!(provider: "openrouter", api_key: "key")
     allow(AgentComputers::PortForward).to receive(:open).and_raise(AgentComputers::PortForward::Error, "kubectl port-forward to desk didn't start")
     stub_const("ENV", ENV.to_h.merge("LANGFUSE_HOST" => "http://localhost:3100", "LANGFUSE_PUBLIC_KEY" => "pk", "LANGFUSE_SECRET_KEY" => "sk"))

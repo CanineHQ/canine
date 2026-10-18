@@ -4,7 +4,7 @@ RSpec.describe AgentLoop::Trace do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let(:task) { computer.tasks.create!(name: "Inbox", instruction: "Report the newest email", schedule: "0 * * * *", model: "test/model") }
-  let(:session) { computer.sessions.create!(task: task, trigger: :manual, model: "test/model", status: :running) }
+  let(:session) { task.sessions.create!(trigger: :manual, model: "test/model", status: :running) }
   let(:pushed) { [] }
   let(:screenshot) { "A" * 2000 }
 

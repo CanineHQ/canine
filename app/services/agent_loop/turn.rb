@@ -171,8 +171,7 @@ module AgentLoop
       return Tools.call(@session, name, args) if name == "finish"
 
       Trace.span(span_name(name, args), type: "tool", input: args) do |traced|
-        action = @session.actions.create!(activity: activity_for(args["intent"]), tool: name, tool_call_id:, arguments: args,
-                                          started_at: Time.current)
+        action = activity_for(args["intent"]).actions.create!(tool: name, tool_call_id:, arguments: args, started_at: Time.current)
         result = call_tool(name, args)
         traced.output = result.text
         # browse and delegate finish when their watch job does; the action stays running until then
