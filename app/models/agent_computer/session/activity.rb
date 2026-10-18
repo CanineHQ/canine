@@ -50,10 +50,10 @@ class AgentComputer::Session::Activity < ApplicationRecord
     finished_at.nil? && session.active?
   end
 
-  # Ended (or ending) badly: a failed or blocked action that nothing later in the activity got past
+  # Ended (or ending) badly: a failed action that nothing later in the activity got past
   def troubled?
     last_doing = actions.reject(&:look_only?).last
-    last_doing&.failed? || last_doing&.blocked?
+    last_doing&.failed?
   end
 
   def duration

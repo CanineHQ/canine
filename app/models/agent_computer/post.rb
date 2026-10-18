@@ -3,7 +3,6 @@
 # Table name: agent_computer_posts
 #
 #  id                   :bigint           not null, primary key
-#  kind                 :string           not null
 #  position             :integer          default(0), not null
 #  posted_at            :datetime         not null
 #  text                 :text             not null
@@ -27,16 +26,13 @@
 #  fk_rails_...  (session_id => agent_computer_sessions.id)
 #
 class AgentComputer::Post < ApplicationRecord
-  KINDS = %w[done found needs_you problem].freeze
-
   belongs_to :session
   has_one :agent_computer, through: :session
-  # The step it's about (none for a run that stopped before taking any: its "problem" post), and the screenshot shown
+  # The step it's about (none for a run that failed before taking any), and the screenshot shown
   # with it if any: the session's (AgentComputer::Session::*), which the name alone wouldn't find from here
   belongs_to :activity, class_name: "AgentComputer::Session::Activity", optional: true
   belongs_to :screenshot_action, class_name: "AgentComputer::Session::Action", optional: true
 
-  validates :kind, inclusion: { in: KINDS }
   validates :text, presence: true
 
   # Show up live at the top of the computer's feed when written.

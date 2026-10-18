@@ -1,11 +1,4 @@
 module AgentPostsHelper
-  POST_KINDS = {
-    "done" => { icon: "lucide:circle-check", color: "text-success", label: nil },
-    "found" => { icon: "lucide:lightbulb", color: "text-info", label: "Found" },
-    "needs_you" => { icon: "lucide:hand", color: "text-warning", label: "Needs you" },
-    "problem" => { icon: "lucide:circle-alert", color: "text-error", label: "Problem" }
-  }.freeze
-
   # A `[phrase]` highlight marker; split keeps it as its own token (the group captures).
   POST_BRACKET = %r{(\[[^\]]+\])}
   # A bare URL (stops at whitespace, brackets, or angle brackets).

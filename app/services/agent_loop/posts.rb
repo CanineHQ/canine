@@ -14,8 +14,6 @@ module AgentLoop
         and finding nothing is not news: "I checked #dev and there were no new messages", "I confirmed the sheet
         needs no new rows", "I reviewed the layout and left it unchanged" are all anything_new: false, and get no posts.
       posts, in the order things happened, each:
-        kind: "done" (it did something for them), "found" (it learned something they'd want to know), "needs_you"
-              (it left something for them to decide or do), or "problem" (something went wrong that they should know)
         text: one or two short sentences, first person, past tense, specific (names, numbers, titles, links), e.g.
               "I noticed Sean asked to be added to Persona, so [I added him] as an Editor." Wrap the words that say
               what it did (or found) in [brackets], exactly once: they link to the step that did it.
@@ -23,8 +21,8 @@ module AgentLoop
         screenshot_id: the screenshot that best shows it (the result, not the way there), or null if none shows it
       Only what the person cares about: the outcomes of the task, not the setup, navigation, retries, checks that came
       up empty, or tools used. Most runs have 1 to 3 posts; a run that found nothing new and did nothing has none
-      ({"anything_new": false, "posts": []}). A run that failed before doing its job gets one "problem" post saying
-      what stopped it. Never invent anything the log and summary don't show.
+      ({"anything_new": false, "posts": []}). A run that failed before doing its job gets one post saying what
+      stopped it. Never invent anything the log and summary don't show.
     PROMPT
     SHOTS_PER_ACTIVITY = 3
 
@@ -42,7 +40,8 @@ module AgentLoop
       posts = json["posts"]
       return unless posts.is_a?(Array)
 
-      posts = posts.select { |post| post.is_a?(Hash) && post["kind"] == "problem" } if json["anything_new"] == false
+      # Nothing new is no posts, unless the run failed: then its post says what stopped it
+      posts = [] if json["anything_new"] == false && !session.failed?
       save(session, activities, posts)
     rescue Llm::OpenRouter::Error, JSON::ParserError => e
       Rails.logger.info("Couldn't write posts for session #{session.id}: #{e.message}")
@@ -54,13 +53,13 @@ module AgentLoop
       AgentComputer::Post.transaction do
         session.posts.delete_all
         posts.grep(Hash).each_with_index do |post, i|
-          next if post["text"].blank? || !post["kind"].in?(AgentComputer::Post::KINDS)
+          next if post["text"].blank?
 
           # The step the model named, or the last one if it named none of this run's (none if the run took no steps)
           activity = by_id[post["activity_id"].to_i] || activities.last
           # The chosen screenshot if it's one of this run's, else the last one of the step it links to
           shot = shots[post["screenshot_id"].to_i] || activity&.actions&.reverse&.find { |a| a.screenshot.attached? }
-          session.posts.create!(kind: post["kind"], text: post["text"].to_s.strip.truncate(600),
+          session.posts.create!(text: post["text"].to_s.strip.truncate(600),
                                 activity:, screenshot_action: shot, posted_at: session.finished_at || Time.current, position: i)
         end
       end

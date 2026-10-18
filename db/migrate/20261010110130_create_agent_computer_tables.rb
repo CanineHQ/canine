@@ -123,7 +123,6 @@ class CreateAgentComputerTables < ActiveRecord::Migration[7.2]
       # stopped before taking any; and the screenshot shown with it, if any.
       t.references :activity, null: true, foreign_key: { to_table: :agent_computer_session_activities, on_delete: :nullify }
       t.references :screenshot_action, null: true, foreign_key: { to_table: :agent_computer_session_actions, on_delete: :nullify }
-      t.string :kind, null: false
       t.text :text, null: false
       t.datetime :posted_at, null: false
       t.integer :position, null: false, default: 0

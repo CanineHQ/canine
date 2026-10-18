@@ -33,7 +33,7 @@ class AgentComputer::Session::Action < ApplicationRecord
     attachable.variant :medium, resize_to_limit: [ 960, 540 ], format: :webp, preprocessed: true
   end
 
-  enum :status, { running: 0, done: 1, failed: 2, blocked: 3 }
+  enum :status, { running: 0, done: 1, failed: 2 }
 
   LOOK_ONLY_ACTIONS = %w[screenshot zoom cursor_position wait].freeze
 

@@ -1,6 +1,5 @@
 <%# One post: its task (the header links to it) and computer and when, what the agent did, and a screenshot of the
     result. %>
-<% kind = AgentPostsHelper::POST_KINDS[post.kind] %>
 <article id="<%= dom_id(post) %>" class="border-b border-base-content/15 pb-5 mb-5 last:mb-0 last:border-b-0 last:pb-0">
   <div class="flex flex-col gap-4">
     <header class="flex items-center gap-3">
@@ -8,22 +7,13 @@
         <iconify-icon icon="lucide:bot" height="16"></iconify-icon>
       </span>
       <div class="min-w-0 flex-1 leading-tight">
-        <% if (task = post.session.task) %>
-          <%= link_to task.name, agent_computer_agent_task_path(post.agent_computer, task),
-                class: "block truncate text-sm font-semibold hover:underline" %>
-        <% else %>
-          <div class="truncate text-sm font-semibold">Agent session</div>
-        <% end %>
+        <%= link_to post.session.task.name, agent_computer_agent_task_path(post.agent_computer, post.session.task),
+              class: "block truncate text-sm font-semibold hover:underline" %>
         <div class="truncate text-xs text-base-content/50">
           <%= post.agent_computer.name %> ·
           <time datetime="<%= post.posted_at.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(post.posted_at) %> ago</time>
         </div>
       </div>
-      <% if kind[:label] %>
-        <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-base-200 px-2.5 py-1 text-xs font-medium <%= kind[:color] %>">
-          <iconify-icon icon="<%= kind[:icon] %>"></iconify-icon><%= kind[:label] %>
-        </span>
-      <% end %>
     </header>
 
     <div class="flex items-start gap-4">

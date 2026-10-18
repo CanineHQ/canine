@@ -268,7 +268,7 @@ def _check_debugging_port():
 
 def task_with_rules(task):
     # browser-use's agent decides on its own; these are the lines that matter for an unattended run on someone's
-    # logged-in browser. Canine's own policy (blocked buttons) is enforced on top, in the step callback.
+    # logged-in browser
     return (
         f"{task}\n\n"
         "Rules: only do what the task asks. Work in the tabs you open, and leave the person's other tabs alone. "

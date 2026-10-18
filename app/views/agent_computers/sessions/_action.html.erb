@@ -1,5 +1,5 @@
-<% icons = { "running" => "lucide:loader-circle", "done" => "lucide:check", "failed" => "lucide:x", "blocked" => "lucide:shield-x" } %>
-<% colors = { "running" => "text-info", "done" => "text-success", "failed" => "text-error", "blocked" => "text-warning" } %>
+<% icons = { "running" => "lucide:loader-circle", "done" => "lucide:check", "failed" => "lucide:x" } %>
+<% colors = { "running" => "text-info", "done" => "text-success", "failed" => "text-error" } %>
 <li id="<%= dom_id(action) %>" class="text-sm <%= "agent-enter" if local_assigns[:animate] %>">
   <details>
     <summary class="flex cursor-pointer items-center gap-2 list-none">

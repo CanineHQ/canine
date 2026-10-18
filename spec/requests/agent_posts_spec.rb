@@ -20,13 +20,13 @@ RSpec.describe "Agent feed", type: :request do
     [ 0, 1, 1 ].each_with_index do |days_ago, i|
       session = task.sessions.create!(trigger: :manual, model: "test/model", status: :succeeded)
       step = session.activities.create!(position: 1, intent: "Adding", title: "Adding")
-      session.posts.create!(activity: step, kind: "done", text: "Post #{i}: [I did that].",
+      session.posts.create!(activity: step, text: "Post #{i}: [I did that].",
                             posted_at: days_ago.days.ago - i.minutes)
     end
     other = AgentComputer.create!(name: "other", cluster: create(:cluster, account:), status: :running,
                                  account_user: account.account_users.find_by(user: account.owner))
     other_session = other.tasks.create!(name: "Task", instruction: "Do it", model: "test/model").sessions.create!(trigger: :manual, model: "test/model", status: :succeeded)
-    other_session.posts.create!(kind: "done", text: "Other computer post", posted_at: Time.current) # stays out
+    other_session.posts.create!(text: "Other computer post", posted_at: Time.current) # stays out
     get agent_computer_agent_posts_path(computer)
 
     expect(response.body).to include("Post 0", "Post 1", "I did that", "agent_feed_after_", "data-agent-computers--feed-day-at-value")

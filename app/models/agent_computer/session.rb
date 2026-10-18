@@ -47,7 +47,7 @@ class AgentComputer::Session < ApplicationRecord
   has_many :posts, dependent: :delete_all
 
   enum :trigger, { scheduled: 0, manual: 1 }
-  enum :status, { queued: 0, running: 1, waiting_for_tool: 3, succeeded: 4, failed: 5, cancelled: 6 }
+  enum :status, { queued: 0, running: 1, waiting_for_tool: 2, succeeded: 3, failed: 4, cancelled: 5 }
 
   ACTIVE = %w[queued running waiting_for_tool].freeze
   scope :active, -> { where(status: ACTIVE) }

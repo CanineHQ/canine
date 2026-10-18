@@ -93,7 +93,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.bigint "session_id", null: false
     t.bigint "activity_id"
     t.bigint "screenshot_action_id"
-    t.string "kind", null: false
     t.text "text", null: false
     t.datetime "posted_at", null: false
     t.integer "position", default: 0, null: false

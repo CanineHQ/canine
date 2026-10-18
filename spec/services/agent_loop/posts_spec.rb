@@ -24,29 +24,32 @@ RSpec.describe AgentLoop::Posts do
       activity.actions.create!(tool: "computer_accessibility", arguments: { "operation" => "press" }, status: :done)
              .tap { |a| a.screenshot.attach(io: StringIO.new(png), filename: "shot.png", content_type: "image/png") }
     end
-    session.posts.create!(kind: "done", text: "old", posted_at: 1.day.ago)
+    session.posts.create!(text: "old", posted_at: 1.day.ago)
     allow(client).to receive(:chat).and_return(Llm::OpenRouter::Reply.new({ "content" => { posts: [
-      { kind: "done", text: "I noticed Sean asked to be added to Persona, so [I added him].", activity_id: persona.id, screenshot_id: nil },
-      { kind: "needs_you", text: "Dan wants a CSV export; [I left it for you].", activity_id: slack.id, screenshot_id: shots.first.id },
-      { kind: "gossip", text: "not a kind", activity_id: slack.id }
+      { text: "I noticed Sean asked to be added to Persona, so [I added him].", activity_id: persona.id, screenshot_id: nil },
+      { text: "Dan wants a CSV export; [I left it for you].", activity_id: slack.id, screenshot_id: shots.first.id },
+      { text: "", activity_id: slack.id } # dropped: says nothing
     ] }.to_json }, { cost_usd: 0.0002 }))
 
     described_class.call(session)
     posts = session.posts.reload.newest_first.to_a
-    expect(posts.map(&:kind)).to eq(%w[done needs_you])
+    expect(posts.size).to eq(2)
     expect(posts.first).to have_attributes(activity: persona, screenshot_action: shots.last) # no screenshot chosen: the step's last
     expect(posts.first.parts).to eq([ "I noticed Sean asked to be added to Persona, so ", "I added him", "." ])
     expect(posts.second.screenshot_action).to eq(shots.first)
     expect(session.reload.cost_usd).to eq(0.0002)
   end
 
-  it "keeps only problem posts from a run that turned up nothing new" do
+  it "posts nothing for a run that turned up nothing new, unless it failed" do
     allow(client).to receive(:chat).and_return(Llm::OpenRouter::Reply.new({ "content" => { anything_new: false, posts: [
-      { kind: "found", text: "I [checked #dev] and there were no new messages." },
-      { kind: "problem", text: "I [couldn't open the sheet]: JavaScript was off." }
+      { text: "I [couldn't open the sheet]: JavaScript was off." }
     ] }.to_json }, { cost_usd: 0.0001 }))
 
     described_class.call(session)
-    expect(session.posts.reload.map(&:kind)).to eq(%w[problem])
+    expect(session.posts.reload).to be_empty
+
+    session.update!(status: :failed)
+    described_class.call(session)
+    expect(session.posts.reload.map(&:text)).to eq([ "I [couldn't open the sheet]: JavaScript was off." ])
   end
 end
