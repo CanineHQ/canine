@@ -37,6 +37,9 @@ RSpec.describe "Agent computers", type: :request do
       post agent_computers_path, params: { agent_computer: { name: "mine", cluster_id: ours.id } }
     }.to change(AgentComputer, :count).by(1)
 
+    get agent_computers_path
+    expect(response.body).to include("mine", ours.name, "New Computer")
+
     patch agent_computer_path(computer), params: { agent_computer: { name: "moved", cluster_id: others.id, coding_agent: "pi" } }
     expect(computer.reload).to have_attributes(name: "desk", cluster: computer.cluster, coding_agent: "pi")
   end

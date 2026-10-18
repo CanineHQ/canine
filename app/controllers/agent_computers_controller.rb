@@ -4,26 +4,7 @@ class AgentComputersController < ApplicationController
   before_action :require_running, only: %i[connect]
 
   def index
-    @agent_computers = current_account.agent_computers
-      .includes(account_user: :user)
-      .order(created_at: :desc)
-
-    if params[:search].present?
-      search = "%#{params[:search]}%"
-      @agent_computers = @agent_computers
-        .joins(account_user: :user)
-        .where("agent_computers.name ILIKE :search OR users.email ILIKE :search", search: search)
-    end
-
-    if params[:created_by_id].present?
-      @agent_computers = @agent_computers.where(account_users: { user_id: params[:created_by_id] })
-    end
-
-    if params[:status].present?
-      @agent_computers = @agent_computers.where(status: params[:status])
-    end
-
-    @pagy, @agent_computers = pagy(@agent_computers)
+    @pagy, @agent_computers = pagy(current_account.agent_computers.includes(:cluster, account_user: :user).order(created_at: :desc))
   end
 
   # A computer opens on its tasks; its machine (status, resources, access commands) is on edit
