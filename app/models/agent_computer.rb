@@ -1,0 +1,156 @@
+# == Schema Information
+#
+# Table name: agent_computers
+#
+#  id                 :bigint           not null, primary key
+#  browse_model       :string
+#  coding_agent       :string
+#  coding_model       :string
+#  computer_use_token :string
+#  failure            :text
+#  name               :string           not null
+#  namespace          :string           not null
+#  password           :string
+#  planning_model     :string
+#  provision_stage    :integer          default(0), not null
+#  ssh_private_key    :text
+#  status             :integer          default("pending"), not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  account_user_id    :bigint           not null
+#  cluster_id         :bigint           not null
+#
+# Indexes
+#
+#  index_agent_computers_on_account_user_id      (account_user_id)
+#  index_agent_computers_on_cluster_id_and_name  (cluster_id,name) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (account_user_id => account_users.id)
+#  fk_rails_...  (cluster_id => clusters.id)
+#
+require "net/ssh" # adds ssh_type/to_blob to OpenSSL keys
+
+class AgentComputer < ApplicationRecord
+  include Namespaced
+  include Loggable # provisioning's progress, shown on the computer's page as it happens
+
+  NAMESPACE_PREFIX = "computer-"
+  FEATURE_FLAG = :agent_computers
+
+  # Whether the account has agent computers at all: the computers, their desktops, tasks and runs, the computer MCP
+  # tools and the KubeVirt package (a Flipper flag while the feature is new). Without it none of them exist for it.
+  def self.enabled_for?(account)
+    account.present? && Flipper.enabled?(FEATURE_FLAG, account)
+  end
+
+  # Each agent computer is a KubeVirt VM running Omarchy (Arch Linux + Hyprland), installed unattended from the
+  # Omarchy ISO and streamed to the browser by Selkies. See AgentComputers::Omarchy and ProvisionJob.
+  DESKTOP_USER = "omarchy"
+  DESKTOP_PORT = 8080
+  COMPUTER_USE_PORT = 8000 # resources/agent_computer/computer_use
+  SSH_PORT = 22
+  CPU_CORES = 4
+  # The desktop idles at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past
+  # 4GiB, where the VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
+  MEMORY = "8Gi"
+  # Runs at once, each on a workspace of its own (the person keeps one of Omarchy's 10): each browses in its own
+  # Chromium windows, and more than a few at a time would run the VM out of memory
+  PARALLEL_RUNS = 3
+  DISK_SIZE = "60Gi"
+  # What ProvisionJob is doing, in order (provision_stage indexes it). Usually 15-25 minutes in all, most of it the
+  # ISO download and the unattended install.
+  PROVISION_STAGES = [ "Creating the VM", "Downloading Omarchy", "Installing Omarchy", "Setting up the desktop", "Starting the stream" ].freeze
+
+  # A pickable option in the machine's model settings: id is the value stored (blank means "inherit"), name and note
+  # are shown, recommended flags the ones we've seen work well. planning_model/browse_model/coding_model and
+  # coding_agent are plain columns; null means inherit. The list is curated from our own benchmark runs.
+  # price is OpenRouter's input / output cost per 1M tokens, shown in the picker. Update if OpenRouter's pricing moves.
+  Option = Data.define(:id, :name, :note, :recommended, :icon, :price)
+  MODELS = [
+    Option.new("openai/gpt-5.1", "GPT-5.1", "reliable for planning & browsing", true, "logos:openai-icon", "$1.25 / $10"),
+    Option.new("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", "great for coding · very cheap", true, "logos:deepseek-icon", "$0.05 / $0.60"),
+    Option.new("openai/gpt-5-mini", "GPT-5 mini", "cheaper, weaker on heavy sites", false, "logos:openai-icon", "$0.25 / $2")
+  ].freeze
+
+  CODING_AGENT_OPTIONS = [
+    Option.new("opencode", "opencode", nil, true, "lucide:square-terminal", nil),
+    *(AgentLoop::Delegate::AGENTS.keys - [ "opencode" ]).map { |a| Option.new(a, a, nil, false, "lucide:terminal", nil) }
+  ].freeze
+
+  belongs_to :account_user
+  belongs_to :cluster
+  has_many :tasks, dependent: :destroy
+  has_many :sessions, through: :tasks # (tasks delete their sessions, and sessions their posts)
+  has_many :posts, through: :sessions
+
+  has_one :user, through: :account_user
+  has_one :account, through: :account_user
+
+  # The client for the computer-use server in this computer's VM (AgentComputers::ComputerUse)
+  def computer_use
+    AgentComputers::ComputerUse.new(self, K8::Connection.new(cluster, user))
+  end
+
+  # Close every window on a run's workspace (what it left open), best-effort: a computer that's stopped or unreachable
+  # has nothing open to clear. Runs clear theirs as they start and once they've ended.
+  def clear_workspace(workspace)
+    computer_use.clear_workspace(workspace) if running? && workspace
+  rescue AgentComputers::ComputerUse::Error => e
+    Rails.logger.info("Couldn't clear workspace #{workspace} on #{name}: #{e.message}")
+  end
+
+  # The planning model a new task on this computer starts with: the machine's, or the global default.
+  def default_model = planning_model.presence || AgentComputer::Task::DEFAULT_MODEL
+
+  enum :status, { pending: 0, provisioning: 1, running: 2, stopped: 3, failed: 4, destroying: 5, starting: 6, stopping: 7 }
+
+  # Why the last provision, start, stop or destroy failed, shown on the computer's pages until it's tried again
+  before_save { self.failure = nil if status_changed? && !failed? }
+  after_update_commit do
+    broadcast_replace_later_to [ self, :provision_progress ], target: ActionView::RecordIdentifier.dom_id(self, :provision_progress),
+                                                              partial: "agent_computers/provision_progress", locals: { agent_computer: self }
+  end
+
+  # Namespace names are capped at 63 characters, including the prefix
+  validates :name, presence: true,
+                   length: { maximum: 63 - NAMESPACE_PREFIX.length },
+                   format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+
+  validate :cluster_in_account
+  before_validation :assign_namespace, on: :create
+  before_create :generate_guest_credentials
+
+  scope :for_account, ->(account) { joins(:account_user).where(account_users: { account_id: account.id }) }
+
+  # A job couldn't bring the VM where it was going
+  def fail!(error)
+    update!(status: :failed, failure: error.message)
+  end
+
+  # OpenSSH authorized_keys line for the key Canine uses to reach the guest
+  def ssh_public_key
+    key = OpenSSL::PKey.read(ssh_private_key)
+    "#{key.ssh_type} #{[ key.to_blob ].pack("m0")} canine-#{name}"
+  end
+
+  private
+
+  # The Omarchy installer needs a password for the desktop user; omarchy-setup.sh uses it once for sudo, then deletes
+  # it (Canine is the only way in). The key is how Canine logs in to run that setup, and the token how it authenticates
+  # to the computer-use server.
+  def generate_guest_credentials
+    self.password ||= SecureRandom.alphanumeric(16)
+    self.ssh_private_key ||= OpenSSL::PKey::EC.generate("prime256v1").to_pem
+    self.computer_use_token ||= SecureRandom.urlsafe_base64(32)
+  end
+
+  def cluster_in_account
+    errors.add(:cluster, "must be one of this account's") if cluster && account_user && cluster.account_id != account_user.account_id
+  end
+
+  def assign_namespace
+    self.namespace = "#{NAMESPACE_PREFIX}#{name}" if name.present?
+  end
+end

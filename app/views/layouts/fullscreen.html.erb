@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html class="h-full antialiased dark" data-theme="dark" lang="en">
+  <% content_for :robots, "noindex, nofollow" %>
+  <head>
+    <%= render 'shared/head' %>
+    <style>
+      body, html { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+    </style>
+  </head>
+
+  <body data-controller="theme" data-theme-preference-value="dark" class="h-full">
+    <%= yield %>
+    <%= render "shared/confirm_modal" %>
+  </body>
+</html>

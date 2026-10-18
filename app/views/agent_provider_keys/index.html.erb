@@ -1,0 +1,37 @@
+<%= content_for :title, "Agent keys" %>
+<%= settings_layout do %>
+  <h2 class="text-2xl font-bold">Agent keys</h2>
+  <p class="text-sm text-base-content/60 mt-1">The keys agents use to call models. Canine's agent loop runs here, so keys are never sent to your agent computers.</p>
+  <hr class="mt-3 mb-4 border-t border-base-300" />
+
+  <div class="max-w-2xl">
+    <h3 class="font-semibold text-sm mb-2">Model provider keys</h3>
+    <% if @keys.any? %>
+      <ul class="divide-y divide-base-content/10">
+        <% @keys.each do |key| %>
+          <li class="flex items-center gap-3 py-2 text-sm">
+            <span class="badge badge-sm"><%= AgentProviderKey::PROVIDERS[key.provider] %></span>
+            <span><%= key.name.presence || "Key" %></span>
+            <code class="text-xs"><%= key.masked %></code>
+            <span class="text-xs text-base-content/50"><%= key.last_used_at ? "used #{time_ago_in_words(key.last_used_at)} ago" : "not used yet" %></span>
+            <%= button_to "Delete", agent_provider_key_path(key), method: :delete, class: "btn btn-ghost btn-xs text-error ml-auto",
+              form: { data: { turbo_confirm: "Delete this key? Tasks using it will stop working." } } %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-sm text-base-content/60">No keys yet.</p>
+    <% end %>
+
+    <%= form_with model: @key, url: agent_provider_keys_path, class: "mt-4 space-y-3" do |form| %>
+      <%= render "shared/error_messages", resource: @key %>
+      <div class="flex gap-2">
+        <%= form.select :provider, AgentProviderKey::PROVIDERS.invert, {}, class: "select select-bordered select-sm" %>
+        <%= form.text_field :name, placeholder: "Name (optional)", class: "input input-bordered input-sm flex-1" %>
+      </div>
+      <%= form.password_field :api_key, placeholder: "sk-or-…", class: "input input-bordered input-sm w-full font-mono", autocomplete: "off", required: true %>
+      <p class="text-xs text-base-content/50">Stored in Canine's database. Set a monthly limit on the key in OpenRouter too.</p>
+      <%= form.button "Add key", class: "btn btn-primary btn-sm" %>
+    <% end %>
+  </div>
+<% end %>

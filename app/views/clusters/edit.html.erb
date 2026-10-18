@@ -68,7 +68,7 @@
       <h3 class="text-lg font-semibold mb-1">Recommended</h3>
       <p class="text-sm text-gray-400 mb-3">Some features in Canine may not work without these packages.</p>
       <div class="flex flex-col gap-3 mb-6">
-        <% ClusterPackage.definitions.select { |d| d['recommended'] }.each do |definition| %>
+        <% ClusterPackage.definitions_for(current_account).select { |d| d['recommended'] }.each do |definition| %>
           <% package = @cluster.cluster_packages.find_by(name: definition['name']) %>
           <%= render "clusters/cluster_packages/package_row",
                      cluster: @cluster,
@@ -80,7 +80,7 @@
       <h3 class="text-lg font-semibold mb-1">Other</h3>
       <p class="text-sm text-gray-400 mb-3">Optional packages for additional functionality.</p>
       <div class="flex flex-col gap-3">
-        <% ClusterPackage.definitions.reject { |d| d['recommended'] }.each do |definition| %>
+        <% ClusterPackage.definitions_for(current_account).reject { |d| d['recommended'] }.each do |definition| %>
           <% package = @cluster.cluster_packages.find_by(name: definition['name']) %>
           <%= render "clusters/cluster_packages/package_row",
                      cluster: @cluster,

@@ -19,8 +19,9 @@ class Clusters::ParseParams
 
     packages = params[:packages]
 
+    offered = ClusterPackage.definitions_for(cluster.account).map { |d| d["name"] }
     packages.each do |name, data|
-      next unless data[:enabled] == "1"
+      next unless data[:enabled] == "1" && offered.include?(name)
       permitted_keys = ClusterPackage.permitted_config_keys(name)
       config = data[:config]&.permit(*permitted_keys)&.to_h || {}
       cluster.cluster_packages.build(name: name, config: config)

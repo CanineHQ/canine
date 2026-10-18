@@ -1,6 +1,6 @@
 class Clusters::ClusterPackagesController < Clusters::BaseController
   def create
-    definition = ClusterPackage.definitions.find { |d| d["name"] == params[:name] }
+    definition = ClusterPackage.definitions_for(current_account).find { |d| d["name"] == params[:name] }
     return head :not_found unless definition
 
     config = params[:config]&.permit!&.to_h || {}

@@ -20,3 +20,25 @@
 - [ ] log drain from application
 - [ ] Check the pods in the namespace and ensure they are running. - app/services/k8/build_cloud_manager.rb
 - [ ] Handle stuck helm `pending-upgrade` releases — detect and rollback before retrying in `K8::Helm::Client#install`
+
+## Agent computers
+
+- [x] Lifecycle: stop/start from the UI
+- [ ] Lifecycle: stop idle computers automatically (nobody connected for a while); start on connect
+- [ ] Keep memory across Stop: hibernate inside the VM (`systemctl hibernate`; Omarchy already sets up a swapfile
+      and `resume=`), with a forced shutdown as the fallback. Saved memory can't be restored at a different size.
+- [x] Computer use: a server in the VM (Anthropic's computer-use actions + the accessibility tree) and MCP tools for it
+- [ ] Computer use over the API: accept Canine API tokens on `/agent_computers/:id/computer-use` in
+      `lib/agent_computer_proxy.rb` and add `/api/v1/agent_computers` (update the swagger specs)
+- [ ] Computer use is slow per call (a kubectl port-forward each time); keep one open per computer if agents need speed
+- [x] Human lock: the desktop page reports the person's input; agents are paused from the screen while they're active
+- [x] Agent loop in Canine (AgentLoop): tasks compiled from an instruction, sessions with a live timeline, OpenRouter models
+- [ ] Agent sessions: notifications when a session finds something; a hypervisor (VNC) recording of each session
+- [ ] Agent sessions: delegate runs the coding agent as the desktop user; give it its own user and a repo-scoped token
+- [ ] Agent provider keys are stored in plain text: encrypt them before other people's accounts use agents
+- [ ] Agents and people on one desktop: give agents a workspace the person isn't looking at, so neither disturbs the other
+- [ ] Share the Omarchy ISO across computers on a cluster instead of importing 6GB per computer
+- [x] Watch a computer from a second tab (view-only, Selkies' #shared) and take control back when another tab takes over
+- [ ] Several tabs controlling one desktop at once: Selkies secure mode (master token per computer, Canine provisions
+      the /api/tokens table and adds ?token= in the proxy). Spike first: do two tabs sharing the mk_control token both
+      get input?

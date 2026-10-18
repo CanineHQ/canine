@@ -1,0 +1,13 @@
+<%= turbo_frame_tag dom_id(agent_computer, :provision_progress) do %>
+  <% if agent_computer.running? %>
+    <script>window.location.reload();</script>
+  <% elsif agent_computer.pending? || agent_computer.provisioning? %>
+    <div class="mt-4">
+      <%= render "shared/partials/progress_stages", stages: AgentComputer::PROVISION_STAGES, current_stage: agent_computer.provision_stage %>
+      <div class="my-4 text-sm text-base-content/60">
+        Started <%= time_ago_in_words(agent_computer.created_at) %> ago. Setting up a computer usually takes 15-25 minutes:
+        most of it is downloading Omarchy and installing it. You can leave this page.
+      </div>
+    </div>
+  <% end %>
+<% end %>
