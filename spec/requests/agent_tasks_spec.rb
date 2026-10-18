@@ -11,19 +11,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
 
   before do
     sign_in account.owner
-    Flipper.enable(:agent_tasks, account)
-  end
-
-  it "is hidden, and its pages don't exist, without the agent_tasks flag" do
-    Flipper.disable(:agent_tasks, account)
-    get agent_computer_path(computer)
-    expect(response).to redirect_to(edit_agent_computer_path(computer)) # the machine page, not tasks
-    get edit_agent_computer_path(computer)
-    expect(response.body).not_to include(agent_computer_agent_tasks_path(computer))
-    get agent_computer_agent_tasks_path(computer)
-    expect(response).to have_http_status(:not_found)
-    get agent_provider_keys_path
-    expect(response).to have_http_status(:not_found)
+    Flipper.enable(:agent_computers, account)
   end
 
   it "saves a key, creates a task from the form, runs it, and shows the session" do
@@ -73,6 +61,8 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     expect(response).to redirect_to(agent_computer_agent_tasks_path(computer))
   end
   describe "composing from the feed" do
+    before { account.agent_provider_keys.create!(provider: "openrouter", api_key: "sk-or-v1-test") }
+
     it "runs an instruction now as a one-off task, and schedules one from a preset" do
       # Run now: creates a one-off (no schedule), starts a session, redirects to it.
       expect {
@@ -129,6 +119,8 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     end
   end
   describe "machine model settings" do
+    before { account.agent_provider_keys.create!(provider: "openrouter", api_key: "sk-or-v1-test") }
+
     it "saves on the machine page, and new runs inherit the models" do
       patch agent_computer_path(computer), params: { agent_computer: {
         planning_model: "openai/gpt-5-mini", coding_model: "deepseek/deepseek-v4.1-flash", coding_agent: "pi" } }

@@ -5,7 +5,7 @@ RSpec.describe AgentTasks::ScheduleJob do
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let!(:task) { computer.tasks.create!(name: "Inbox", instruction: "Check Slack", schedule: "0 * * * *", model: "test/model", enabled: true) }
   before do
-    Flipper.enable(:agent_tasks, account_user.account)
+    Flipper.enable(:agent_computers, account_user.account)
     task.update_columns(next_run_at: 1.minute.ago)
   end
 
@@ -22,8 +22,8 @@ RSpec.describe AgentTasks::ScheduleJob do
     expect(task.reload.next_run_at).to be < Time.current # still due: it starts once its last run is done
   end
 
-  it "skips the tasks of accounts without the agent_tasks flag" do
-    Flipper.disable(:agent_tasks, account_user.account)
+  it "skips the tasks of accounts without the agent_computers flag" do
+    Flipper.disable(:agent_computers, account_user.account)
     expect { described_class.perform_now }.not_to change(AgentComputer::Session, :count)
     expect(task.reload.next_run_at).to be > Time.current # skipped, not piled up
   end

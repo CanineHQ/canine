@@ -7,6 +7,8 @@ RSpec.describe Tools::ComputerAction do
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:) }
   let(:context) { { user_id: account_user.user_id } }
 
+  before { Flipper.enable(:agent_computers, account_user.account) }
+
   it "passes actions to a running computer, returns screenshots as images, and refuses stopped or other accounts' computers" do
     computer.running!
     computer_use = instance_double(AgentComputers::ComputerUse)

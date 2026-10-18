@@ -25,12 +25,12 @@ RSpec.describe AgentLoop::Turn do
   end
 
   it "groups calls into activities by intent, runs the shell, and finishes" do
-    allow(Tools::ComputerRun).to receive(:call).and_return(MCP::Tool::Response.new([ { type: "text", text: "akula is three repos" } ]))
+    allow(Tools::ComputerRun).to receive(:call).and_return(MCP::Tool::Response.new([ { type: "text", text: "my-app is three repos" } ]))
     allow(client).to receive(:chat).and_return(
-      reply("Checking the repo.", [ "computer_run", { intent: "Checking the repo", command: "ls ~/akula" } ]),
+      reply("Checking the repo.", [ "computer_run", { intent: "Checking the repo", command: "ls ~/my-app" } ]),
       reply(nil, [ "computer_run", { intent: "Checking the repo", command: "cat README.md" } ],
                [ "computer_run", { intent: "Reading the docs", command: "ls docs" } ]),
-      reply(nil, [ "finish", { summary: "akula is three repos." } ])
+      reply(nil, [ "finish", { summary: "my-app is three repos." } ])
     )
 
     expect(described_class.new(session, key).run).to eq(:continue)
@@ -45,12 +45,12 @@ RSpec.describe AgentLoop::Turn do
     expect(checking.reload.finished_at).to be_present
 
     expect(described_class.new(session, key).run).to eq(:finished)
-    expect(session.reload).to have_attributes(status: "succeeded", summary: "akula is three repos.", turns: 3, input_tokens: 300)
+    expect(session.reload).to have_attributes(status: "succeeded", summary: "my-app is three repos.", turns: 3, input_tokens: 300)
   end
 
   it "hands a browser task to browse and waits for its job" do
     allow(computer_use).to receive(:browse_start).and_return("id" => "browse-xyz")
-    allow(client).to receive(:chat).and_return(reply("On it.", [ "browse", { intent: "Reading Slack", task: "List today's requests in #akula-dev" } ]))
+    allow(client).to receive(:chat).and_return(reply("On it.", [ "browse", { intent: "Reading Slack", task: "List today's requests in #dev" } ]))
 
     expect do
       expect(described_class.new(session, key).run).to eq(:waiting_for_tool)

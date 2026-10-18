@@ -42,7 +42,7 @@ RSpec.describe AgentLoop::Posts do
 
   it "keeps only problem posts from a run that turned up nothing new" do
     allow(client).to receive(:chat).and_return(Llm::OpenRouter::Reply.new({ "content" => { anything_new: false, posts: [
-      { kind: "found", text: "I [checked #akula-dev] and there were no new messages." },
+      { kind: "found", text: "I [checked #dev] and there were no new messages." },
       { kind: "problem", text: "I [couldn't open the sheet]: JavaScript was off." }
     ] }.to_json }, { cost_usd: 0.0001 }))
 

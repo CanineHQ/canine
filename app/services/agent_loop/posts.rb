@@ -11,7 +11,7 @@ module AgentLoop
       log: activities (with ids), each with the screenshots taken during it (with ids). Reply with only a JSON object
       {"anything_new": true or false, "posts": [...]}.
       anything_new: whether this run changed anything or turned up anything the person doesn't already know. Checking
-        and finding nothing is not news: "I checked #akula-dev and there were no new messages", "I confirmed the sheet
+        and finding nothing is not news: "I checked #dev and there were no new messages", "I confirmed the sheet
         needs no new rows", "I reviewed the layout and left it unchanged" are all anything_new: false, and get no posts.
       posts, in the order things happened, each:
         kind: "done" (it did something for them), "found" (it learned something they'd want to know), "needs_you"

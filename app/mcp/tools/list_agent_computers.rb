@@ -12,8 +12,7 @@ module Tools
 
     def self.call(server_context:)
       with_account_users(server_context: server_context) do |_user, account_users|
-        computers = AgentComputer.joins(:account_user).where(account_users: { account_id: account_users.map(&:account_id) })
-          .includes(:cluster).order(:name)
+        computers = agent_computers(account_users).includes(:cluster).order(:name)
           .map { |c| { id: c.id, name: c.name, status: c.status, cluster: c.cluster.name } }
 
         MCP::Tool::Response.new([ { type: "text", text: computers.to_json } ])

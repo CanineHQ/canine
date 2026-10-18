@@ -7,7 +7,7 @@
   </div>
 
   <% if @tasks.empty? %>
-    <% has_key = current_account.agent_provider_keys.exists?(provider: "openrouter") %>
+    <% has_key = openrouter_key? %>
     <div class="mx-auto max-w-xl py-8">
       <div class="card card-bordered bg-base-100">
         <div class="card-body items-center gap-2 p-6 text-center">
@@ -29,7 +29,7 @@
 
           <div class="mt-3 flex w-full flex-col gap-2 text-left">
             <% [
-                 "Every hour, check Slack and email for feature requests to the akula codebase, and implement the straightforward ones.",
+                 "Every hour, check Slack and email for feature requests to my app, and implement the straightforward ones.",
                  "Every weekday at 8am, summarize my unread email and flag anything that needs a reply.",
                  "Twice a day, check the repo's open issues and open a draft PR for any small, well-specified bug."
                ].each do |example| %>

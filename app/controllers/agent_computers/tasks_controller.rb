@@ -2,6 +2,7 @@
 # instruction, which `draft` compiles into a name, schedule and limits for them to review before saving.
 class AgentComputers::TasksController < AgentComputers::BaseController
   before_action :set_task, only: %i[show edit update destroy run_now]
+  before_action :require_openrouter_key, only: %i[compose run_now]
 
   def index
     @tasks = @agent_computer.tasks.order(:name)
@@ -109,6 +110,10 @@ class AgentComputers::TasksController < AgentComputers::BaseController
     # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer has as many runs
     # going as it takes, it queues and starts when one finishes.
     to_feed(notice: session.waiting_in_queue? ? "Queued — it'll start when one of the runs going now finishes." : "On it — watch it run below.")
+  end
+
+  def require_openrouter_key
+    to_feed(alert: "Add an OpenRouter key first.") unless helpers.openrouter_key?
   end
 
   def to_feed(**flash)

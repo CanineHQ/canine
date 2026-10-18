@@ -12,7 +12,7 @@ RSpec.describe "Agent feed", type: :request do
 
   before do
     sign_in account.owner
-    Flipper.enable(:agent_tasks, account)
+    Flipper.enable(:agent_computers, account)
   end
 
   it "shows a computer's posts newest first, with day headings, the header linking to the task, and pages on" do

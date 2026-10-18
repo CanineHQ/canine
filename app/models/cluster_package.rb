@@ -68,6 +68,11 @@ class ClusterPackage < ApplicationRecord
     DEFINITIONS
   end
 
+  # The packages an account can install: KubeVirt only runs agent computers, so it's offered only with them
+  def self.definitions_for(account)
+    AgentComputer.enabled_for?(account) ? DEFINITIONS : DEFINITIONS.reject { |d| d["name"] == "kubevirt" }
+  end
+
   def self.default_package_names
     DEFINITIONS.select { |d| d["default"] }.map { |d| d["name"] }
   end

@@ -55,38 +55,36 @@
     <% end %>
   <% end %>
 
-  <% if AgentComputer::Task.enabled_for?(current_account) %>
-    <div class="divider"></div>
-    <div class="mb-4">
-      <h6 class="text-sm font-semibold">Models</h6>
-      <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task picks its own
-        planning model.</p>
-    </div>
-    <%= form_with(model: @agent_computer) do |form| %>
-      <%= render "shared/error_messages", resource: form.object %>
-      <div class="space-y-8">
-        <% [
-             [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
-             [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
-             [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
-             [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
-           ].each do |field, label, description, options, fallback| %>
-          <%= render(FormFieldComponent.new(label: label, description: description)) do %>
-            <%= render(RichSelectComponent.new(
-              name: "agent_computer[#{field}]",
-              id: "agent_computer_#{field}",
-              collection: options,
-              selected: @agent_computer.public_send(field).presence || fallback,
-              partial: "agent_computers/option_item",
-              placeholder: ""
-            )) %>
-          <% end %>
+  <div class="divider"></div>
+  <div class="mb-4">
+    <h6 class="text-sm font-semibold">Models</h6>
+    <p class="text-xs text-base-content/60">Which OpenRouter models this computer's runs use. A task picks its own
+      planning model.</p>
+  </div>
+  <%= form_with(model: @agent_computer) do |form| %>
+    <%= render "shared/error_messages", resource: form.object %>
+    <div class="space-y-8">
+      <% [
+           [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+           [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+           [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+           [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
+         ].each do |field, label, description, options, fallback| %>
+        <%= render(FormFieldComponent.new(label: label, description: description)) do %>
+          <%= render(RichSelectComponent.new(
+            name: "agent_computer[#{field}]",
+            id: "agent_computer_#{field}",
+            collection: options,
+            selected: @agent_computer.public_send(field).presence || fallback,
+            partial: "agent_computers/option_item",
+            placeholder: ""
+          )) %>
         <% end %>
-      </div>
-      <div class="form-footer">
-        <%= form.button "Save models", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+    <div class="form-footer">
+      <%= form.button "Save models", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    </div>
   <% end %>
 
   <div class="divider"></div>

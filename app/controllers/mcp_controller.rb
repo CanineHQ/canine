@@ -65,7 +65,16 @@ class MCPController < ActionController::API
       Tools::CreateAddOn,
       Tools::GetAddOnLogs,
 
-      # Agent computers
+      *agent_computer_tools
+    ]
+  end
+
+  # Only for someone in an account that has agent computers (AgentComputer.enabled_for?)
+  def agent_computer_tools
+    user = User.find(doorkeeper_token.resource_owner_id)
+    return [] unless user.accounts.any? { |account| AgentComputer.enabled_for?(account) }
+
+    [
       Tools::ListAgentComputers,
       Tools::ComputerScreenshot,
       Tools::ComputerRun,

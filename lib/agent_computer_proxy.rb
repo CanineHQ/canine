@@ -79,8 +79,8 @@ class AgentComputerProxy
     end
 
     sandbox = AgentComputer.find_by(id: sandbox_id)
-    unless sandbox&.running?
-      log_error "Sandbox #{sandbox_id} not found or not running"
+    unless sandbox&.running? && AgentComputer.enabled_for?(sandbox.account)
+      log_error "Sandbox #{sandbox_id} not found, not running, or its account doesn't have agent computers"
       return nil
     end
 

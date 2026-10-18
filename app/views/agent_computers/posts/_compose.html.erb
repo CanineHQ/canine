@@ -1,7 +1,19 @@
 <%# The compose box at the top of the feed: describe a task and run it now, or pick a recurring schedule. Posts to
-    AgentComputers::TasksController#compose, which creates the task and either starts a session or schedules it. %>
-<% has_key = current_account.agent_provider_keys.exists?(provider: "openrouter") %>
-<div class="card border border-base-content/20 bg-base-100 mb-5"
+    AgentComputers::TasksController#compose, which creates the task and either starts a session or schedules it.
+    Without an OpenRouter key nothing can run, so it's shown disabled under a prompt to add one. %>
+<% has_key = openrouter_key? %>
+<% unless has_key %>
+  <div role="alert" class="alert mb-3 border border-warning/40 bg-warning/10">
+    <iconify-icon icon="lucide:key-round" height="20" class="text-warning"></iconify-icon>
+    <div>
+      <div class="font-semibold">Add an OpenRouter key to start</div>
+      <div class="text-sm text-base-content/70">Your agents run on models through OpenRouter, so they can't do anything until there's a key.</div>
+    </div>
+    <%= link_to "Add key", agent_provider_keys_path, class: "btn btn-primary btn-sm" %>
+  </div>
+<% end %>
+<div class="card border border-base-content/20 bg-base-100 mb-5 <%= "pointer-events-none select-none opacity-50" unless has_key %>"
+     <%= "inert" unless has_key %>
      data-controller="agent-computers--compose"
      data-agent-computers--compose-labels-value='<%= { now: "Run now", "10m": "Every 10 minutes", "30m": "Every 30 minutes", "1h": "Every hour", "6h": "Every 6 hours" }.to_json %>'>
   <div class="card-body gap-3 p-4">
@@ -49,12 +61,6 @@
         <button type="submit" class="btn btn-primary btn-sm" data-agent-computers--compose-target="submit">Run</button>
       </div>
 
-      <% unless has_key %>
-        <p class="text-xs text-base-content/50">
-          <iconify-icon icon="lucide:info" height="13"></iconify-icon>
-          Add your <%= link_to "OpenRouter key", agent_provider_keys_path, class: "link link-primary" %> to run tasks.
-        </p>
-      <% end %>
     <% end %>
   </div>
 

@@ -3,7 +3,7 @@
   <div class="space-y-8">
     <%= render(FormFieldComponent.new(label: "What should the agent do?", description: "In your own words, including how often. \"Draft\" turns it into the details below, which you can review and change.")) do %>
       <%= form.text_area :instruction, rows: 3, class: "textarea textarea-bordered w-full", required: true,
-        placeholder: "Every hour, check Slack and email for feature requests to the akula codebase, and if they look straightforward enough, implement them." %>
+        placeholder: "Every hour, check Slack and email for feature requests to my app, and if they look straightforward enough, implement them." %>
       <% unless task.persisted? %>
         <%= form.button "Draft from this", formaction: draft_agent_computer_agent_tasks_path(@agent_computer), class: "btn btn-secondary btn-sm mt-2",
           data: { turbo_submits_with: "Drafting…" } %>

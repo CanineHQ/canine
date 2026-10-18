@@ -28,13 +28,6 @@
 #  fk_rails_...  (agent_computer_id => agent_computers.id)
 #
 class AgentComputer::Task < ApplicationRecord
-  FEATURE_FLAG = :agent_tasks
-
-  # Whether the account has agent tasks and sessions (a Flipper flag while the feature is new)
-  def self.enabled_for?(account)
-    Flipper.enabled?(FEATURE_FLAG, account)
-  end
-
   DEFAULT_MODEL = "openai/gpt-5.1"
 
   belongs_to :agent_computer

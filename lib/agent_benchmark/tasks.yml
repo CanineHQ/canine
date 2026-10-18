@@ -13,9 +13,9 @@ tasks:
   - key: gmail_newest
     instruction: Open Gmail, open the newest email in the inbox, and report who sent it and its subject.
     reference: "The newest inbox email (as of 2026-10-03) is from Chris Zhu via Google Keep (keep-shares-dm-noreply@google.com): a shared note (subject starts \"Note shared with you\"). A newer email would also be acceptable if it's clearly the newest."
-  - key: slack_akula_dev
-    instruction: Open Slack, go to #akula-dev, and report who posted the last three messages and when.
-    reference: "Any answer that names three posters with times, read from #akula-dev's newest messages (not search results or a thread), is acceptable; it must not claim the channel is unreadable."
+  - key: slack_general
+    instruction: Open Slack, go to #general, and report who posted the last three messages and when.
+    reference: "Any answer that names three posters with times, read from #general's newest messages (not search results or a thread), is acceptable; it must not claim the channel is unreadable."
   - key: wikipedia_turing
     instruction: Open the Wikipedia article on Alan Turing, follow the link to the Turing machine article, and report its first sentence.
     reference: live:wikipedia_turing_machine

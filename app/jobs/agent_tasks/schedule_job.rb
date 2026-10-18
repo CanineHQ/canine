@@ -15,8 +15,8 @@ module AgentTasks
     def perform
       AgentComputer::Task.due.includes(agent_computer: :cluster).find_each do |task|
         computer = task.agent_computer
-        # skip this run, don't pile up: the computer is off, or the account doesn't have the feature (AgentComputer::Task.enabled_for?)
-        next task.update!(next_run_at: task.cron.next_time.to_t) unless computer.running? && AgentComputer::Task.enabled_for?(computer.account)
+        # skip this run, don't pile up: the computer is off, or the account doesn't have the feature (AgentComputer.enabled_for?)
+        next task.update!(next_run_at: task.cron.next_time.to_t) unless computer.running? && AgentComputer.enabled_for?(computer.account)
 
         # Check and start under a lock on the computer, so nothing else starts this task in between
         computer.with_lock do

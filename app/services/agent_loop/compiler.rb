@@ -1,5 +1,5 @@
 module AgentLoop
-  # Turns the person's instruction ("every hour, check Slack and email for akula feature requests and implement the
+  # Turns the person's instruction ("every hour, check Slack and email for feature requests to my app and implement the
   # straightforward ones") into a name, a cron schedule and limits for one run, for them to review and edit before
   # the task is enabled. One model call.
   module Compiler

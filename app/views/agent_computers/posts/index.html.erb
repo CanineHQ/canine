@@ -24,7 +24,7 @@
         <div class="card border border-base-content/20 bg-base-100">
           <div class="card-body items-center text-center text-base-content/60">
             <iconify-icon icon="lucide:newspaper" height="32"></iconify-icon>
-            <p>Nothing yet. Describe a task above — what your agent does for you shows up here.</p>
+            <p><%= openrouter_key? ? "Nothing yet. Describe a task above — what your agent does for you shows up here." : "Nothing yet. Once there's a key, what your agent does for you shows up here." %></p>
           </div>
         </div>
       <% end %>

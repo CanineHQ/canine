@@ -27,7 +27,7 @@ module AgentLoop
         description: "Hand a coding job to a coding agent (opencode) in a directory on the computer, e.g. implementing a feature in a repository. " \
                      "It works on its own (in a terminal you can read with computer_terminal) and you get its final output back. Use it for any real code change.",
         parameters: { type: "object", properties: { instructions: { type: "string", description: "What to do, with all the context it needs" },
-                                                    cwd: { type: "string", description: "The repository, e.g. ~/akula" } },
+                                                    cwd: { type: "string", description: "The repository, e.g. ~/my-app" } },
                       required: %w[instructions cwd] }
       },
       "finish" => {

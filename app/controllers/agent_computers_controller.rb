@@ -1,4 +1,5 @@
 class AgentComputersController < ApplicationController
+  include AgentComputers::FeatureGate
   before_action :set_agent_computer, only: %i[show edit update destroy connect stats stop start]
   before_action :require_running, only: %i[connect]
 
@@ -27,7 +28,7 @@ class AgentComputersController < ApplicationController
 
   # A computer opens on its tasks; its machine (status, resources, access commands) is on edit
   def show
-    redirect_to AgentComputer::Task.enabled_for?(current_account) ? agent_computer_agent_posts_path(@agent_computer) : edit_agent_computer_path(@agent_computer)
+    redirect_to agent_computer_agent_posts_path(@agent_computer)
   end
 
   def edit

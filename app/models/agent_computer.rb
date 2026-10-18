@@ -37,6 +37,14 @@ class AgentComputer < ApplicationRecord
   include Loggable # provisioning's progress, shown on the computer's page as it happens
 
   NAMESPACE_PREFIX = "computer-"
+  FEATURE_FLAG = :agent_computers
+
+  # Whether the account has agent computers at all: the computers, their desktops, tasks and runs, the computer MCP
+  # tools and the KubeVirt package (a Flipper flag while the feature is new). Without it none of them exist for it.
+  def self.enabled_for?(account)
+    account.present? && Flipper.enabled?(FEATURE_FLAG, account)
+  end
+
   # Each agent computer is a KubeVirt VM running Omarchy (Arch Linux + Hyprland), installed unattended from the
   # Omarchy ISO and streamed to the browser by Selkies. See AgentComputers::Omarchy and ProvisionJob.
   DESKTOP_USER = "omarchy"

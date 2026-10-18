@@ -3,6 +3,11 @@ module AgentComputersHelper
     render layout: "agent_computers/layout", locals: { agent_computer: }, &block
   end
 
+  # Agents need an OpenRouter key to run; without one, the pages that start runs are disabled
+  def openrouter_key?
+    current_account.agent_provider_keys.exists?(provider: "openrouter")
+  end
+
   # Copyable kubectl/virtctl recipes for poking at an agent computer from your own machine
   def agent_computer_commands(agent_computer)
     ns = agent_computer.namespace

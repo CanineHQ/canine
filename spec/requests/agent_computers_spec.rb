@@ -8,7 +8,10 @@ RSpec.describe "Agent computers", type: :request do
     AgentComputer.create!(name: "desk", cluster: create(:cluster, account:), account_user: account.account_users.find_by(user: account.owner))
   end
 
-  before { sign_in account.owner }
+  before do
+    sign_in account.owner
+    Flipper.enable(:agent_computers, account)
+  end
 
   it "shows provisioning's progress as it goes, and why it failed after" do
     computer.update!(status: :provisioning, provision_stage: 2)

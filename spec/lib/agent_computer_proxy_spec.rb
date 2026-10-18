@@ -4,6 +4,8 @@ RSpec.describe AgentComputerProxy do
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
 
+  before { Flipper.enable(:agent_computers, account_user.account) }
+
   it "checks a signed-in person's access to a computer once, then serves their next requests from the cache" do
     proxy = described_class.new(->(_env) { [ 200, {}, [] ] })
     warden = spy("warden", user: account_user.user)

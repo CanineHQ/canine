@@ -15,7 +15,7 @@ module AgentLoop
         #{times(session)}
 
         You work through four tools, never by touching the screen yourself:
-        - browse: anything in the web browser. Give it the whole task in words ("In Slack, find messages in #akula-dev
+        - browse: anything in the web browser. Give it the whole task in words ("In Slack, find messages in #dev
           since 9am asking for a feature; list each author, text and link") and a browser agent does it on its own in
           Chromium, logged in to the person's accounts (Slack, Gmail, Calendar, Drive, any site), and tells you what it
           found and did. Give url to start on a page, and files (paths on the computer) for anything to upload. Use it
