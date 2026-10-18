@@ -118,6 +118,7 @@ class AgentComputer < ApplicationRecord
                    length: { maximum: 63 - NAMESPACE_PREFIX.length },
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
 
+  validate :cluster_in_account
   before_validation :assign_namespace, on: :create
   before_create :generate_guest_credentials
 
@@ -143,6 +144,10 @@ class AgentComputer < ApplicationRecord
     self.password ||= SecureRandom.alphanumeric(16)
     self.ssh_private_key ||= OpenSSL::PKey::EC.generate("prime256v1").to_pem
     self.computer_use_token ||= SecureRandom.urlsafe_base64(32)
+  end
+
+  def cluster_in_account
+    errors.add(:cluster, "must be one of this account's") if cluster && account_user && cluster.account_id != account_user.account_id
   end
 
   def assign_namespace

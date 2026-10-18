@@ -1,13 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 // A computer's Selkies desktop, full window in an iframe. Selkies lets one tab control a desktop at a time: when another
-// tab connects as the controller, this one's stream is closed ("Connection Terminated"), and we offer to take it back
-// or keep watching. Watch mode joins as a view-only viewer (Selkies' #shared link), which never displaces anyone.
+// tab connects as the controller, this one's stream is closed ("Connection Terminated"), and we offer to take it back.
 // The person and the agents share the computer: runs work on workspaces of their own, so nothing pauses while it's open.
 
 export default class extends Controller {
   static targets = ["frame", "status", "statusText", "replaced"]
-  static values = { url: String, watch: Boolean }
+  static values = { url: String }
 
   connect() {
     this.load()
@@ -45,7 +44,7 @@ export default class extends Controller {
   load() {
     this.replacedTarget.classList.add("hidden")
     this.frameTarget.onload = () => this.statusTarget.classList.add("hidden")
-    this.frameTarget.src = `${this.urlValue}?load=${Date.now()}${this.watchValue ? "#shared" : ""}`
+    this.frameTarget.src = `${this.urlValue}?load=${Date.now()}`
   }
 
   reconnect() {
@@ -70,7 +69,7 @@ export default class extends Controller {
 
   // The iframe is served through Canine's proxy, so it's same-origin and we can read the notice Selkies shows
   checkReplaced() {
-    if (this.watchValue || !this.replacedTarget.classList.contains("hidden")) return
+    if (!this.replacedTarget.classList.contains("hidden")) return
     try {
       const text = this.frameTarget.contentDocument?.body?.textContent || ""
       if (text.includes("Connection Terminated")) this.replacedTarget.classList.remove("hidden")

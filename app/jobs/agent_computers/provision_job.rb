@@ -32,6 +32,8 @@ module AgentComputers
       GuestShell.open(agent_computer, connection) do |shell|
         shell.run("rm -rf ~/.local/share/canine/computer_use ~/.local/share/canine/bigarrow && mkdir -p ~/.local/share/canine && tar -xzf - -C ~/.local/share/canine",
                   stdin: AgentComputers::Omarchy.computer_use_archive)
+        # Before the setup starts Selkies: it only watches the credentials file if it's there when it starts
+        AgentComputers::Turn.write(shell) if AgentComputers::Turn.configured?
         shell.run("bash -s", stdin: AgentComputers::Omarchy::SETUP_SCRIPT.read, env: omarchy.setup_environment) { |line| agent_computer.info(line) }
       end
       stage(agent_computer, 4, "Waiting for the desktop stream...")

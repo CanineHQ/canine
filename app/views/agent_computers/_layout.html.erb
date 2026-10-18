@@ -31,11 +31,6 @@
           <iconify-icon icon="lucide:monitor" height="14"></iconify-icon>
           Open desktop
         <% end %>
-        <%= link_to connect_agent_computer_path(agent_computer, watch: 1), class: "btn btn-ghost btn-sm",
-          title: "View the desktop without taking control of it" do %>
-          <iconify-icon icon="lucide:eye" height="14"></iconify-icon>
-          Watch
-        <% end %>
         <%= button_to stop_agent_computer_path(agent_computer), class: "btn btn-ghost btn-sm",
           data: { turbo_confirm: "Shut down this computer? Open windows close, but its files and installed apps are kept." } do %>
           <iconify-icon icon="lucide:square" height="14"></iconify-icon>

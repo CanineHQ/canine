@@ -2,7 +2,6 @@
 
 require "socket"
 require "digest/sha1"
-require "shellwords"
 require "net/http"
 
 # Rack middleware that reverse-proxies HTTP and WebSocket requests to an agent computer's VM
@@ -13,7 +12,10 @@ require "net/http"
 class AgentComputerProxy
   # Mirrors AgentComputer::DESKTOP_PORT; app models aren't autoloadable when middleware loads
   DESKTOP_PORT = 8080
-  FORWARD_PORT_RANGE = (18000..19000)
+  FORWARD_START_TIMEOUT = 5 # seconds; this waits under @mutex
+  # What a WebSocket upgrade passes on to the VM, as header => Rack env key
+  WEBSOCKET_HEADERS = %w[Upgrade Connection Sec-WebSocket-Key Sec-WebSocket-Version Sec-WebSocket-Protocol
+                         Sec-WebSocket-Extensions User-Agent].to_h { |name| [ name, "HTTP_#{name.upcase.tr("-", "_")}" ] }.freeze
   PATH_PATTERN = %r{\A/agent_computers/(\d+)/proxy(?:/(.*))?}
 
   AUTH_CACHE_TTL = 60 # seconds
@@ -25,7 +27,7 @@ class AgentComputerProxy
 
   def initialize(app)
     @app = app
-    @port_forwards = {} # "sandbox_id:remote_port" => { pid:, port:, kubeconfig:, last_used:, websockets: }
+    @port_forwards = {} # "sandbox_id:remote_port" => { forward:, port:, kubeconfig:, last_used:, websockets: }
     @auth_cache = {}    # "<session key>:sandbox_id" => { sandbox:, expires_at: }
     @mutex = Mutex.new
   end
@@ -104,7 +106,7 @@ class AgentComputerProxy
     @mutex.synchronize do
       @sweeper ||= Thread.new { sweep_loop } # in the process serving requests, so after Puma forks its workers
       entry = @port_forwards[key]
-      if entry && port_alive?(entry[:port])
+      if entry && entry[:forward].alive? && port_alive?(entry[:port])
         entry[:last_used] = Time.current
         return entry
       end
@@ -113,15 +115,9 @@ class AgentComputerProxy
       cleanup_entry(entry) if entry
 
       # Start new port-forward
-      port = start_port_forward(sandbox, remote_port)
-      if port
-        @port_forwards[key] = {
-          pid: Thread.current[:pf_pid],
-          port: port,
-          kubeconfig: Thread.current[:pf_kubeconfig],
-          last_used: Time.current,
-          websockets: 0
-        }
+      forward, kubeconfig = start_port_forward(sandbox, remote_port)
+      if forward
+        @port_forwards[key] = { forward:, port: forward.port, kubeconfig:, last_used: Time.current, websockets: 0 }
       end
     end
   end
@@ -149,7 +145,8 @@ class AgentComputerProxy
     end
   end
 
-  # Whether kubectl's local listener is up. This runs under @mutex, so it's capped: a wedged listener mustn't block
+  # Whether kubectl's local listener is up (asked once its kubectl is known to be running: after it exits, the port
+  # can belong to another tunnel). This runs under @mutex, so it's capped: a wedged listener mustn't block
   # every other proxy request. (A listener being up doesn't prove the tunnel works — a request that fails through it
   # invalidates the entry, so a dead-but-listening port gets rebuilt rather than reused forever.)
   def port_alive?(port)
@@ -166,7 +163,7 @@ class AgentComputerProxy
   end
 
   def cleanup_entry(entry)
-    Process.kill("TERM", entry[:pid]) rescue nil
+    entry[:forward].stop
     entry[:kubeconfig]&.close
     entry[:kubeconfig]&.unlink
   rescue StandardError => e
@@ -195,30 +192,13 @@ class AgentComputerProxy
       return nil
     end
 
-    local_port = rand(FORWARD_PORT_RANGE)
-    # kubectl itself, not a shell around it, so killing the pid ends the tunnel
-    cmd = %W[kubectl port-forward -n #{sandbox.namespace} #{pod_name} #{local_port}:#{remote_port}]
-    log "Spawning: #{cmd.shelljoin}"
-
-    pid = spawn({ "KUBECONFIG" => kubeconfig_file.path }, *cmd, out: "/dev/null", err: "/dev/null")
-    Process.detach(pid)
-    Thread.current[:pf_pid] = pid
-    Thread.current[:pf_kubeconfig] = kubeconfig_file
-
-    10.times do |i|
-      sleep 0.5
-      begin
-        s = TCPSocket.new("127.0.0.1", local_port)
-        s.close
-        log "Port-forward ready on localhost:#{local_port} after #{(i + 1) * 0.5}s"
-        return local_port
-      rescue Errno::ECONNREFUSED
-        next
-      end
-    end
-
-    log_error "Port-forward timed out"
-    Process.kill("TERM", pid) rescue nil
+    # kubectl picks the local port, so the tunnel can't be mistaken for another one already listening there
+    forward = AgentComputers::KubectlForward.start(kubeconfig_file.path, sandbox.namespace, pod_name, remote_port,
+                                                   timeout: FORWARD_START_TIMEOUT)
+    log "Port-forward to #{sandbox.namespace}/#{pod_name}:#{remote_port} ready on localhost:#{forward.port}"
+    [ forward, kubeconfig_file ]
+  rescue AgentComputers::KubectlForward::Error => e
+    log_error "Port-forward failed: #{e.message}"
     kubeconfig_file.close
     kubeconfig_file.unlink
     nil
@@ -307,11 +287,10 @@ class AgentComputerProxy
 
     # Reconstruct the original upgrade request for the upstream
     upgrade_request = "GET #{path_for_upstream} HTTP/1.1\r\n"
-    # Forward all relevant headers
-    env.each do |key, value|
-      next unless key.start_with?("HTTP_") && !%w[HTTP_HOST HTTP_ORIGIN].include?(key)
-      header_name = key.sub("HTTP_", "").split("_").map(&:capitalize).join("-")
-      upgrade_request += "#{header_name}: #{value}\r\n"
+    # Only the handshake's own headers: the VM is the user's to control (they have root on it), so anything else the
+    # browser sent, above all Canine's session cookie and any Authorization, must never reach it
+    WEBSOCKET_HEADERS.each do |name, key|
+      upgrade_request += "#{name}: #{env[key]}\r\n" if env[key]
     end
     upgrade_request += "Host: 127.0.0.1:#{local_port}\r\n"
     # Servers like Selkies 2.0 reject upgrades whose Origin doesn't match their Host. The user is already

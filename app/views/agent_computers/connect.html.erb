@@ -1,10 +1,8 @@
 <%= content_for :title, "#{@agent_computer.name} | Desktop" %>
-<% watching = params[:watch].present? %>
 
 <div class="relative h-screen w-screen bg-base-300"
      data-controller="agent-computers--desktop"
-     data-agent-computers--desktop-url-value="<%= "/agent_computers/#{@agent_computer.id}/proxy/" %>"
-     data-agent-computers--desktop-watch-value="<%= watching %>">
+     data-agent-computers--desktop-url-value="<%= "/agent_computers/#{@agent_computer.id}/proxy/" %>">
   <iframe
     data-agent-computers--desktop-target="frame"
     class="absolute inset-0 w-full h-full border-0"
@@ -32,20 +30,11 @@
       <div class="card-body items-center text-center">
         <iconify-icon icon="lucide:monitor-off" height="32"></iconify-icon>
         <h2 class="card-title">Opened in another tab</h2>
-        <p class="text-sm text-base-content/70">A desktop can be controlled from one tab at a time. Use it here instead, or keep watching without controlling it.</p>
+        <p class="text-sm text-base-content/70">A desktop can be used from one tab at a time.</p>
         <div class="card-actions mt-2">
           <button type="button" data-action="agent-computers--desktop#reconnect" class="btn btn-primary btn-sm">Use it here</button>
-          <%= link_to "Watch instead", connect_agent_computer_path(@agent_computer, watch: 1), class: "btn btn-ghost btn-sm" %>
         </div>
       </div>
     </div>
   </div>
-
-  <% if watching %>
-    <div class="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-base-100/80 px-3 py-1 text-xs shadow">
-      <iconify-icon icon="lucide:eye"></iconify-icon>
-      Watching (view only)
-      <%= link_to "Take control", connect_agent_computer_path(@agent_computer), class: "link link-primary" %>
-    </div>
-  <% end %>
 </div>

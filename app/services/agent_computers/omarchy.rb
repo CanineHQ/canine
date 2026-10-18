@@ -98,17 +98,7 @@ class AgentComputers::Omarchy
       "COMPUTER_USE_TOKEN" => @computer.computer_use_token,
       "SELKIES_PACKAGE_URL" => SELKIES_PACKAGE_URL,
       "SELKIES_PACKAGE_SHA256" => SELKIES_PACKAGE_SHA256
-    }.merge(turn_environment)
-  end
-
-  # Cloudflare TURN credentials for Selkies' WebRTC transport, from the Canine deployment's env. When unset, the setup
-  # script leaves Selkies on its WebSocket transport, so this is optional infrastructure.
-  def turn_environment
-    id = ENV["CLOUDFLARE_TURN_TOKEN_ID"]
-    token = ENV["CLOUDFLARE_TURN_API_TOKEN"]
-    return {} if id.blank? || token.blank?
-
-    { "CLOUDFLARE_TURN_TOKEN_ID" => id, "CLOUDFLARE_TURN_API_TOKEN" => token }
+    }
   end
 
   # The Python projects the computer runs, the computer-use server and bigarrow, as one .tar.gz, which the setup

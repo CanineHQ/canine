@@ -25,21 +25,15 @@ rm /tmp/50-autologin.conf
 # pinned on both sides, or Selkies' resize requests and Hyprland's monitor changes chase each other.
 mkdir -p ~/.config/systemd/user/graphical-session.target.wants
 
-# Transport: stream over WebRTC through Cloudflare's managed TURN relay when CLOUDFLARE_TURN_* are set, so media rides
-# UDP to the browser instead of the TCP WebSocket tunnel (KubeVirt masquerade rules out a direct peer path). Without the
-# creds Selkies stays on its WebSocket transport. Selkies mints short-lived TURN credentials from the token itself, so
-# the token lives in a private EnvironmentFile, never in the unit (which systemctl show and the journal expose).
+# Transport: stream over WebRTC through Cloudflare's TURN relay when Canine has written TURN credentials (Canine's
+# AgentComputers::Turn), so media rides UDP to the browser instead of the TCP WebSocket tunnel (KubeVirt masquerade
+# rules out a direct peer path). Canine keeps the TURN API token and writes only short-lived credentials, which Selkies
+# reads from this file and re-reads whenever Canine replaces them. Without it Selkies stays on its WebSocket transport.
 selkies_transport_flags=""
-selkies_turn_envfile=""
-if [ -n "${CLOUDFLARE_TURN_TOKEN_ID:-}" ] && [ -n "${CLOUDFLARE_TURN_API_TOKEN:-}" ]; then
-  selkies_transport_flags="--mode webrtc --enable-cloudflare-turn"
-  ( umask 077; cat > ~/.config/selkies-turn.env <<ENVF
-SELKIES_CLOUDFLARE_TURN_TOKEN_ID=${CLOUDFLARE_TURN_TOKEN_ID}
-SELKIES_CLOUDFLARE_TURN_API_TOKEN=${CLOUDFLARE_TURN_API_TOKEN}
-ENVF
-  )
-  selkies_turn_envfile="EnvironmentFile=%h/.config/selkies-turn.env"
+if [ -f ~/.config/canine/rtc.json ]; then
+  selkies_transport_flags="--mode webrtc --rtc-config-json=%h/.config/canine/rtc.json"
 fi
+rm -f ~/.config/selkies-turn.env # from before, when the token itself was written here
 
 cat > ~/.config/systemd/user/selkies.service <<UNIT
 [Unit]
@@ -55,7 +49,6 @@ Environment=SELKIES_USE_CSS_SCALING=true
 Environment=SELKIES_MAC_CMD_AS_CTRL=false|locked
 Environment=SELKIES_MANUAL_WIDTH=1920
 Environment=SELKIES_MANUAL_HEIGHT=1080
-${selkies_turn_envfile}
 ExecStart=/bin/sh -c 'exec /usr/bin/selkies --public --port=${DESKTOP_PORT} --enable-basic-auth=false --enable-https=false --wayland-host-display="\$WAYLAND_DISPLAY" ${selkies_transport_flags}'
 Restart=always
 RestartSec=2

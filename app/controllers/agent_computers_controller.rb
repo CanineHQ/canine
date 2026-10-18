@@ -35,7 +35,7 @@ class AgentComputersController < ApplicationController
   end
 
   def update
-    if @agent_computer.update(agent_computer_params)
+    if @agent_computer.update(model_params)
       redirect_to edit_agent_computer_path(@agent_computer), notice: "Model settings saved."
     else
       render :edit, status: :unprocessable_entity
@@ -44,18 +44,20 @@ class AgentComputersController < ApplicationController
 
   def new
     @agent_computer = AgentComputer.new
-    @clusters = current_account.clusters.running.with_agent_computer.order(:name)
+    @clusters = available_clusters
   end
 
+  # The cluster comes from the ones this person can use, never straight from the request: any id would otherwise
+  # put a VM on another account's cluster, with that account's kubeconfig
   def create
-    @agent_computer = AgentComputer.new(agent_computer_params)
-    @agent_computer.account_user = current_account_user
+    @agent_computer = current_account_user.agent_computers.new(model_params.merge(name: params.dig(:agent_computer, :name)))
+    @agent_computer.cluster = available_clusters.find_by(id: params.dig(:agent_computer, :cluster_id))
 
     if @agent_computer.save
       AgentComputers::ProvisionJob.perform_later(@agent_computer)
       redirect_to edit_agent_computer_path(@agent_computer), notice: "Computer is being provisioned."
     else
-      @clusters = current_account.clusters.running.with_agent_computer.order(:name)
+      @clusters = available_clusters
       render :new, status: :unprocessable_entity
     end
   end
@@ -105,7 +107,13 @@ class AgentComputersController < ApplicationController
     @agent_computer = current_account.agent_computers.find(params[:id])
   end
 
-  def agent_computer_params
-    params.require(:agent_computer).permit(:name, :cluster_id, :planning_model, :browse_model, :coding_model, :coding_agent)
+  # Clusters this person can see (teams can restrict them) that can run agent computers
+  def available_clusters
+    Clusters::VisibleToUser.execute(account_user: current_account_user).clusters.running.with_agent_computer.order(:name)
+  end
+
+  # What can change after create: a computer's name and cluster are fixed (its namespace and VM live there)
+  def model_params
+    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent)
   end
 end

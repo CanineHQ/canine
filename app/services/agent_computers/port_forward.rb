@@ -4,7 +4,8 @@ module AgentComputers
   #
   #   PortForward.open(computer, connection, AgentComputer::SSH_PORT) { |local_port| ... }
   class PortForward
-    LOCAL_PORT_RANGE = (19000..19999)
+    # kubectl takes ~10 seconds to start forwarding (most of it authenticating to the cluster), so 10 seconds of
+    # waiting failed about one start in five
     START_TIMEOUT = 30 # seconds
 
     class Error < StandardError; end
@@ -25,19 +26,16 @@ module AgentComputers
         pod = launcher_pod(kubeconfig.path)
         raise Error, "No running VM pod for #{@computer.name}" if pod.blank?
 
-        local_port = rand(LOCAL_PORT_RANGE)
-        errors = Tempfile.new("port-forward")
-        pid = spawn({ "KUBECONFIG" => kubeconfig.path },
-                    "kubectl", "port-forward", "-n", @computer.namespace, pod, "#{local_port}:#{@remote_port}",
-                    out: File::NULL, err: errors.path)
+        forward = begin
+          KubectlForward.start(kubeconfig.path, @computer.namespace, pod, @remote_port, timeout: START_TIMEOUT)
+        rescue KubectlForward::Error => e
+          raise Error, "#{e.message} (to #{@computer.name})"
+        end
         begin
-          wait_for(local_port, pid, errors)
-          trace(started_at, pod:, local_port:)
-          yield local_port
+          trace(started_at, pod:, local_port: forward.port)
+          yield forward.port
         ensure
-          Process.kill("TERM", pid) rescue nil
-          Process.wait(pid) rescue nil
-          errors.close!
+          forward.stop
         end
       end
     rescue Error => e
@@ -58,22 +56,6 @@ module AgentComputers
                                "-l", "vm.kubevirt.io/name=#{@computer.name}", "--field-selector=status.phase=Running",
                                "-o", "jsonpath={.items[0].metadata.name}")
       output.strip
-    end
-
-    # kubectl takes ~10 seconds to start forwarding (most of it authenticating to the cluster), so 10 seconds of
-    # waiting failed about one start in five. If kubectl exits instead, say why.
-    def wait_for(local_port, pid, errors)
-      deadline = Time.current + START_TIMEOUT
-      while Time.current < deadline
-        begin
-          return TCPSocket.new("127.0.0.1", local_port).close
-        rescue Errno::ECONNREFUSED
-          raise Error, "kubectl port-forward to #{@computer.name} failed: #{File.read(errors.path).strip.presence || "it exited"}" if Process.wait(pid, Process::WNOHANG)
-
-          sleep 0.5
-        end
-      end
-      raise Error, "kubectl port-forward to #{@computer.name} didn't start in #{START_TIMEOUT} seconds"
     end
   end
 end

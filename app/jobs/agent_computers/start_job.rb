@@ -15,7 +15,7 @@ module AgentComputers
 
       deadline = TIMEOUT.from_now
       until Time.current > deadline
-        return agent_computer.running! if desktop_streaming?(kubectl, agent_computer)
+        return started(agent_computer) if desktop_streaming?(kubectl, agent_computer)
         if (unschedulable = Unschedulable.reason(JSON.parse(kubectl.(%W[get vm #{agent_computer.name} -n #{agent_computer.namespace} -o json]))))
           raise unschedulable
         end
@@ -30,6 +30,15 @@ module AgentComputers
     end
 
     private
+
+    # Back up: the TURN credentials it had may have expired while it was stopped, and Selkies picks up new ones as
+    # they're written
+    def started(agent_computer)
+      agent_computer.running!
+      AgentComputers::Turn.refresh(agent_computer) if AgentComputers::Turn.configured?
+    rescue AgentComputers::Turn::Error, AgentComputers::GuestShell::Error => e
+      Rails.logger.warn("Couldn't refresh TURN credentials on #{agent_computer.name}: #{e.message}") # RefreshTurnJob tries again
+    end
 
     def desktop_streaming?(kubectl, agent_computer)
       pod = kubectl.(%W[get pods -n #{agent_computer.namespace} -l vm.kubevirt.io/name=#{agent_computer.name}

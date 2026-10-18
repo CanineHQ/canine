@@ -75,6 +75,11 @@ Rails.application.configure do
         class: "AgentTasks::ScheduleJob",
         description: "Start agent sessions for tasks that are due, when their computer is free"
       },
+      refresh_agent_computer_turn: {
+        cron: "0 */6 * * *",
+        class: "AgentComputers::RefreshTurnJob",
+        description: "Write fresh TURN credentials into running agent computers before theirs expire"
+      },
       sync_stripe_usage: {
         cron: "*/30 * * * *",
         class: "StripeSyncUsageJob",
