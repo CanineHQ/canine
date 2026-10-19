@@ -3,7 +3,6 @@ x-shared-env: &shared-env
   BOOT_MODE: local
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required}
   APP_HOST: http://localhost:${PORT:-3000}
-  LOCAL_MODE_PASSWORDLESS: true
   REMAP_LOCALHOST: "host.docker.internal"
   ALLOWED_HOSTNAME: "*"
 
@@ -15,8 +14,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_MULTIPLE_DATABASES=canine_production,canine_development
-    ports:
-      - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data"
     healthcheck:

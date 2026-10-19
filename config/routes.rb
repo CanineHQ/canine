@@ -322,11 +322,6 @@ Rails.application.routes.draw do
   # Public marketing homepage
   if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do
-      resources :authentication do
-        member do
-          post :login
-        end
-      end
       resources :onboarding, only: [ :index, :create ] do
         collection do
           get :account_select
