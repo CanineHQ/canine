@@ -1,141 +1,157 @@
 #!/bin/bash
-set -e
+# Installs or upgrades Canine on a Linux server (e.g. an EC2 box) with Docker Compose.
+#
+#   curl -sSL https://canine.sh/install.sh | bash
+#   curl -sSL https://canine.sh/install.sh | bash -s -- --host https://canine.example.ts.net
+#
+# Canine listens on 127.0.0.1 only; reach it through Tailscale, a Cloudflare Tunnel or an SSH tunnel.
+# Re-running upgrades in place and keeps .env (including SECRET_KEY_BASE) and the database.
+set -euo pipefail
 
-# Add ASCII art at the beginning
+CANINE_HOME="${CANINE_HOME:-$HOME/.canine}"
+CANINE_REF="${CANINE_REF:-main}"
+RAW_URL="https://raw.githubusercontent.com/CanineHQ/canine/${CANINE_REF}"
+HEALTH_TIMEOUT=300
+
+usage() {
+  cat <<EOF
+Usage: install.sh [--host URL] [--port PORT] [--bind ADDRESS]
+
+  --host URL       Public URL people use to reach Canine, e.g. https://canine.example.ts.net (sets APP_HOST)
+  --port PORT      Port Canine listens on (default: 3000)
+  --bind ADDRESS   Address the port is published on (default: 127.0.0.1; 0.0.0.0 exposes it on every interface)
+EOF
+}
+
+APP_HOST_ARG=""
+PORT_ARG=""
+BIND_ARG=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --host) APP_HOST_ARG="${2:?--host needs a value}"; shift 2 ;;
+    --port) PORT_ARG="${2:?--port needs a value}"; shift 2 ;;
+    --bind) BIND_ARG="${2:?--bind needs a value}"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Unknown option: $1"; usage; exit 1 ;;
+  esac
+done
+
+ok() { echo " [OK]${1:+ $1}"; }
+fail() { echo " [FAIL]"; echo "$1" >&2; exit 1; }
+
 cat << "EOF"
-   _____            _            
-  / ____|          (_)           
- | |     __ _ _ __  _ _ __   ___ 
+   _____            _
+  / ____|          (_)
+ | |     __ _ _ __  _ _ __   ___
  | |    / _` | '_ \| | '_ \ / _ \
  | |___| (_| | | | | | | | |  __/
   \_____\__,_|_| |_|_|_| |_|\___|
 EOF
 echo
 
-echo -n "Cloning Canine..."
-mkdir -p ~/.canine
-# Remove existing src directory if it exists
-rm -rf ~/.canine/src
-# Shallow clone the repo
-git clone --depth 1 https://github.com/CanineHQ/canine.git ~/.canine/src
-
-cd ~/.canine/src
-echo " [OK]"
-
-echo -n "Checking Docker..."
-# Function to check if a socket file exists and is accessible
-check_docker_socket() {
-    local socket_path="$1"
-    if [ -S "$socket_path" ] && [ -w "$socket_path" ]; then
-        echo "$socket_path"
-        return 0
-    fi
-    return 1
-}
-
-# Try to find Docker socket in common locations
-DOCKER_SOCKET=""
-for socket in "/var/run/docker.sock" "/run/docker.sock" "$HOME/.docker/run/docker.sock"; do
-    if check_docker_socket "$socket"; then
-        DOCKER_SOCKET="$socket"
-        break
-    fi
+echo -n "Checking required tools..."
+for tool in curl openssl docker; do
+  command -v "$tool" > /dev/null 2>&1 || fail "$tool is not installed. Install Docker (https://docs.docker.com/engine/install/), curl and openssl, then re-run."
 done
+docker compose version > /dev/null 2>&1 || fail "The Docker Compose plugin is not installed: https://docs.docker.com/compose/install/linux/"
+ok
 
-# If no socket found, try to get it from Docker's configuration
-if [ -z "$DOCKER_SOCKET" ]; then
-    if command -v docker >/dev/null 2>&1; then
-        # Try to get socket from docker info
-        DOCKER_SOCKET=$(docker info --format '{{.DockerRootDir}}/docker.sock' 2>/dev/null)
-        if [ -n "$DOCKER_SOCKET" ] && check_docker_socket "$DOCKER_SOCKET"; then
-            :  # Found valid socket from Docker info
-        else
-            # Try to get socket from docker context
-            DOCKER_SOCKET=$(docker context inspect | grep -o '"Host": *"unix://[^"]*"' | head -n 1 | sed -E 's/.*"unix:\/\/(.*)"$/\1/')
-            if [ -n "$DOCKER_SOCKET" ] && check_docker_socket "$DOCKER_SOCKET"; then
-                :  # Found valid socket from Docker context
-            else
-                DOCKER_SOCKET=""
-            fi
-        fi
-    fi
+echo -n "Checking Docker access..."
+docker info > /dev/null 2>&1 || fail "Can't talk to the Docker daemon. Make sure it's running, then either add yourself to the docker group
+(sudo usermod -aG docker \$USER, then log out and back in) or re-run this script with sudo."
+DOCKER_SOCKET="/var/run/docker.sock"
+if [[ "${DOCKER_HOST:-}" == unix://* ]]; then
+  DOCKER_SOCKET="${DOCKER_HOST#unix://}"
 fi
+[ -S "$DOCKER_SOCKET" ] || fail "Docker socket not found at $DOCKER_SOCKET. Set DOCKER_HOST=unix:///path/to/docker.sock and re-run."
+ok "($DOCKER_SOCKET)"
 
-if [ -z "$DOCKER_SOCKET" ]; then
-    echo " [FAIL]"
-    echo "Docker socket not found. Please ensure:"
-    echo "1. Docker is installed and running"
-    echo "2. You have permissions to access the Docker socket"
-    echo "3. Docker is configured correctly"
-    echo "Common socket locations checked:"
-    echo "- /var/run/docker.sock"
-    echo "- /run/docker.sock"
-    echo "- $HOME/.docker/run/docker.sock"
-    exit 1
-fi
+mkdir -p "$CANINE_HOME"
+cd "$CANINE_HOME"
+touch .env
+chmod 600 .env
 
-echo " [OK] (Found at $DOCKER_SOCKET)"
-
-echo -n "Checking docker-compose..."
-# Check if docker-compose is installed
-if ! docker compose version > /dev/null 2>&1; then
-  echo " [FAIL]"
-  echo "docker-compose not found. Please check your Docker installation."
-  exit 1
-fi
-echo " [OK]"
-
-# Try /usr/local/bin first
-
-# Get the port that the user wants to use, or just default to 3456
-port=3456  # Set default first
-if [ -t 0 ]; then  # Only prompt if running in interactive terminal
-    read -p "What port do you want Canine running on? (default: 3456) " port
-    port=${port:-3456}
-fi
-
-echo -n "Generating secrets..."
-# Generate SECRET_KEY_BASE if not already set in .env
-if [ -f .env ] && grep -q "^SECRET_KEY_BASE=" .env; then
-    echo " [OK] (using existing)"
-else
-    SECRET_KEY_BASE=$(openssl rand -hex 64)
-    echo "SECRET_KEY_BASE=$SECRET_KEY_BASE" >> .env
-    echo " [OK]"
-fi
-
-echo "Pulling latest Docker images..."
-
-# Pull latest images and start docker compose
-docker compose pull
-echo " [OK]"
-
-echo "Starting Canine on port $port..."
-PORT=$port DOCKER_SOCKET="$DOCKER_SOCKET" docker compose up -d
-
-# Function to check if port is ready
-wait_for_port() {
-    local port=$1
-    echo -n "Waiting for service to be ready..."
-    while ! curl -s "http://localhost:$port" > /dev/null 2>&1; do
-        echo -n "."
-        sleep 2
-    done
-    echo " [OK]"
+env_get() { grep -E "^$1=" .env | tail -n 1 | cut -d= -f2- || true; }
+env_set() {
+  local tmp
+  tmp=$(mktemp)
+  grep -vE "^$1=" .env > "$tmp" || true
+  echo "$1=$2" >> "$tmp"
+  mv "$tmp" .env
+  chmod 600 .env
 }
 
-# Wait for port to be ready
-wait_for_port $port
-
-echo "Opening browser to http://localhost:$port"
-# Platform-independent way to open browser
-if command -v xdg-open > /dev/null 2>&1; then
-    xdg-open "http://localhost:$port"  # Linux
-elif command -v open > /dev/null 2>&1; then
-    open "http://localhost:$port"      # macOS
-elif command -v start > /dev/null 2>&1; then
-    start "http://localhost:$port"     # Windows
-else
-    echo "Please open http://localhost:$port in your browser"
+# Installs before this script lived in ~/.canine/src; carry their secret and database volume over
+if [ -f "$CANINE_HOME/src/.env" ] && [ -z "$(env_get SECRET_KEY_BASE)" ]; then
+  echo -n "Migrating the install in $CANINE_HOME/src..."
+  env_set SECRET_KEY_BASE "$(grep -E '^SECRET_KEY_BASE=' "$CANINE_HOME/src/.env" | tail -n 1 | cut -d= -f2-)"
+  env_set COMPOSE_PROJECT_NAME src
+  ok "(you can delete $CANINE_HOME/src once Canine is running)"
 fi
-echo "Run 'cd $HOME/.canine/src && docker compose down' to stop Canine"
+
+echo -n "Writing configuration..."
+[ -n "$(env_get COMPOSE_PROJECT_NAME)" ] || env_set COMPOSE_PROJECT_NAME canine
+[ -n "$(env_get SECRET_KEY_BASE)" ] || env_set SECRET_KEY_BASE "$(openssl rand -hex 64)"
+if [ -n "$PORT_ARG" ] || [ -z "$(env_get PORT)" ]; then env_set PORT "${PORT_ARG:-3000}"; fi
+if [ -n "$BIND_ARG" ] || [ -z "$(env_get BIND_ADDRESS)" ]; then env_set BIND_ADDRESS "${BIND_ARG:-127.0.0.1}"; fi
+if [ -n "$APP_HOST_ARG" ] || [ -z "$(env_get APP_HOST)" ]; then env_set APP_HOST "${APP_HOST_ARG:-http://localhost:$(env_get PORT)}"; fi
+env_set DOCKER_SOCKET "$DOCKER_SOCKET"
+PORT=$(env_get PORT)
+BIND_ADDRESS=$(env_get BIND_ADDRESS)
+APP_HOST=$(env_get APP_HOST)
+ok "($CANINE_HOME/.env)"
+
+echo -n "Downloading Canine ($CANINE_REF)..."
+curl -fsSL "$RAW_URL/docker-compose.yml" -o docker-compose.yml.new || fail "Couldn't download $RAW_URL/docker-compose.yml"
+mv docker-compose.yml.new docker-compose.yml
+curl -fsSL "$RAW_URL/install/canine" -o canine || fail "Couldn't download $RAW_URL/install/canine"
+chmod +x canine
+ok
+
+echo "Pulling images..."
+docker compose pull < /dev/null
+echo "Starting Canine..."
+docker compose up -d --remove-orphans < /dev/null
+
+echo -n "Waiting for Canine to be ready..."
+health_host="$BIND_ADDRESS"
+[ "$health_host" = "0.0.0.0" ] && health_host="127.0.0.1"
+deadline=$((SECONDS + HEALTH_TIMEOUT))
+until curl -fsS "http://$health_host:$PORT/up" > /dev/null 2>&1; do
+  if [ $SECONDS -ge $deadline ]; then
+    echo " [FAIL]"
+    docker compose logs --tail 50 web
+    echo "Canine didn't come up within ${HEALTH_TIMEOUT}s. See the logs above, or run: $CANINE_HOME/canine logs" >&2
+    exit 1
+  fi
+  echo -n "."
+  sleep 3
+done
+ok
+
+# Put the helper on the PATH where we can without prompting
+helper_dir=""
+if [ -w /usr/local/bin ]; then
+  helper_dir=/usr/local/bin
+elif sudo -n true 2> /dev/null; then
+  sudo ln -sf "$CANINE_HOME/canine" /usr/local/bin/canine && helper_dir=/usr/local/bin
+fi
+if [ -z "$helper_dir" ]; then
+  mkdir -p "$HOME/.local/bin"
+  helper_dir="$HOME/.local/bin"
+fi
+[ -e "$helper_dir/canine" ] || ln -sf "$CANINE_HOME/canine" "$helper_dir/canine"
+
+cat <<EOF
+
+Canine is running on http://$health_host:$PORT (published on $BIND_ADDRESS only).
+
+Next steps:
+  1. Expose it to your team privately, e.g. with Tailscale:
+       sudo tailscale serve --bg $PORT
+  2. Point APP_HOST at the URL people will use (currently $APP_HOST):
+       curl -sSL https://canine.sh/install.sh | bash -s -- --host https://<your-host>
+  3. Open it and create the first account right away; the first visitor sets up the instance.
+
+Manage it with 'canine' (in $helper_dir): canine status | logs | restart | upgrade | stop
+EOF

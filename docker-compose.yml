@@ -2,7 +2,7 @@ x-shared-env: &shared-env
   DATABASE_URL: postgres://postgres:password@postgres:5432
   BOOT_MODE: local
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required}
-  APP_HOST: http://localhost:${PORT:-3000}
+  APP_HOST: ${APP_HOST:-http://localhost:${PORT:-3000}}
   REMAP_LOCALHOST: "host.docker.internal"
   ALLOWED_HOSTNAME: "*"
 
@@ -33,8 +33,8 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-      - "3200:3200"
+      # Loopback only by default; set BIND_ADDRESS=0.0.0.0 to expose it on every interface
+      - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-3000}:${PORT:-3000}"
     environment:
       <<: *shared-env
       PORT: ${PORT:-3000}

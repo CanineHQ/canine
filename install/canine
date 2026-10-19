@@ -1,57 +1,26 @@
 #!/bin/bash
+# Manages a Canine install made by install.sh. Settings live in $CANINE_HOME/.env.
+set -euo pipefail
 
-CANINE_HOME="$HOME/.canine"
-CANINE_PATH="$CANINE_HOME/src"
-DEFAULT_PORT=3000
+CANINE_HOME="${CANINE_HOME:-$HOME/.canine}"
+cd "$CANINE_HOME" 2> /dev/null || { echo "No Canine install found in $CANINE_HOME" >&2; exit 1; }
 
-function start() {
-  local port=${1:-$DEFAULT_PORT}
-  cd "$CANINE_PATH" || exit
-
-  # Start the Docker Compose with the specified or default port
-  PORT=$port docker compose up -d
-
-  # Poll localhost:$port until it's ready
-  echo "Waiting for http://localhost:$port to be available..."
-  until curl -s --head "http://localhost:$port" > /dev/null 2>&1; do
-
-    sleep 2
-  done
-
-  echo "http://localhost:$port is now available. Opening in browser..."
-  # Open the browser (platform-specific command)
-  if command -v xdg-open > /dev/null; then
-    xdg-open "http://localhost:$port"
-  elif command -v open > /dev/null; then
-    open "http://localhost:$port"
-  else
-    echo "Please open http://localhost:$port in your browser."
-  fi
-}
-
-function stop() {
-  cd "$CANINE_PATH" || exit
-  docker compose down
-}
-
-function destroy() {
-  cd "$CANINE_PATH" || exit
-  docker compose down --volumes --rmi all
-  rm -rf "$CANINE_HOME"
-}
-
-case $1 in
-  start)
-    start "$2"
-    ;;
-  stop)
-    stop
-    ;;
-  destroy)
-    destroy
+case "${1:-}" in
+  start) docker compose up -d ;;
+  stop) docker compose stop ;;
+  restart) docker compose up -d --force-recreate web worker ;;
+  status) docker compose ps ;;
+  logs) shift; docker compose logs -f --tail 100 "$@" ;;
+  # The installer is idempotent: it keeps .env and the database, refreshes the compose file and pulls new images
+  upgrade) curl -sSL https://canine.sh/install.sh | bash ;;
+  uninstall)
+    read -r -p "This deletes Canine's database and $CANINE_HOME. Type 'delete' to continue: " answer
+    [ "$answer" = "delete" ] || { echo "Aborted"; exit 1; }
+    docker compose down --volumes --rmi all
+    rm -rf "$CANINE_HOME"
     ;;
   *)
-    echo "Usage: canine [start|stop|destroy] [optional port for start]"
+    echo "Usage: canine start | stop | restart | status | logs [service] | upgrade | uninstall"
     exit 1
     ;;
 esac
