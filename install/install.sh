@@ -81,14 +81,6 @@ env_set() {
   chmod 600 .env
 }
 
-# Installs before this script lived in ~/.canine/src; carry their secret and database volume over
-if [ -f "$CANINE_HOME/src/.env" ] && [ -z "$(env_get SECRET_KEY_BASE)" ]; then
-  echo -n "Migrating the install in $CANINE_HOME/src..."
-  env_set SECRET_KEY_BASE "$(grep -E '^SECRET_KEY_BASE=' "$CANINE_HOME/src/.env" | tail -n 1 | cut -d= -f2-)"
-  env_set COMPOSE_PROJECT_NAME src
-  ok "(you can delete $CANINE_HOME/src once Canine is running)"
-fi
-
 echo -n "Writing configuration..."
 [ -n "$(env_get COMPOSE_PROJECT_NAME)" ] || env_set COMPOSE_PROJECT_NAME canine
 [ -n "$(env_get SECRET_KEY_BASE)" ] || env_set SECRET_KEY_BASE "$(openssl rand -hex 64)"
