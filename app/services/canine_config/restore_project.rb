@@ -56,7 +56,8 @@ class CanineConfig::RestoreProject
           image_repository: bc["image_repository"],
           buildpack_base_builder: bc["buildpack_base_builder"],
           provider_id: bc["provider_id"],
-          build_cloud_id: bc["build_cloud_id"]
+          build_cloud_id: bc["build_cloud_id"],
+          cluster_registry: bc["cluster_registry"] || false
         )
       end
 

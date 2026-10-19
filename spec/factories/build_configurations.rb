@@ -5,6 +5,7 @@
 #  id                     :bigint           not null, primary key
 #  build_type             :integer          not null
 #  buildpack_base_builder :string
+#  cluster_registry       :boolean          default(FALSE), not null
 #  context_directory      :string           default("./"), not null
 #  dockerfile_path        :string           default("./Dockerfile"), not null
 #  driver                 :integer          not null
@@ -13,7 +14,7 @@
 #  updated_at             :datetime         not null
 #  build_cloud_id         :bigint
 #  project_id             :bigint           not null
-#  provider_id            :bigint           not null
+#  provider_id            :bigint
 #
 # Indexes
 #

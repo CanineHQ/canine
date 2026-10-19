@@ -5,7 +5,8 @@ class Clusters::ClusterPackagesController < Clusters::BaseController
 
     config = params[:config]&.permit!&.to_h || {}
     package = @cluster.cluster_packages.find_or_initialize_by(name: params[:name])
-    package.update!(status: :pending, config: config)
+    # Merge so settings Canine keeps in the config (like the registry's password) survive a reinstall
+    package.update!(status: :pending, config: (package.config || {}).merge(config))
 
     Clusters::InstallPackageJob.perform_later(package, current_user)
     render partial: "clusters/cluster_packages/package_row",

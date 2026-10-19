@@ -31,11 +31,15 @@ class Deployments::BaseDeploymentService
     return if @project.public_image?
 
     @logger.info("Creating registry secret for #{@project.container_image_reference}", color: :yellow)
-    provider = @project.build_provider
-    result = Providers::GenerateConfigJson.execute(provider:)
-    raise StandardError, result.message if result.failure?
+    docker_config_json = if @project.build_configuration&.cluster_registry?
+      @project.build_configuration.registry.docker_config_json(ClusterRegistry::NODE_HOST)
+    else
+      result = Providers::GenerateConfigJson.execute(provider: @project.build_provider)
+      raise StandardError, result.message if result.failure?
+      result.docker_config_json
+    end
 
-    secret_yaml = K8::Secrets::RegistrySecret.new(@project, result.docker_config_json).to_yaml
+    secret_yaml = K8::Secrets::RegistrySecret.new(@project, docker_config_json).to_yaml
     @kubectl.apply_yaml(secret_yaml)
   end
 

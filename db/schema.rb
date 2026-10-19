@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_19_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -269,12 +269,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.bigint "build_cloud_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "provider_id", null: false
+    t.bigint "provider_id"
     t.string "image_repository", null: false
     t.string "buildpack_base_builder"
     t.string "context_directory", default: "./", null: false
     t.string "dockerfile_path", default: "./Dockerfile", null: false
     t.integer "build_type", null: false
+    t.boolean "cluster_registry", default: false, null: false
     t.index ["build_cloud_id"], name: "index_build_configurations_on_build_cloud_id"
     t.index ["project_id"], name: "index_build_configurations_on_project_id"
     t.index ["provider_id"], name: "index_build_configurations_on_provider_id"

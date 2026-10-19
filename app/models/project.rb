@@ -323,7 +323,8 @@ class Project < ApplicationRecord
         "image_repository" => bc.image_repository,
         "buildpack_base_builder" => bc.buildpack_base_builder,
         "provider_id" => bc.provider_id,
-        "build_cloud_id" => bc.build_cloud_id
+        "build_cloud_id" => bc.build_cloud_id,
+        "cluster_registry" => (true if bc.cluster_registry?)
       }.compact
     end
 
