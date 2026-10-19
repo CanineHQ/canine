@@ -90,6 +90,16 @@ packages:
     manifest_path: resources/k8/shared/metrics_server.yaml
     check_command: get deployment metrics-server
 
+  - name: registry
+    display_name: Image Registry
+    description: Stores the images your projects build in this cluster, so builds need no external registry credentials
+    icon: mdi:package-variant-closed
+    default: false
+    recommended: true
+    install_type: manifest
+    check_command: get deployment canine-registry
+    help_text: 'Needs a default StorageClass for its volume, and the Kubernetes build driver on this cluster.'
+
   - name: telepresence
     display_name: Telepresence
     description: Local development against a remote Kubernetes cluster

@@ -45,6 +45,7 @@ class ClusterPackage < ApplicationRecord
     "nginx-ingress" => "ClusterPackage::Installer::NginxIngress",
     "cert-manager" => "ClusterPackage::Installer::CertManager",
     "metrics-server" => "ClusterPackage::Installer::MetricsServer",
+    "registry" => "ClusterPackage::Installer::Registry",
     "telepresence" => "ClusterPackage::Installer::Telepresence",
     "cloudflared" => "ClusterPackage::Installer::Cloudflared",
     "fluent-bit" => "ClusterPackage::Installer::FluentBit",

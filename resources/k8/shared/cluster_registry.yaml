@@ -1,0 +1,141 @@
+# An image registry inside the cluster, so builds need no external registry credentials.
+# Builds push to the Service; nodes pull through a per-node proxy on 127.0.0.1, which containerd allows over plain HTTP.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: canine-registry-auth
+  namespace: <%= namespace %>
+type: Opaque
+stringData:
+  htpasswd: "<%= htpasswd %>"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: canine-registry
+  namespace: <%= namespace %>
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: <%= storage_size %>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canine-registry
+  namespace: <%= namespace %>
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: canine-registry
+  template:
+    metadata:
+      labels:
+        app: canine-registry
+      annotations:
+        canine.sh/htpasswd-checksum: "<%= Digest::SHA256.hexdigest(htpasswd) %>"
+    spec:
+      containers:
+        - name: registry
+          image: registry:2.8.3
+          ports:
+            - containerPort: 5000
+          env:
+            - name: REGISTRY_AUTH
+              value: htpasswd
+            - name: REGISTRY_AUTH_HTPASSWD_REALM
+              value: Canine Registry
+            - name: REGISTRY_AUTH_HTPASSWD_PATH
+              value: /auth/htpasswd
+            - name: REGISTRY_STORAGE_DELETE_ENABLED
+              value: "true"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry
+            - name: auth
+              mountPath: /auth
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 5000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: canine-registry
+        - name: auth
+          secret:
+            secretName: canine-registry-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canine-registry
+  namespace: <%= namespace %>
+spec:
+  selector:
+    app: canine-registry
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: canine-registry-proxy
+  namespace: <%= namespace %>
+data:
+  nginx.conf: |
+    events {}
+    stream {
+      server {
+        listen 127.0.0.1:<%= node_port %>;
+        proxy_pass <%= service_host %>;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: canine-registry-proxy
+  namespace: <%= namespace %>
+spec:
+  selector:
+    matchLabels:
+      app: canine-registry-proxy
+  template:
+    metadata:
+      labels:
+        app: canine-registry-proxy
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: proxy
+          image: nginx:1.27-alpine
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+      volumes:
+        - name: config
+          configMap:
+            name: canine-registry-proxy

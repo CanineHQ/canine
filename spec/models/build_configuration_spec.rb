@@ -5,6 +5,7 @@
 #  id                     :bigint           not null, primary key
 #  build_type             :integer          not null
 #  buildpack_base_builder :string
+#  cluster_registry       :boolean          default(FALSE), not null
 #  context_directory      :string           default("./"), not null
 #  dockerfile_path        :string           default("./Dockerfile"), not null
 #  driver                 :integer          not null
@@ -13,7 +14,7 @@
 #  updated_at             :datetime         not null
 #  build_cloud_id         :bigint
 #  project_id             :bigint           not null
-#  provider_id            :bigint           not null
+#  provider_id            :bigint
 #
 # Indexes
 #
@@ -98,6 +99,26 @@ RSpec.describe BuildConfiguration, type: :model do
       it 'returns the container image reference with latest tag' do
         expect(build_configuration.container_image_reference).to eq('ghcr.io/caninehq/canine:latest')
       end
+    end
+  end
+
+  describe 'cluster registry' do
+    let(:build_cloud) { create(:build_cloud, cluster: project.cluster) }
+    let(:build_configuration) do
+      build(:build_configuration, project:, provider: nil, driver: :k8s, build_cloud:, cluster_registry: true)
+    end
+
+    it 'pushes to the registry service, pulls through the node proxy and needs the package installed' do
+      expect(build_configuration).not_to be_valid
+      expect(build_configuration.errors[:cluster_registry]).to include("isn't installed on this cluster")
+
+      create(:cluster_package, cluster: project.cluster, name: ClusterRegistry::PACKAGE_NAME, status: :installed)
+      expect(build_configuration).to be_valid
+      expect(build_configuration.push_image_reference).to eq("canine-registry.canine-system.svc.cluster.local:5000/caninehq/canine:main")
+      expect(build_configuration.container_image_reference).to eq("127.0.0.1:5000/caninehq/canine:main")
+
+      build_configuration.driver = :docker
+      expect(build_configuration).not_to be_valid
     end
   end
 end

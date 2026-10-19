@@ -5,6 +5,7 @@
 #  id                     :bigint           not null, primary key
 #  build_type             :integer          not null
 #  buildpack_base_builder :string
+#  cluster_registry       :boolean          default(FALSE), not null
 #  context_directory      :string           default("./"), not null
 #  dockerfile_path        :string           default("./Dockerfile"), not null
 #  driver                 :integer          not null
@@ -13,7 +14,7 @@
 #  updated_at             :datetime         not null
 #  build_cloud_id         :bigint
 #  project_id             :bigint           not null
-#  provider_id            :bigint           not null
+#  provider_id            :bigint
 #
 # Indexes
 #
@@ -44,10 +45,12 @@ class BuildConfiguration < ApplicationRecord
   end
   belongs_to :project
   belongs_to :build_cloud, optional: true
-  belongs_to :provider
+  belongs_to :provider, optional: true
   has_many :build_packs, -> { order(:build_order) }, dependent: :destroy
 
-  validates_presence_of :project, :provider, :driver
+  validates_presence_of :project, :driver
+  validates_presence_of :provider, unless: :cluster_registry?
+  validate :cluster_registry_supported, if: :cluster_registry?
   validates_presence_of :image_repository
   validates :image_repository, format: {
     with: /\A[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]\/[a-zA-Z0-9._-]+(\/[a-zA-Z0-9._-]+)*\z/,
@@ -55,7 +58,7 @@ class BuildConfiguration < ApplicationRecord
   }
 
   def self.permit_params(params)
-    params.permit(:image_repository, :driver, :build_cloud_id, :provider_id, :context_directory, :dockerfile_path, :build_type, :buildpack_base_builder)
+    params.permit(:image_repository, :driver, :build_cloud_id, :provider_id, :context_directory, :dockerfile_path, :build_type, :buildpack_base_builder, :cluster_registry)
   end
 
   def self.available_buildpacks
@@ -75,8 +78,34 @@ class BuildConfiguration < ApplicationRecord
   }
   validates_presence_of :build_cloud, if: -> { driver == 'k8s' }
 
+  def registry
+    ClusterRegistry.new(project.cluster) if cluster_registry?
+  end
+
+  # The reference the cluster pulls the image by
   def container_image_reference
+    cluster_registry? ? registry.pull_reference(image_name) : "#{provider.registry_base_url}/#{image_name}"
+  end
+
+  # The reference builds push the image to
+  def push_image_reference
+    cluster_registry? ? registry.push_reference(image_name) : container_image_reference
+  end
+
+  private
+
+  def image_name
     tag = project.git? ? project.branch.gsub('/', '-') : 'latest'
-    "#{provider.registry_base_url}/#{image_repository.downcase}:#{tag}"
+    "#{image_repository.downcase}:#{tag}"
+  end
+
+  # The registry is only reachable inside its cluster, so the build has to run there too
+  def cluster_registry_supported
+    errors.add(:cluster_registry, "needs the Kubernetes build driver") unless k8s?
+    errors.add(:cluster_registry, "doesn't support buildpacks yet") if buildpacks?
+    if build_cloud && project && build_cloud.cluster_id != project.cluster_id
+      errors.add(:cluster_registry, "needs the build cloud on the project's cluster")
+    end
+    errors.add(:cluster_registry, "isn't installed on this cluster") if project && !registry.installed?
   end
 end

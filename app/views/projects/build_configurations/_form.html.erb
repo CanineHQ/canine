@@ -17,6 +17,16 @@
       </div>
 
       <div class="form-control mt-1 mb-2 w-full max-w-md">
+        <label class="label cursor-pointer justify-start gap-3">
+          <%= bc_form.check_box :cluster_registry, class: "checkbox checkbox-sm", checked: build_configuration.cluster_registry? %>
+          <span class="label-text">Push images to the cluster's built-in registry</span>
+        </label>
+        <label class="label">
+          <span class="label-text-alt">No registry credentials needed. Requires the Image Registry package on the cluster, the Kubernetes build driver and a Dockerfile build. The credentials below are then ignored.</span>
+        </label>
+      </div>
+
+      <div class="form-control mt-1 mb-2 w-full max-w-md">
         <label class="label">
           <span class="label-text">Credentials</span>
         </label>
