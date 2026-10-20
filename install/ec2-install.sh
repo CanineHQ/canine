@@ -16,22 +16,28 @@ HEALTH_TIMEOUT=300
 
 usage() {
   cat <<EOF
-Usage: install.sh [--host URL] [--port PORT] [--bind ADDRESS]
+Usage: ec2-install.sh [--host URL] [--port PORT] [--bind ADDRESS] [--cloudflare-tunnel-token TOKEN]
 
-  --host URL       Public URL people use to reach Canine, e.g. https://canine.example.ts.net (sets APP_HOST)
+  --host URL       URL people use to reach Canine, e.g. http://canine.internal:3000 (sets APP_HOST)
   --port PORT      Port Canine listens on (default: 3000)
   --bind ADDRESS   Address the port is published on (default: 127.0.0.1; 0.0.0.0 exposes it on every interface)
+  --cloudflare-tunnel-token TOKEN
+                   Run a Cloudflare Tunnel so Canine is reachable only through Cloudflare WARP, via a private
+                   network route to this machine's private IP (Canine binds to that IP). The token can also come
+                   from the CLOUDFLARE_TUNNEL_TOKEN environment variable, which keeps it out of the process list.
 EOF
 }
 
 APP_HOST_ARG=""
 PORT_ARG=""
 BIND_ARG=""
+TUNNEL_TOKEN="${CLOUDFLARE_TUNNEL_TOKEN:-}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --host) APP_HOST_ARG="${2:?--host needs a value}"; shift 2 ;;
     --port) PORT_ARG="${2:?--port needs a value}"; shift 2 ;;
     --bind) BIND_ARG="${2:?--bind needs a value}"; shift 2 ;;
+    --cloudflare-tunnel-token) TUNNEL_TOKEN="${2:?--cloudflare-tunnel-token needs a value}"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1"; usage; exit 1 ;;
   esac
@@ -82,12 +88,33 @@ env_set() {
   chmod 600 .env
 }
 
+# EC2 instance metadata (IMDSv2) first, then the source address of the default route
+private_ip() {
+  local token="" ip=""
+  token=$(curl -fsS -m 2 -X PUT http://169.254.169.254/latest/api/token -H "X-aws-ec2-metadata-token-ttl-seconds: 60" 2> /dev/null) &&
+    ip=$(curl -fsS -m 2 -H "X-aws-ec2-metadata-token: $token" http://169.254.169.254/latest/meta-data/local-ipv4 2> /dev/null)
+  [ -n "$ip" ] || ip=$(ip -4 route get 1.1.1.1 2> /dev/null | awk '{for (i = 1; i < NF; i++) if ($i == "src") print $(i + 1)}')
+  [ -n "$ip" ] && echo "$ip"
+}
+
+# The tunnel's private network route points at this machine's private IP, so Canine binds there instead of loopback
+if [ -n "$TUNNEL_TOKEN" ] && [ -z "$BIND_ARG" ]; then
+  echo -n "Finding this machine's private IP..."
+  BIND_ARG=$(private_ip) || fail "Couldn't find this machine's private IP. Pass it with --bind <ip>."
+  ok "($BIND_ARG)"
+fi
+
 echo -n "Writing configuration..."
 [ -n "$(env_get COMPOSE_PROJECT_NAME)" ] || env_set COMPOSE_PROJECT_NAME canine
 [ -n "$(env_get SECRET_KEY_BASE)" ] || env_set SECRET_KEY_BASE "$(openssl rand -hex 64)"
 if [ -n "$PORT_ARG" ] || [ -z "$(env_get PORT)" ]; then env_set PORT "${PORT_ARG:-3000}"; fi
 if [ -n "$BIND_ARG" ] || [ -z "$(env_get BIND_ADDRESS)" ]; then env_set BIND_ADDRESS "${BIND_ARG:-127.0.0.1}"; fi
-if [ -n "$APP_HOST_ARG" ] || [ -z "$(env_get APP_HOST)" ]; then env_set APP_HOST "${APP_HOST_ARG:-http://localhost:$(env_get PORT)}"; fi
+default_app_host="http://localhost:$(env_get PORT)"
+[ -n "$TUNNEL_TOKEN" ] && default_app_host="http://$(env_get BIND_ADDRESS):$(env_get PORT)"
+current_app_host=$(env_get APP_HOST)
+if [ -n "$APP_HOST_ARG" ] || [ -z "$current_app_host" ] || { [ -n "$TUNNEL_TOKEN" ] && [[ "$current_app_host" == http://localhost:* ]]; }; then
+  env_set APP_HOST "${APP_HOST_ARG:-$default_app_host}"
+fi
 env_set DOCKER_SOCKET "$DOCKER_SOCKET"
 PORT=$(env_get PORT)
 BIND_ADDRESS=$(env_get BIND_ADDRESS)
@@ -148,6 +175,42 @@ until curl -fsS "http://$health_host:$PORT/up" > /dev/null 2>&1; do
 done
 ok
 
+if [ -n "$TUNNEL_TOKEN" ]; then
+  SUDO=""
+  if [ "$(id -u)" -ne 0 ]; then
+    command -v sudo > /dev/null 2>&1 || fail "Setting up the Cloudflare Tunnel needs root. Re-run as root."
+    SUDO=sudo
+  fi
+
+  # From Cloudflare's package repository, so it gets updates with the rest of the system
+  if ! command -v cloudflared > /dev/null 2>&1; then
+    echo -n "Installing cloudflared..."
+    if command -v apt-get > /dev/null 2>&1; then
+      $SUDO mkdir -p --mode=0755 /usr/share/keyrings
+      curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | $SUDO tee /usr/share/keyrings/cloudflare-main.gpg > /dev/null
+      echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main" |
+        $SUDO tee /etc/apt/sources.list.d/cloudflared.list > /dev/null
+      $SUDO apt-get update -qq < /dev/null > /dev/null
+      $SUDO apt-get install -y -qq cloudflared < /dev/null > /dev/null
+    elif command -v dnf > /dev/null 2>&1 || command -v yum > /dev/null 2>&1; then
+      curl -fsSL https://pkg.cloudflare.com/cloudflared-ascii.repo | $SUDO tee /etc/yum.repos.d/cloudflared.repo > /dev/null
+      $SUDO "$(command -v dnf || command -v yum)" install -y -q cloudflared < /dev/null > /dev/null
+    else
+      fail "Install cloudflared yourself (https://pkg.cloudflare.com) and re-run."
+    fi
+    ok
+  fi
+
+  echo -n "Starting the Cloudflare Tunnel..."
+  if $SUDO systemctl is-enabled --quiet cloudflared 2> /dev/null; then
+    ok "(already a service; to switch tunnels run 'sudo cloudflared service uninstall' and re-run)"
+  else
+    $SUDO cloudflared service install "$TUNNEL_TOKEN" < /dev/null > /dev/null ||
+      fail "cloudflared couldn't start the tunnel. Check the token in the Zero Trust dashboard (Networks > Tunnels)."
+    ok
+  fi
+fi
+
 # Put the helper on the PATH where we can without prompting
 helper_dir=""
 if [ -w /usr/local/bin ]; then
@@ -160,6 +223,28 @@ if [ -z "$helper_dir" ]; then
   helper_dir="$HOME/.local/bin"
 fi
 [ -e "$helper_dir/canine" ] || ln -sf "$CANINE_HOME/canine" "$helper_dir/canine"
+
+# Upgrades run without the token, so also go by whether the tunnel service is already set up
+if [ -n "$TUNNEL_TOKEN" ] || systemctl is-enabled --quiet cloudflared 2> /dev/null; then
+  cat <<EOF
+
+Canine is running on http://$BIND_ADDRESS:$PORT and the Cloudflare Tunnel is running.
+Keep this machine's security group free of inbound rules; the tunnel only connects out.
+
+Finish in the Cloudflare Zero Trust dashboard:
+  1. Networks > Tunnels > your tunnel > Private Networks: add $BIND_ADDRESS/32 (add no public hostname)
+  2. Settings > Network: turn on the Gateway proxy for TCP
+  3. Settings > WARP Client > Device settings: make sure the split tunnels send $BIND_ADDRESS through WARP
+     (the default profile excludes 10.0.0.0/8 and 172.16.0.0/12)
+  4. Gateway > Firewall policies > Network: allow $BIND_ADDRESS port $PORT for your team, then block it for everyone else
+  5. Optional, Gateway > Firewall policies > DNS: override canine.internal to $BIND_ADDRESS, then re-run with
+       --host http://canine.internal:$PORT
+  6. From a laptop on WARP, open $APP_HOST and create the first account right away.
+
+Manage it with 'canine' (in $helper_dir): canine status | logs | restart | upgrade | stop
+EOF
+  exit 0
+fi
 
 cat <<EOF
 
