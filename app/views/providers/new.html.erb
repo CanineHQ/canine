@@ -14,13 +14,20 @@
             Make sure you have the <code class="mx-2 bg-white text-black px-2 py-1 rounded-md">Read & Write</code> permission if you want to deploy a private image.
           </div>
         <% elsif params[:provider_type] == Provider::GITHUB_PROVIDER %>
-          <%= link_to "Create your Github token →", "https://github.com/settings/tokens/new?scopes=repo,write:packages&description=Canine%20Deployment%20Platform", target: "_blank", class: "text-sm text-gray-500 " %>
+          <%= link_to "Create a fine-grained Github token →", "https://github.com/settings/personal-access-tokens/new?name=Canine%20Deployment%20Platform", target: "_blank", class: "text-sm text-gray-500 " %>
           <div class="mt-2">
-            Select the
-            <% Providers::CreateGithubProvider::EXPECTED_SCOPES.each do |scope| %>
-              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
+            Under <b>Repository access</b>, choose only the repositories you want to deploy, and grant
+            <% Providers::CreateGithubProvider::FINE_GRAINED_PERMISSIONS.each do |permission, access| %>
+              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= permission %>: <%= access %></code>
             <% end %>
-            permissions.
+          </div>
+          <div class="mt-2 text-sm text-gray-500">
+            Fine-grained tokens can't push to ghcr.io, so add a Container Registry credential for your builds.
+            A classic token with the
+            <% Providers::CreateGithubProvider::EXPECTED_SCOPES.each do |scope| %>
+              <code class="mx-1 bg-white text-black px-1 rounded-md"><%= scope %></code>
+            <% end %>
+            scopes also works.
           </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
           <%= link_to "Create your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500 " %>

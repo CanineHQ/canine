@@ -46,6 +46,19 @@ RSpec.describe Providers::Create do
         end
       end
 
+      context 'when the access token is fine-grained' do
+        let(:provider) { build(:provider, :github, access_token: 'github_pat_abc123') }
+
+        before do
+          allow(Git::Github::Client).to receive(:build_client).and_return(double(user: { login: 'test_user' }, scopes: []))
+        end
+
+        it 'saves the provider without checking scopes' do
+          expect(subject).to be_success
+          expect(subject.provider).to be_persisted
+        end
+      end
+
       context 'when the scopes are invalid' do
         before do
           allow(Git::Github::Client).to receive(:build_client).and_return(double(user: { login: 'test_user' }, scopes: [ 'repo' ]))
