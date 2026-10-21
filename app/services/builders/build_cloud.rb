@@ -48,8 +48,8 @@ module Builders
         command += [ "--build-arg", "#{name}=#{value}" ]
       end
 
-      # Add build arguments
-      project.environment_variables.each do |envar|
+      # Add config environment variables as build args; secrets are never passed to the build
+      project.environment_variables.config.each do |envar|
         command += [ "--build-arg", "#{envar.name}=#{envar.value}" ]
       end
 
