@@ -43,4 +43,18 @@ RSpec.describe "Agent computers", type: :request do
     patch agent_computer_path(computer), params: { agent_computer: { name: "moved", cluster_id: others.id, coding_agent: "pi" } }
     expect(computer.reload).to have_attributes(name: "desk", cluster: computer.cluster, coding_agent: "pi")
   end
+
+  it "reserves the memory picked, recommending 8Gi, and applies a change on the next start" do
+    get new_agent_computer_path
+    expect(response.body).to include("16Gi", "Recommended")
+
+    computer.update!(status: :running)
+    patch agent_computer_path(computer), params: { agent_computer: { memory: "16Gi" } }
+    expect(flash[:notice]).to eq("Memory set to 16Gi. Stop and start the computer to apply it.")
+    expect(AgentComputers::Omarchy.new(computer.reload).virtual_machine_yaml({})).to include("guest: 16Gi")
+
+    patch agent_computer_path(computer), params: { agent_computer: { memory: "1Ti" } }
+    expect(response).to have_http_status(:unprocessable_entity)
+    expect(computer.reload.memory).to eq("16Gi")
+  end
 end

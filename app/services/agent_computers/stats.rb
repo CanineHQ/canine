@@ -55,7 +55,7 @@ module AgentComputers
     end
 
     def cpu_limit = AgentComputer::CPU_CORES * 1000
-    def memory_limit = memory_total || memory_to_integer(AgentComputer::MEMORY)
+    def memory_limit = memory_total || memory_to_integer(@agent_computer.memory)
 
     private
 

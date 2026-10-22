@@ -62,7 +62,7 @@ class AgentComputers::Omarchy
             "domain" => {
               "firmware" => { "bootloader" => { "efi" => { "secureBoot" => false } } },
               "cpu" => { "cores" => AgentComputer::CPU_CORES, "model" => "host-passthrough" },
-              "memory" => { "guest" => AgentComputer::MEMORY },
+              "memory" => { "guest" => @computer.memory },
               "devices" => {
                 "video" => { "type" => "virtio" },
                 # An absolute pointer, for KubeVirt's console (virtctl vnc) when debugging a VM
