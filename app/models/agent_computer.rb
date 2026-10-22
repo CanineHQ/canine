@@ -81,11 +81,11 @@ class AgentComputer < ApplicationRecord
   # at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past 4GiB, where the
   # VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
   MEMORY_OPTIONS = [
-    Option.new("4Gi", "4Gi", "swaps during agent runs", false, "lucide:memory-stick", nil),
-    Option.new("6Gi", "6Gi", "one or two runs at once", false, "lucide:memory-stick", nil),
-    Option.new("8Gi", "8Gi", "fits #{PARALLEL_RUNS} runs at once", true, "lucide:memory-stick", nil),
-    Option.new("16Gi", "16Gi", "for heavy coding or many tabs", false, "lucide:memory-stick", nil),
-    Option.new("32Gi", "32Gi", nil, false, "lucide:memory-stick", nil)
+    Option.new("4Gi", "4Gi", "slows down once an agent opens a browser", false, "lucide:memory-stick", nil),
+    Option.new("6Gi", "6Gi", "fine for one agent at a time", false, "lucide:memory-stick", nil),
+    Option.new("8Gi", "8Gi", "smooth with several agents working", true, "lucide:memory-stick", nil),
+    Option.new("16Gi", "16Gi", "big builds and lots of tabs", false, "lucide:memory-stick", nil),
+    Option.new("32Gi", "32Gi", "large builds or data work", false, "lucide:memory-stick", nil)
   ].freeze
 
   belongs_to :account_user

@@ -62,7 +62,7 @@
       booted with until it's stopped and started again.</p>
   </div>
   <%= form_with(model: @agent_computer) do |form| %>
-    <%= render(FormFieldComponent.new(label: "Memory", description: "8Gi fits #{AgentComputer::PARALLEL_RUNS} runs at once without swapping.")) do %>
+    <%= render(FormFieldComponent.new(label: "Memory", description: "Too little and the desktop slows down while agents work.")) do %>
       <%= render(RichSelectComponent.new(
         name: "agent_computer[memory]",
         id: "agent_computer_memory",
