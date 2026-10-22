@@ -1,11 +1,5 @@
 class Providers::CreateGithubProvider
   EXPECTED_SCOPES = [ "repo", "write:packages" ]
-  FINE_GRAINED_PERMISSIONS = {
-    "Contents" => "Read-only",
-    "Pull requests" => "Read-only",
-    "Webhooks" => "Read and write"
-  }
-  FINE_GRAINED_TOKEN_PREFIX = "github_pat_"
   extend LightService::Action
 
   expects :provider
@@ -23,9 +17,8 @@ class Providers::CreateGithubProvider
       }
     }.to_json
 
-    # Fine-grained tokens have no OAuth scopes; repo access is checked when a project is created.
-    # Also skip for enterprise (some GHE instances don't expose scopes).
-    unless context.provider.enterprise? || context.provider.access_token.start_with?(FINE_GRAINED_TOKEN_PREFIX)
+    # Skip scope validation for enterprise (some GHE instances don't expose scopes)
+    unless context.provider.enterprise?
       if (client.scopes & EXPECTED_SCOPES).sort != EXPECTED_SCOPES.sort
         message = "Invalid scopes. Please check that your personal access token has the following scopes: #{EXPECTED_SCOPES.join(", ")}"
         context.fail_and_return!(message)
