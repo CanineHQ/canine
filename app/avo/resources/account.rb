@@ -16,5 +16,12 @@ class Avo::Resources::Account < Avo::BaseResource
     field :clusters, as: :has_many
     field :projects, as: :has_many, through: :clusters
     field :add_ons, as: :has_many, through: :clusters
+    field :plan, as: :text, readonly: true, format_using: -> { record.complimentary? ? "pro (free)" : value }
+    field :subscription_status, as: :text, readonly: true
+  end
+
+  def actions
+    action Avo::Actions::CompProPlan
+    action Avo::Actions::RemoveCompedProPlan
   end
 end
