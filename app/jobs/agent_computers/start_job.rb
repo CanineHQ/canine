@@ -1,6 +1,7 @@
 module AgentComputers
   # Boots a stopped computer (runStrategy Always) and waits for its desktop stream. Omarchy logs straight into the
-  # desktop and starts Selkies on its own, so there's nothing to set up again.
+  # desktop and starts Selkies on its own, so there's nothing to set up again. The boot picks up the computer's memory,
+  # in case it was changed while it was stopped or running.
   class StartJob < ApplicationJob
     queue_as :agent_computers
 
@@ -11,7 +12,8 @@ module AgentComputers
     def perform(agent_computer)
       agent_computer.starting!
       kubectl = K8::Kubectl.new(K8::Connection.new(agent_computer.cluster, agent_computer.user))
-      kubectl.(%W[patch vm #{agent_computer.name} -n #{agent_computer.namespace} --type merge -p {"spec":{"runStrategy":"Always"}}])
+      patch = { spec: { runStrategy: "Always", template: { spec: { domain: { memory: { guest: agent_computer.memory } } } } } }
+      kubectl.(%W[patch vm #{agent_computer.name} -n #{agent_computer.namespace} --type merge -p #{patch.to_json}])
 
       deadline = TIMEOUT.from_now
       until Time.current > deadline

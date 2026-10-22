@@ -36,7 +36,7 @@
     </div>
     <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Machine</div>
-      <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputers::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= AgentComputer::MEMORY %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
+      <div class="mt-1 font-mono text-xs break-all">Omarchy <%= AgentComputers::Omarchy::VERSION %> · <%= AgentComputer::CPU_CORES %> cores, <%= @agent_computer.memory %> RAM, <%= AgentComputer::DISK_SIZE %> disk</div>
     </div>
     <div>
       <div class="text-xs uppercase tracking-wide text-base-content/50">Last Updated</div>
@@ -53,6 +53,28 @@
         Loading live stats from the cluster...
       </div>
     <% end %>
+  <% end %>
+
+  <div class="divider"></div>
+  <div class="mb-4">
+    <h6 class="text-sm font-semibold">Memory</h6>
+    <p class="text-xs text-base-content/60">RAM reserved for this computer on its node. A running computer keeps what it
+      booted with until it's stopped and started again.</p>
+  </div>
+  <%= form_with(model: @agent_computer) do |form| %>
+    <%= render(FormFieldComponent.new(label: "Memory", description: "8Gi fits #{AgentComputer::PARALLEL_RUNS} runs at once without swapping.")) do %>
+      <%= render(RichSelectComponent.new(
+        name: "agent_computer[memory]",
+        id: "agent_computer_memory",
+        collection: AgentComputer::MEMORY_OPTIONS,
+        selected: @agent_computer.memory_in_database,
+        partial: "agent_computers/option_item",
+        placeholder: ""
+      )) %>
+    <% end %>
+    <div class="form-footer">
+      <%= form.button "Save memory", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    </div>
   <% end %>
 
   <div class="divider"></div>
