@@ -90,6 +90,23 @@
           <%= "—" if stats.services.empty? %>
         </div>
       </div>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Desktop Stream</div>
+        <div class="mt-1">
+          <% stream = stats.stream %>
+          <% if stream.nil? %>
+            <span class="badge badge-sm badge-ghost" title="Selkies didn't answer">Unknown</span>
+          <% elsif !stream.webrtc? %>
+            <span class="badge badge-sm badge-warning" title="Video goes over Canine's TCP tunnel, not a TURN relay">WebSockets</span>
+          <% elsif stream.cloudflare_turn? %>
+            <span class="badge badge-sm badge-success" title="Video is relayed over UDP by Cloudflare's TURN servers">WebRTC · Cloudflare TURN</span>
+          <% elsif stream.relays.any? %>
+            <span class="badge badge-sm badge-info" title="Relayed by <%= stream.relays.to_sentence %>">WebRTC · TURN</span>
+          <% else %>
+            <span class="badge badge-sm badge-error" title="Selkies has no TURN relay, so the browser can't reach the VM">WebRTC · no TURN</span>
+          <% end %>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>

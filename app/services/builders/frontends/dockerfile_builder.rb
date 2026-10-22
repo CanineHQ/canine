@@ -38,8 +38,8 @@ class Builders::Frontends::DockerfileBuilder
       docker_build_command.push("--build-arg", "#{name}=#{value}")
     end
 
-    # Add environment variables to the build command
-    project.environment_variables.each do |envar|
+    # Add config environment variables as build args; secrets are never passed to the build
+    project.environment_variables.config.each do |envar|
       docker_build_command.push("--build-arg", "#{envar.name}=#{envar.value}")
     end
 
@@ -49,7 +49,6 @@ class Builders::Frontends::DockerfileBuilder
 
     # Add the build context directory at the end
     docker_build_command.push(File.join(repository_path, project.build_configuration.context_directory))
-    Rails.logger.info("Docker build command: `#{docker_build_command.join(" ")}`")
     docker_build_command
   end
 
