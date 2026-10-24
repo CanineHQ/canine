@@ -31,12 +31,8 @@ class Deployments::BaseDeploymentService
     return if @project.public_image?
 
     @logger.info("Creating registry secret for #{@project.container_image_reference}", color: :yellow)
-    provider = @project.build_provider
-    result = Providers::GenerateConfigJson.execute(provider:)
+    result = Projects::ApplyRegistrySecret.execute(project: @project, kubectl: @kubectl)
     raise StandardError, result.message if result.failure?
-
-    secret_yaml = K8::Secrets::RegistrySecret.new(@project, result.docker_config_json).to_yaml
-    @kubectl.apply_yaml(secret_yaml)
   end
 
   def deploy_services

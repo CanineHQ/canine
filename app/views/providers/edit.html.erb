@@ -1,0 +1,36 @@
+<%= settings_layout do %>
+  <%= turbo_frame_tag "provider" do %>
+    <%= render "providers/index" %>
+    <div class="font-lg font-bold mt-4">
+      Update <%= @provider.provider.titleize %> Token
+    </div>
+    <div class="mt-2 mb-4 text-sm text-gray-500">
+      Connected as <b><%= @provider.username %></b>.
+      Every project using this credential switches to the new token, and running deployments get a refreshed image pull secret without a redeploy.
+    </div>
+    <%= form_with model: @provider do |form| %>
+      <%= render "shared/error_messages", resource: form.object %>
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">New Access Token</span>
+        </label>
+        <%= form.text_field :access_token, value: "", class: "input input-bordered", required: true, autocomplete: "off" %>
+      </div>
+
+      <div class="form-control mt-1 w-full max-w-sm">
+        <label class="label">
+          <span class="label-text">Name</span>
+        </label>
+        <%= form.text_field :name, class: "input input-bordered", placeholder: "e.g. Production, Personal" %>
+        <label class="label">
+          <span class="label-text-alt">Optional</span>
+        </label>
+      </div>
+
+      <div class="form-footer">
+        <%= form.submit "Update Token", class: "btn btn-primary" %>
+        <%= link_to "Cancel", providers_path, class: "btn btn-outline" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

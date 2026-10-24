@@ -5,22 +5,19 @@ module Providers
     extend LightService::Organizer
 
     def self.call(provider)
+      with(provider:).reduce(validator_for(provider))
+    end
+
+    # Each action checks the token against the provider, fills in `auth`, and saves.
+    def self.validator_for(provider)
       if provider.github?
-        with(provider:).reduce(
-          Providers::CreateGithubProvider,
-        )
+        Providers::CreateGithubProvider
       elsif provider.container_registry?
-        with(provider:).reduce(
-          Providers::CreateDockerImageProvider,
-        )
+        Providers::CreateDockerImageProvider
       elsif provider.gitlab?
-        with(provider:).reduce(
-          Providers::CreateGitlabProvider,
-        )
+        Providers::CreateGitlabProvider
       elsif provider.bitbucket?
-        with(provider:).reduce(
-          Providers::CreateBitbucketProvider,
-        )
+        Providers::CreateBitbucketProvider
       end
     end
   end

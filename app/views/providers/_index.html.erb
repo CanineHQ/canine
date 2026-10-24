@@ -69,11 +69,16 @@
             <% end %>
           </td>
           <td>
+            <div class="flex gap-2">
+            <% if provider.git? || provider.container_registry? %>
+              <%= link_to "Update Token", edit_provider_path(provider), class: "btn btn-outline btn-sm" %>
+            <% end %>
             <% if project_credential_providers.empty? %>
               <%= link_to "Delete", provider, method: :delete, class: "btn btn-error btn-sm" %>
             <% else %>
               <%= link_to "Delete", "#", class: "btn btn-error btn-sm", disabled: true %>
             <% end %>
+            </div>
           </td>
         </tr>
       <% end %>
