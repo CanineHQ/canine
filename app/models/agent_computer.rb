@@ -8,6 +8,7 @@
 #  coding_model       :string
 #  computer_use_token :string
 #  failure            :text
+#  memory             :string           default("8Gi"), not null
 #  name               :string           not null
 #  namespace          :string           not null
 #  password           :string
@@ -52,9 +53,6 @@ class AgentComputer < ApplicationRecord
   COMPUTER_USE_PORT = 8000 # resources/agent_computer/computer_use
   SSH_PORT = 22
   CPU_CORES = 4
-  # The desktop idles at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past
-  # 4GiB, where the VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
-  MEMORY = "8Gi"
   # Runs at once, each on a workspace of its own (the person keeps one of Omarchy's 10): each browses in its own
   # Chromium windows, and more than a few at a time would run the VM out of memory
   PARALLEL_RUNS = 3
@@ -77,6 +75,17 @@ class AgentComputer < ApplicationRecord
   CODING_AGENT_OPTIONS = [
     Option.new("opencode", "opencode", nil, true, "lucide:square-terminal", nil),
     *(AgentLoop::Delegate::AGENTS.keys - [ "opencode" ]).map { |a| Option.new(a, a, nil, false, "lucide:terminal", nil) }
+  ].freeze
+
+  # The VM's RAM, picked per computer (the memory column; a change takes effect on its next start). The desktop idles
+  # at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past 4GiB, where the
+  # VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
+  MEMORY_OPTIONS = [
+    Option.new("4Gi", "4Gi", "slows down once an agent opens a browser", false, "lucide:memory-stick", nil),
+    Option.new("6Gi", "6Gi", "fine for one agent at a time", false, "lucide:memory-stick", nil),
+    Option.new("8Gi", "8Gi", "smooth with several agents working", true, "lucide:memory-stick", nil),
+    Option.new("16Gi", "16Gi", "big builds and lots of tabs", false, "lucide:memory-stick", nil),
+    Option.new("32Gi", "32Gi", "large builds or data work", false, "lucide:memory-stick", nil)
   ].freeze
 
   belongs_to :account_user
@@ -117,6 +126,7 @@ class AgentComputer < ApplicationRecord
   validates :name, presence: true,
                    length: { maximum: 63 - NAMESPACE_PREFIX.length },
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
+  validates :memory, inclusion: { in: MEMORY_OPTIONS.map(&:id) }
 
   validate :cluster_in_account
   before_validation :assign_namespace, on: :create

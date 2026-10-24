@@ -3,7 +3,6 @@ x-shared-env: &shared-env
   BOOT_MODE: local
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:-devsecret}
   APP_HOST: http://localhost:${PORT:-3000}
-  LOCAL_MODE_PASSWORDLESS: true
   REMAP_LOCALHOST: "host.docker.internal"
   ALLOWED_HOSTNAME: "*"
 

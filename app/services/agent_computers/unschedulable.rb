@@ -11,9 +11,11 @@ module AgentComputers
 
       message = condition["message"].to_s
       short = if message.include?("Insufficient memory")
-        "There isn't enough free memory on the cluster for this computer, which needs #{AgentComputer::MEMORY}."
+        memory = vm.dig("spec", "template", "spec", "domain", "memory", "guest")
+        "There isn't enough free memory on the cluster for this computer#{", which needs #{memory}" if memory}."
       elsif message.include?("Insufficient cpu")
-        "There aren't enough free CPUs on the cluster for this computer, which needs #{AgentComputer::CPU_CORES}."
+        # Not CPU_CORES: KubeVirt only requests a tenth of a CPU per core, so the shortfall is far smaller than that
+        "There isn't enough free CPU on the cluster for this computer."
       end
       return unless short # anything else (e.g. a disk still binding) can settle on its own
 

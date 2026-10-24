@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -208,6 +208,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_000000) do
     t.string "coding_agent"
     t.text "failure"
     t.integer "provision_stage", default: 0, null: false
+    t.string "memory", default: "8Gi", null: false
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
   end

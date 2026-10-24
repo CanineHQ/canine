@@ -104,3 +104,4 @@ Canine is released under the [Apache 2.0 License](https://github.com/CanineHQ/ca
 You are free to use, modify, and distribute this software for commercial and non-commercial purposes. See the LICENSE file for full details.
 
 For commercial support, enterprise features, or managed hosting, visit [https://canine.sh](https://canine.sh).
+

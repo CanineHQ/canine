@@ -167,7 +167,7 @@ Rails.application.routes.draw do
   end
 
   resource :email_preference, only: %i[show update]
-  resources :providers, only: %i[index new create destroy]
+  resources :providers, only: %i[index new create edit update destroy]
   resources :api_tokens, only: %i[index new create destroy]
   resources :shell_sessions, only: %i[destroy], controller: "shell_sessions" do
     post :upload, on: :member
@@ -322,11 +322,6 @@ Rails.application.routes.draw do
   # Public marketing homepage
   if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do
-      resources :authentication do
-        member do
-          post :login
-        end
-      end
       resources :onboarding, only: [ :index, :create ] do
         collection do
           get :account_select

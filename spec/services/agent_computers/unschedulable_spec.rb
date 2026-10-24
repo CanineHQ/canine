@@ -2,12 +2,13 @@ require "rails_helper"
 
 RSpec.describe AgentComputers::Unschedulable do
   def vm(message)
-    { "status" => { "conditions" => [ { "type" => "PodScheduled", "status" => "False", "reason" => "Unschedulable", "message" => message } ] } }
+    { "spec" => { "template" => { "spec" => { "domain" => { "memory" => { "guest" => "16Gi" } } } } },
+      "status" => { "conditions" => [ { "type" => "PodScheduled", "status" => "False", "reason" => "Unschedulable", "message" => message } ] } }
   end
 
   it "explains a full cluster, and leaves anything that can settle on its own alone" do
     reason = described_class.reason(vm("0/1 nodes are available: 1 Insufficient memory. preemption: 0/1 nodes are available"))
-    expect(reason).to start_with("There isn't enough free memory on the cluster for this computer, which needs 8Gi.")
+    expect(reason).to start_with("There isn't enough free memory on the cluster for this computer, which needs 16Gi.")
     expect(reason).to end_with("(Kubernetes: 0/1 nodes are available: 1 Insufficient memory.)")
 
     expect(described_class.reason(vm("0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims"))).to be_nil

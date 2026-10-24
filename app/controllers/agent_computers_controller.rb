@@ -17,7 +17,7 @@ class AgentComputersController < ApplicationController
 
   def update
     if @agent_computer.update(model_params)
-      redirect_to edit_agent_computer_path(@agent_computer), notice: "Model settings saved."
+      redirect_to edit_agent_computer_path(@agent_computer), notice: update_notice
     else
       render :edit, status: :unprocessable_entity
     end
@@ -95,6 +95,14 @@ class AgentComputersController < ApplicationController
 
   # What can change after create: a computer's name and cluster are fixed (its namespace and VM live there)
   def model_params
-    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent)
+    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent, :memory)
+  end
+
+  # A booted VM keeps the memory it started with; StartJob applies the new size
+  def update_notice
+    return "Settings saved." unless @agent_computer.saved_change_to_memory?
+    return "Memory set to #{@agent_computer.memory}." if @agent_computer.stopped?
+
+    "Memory set to #{@agent_computer.memory}. Stop and start the computer to apply it."
   end
 end

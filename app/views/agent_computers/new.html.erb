@@ -41,6 +41,20 @@
               <span class="label-text-alt">* Required</span>
             </label>
           <% end %>
+
+          <%= render(FormFieldComponent.new(
+            label: "Memory",
+            description: "RAM reserved for the computer on its node. You can change it later; it applies on the next start."
+          )) do %>
+            <%= render(RichSelectComponent.new(
+              name: "agent_computer[memory]",
+              id: "agent_computer_memory",
+              collection: AgentComputer::MEMORY_OPTIONS,
+              selected: form.object.memory,
+              partial: "agent_computers/option_item",
+              placeholder: ""
+            )) %>
+          <% end %>
         </div>
 
         <div class="form-footer">

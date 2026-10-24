@@ -13,8 +13,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_MULTIPLE_DATABASES=canine_production,canine_development
-    ports:
-      - "5432:5432"
     volumes:
       - "postgres:/var/lib/postgresql/data"
     healthcheck:
