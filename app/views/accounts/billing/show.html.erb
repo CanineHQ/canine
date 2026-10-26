@@ -11,7 +11,9 @@
         <div>
           <p class="text-sm text-gray-500">Current Plan</p>
           <p class="text-2xl font-bold mt-1 capitalize"><%= current_account.plan %></p>
-          <% if current_account.subscription_status == "trialing" && current_account.trial_ends_at&.future? %>
+          <% if current_account.complimentary? %>
+            <p class="text-sm text-gray-500 mt-1">Complimentary: no charge</p>
+          <% elsif current_account.subscription_status == "trialing" && current_account.trial_ends_at&.future? %>
             <p class="text-sm text-warning mt-1">Trial ends <%= time_ago(current_account.trial_ends_at) %></p>
           <% elsif current_account.subscription_status.present? %>
             <p class="text-sm text-gray-500 mt-1 capitalize">Status: <%= current_account.subscription_status %></p>
@@ -22,10 +24,12 @@
           <p class="text-sm mt-1">
             <span class="font-semibold"><%= current_account.clusters.count %></span> total
           </p>
-          <% if current_account.billable_clusters_count > 0 %>
+          <% if current_account.billable_clusters_count > 0 && !current_account.complimentary? %>
             <p class="text-sm text-gray-400">
               1 free + <%= current_account.billable_clusters_count %> paid ($<%= current_account.billable_clusters_count * 20 %>/mo)
             </p>
+          <% elsif current_account.complimentary? %>
+            <p class="text-sm text-gray-400">All included at no charge</p>
           <% else %>
             <p class="text-sm text-gray-400">1 free cluster included</p>
           <% end %>
