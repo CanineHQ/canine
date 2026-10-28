@@ -15,7 +15,7 @@
   <div class="flex items-center justify-center">
     <details class="mx-auto dropdown">
       <summary class="btn m-1"><%= truncate(current_account.name, length: 20) %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
-      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow">
+      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow flex-nowrap max-h-[60vh] overflow-y-auto">
         <!-- Current Account Section -->
         <li class="menu-title text-xs opacity-60 px-4 py-2">CURRENT ORGANIZATION</li>
         <li>
@@ -37,8 +37,7 @@
           <% end %>
         <% end %>
 
-        <hr class="my-2 border-base-content/15" />
-        <li>
+        <li class="sticky -bottom-2 -mb-2 mt-2 border-t border-base-content/15 bg-base-300 py-2">
           <button class="btn btn-ghost btn-sm justify-start" onclick="click_outside_modal_2.showModal()">
             <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
             <span>New organization</span>
