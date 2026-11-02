@@ -1,11 +1,18 @@
 module AgentComputers
   # Live stats for an agent computer's VM: KubeVirt's view of the VM, metrics-server CPU of its launcher pod (QEMU
   # included), memory and who has the screen from inside the guest (the computer-use server), disk usage from the
-  # guest agent, and port probes for the services inside the guest.
+  # guest agent, port probes for the services inside the guest, and whether its desktop stream relays through TURN.
   class Stats
     include StorageHelper
 
     Service = Struct.new(:name, :state, :detail, keyword_init: true)
+    # The desktop stream's relay, as the guest has it: Selkies started with the credentials file (Turn::RTC_CONFIG_PATH),
+    # which holds TURN servers, and when they were written (they're good for Turn::TTL)
+    Relay = Struct.new(:selkies_uses_file, :turn_servers, :written_at, keyword_init: true) do
+      def relayed? = selkies_uses_file && turn_servers.positive?
+      def expires_at = written_at && written_at + Turn::TTL
+      def expired? = expires_at && expires_at.past?
+    end
 
     # Probed from the launcher pod, where the guest is reachable at KubeVirt's masquerade address
     GUEST_ADDRESS = "10.0.2.2"
@@ -15,7 +22,7 @@ module AgentComputers
       "computer-use" => AgentComputer::COMPUTER_USE_PORT
     }.freeze
 
-    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services
+    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services, :relay
 
     def initialize(agent_computer, user)
       @agent_computer = agent_computer
@@ -38,7 +45,7 @@ module AgentComputers
       fetch_cpu(namespace)
       fetch_disk(namespace)
       probe_services(namespace)
-      @memory_used, @memory_total = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
+      @memory_used, @memory_total, @relay = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
       self
     end
 
@@ -61,15 +68,34 @@ module AgentComputers
 
     # From inside the guest: memory in use as Linux counts it, total minus available, so page cache it would drop on
     # demand doesn't count. (The pod's working set counts all the guest RAM QEMU has ever touched, so it sits near the
-    # VM's size even when the guest has plenty free: no sign of pressure.) Nils if the server didn't answer.
+    # VM's size even when the guest has plenty free: no sign of pressure.) And the stream's relay (Relay). Nils if the
+    # server didn't answer.
     def fetch_guest(computer_use)
-      meminfo = computer_use.run("cat /proc/meminfo")["stdout"].to_s
+      output = computer_use.run(GUEST_COMMAND)["stdout"].to_s
+      meminfo, relay = output.split("---relay\n", 2)
       bytes = ->(key) { meminfo[/^#{key}:\s+(\d+) kB/, 1]&.to_i&.*(1024) }
       total, available = bytes.("MemTotal"), bytes.("MemAvailable")
-      [ total && available && total - available, total ]
+      [ total && available && total - available, total, parse_relay(relay) ]
     rescue StandardError => e
       Rails.logger.info("Couldn't read computer #{@agent_computer.id}'s guest stats: #{e.message}")
-      [ nil, nil ]
+      [ nil, nil, nil ]
+    end
+
+    # Selkies' arguments ([-] so grep doesn't find itself), then the credentials file's mtime and count of TURN URLs
+    GUEST_COMMAND = <<~SH.freeze
+      cat /proc/meminfo
+      echo ---relay
+      ps -eo args | grep -c '[-]-rtc-config-json=.*#{Turn::RTC_CONFIG_PATH.delete_prefix("~/")}'
+      stat -c %Y #{Turn::RTC_CONFIG_PATH} 2>/dev/null || echo none
+      grep -oE '"turns?:' #{Turn::RTC_CONFIG_PATH} 2>/dev/null | wc -l
+    SH
+
+    def parse_relay(output)
+      uses, written, servers = output.to_s.split("\n").map(&:strip)
+      return if servers.nil?
+
+      Relay.new(selkies_uses_file: uses.to_i.positive?, turn_servers: servers.to_i,
+                written_at: written.to_s.match?(/\A\d+\z/) ? Time.zone.at(written.to_i) : nil)
     end
 
     def condition?(type)

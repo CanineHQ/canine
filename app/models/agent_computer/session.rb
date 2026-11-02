@@ -2,28 +2,32 @@
 #
 # Table name: agent_computer_sessions
 #
-#  id            :bigint           not null, primary key
-#  cached_tokens :bigint           default(0), not null
-#  cost_usd      :decimal(10, 6)   default(0.0), not null
-#  error         :text
-#  finished_at   :datetime
-#  input_tokens  :integer          default(0), not null
-#  model         :string           not null
-#  notes         :text
-#  notes_through :integer
-#  output_tokens :integer          default(0), not null
-#  provider      :string
-#  started_at    :datetime
-#  status        :integer          default("queued"), not null
-#  summary       :text
-#  trigger       :integer          default("scheduled"), not null
-#  turns         :integer          default(0), not null
-#  window_from   :datetime
-#  window_to     :datetime
-#  workspace     :integer
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  task_id       :bigint           not null
+#  id             :bigint           not null, primary key
+#  cached_tokens  :bigint           default(0), not null
+#  cost_usd       :decimal(10, 6)   default(0.0), not null
+#  error          :text
+#  finished_at    :datetime
+#  input_tokens   :integer          default(0), not null
+#  kept_tab       :string
+#  model          :string           not null
+#  notes          :text
+#  notes_through  :integer
+#  outcome        :integer
+#  output_tokens  :integer          default(0), not null
+#  provider       :string
+#  started_at     :datetime
+#  status         :integer          default("queued"), not null
+#  summary        :text
+#  trigger        :integer          default("scheduled"), not null
+#  turns          :integer          default(0), not null
+#  waited_seconds :integer          default(0), not null
+#  waiting_since  :datetime
+#  window_from    :datetime
+#  window_to      :datetime
+#  workspace      :integer
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  task_id        :bigint           not null
 #
 # Indexes
 #
@@ -45,11 +49,19 @@ class AgentComputer::Session < ApplicationRecord
   has_many :activities, -> { order(:position) }, dependent: :destroy # and their actions
   has_many :actions, -> { reorder(:created_at) }, through: :activities
   has_many :posts, dependent: :delete_all
+  # The comment it acts on, for a follow-up run (trigger "comment")
+  has_one :comment, dependent: :nullify
 
-  enum :trigger, { scheduled: 0, manual: 1 }
-  enum :status, { queued: 0, running: 1, waiting_for_tool: 2, succeeded: 3, failed: 4, cancelled: 5 }
+  enum :trigger, { scheduled: 0, manual: 1, comment: 2 }
+  # waiting_for_person: paused on a question only the person can answer (a one-time code, a yes/no), asked with the
+  # ask_person tool. It keeps its workspace and leaves its windows as they are (the code form stays open) until they
+  # answer (answer!) or cancel it.
+  enum :status, { queued: 0, running: 1, waiting_for_tool: 2, succeeded: 3, failed: 4, cancelled: 5, waiting_for_person: 6 }
+  # Whether the task got done, by the model's own account when it called finish: a run that ends "succeeded" can still
+  # have been blocked. nil when it ended any other way.
+  enum :outcome, { done: 0, partly_done: 1, blocked: 2 }, prefix: true
 
-  ACTIVE = %w[queued running waiting_for_tool].freeze
+  ACTIVE = %w[queued running waiting_for_tool waiting_for_person].freeze
   scope :active, -> { where(status: ACTIVE) }
 
   after_create_commit -> { broadcast_prepend_to [ task, :runs ], target: dom_id(task, :runs), partial: "agent_computers/tasks/run", locals: { session: self, animate: true } }
@@ -70,10 +82,58 @@ class AgentComputer::Session < ApplicationRecord
     status.in?(ACTIVE)
   end
 
+  # Waiting on something other than the model: a tool's job, or the person
+  def paused?
+    waiting_for_tool? || waiting_for_person?
+  end
+
+  # The question it's waiting on the person for (an ask_person action, still running), if it is
+  def question
+    actions.running.where(tool: "ask_person").last if waiting_for_person?
+  end
+
+  # Time it has spent working, which its time limit counts: not the time spent waiting for the person
+  def working_seconds
+    return 0 unless started_at
+
+    waiting = waiting_since ? Time.current - waiting_since : 0
+    Time.current - started_at - waited_seconds - waiting
+  end
+
+  def wait_for_person!
+    update!(status: :waiting_for_person, waiting_since: Time.current)
+  end
+
+  # The person's answer to its question: back to the model as a message, and the run carries on. Like resume_with!,
+  # under a row lock, so an answer can't resume a run cancelled meanwhile. Returns whether it resumed.
+  def answer!(text)
+    question = self.question
+    resumed = with_lock do
+      next false unless waiting_for_person?
+
+      messages.create!(position: messages.unscope(:order).maximum(:position).to_i + 1, role: "user",
+                       content: "The person answered your question: #{text}")
+      update!(status: :running, waited_seconds: waited_seconds + (Time.current - waiting_since).round, waiting_since: nil)
+      true
+    end
+    return false unless resumed
+
+    question&.update!(status: :done, result: { "text" => "Answered." }, # (not the answer: it's often a code)
+                      duration_ms: ((Time.current - question.started_at) * 1000).round)
+    AgentSessions::TurnJob.perform_later(self)
+    true
+  end
+
+  # Queued until the computer is running: a run started while it's off waits for it, and starts when it boots
+  # (AgentComputer#start_queued_sessions)
+  def waiting_for_computer?
+    queued? && workspace.nil? && !agent_computer.running?
+  end
+
   # Queued until a workspace frees up (rather than queued and about to start): the computer has as many runs going as
   # it takes at once.
   def waiting_in_queue?
-    queued? && workspace.nil? && agent_computer.sessions.active.where.not(workspace: nil).count >= AgentComputer::PARALLEL_RUNS
+    queued? && workspace.nil? && agent_computer.running? && agent_computer.sessions.active.where.not(workspace: nil).count >= AgentComputer::PARALLEL_RUNS
   end
 
   # A run in progress that's done nothing for this long is probably stuck (its card says so)
@@ -147,12 +207,16 @@ class AgentComputer::Session < ApplicationRecord
     (usable.find { |w| w["windows"].empty? } || usable.first)&.dig("workspace")
   end
 
-  def finish!(status, summary: nil, error: nil)
-    update!(status:, summary:, error:, finished_at: Time.current)
+  def finish!(status, summary: nil, error: nil, outcome: nil)
+    started = started_at || workspace
+    update!(status:, summary:, error:, outcome:, finished_at: Time.current)
+    return if status.to_s == "cancelled" && !started # cancelled in the queue: nothing to sum up, post, or close
+
     current_activity&.finish!
     AgentLoop::Tidy.enqueue(self, all: true)
     AgentSessions::WrapupJob.perform_later(self) # a summary if it has none, and close the windows it opened
-    AgentSessions::PostJob.set(wait: AgentSessions::PostJob::WAIT).perform_later(self) # what it did, for the feed
+    # What it did, for the feed. A follow-up's summary is the reply under its comment instead.
+    AgentSessions::PostJob.set(wait: AgentSessions::PostJob::WAIT).perform_later(self) unless comment?
     broadcast_thinking(false)
   end
 
@@ -176,5 +240,6 @@ class AgentComputer::Session < ApplicationRecord
     if summary_previously_changed? || error_previously_changed?
       broadcast_replace_to self, target: dom_id(self, :outcome), partial: "agent_computers/sessions/outcome", locals: { session: self }
     end
+    comment&.broadcast_reply if saved_change_to_status? || summary_previously_changed? || error_previously_changed?
   end
 end

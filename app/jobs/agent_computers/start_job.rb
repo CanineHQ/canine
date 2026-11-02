@@ -37,6 +37,7 @@ module AgentComputers
     # they're written
     def started(agent_computer)
       agent_computer.running!
+      agent_computer.start_queued_sessions
       AgentComputers::Turn.refresh(agent_computer) if AgentComputers::Turn.configured?
     rescue AgentComputers::Turn::Error, AgentComputers::GuestShell::Error => e
       Rails.logger.warn("Couldn't refresh TURN credentials on #{agent_computer.name}: #{e.message}") # RefreshTurnJob tries again

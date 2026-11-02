@@ -18,7 +18,8 @@
      data-agent-computers--compose-labels-value='<%= { now: "Run now", "10m": "Every 10 minutes", "30m": "Every 30 minutes", "1h": "Every hour", "6h": "Every 6 hours" }.to_json %>'>
   <div class="card-body gap-3 p-4">
     <%= form_with url: compose_agent_computer_agent_tasks_path(@agent_computer), method: :post do |f| %>
-      <%= text_area_tag :instruction, nil, rows: 2, required: true,
+      <%# No spellcheck or autocorrect: instructions are full of names, repos and URLs the browser "fixes" %>
+      <%= text_area_tag :instruction, nil, rows: 2, required: true, spellcheck: false, autocorrect: "off", autocapitalize: "off",
             data: { controller: "textarea-autogrow", "agent-computers--compose-target": "instruction" },
             placeholder: "What should your agent do? e.g. Check my email and summarize anything that needs a reply.",
             class: "w-full resize-none border-0 bg-transparent px-1 text-[15px] leading-relaxed placeholder:text-base-content/40 focus:border-0 focus:outline-none focus:ring-0" %>

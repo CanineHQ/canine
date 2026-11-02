@@ -70,6 +70,10 @@ module Cli
 
         exit_status
       end
+    rescue Errno::ENOENT
+      # The program itself isn't there (not installed, or not on the PATH): say so in the log, not just in the job's error
+      @loggable.error("`#{command.first}` isn't installed or isn't on the PATH")
+      raise CommandFailedError, "`#{command.first}` isn't installed or isn't on the PATH"
     ensure
       stop_monitor_thread
     end

@@ -110,6 +110,21 @@
   <% end %>
 
   <div class="divider"></div>
+  <div class="mb-4">
+    <h6 class="text-sm font-semibold">Long-term memory</h6>
+    <p class="text-xs text-base-content/60">What agents have learned on this computer, one note per line. Every run starts
+      with it, and they add to it as they go. Edit it to correct a note or tell them something up front.</p>
+  </div>
+  <%= form_with(model: @agent_computer) do |form| %>
+    <%= form.text_area :long_term_memory, rows: 8, maxlength: AgentComputer::LONG_TERM_MEMORY_LIMIT,
+          placeholder: "- GitHub asks for an emailed code before changing SSH keys",
+          class: "textarea textarea-bordered w-full font-mono text-sm" %>
+    <div class="form-footer">
+      <%= form.button "Save long-term memory", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    </div>
+  <% end %>
+
+  <div class="divider"></div>
   <a class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block mb-4"
      onclick="agent_terminal_modal.showModal()">
     Prefer using your own terminal?

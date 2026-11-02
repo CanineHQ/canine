@@ -136,9 +136,10 @@ RSpec.describe Clusters::Install do
         allow(described_class).to receive(:run_install).and_raise(error)
       end
 
-      it 'sets cluster status to failed' do
+      it 'sets cluster status to failed and logs why' do
         expect(cluster).to receive(:failed!)
         expect { described_class.call(cluster, user) }.to raise_error(error)
+        expect(cluster.log_outputs.last.output).to include("Installation failed: Something went wrong")
       end
 
       it 're-raises the exception' do

@@ -13,10 +13,13 @@ module AgentLoop
       return Tools::Result.new(text: "Add an OpenRouter key in Agent settings first.", error: true) unless key
 
       model = session.agent_computer.browse_model.presence || session.model
+      # A tab the last browse left open when it stopped to ask the person (the code form): this one carries on in it
+      continue_tab = session.kept_tab
       response = session.computer_use.browse_start(
         task: args["task"], url: args["url"].presence, model:, api_key: key.api_key,
-        files: Array(args["files"]).presence, max_steps: MAX_STEPS, workspace: session.workspace
+        files: Array(args["files"]).presence, max_steps: MAX_STEPS, workspace: session.workspace, continue_tab:
       )
+      session.update!(kept_tab: nil) if continue_tab
       # A short wait so the turn has committed waiting_for_tool! before the watch job's first poll (as DelegateWatchJob)
       AgentSessions::BrowseWatchJob.set(wait: 5.seconds).perform_later(session, response["id"], args["task"].to_s)
       Tools::Result.new(text: "Started browsing (job #{response["id"]}, in a window on workspace #{response["workspace"]}): " \

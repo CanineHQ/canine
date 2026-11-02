@@ -1,0 +1,29 @@
+<%# What a run paused to ask the person (ask_person), and the box to answer it: a code field for a one-time code, Yes/No
+    for a confirmation. Shown on the feed's live card and the run's page; answering resumes the run (Session#answer!). %>
+<% if (question = session.question) %>
+  <% kind = question.arguments["kind"] %>
+  <div class="w-full rounded-lg border border-warning/40 bg-warning/10 p-3">
+    <div class="flex items-center gap-2 text-sm font-semibold text-warning">
+      <iconify-icon icon="lucide:hand" height="15"></iconify-icon>
+      Needs you · paused <%= time_ago_in_words(session.waiting_since || question.started_at) %> ago
+    </div>
+    <p class="mt-1 text-sm text-base-content/90"><%= question.arguments["question"] %></p>
+    <% url = answer_agent_computer_agent_session_path(session.agent_computer, session) %>
+    <% if kind == "yes_no" %>
+      <div class="mt-2 flex gap-2">
+        <%= button_to "Yes", url, params: { answer: "Yes" }, class: "btn btn-primary btn-sm" %>
+        <%= button_to "No", url, params: { answer: "No" }, class: "btn btn-ghost btn-sm" %>
+      </div>
+    <% else %>
+      <%= form_with url:, class: "mt-2 flex gap-2" do |f| %>
+        <% if kind == "code" %>
+          <%= f.text_field :answer, required: true, autocomplete: "one-time-code", inputmode: "numeric", placeholder: "Code",
+                class: "input input-bordered input-sm w-40 font-mono tracking-widest" %>
+        <% else %>
+          <%= f.text_field :answer, required: true, placeholder: "Your answer", class: "input input-bordered input-sm flex-1" %>
+        <% end %>
+        <%= f.button "Send", class: "btn btn-primary btn-sm", data: { turbo_submits_with: "Sending…" } %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

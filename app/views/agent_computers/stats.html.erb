@@ -82,6 +82,27 @@
         </div>
       </div>
       <div>
+        <div class="text-xs uppercase tracking-wide text-base-content/50">Desktop Relay</div>
+        <div class="mt-1">
+          <% relay = stats.relay %>
+          <% if relay.nil? %>
+            —
+          <% elsif relay.relayed? %>
+            <span class="badge badge-sm <%= relay.expired? ? 'badge-warning' : 'badge-success' %>">Cloudflare TURN</span>
+            <% if relay.written_at %>
+              <div class="text-xs text-base-content/50 mt-1">
+                <%= relay.expired? ? "Credentials expired #{time_ago_in_words(relay.expires_at)} ago" : "Credentials good for #{distance_of_time_in_words(Time.current, relay.expires_at)}" %>
+              </div>
+            <% end %>
+          <% else %>
+            <span class="badge badge-sm badge-warning">No TURN</span>
+            <div class="text-xs text-base-content/50 mt-1">
+              <%= relay.turn_servers.positive? ? "Selkies wasn't started with the credentials" : "No TURN credentials on the computer" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div>
         <div class="text-xs uppercase tracking-wide text-base-content/50">Services</div>
         <div class="mt-1 flex flex-wrap gap-1">
           <% stats.services.each do |service| %>

@@ -95,11 +95,12 @@ class AgentComputersController < ApplicationController
 
   # What can change after create: a computer's name and cluster are fixed (its namespace and VM live there)
   def model_params
-    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent, :memory)
+    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent, :memory, :long_term_memory)
   end
 
   # A booted VM keeps the memory it started with; StartJob applies the new size
   def update_notice
+    return "Long-term memory saved." if @agent_computer.saved_change_to_long_term_memory?
     return "Settings saved." unless @agent_computer.saved_change_to_memory?
     return "Memory set to #{@agent_computer.memory}." if @agent_computer.stopped?
 

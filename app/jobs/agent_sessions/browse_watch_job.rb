@@ -84,7 +84,7 @@ module AgentSessions
       activity = parent&.activity || session.current_activity
       return Rails.logger.warn("Skipped a browse step for session #{session.id}: no activity to put it under") unless activity
 
-      action = activity.actions.create!(tool: "browse_step",
+      action = activity.actions.create!(tool: "browse_step", parent:,
                                         arguments: { "goal" => event["goal"], "step" => event["step"], "url" => event["url"],
                                                     "actions" => Array(event["actions"]), "did" => Array(event["did"]),
                                                     "marked" => event["marked"] },
@@ -105,18 +105,25 @@ module AgentSessions
 
     def finished(session, parent, task, done)
       done ||= { "finished" => false, "result" => nil, "errors" => [ "The browse job ended without a result." ] }
-      add_cost(session, done.dig("usage", "cost_usd"))
-      summary = browse_summary(task, done)
-      parent&.update!(status: done["finished"] && done["success"] != false ? :done : :failed,
+      add_usage(session, done["usage"])
+      session.update!(kept_tab: done["kept_tab"]) if done["kept_tab"].present?
+      summary = browse_summary(task, done, parent)
+      parent&.update!(status: done["needs_person"].present? || (done["finished"] && done["success"] != false) ? :done : :failed,
                       result: { "text" => summary.truncate(4000) },
                       duration_ms: parent.started_at ? ((Time.current - parent.started_at) * 1000).round : 0)
       session.resume_with!(summary)
     end
 
-    def browse_summary(task, done)
+    def browse_summary(task, done, parent = nil)
+      if done["needs_person"].present?
+        return "The browse task “#{task}” stopped because it needs the person: #{done["needs_person"]} Its page is still " \
+               "open, and the next browse call carries on in it. Ask them with ask_person, then call browse again with their " \
+               "answer (e.g. \"Enter the code 123456 on the open page and finish signing in\")."
+      end
       if done["kind"] == "error" || (done["result"].blank? && !done["finished"])
         reason = Array(done["errors"]).first || done["message"] || "it ended without finishing"
-        return "The browse task “#{task}” didn't finish: #{reason}. You can try again, or carry on another way."
+        return [ "The browse task “#{task}” didn't finish: #{reason}.", last_steps(parent),
+                 "Carry on from where it got to: a narrower browse that starts there, or another way." ].compact.join("\n")
       end
       visited = Array(done["visited"]).last(8).join(" → ")
       where = done["workspace"] ? " (on workspace #{done["workspace"]})" : ""
@@ -125,8 +132,30 @@ module AgentSessions
         visited.present? && "Pages visited: #{visited}" ].select { |x| x }.join("\n")
     end
 
-    def add_cost(session, cost)
-      session.update!(cost_usd: session.cost_usd + cost.to_f) if cost.to_f.positive?
+    # Where a browse that didn't finish got to, from its steps on the timeline: browser-use's own result is empty then,
+    # and without this the model knew only the first error, not what had worked or which page it was left on
+    def last_steps(parent)
+      steps = parent&.steps&.last(LAST_STEPS)
+      return if steps.blank?
+
+      lines = steps.map do |step|
+        args = step.arguments
+        error = step.result&.dig("text").to_s.lines.grep(/\AError: /).first&.delete_prefix("Error: ")&.strip&.truncate(200)
+        [ "- #{args["goal"].presence || "(step)"}", args["url"].presence && "on #{args["url"]}", error && "failed: #{error}" ]
+          .select(&:present?).join(", ")
+      end
+      "Its last steps:\n#{lines.join("\n")}"
+    end
+    LAST_STEPS = 5
+
+    # The browser agent's model calls, on top of the loop's own (AgentLoop::Turn)
+    def add_usage(session, usage)
+      return if usage.blank?
+
+      session.update!(input_tokens: session.input_tokens + usage["input_tokens"].to_i,
+                      output_tokens: session.output_tokens + usage["output_tokens"].to_i,
+                      cached_tokens: session.cached_tokens + usage["cached_tokens"].to_i,
+                      cost_usd: session.cost_usd + usage["cost_usd"].to_f)
     end
 
     def attach_screenshot(action, base64)

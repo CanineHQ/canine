@@ -8,6 +8,7 @@
 #  coding_model       :string
 #  computer_use_token :string
 #  failure            :text
+#  long_term_memory   :text
 #  memory             :string           default("8Gi"), not null
 #  name               :string           not null
 #  namespace          :string           not null
@@ -80,6 +81,9 @@ class AgentComputer < ApplicationRecord
   # The VM's RAM, picked per computer (the memory column; a change takes effect on its next start). The desktop idles
   # at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past 4GiB, where the
   # VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
+  # Characters of long-term memory (#remember!), all of it in every run's system prompt
+  LONG_TERM_MEMORY_LIMIT = 6_000
+
   MEMORY_OPTIONS = [
     Option.new("4Gi", "4Gi", "slows down once an agent opens a browser", false, "lucide:memory-stick", nil),
     Option.new("6Gi", "6Gi", "fine for one agent at a time", false, "lucide:memory-stick", nil),
@@ -110,6 +114,35 @@ class AgentComputer < ApplicationRecord
     Rails.logger.info("Couldn't clear workspace #{workspace} on #{name}: #{e.message}")
   end
 
+  # Runs started while the computer was off wait, queued, for it to come back up (AgentSessions::TurnJob); this starts
+  # them once it has (StartJob)
+  def start_queued_sessions
+    sessions.queued.where(workspace: nil).find_each { |session| AgentSessions::TurnJob.perform_later(session) }
+  end
+
+  # The agent's notes for later runs, one per line (the remember tool). Under a row lock: runs going at the same time
+  # would otherwise overwrite each other's. Returns false when it's full.
+  def remember!(note)
+    with_lock do
+      lines = long_term_memory.to_s.lines.map(&:chomp).reject(&:blank?)
+      line = "- #{note.squish}"
+      next true if lines.include?(line)
+      next false if [ *lines, line ].join("\n").length > LONG_TERM_MEMORY_LIMIT
+
+      update!(long_term_memory: [ *lines, line ].join("\n"))
+    end
+  end
+
+  # Drops the notes containing `text`; returns how many it dropped
+  def forget!(text)
+    with_lock do
+      lines = long_term_memory.to_s.lines.map(&:chomp)
+      kept = lines.reject { |line| line.downcase.include?(text.downcase.strip) }
+      update!(long_term_memory: kept.join("\n").presence) if kept.size < lines.size
+      lines.size - kept.size
+    end
+  end
+
   # The planning model a new task on this computer starts with: the machine's, or the global default.
   def default_model = planning_model.presence || AgentComputer::Task::DEFAULT_MODEL
 
@@ -127,6 +160,7 @@ class AgentComputer < ApplicationRecord
                    length: { maximum: 63 - NAMESPACE_PREFIX.length },
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :memory, inclusion: { in: MEMORY_OPTIONS.map(&:id) }
+  validates :long_term_memory, length: { maximum: LONG_TERM_MEMORY_LIMIT }
 
   validate :cluster_in_account
   before_validation :assign_namespace, on: :create

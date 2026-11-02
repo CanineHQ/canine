@@ -23,4 +23,12 @@
       <% end %>
     </div>
   </details>
+  <% if action.tool == "browse" %>
+    <%# Its steps, streamed in as the browser takes them (Action's broadcast appends a step here) %>
+    <ul id="<%= dom_id(action, :steps) %>" class="mt-1 ml-[7px] space-y-1 border-l border-base-content/15 pl-4">
+      <% local_assigns.fetch(:steps) { action.steps }.each do |step| %>
+        <%= render "agent_computers/sessions/action", action: step %>
+      <% end %>
+    </ul>
+  <% end %>
 </li>

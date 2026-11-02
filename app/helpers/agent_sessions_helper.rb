@@ -9,6 +9,8 @@ module AgentSessionsHelper
       when "browse", "browse_step" then "browsing the web"
       else "working"
       end
+    when "waiting_for_person" then "needs you"
+    when "succeeded" then session.outcome_partly_done? || session.outcome_blocked? ? session.outcome.humanize(capitalize: false) : "succeeded"
     else session.status
     end
   end
