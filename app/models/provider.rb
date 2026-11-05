@@ -106,6 +106,10 @@ class Provider < ApplicationRecord
     provider == BITBUCKET_PROVIDER
   end
 
+  def rancher?
+    provider == RANCHER_PROVIDER
+  end
+
   def has_native_container_registry?
     PROVIDERS_WITH_CONTAINER_REGISTRY.include?(provider)
   end
