@@ -18,6 +18,8 @@ module Providers
         Providers::CreateGitlabProvider
       elsif provider.bitbucket?
         Providers::CreateBitbucketProvider
+      elsif provider.rancher?
+        Providers::CreateRancherProvider
       end
     end
   end
