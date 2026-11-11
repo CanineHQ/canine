@@ -23,13 +23,31 @@
             permissions.
           </div>
         <% elsif params[:provider_type] == Provider::GITLAB_PROVIDER %>
-          <%= link_to "Create your Gitlab token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500 " %>
-          <div class="mt-2">
-            Select the
-            <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>
-              <code class="mx-2 bg-white text-black px-2 py-1 rounded-md"><%= scope %></code>
-            <% end %>
-            permissions.
+          <div data-controller="tabs">
+            <div role="tablist" class="tabs tabs-bordered tabs-sm mb-3">
+              <a role="tab" class="tab tab-active" data-action="click->tabs#select" data-tabs-target="tab" data-tab="classic">Classic Token</a>
+              <a role="tab" class="tab" data-action="click->tabs#select" data-tabs-target="tab" data-tab="fine-grained">Fine-grained Token</a>
+            </div>
+
+            <div data-tabs-target="panel" data-tab="classic">
+              <%= link_to "Create a classic token →", "https://gitlab.com/-/user_settings/personal_access_tokens?name=Canine+Deployment+Platform&scopes=api,read_repository,read_registry,write_registry", target: "_blank", class: "text-sm text-gray-500" %>
+              <div class="mt-2 flex flex-wrap gap-1">
+                <span class="text-sm">Required scopes:</span>
+                <% Providers::CreateGitlabProvider::EXPECTED_SCOPES.each do |scope| %>
+                  <code class="text-xs bg-base-300 px-2 py-0.5 rounded"><%= scope %></code>
+                <% end %>
+              </div>
+            </div>
+
+            <div data-tabs-target="panel" data-tab="fine-grained" class="hidden">
+              <%= link_to "Create a fine-grained token →", "https://gitlab.com/-/user_settings/personal_access_tokens", target: "_blank", class: "text-sm text-gray-500" %>
+              <div class="mt-2 flex flex-wrap gap-1">
+                <span class="text-sm">Required permissions:</span>
+                <% Providers::CreateGitlabProvider::EXPECTED_FINE_GRAINED_PERMISSIONS.each do |perm| %>
+                  <code class="text-xs bg-base-300 px-2 py-0.5 rounded"><%= perm %></code>
+                <% end %>
+              </div>
+            </div>
           </div>
         <% elsif params[:provider_type] == Provider::BITBUCKET_PROVIDER %>
           <%= link_to "Create your Bitbucket API Token →", "https://id.atlassian.com/manage-profile/security/api-tokens", target: "_blank", class: "text-sm text-gray-500 " %>
