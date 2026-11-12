@@ -1,0 +1,12 @@
+<% content_for :title, "No account" %>
+
+<div class="container mx-auto mt-16 max-w-md text-center space-y-4">
+  <h1 class="text-2xl font-bold">You aren't a member of any account</h1>
+  <p class="text-base-content/70">Ask an account owner to add <%= current_user.email %>, or sign in with a different user.</p>
+  <div class="flex justify-center gap-2">
+    <% if current_user.admin? %>
+      <%= link_to "Site admin", avo_path, class: "btn btn-ghost" %>
+    <% end %>
+    <%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-primary" %>
+  </div>
+</div>

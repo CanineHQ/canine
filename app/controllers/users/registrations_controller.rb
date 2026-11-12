@@ -1,6 +1,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   layout 'homepage', only: [ :new, :create ]
-  before_action :disable_registration_for_self_hosted
+  before_action :disable_registration_for_self_hosted, only: [ :new, :create ]
 
   def create
     ActiveRecord::Base.transaction do
