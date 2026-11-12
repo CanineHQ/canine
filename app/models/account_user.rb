@@ -31,7 +31,32 @@ class AccountUser < ApplicationRecord
     owner? || admin?
   end
 
+  validate :keep_an_admin_or_owner, on: :update
+  before_destroy :keep_an_admin_or_owner_on_destroy
+
   def destroyable?
     !owner?
+  end
+
+  # True when no other owner or admin would remain on the account if this record lost its role or were removed
+  def last_admin_or_owner?
+    admin_or_owner? && !account.account_users.where.not(id: id).where(role: [ :owner, :admin ]).exists?
+  end
+
+  private
+
+  def keep_an_admin_or_owner
+    return unless role_changed? && role_was.in?(%w[owner admin]) && !admin_or_owner?
+    return unless account.account_users.where.not(id: id).where(role: [ :owner, :admin ]).empty?
+
+    errors.add(:base, "Account must keep at least one owner or admin")
+  end
+
+  def keep_an_admin_or_owner_on_destroy
+    return if destroyed_by_association
+    return unless last_admin_or_owner?
+
+    errors.add(:base, "Account must keep at least one owner or admin")
+    throw :abort
   end
 end

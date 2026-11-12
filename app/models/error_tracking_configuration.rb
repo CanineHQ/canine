@@ -18,8 +18,6 @@
 #
 #  fk_rails_...  (project_id => projects.id) ON DELETE => cascade
 #
-# Present while a project has error tracking enabled. Holds the public key of the project's Sentry-compatible DSN
-# and owns everything reported to it.
 class ErrorTrackingConfiguration < ApplicationRecord
   belongs_to :project
   has_many :issues, class_name: "ErrorTracking::Issue", dependent: :delete_all
