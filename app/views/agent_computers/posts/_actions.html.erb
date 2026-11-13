@@ -1,0 +1,60 @@
+<%# A post's action bar, like a social feed's: what it's been tagged and how many comments, then Tag (click for the
+    first tag, hold or hover for the picker; agent_computers/post_controller.js), Comment (opens the box), and the run.
+    Re-drawn when it's tagged (AgentComputers::ReactionsController). %>
+<% viewer = local_assigns.fetch(:viewer) { current_user } %>
+<% mine = viewer && post.reactions.find { |r| r.user_id == viewer.id } %>
+<% tagged = post.reactions.group_by(&:tag) %>
+<% tags = AgentComputer::Reaction::TAGS %>
+<div id="<%= dom_id(post, :actions) %>">
+  <% if tagged.any? || post.comments.any? %>
+    <div class="flex items-center justify-between pb-2 text-xs text-base-content/60">
+      <div class="flex items-center gap-3">
+        <% tagged.each do |tag, reactions| %>
+          <span class="inline-flex items-center gap-1" title="<%= reactions.map { |r| r.user.email }.to_sentence %>">
+            <iconify-icon icon="<%= tags[tag][1] %>" height="13" class="<%= tags[tag][2] %>"></iconify-icon>
+            <%= tags[tag][0] %><% if reactions.size > 1 %> · <%= reactions.size %><% end %>
+          </span>
+        <% end %>
+      </div>
+      <% if post.comments.any? %>
+        <button type="button" class="hover:underline" data-action="agent-computers--post#comment"><%= pluralize(post.comments.size, "comment") %></button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-3 gap-1 border-y border-base-content/10 py-1 text-sm font-medium text-base-content/60">
+    <div class="relative" data-action="mouseenter->agent-computers--post#showPicker mouseleave->agent-computers--post#hidePicker">
+      <%# The picker: pops up over the button %>
+      <div data-agent-computers--post-target="picker"
+           class="absolute bottom-full left-0 z-20 mb-1 hidden items-center gap-1 rounded-full border border-base-content/10 bg-base-200 p-1.5 shadow-xl">
+        <% tags.each do |tag, (label, icon, color)| %>
+          <%= button_to agent_computer_agent_post_reaction_path(post.agent_computer, post), params: { tag: }, form_class: "contents",
+                class: "group relative flex h-10 w-10 items-center justify-center rounded-full transition hover:-translate-y-1 hover:scale-125 hover:bg-base-100 #{"bg-base-100" if mine&.tag == tag}",
+                aria: { label: } do %>
+            <iconify-icon icon="<%= icon %>" height="20" class="<%= color %>"></iconify-icon>
+            <span class="pointer-events-none absolute -top-7 whitespace-nowrap rounded-full bg-neutral px-2 py-0.5 text-[11px] text-neutral-content opacity-0 transition group-hover:opacity-100"><%= label %></span>
+          <% end %>
+        <% end %>
+      </div>
+      <% if mine %>
+        <%= button_to agent_computer_agent_post_reaction_path(post.agent_computer, post), method: :delete, form_class: "contents",
+              class: "flex w-full items-center justify-center gap-2 rounded-md py-1.5 hover:bg-base-200 #{mine.color}",
+              data: { action: "touchstart->agent-computers--post#holdStart touchend->agent-computers--post#holdEnd" } do %>
+          <iconify-icon icon="<%= mine.icon %>" height="16"></iconify-icon> <%= mine.label %>
+        <% end %>
+      <% else %>
+        <%= button_to agent_computer_agent_post_reaction_path(post.agent_computer, post), params: { tag: AgentComputer::Reaction::DEFAULT }, form_class: "contents",
+              class: "flex w-full items-center justify-center gap-2 rounded-md py-1.5 hover:bg-base-200",
+              data: { action: "touchstart->agent-computers--post#holdStart touchend->agent-computers--post#holdEnd" } do %>
+          <iconify-icon icon="<%= tags[AgentComputer::Reaction::DEFAULT][1] %>" height="16"></iconify-icon> <%= tags[AgentComputer::Reaction::DEFAULT][0] %>
+        <% end %>
+      <% end %>
+    </div>
+    <button type="button" class="flex items-center justify-center gap-2 rounded-md py-1.5 hover:bg-base-200" data-action="agent-computers--post#comment">
+      <iconify-icon icon="lucide:message-circle" height="16"></iconify-icon> Comment
+    </button>
+    <%= link_to agent_computer_agent_session_path(post.agent_computer, post.session), class: "flex items-center justify-center gap-2 rounded-md py-1.5 hover:bg-base-200" do %>
+      <iconify-icon icon="lucide:square-play" height="16"></iconify-icon> View run
+    <% end %>
+  </div>
+</div>

@@ -12,6 +12,7 @@ RSpec.describe "Agent tasks and sessions", type: :request do
   before do
     sign_in account.owner
     Flipper.enable(:agent_computers, account)
+    allow(AgentLoop::Titler).to receive(:title).and_return(nil) # as when the model doesn't answer: the instruction, cut off
   end
 
   it "saves a key, creates a task from the form, runs it, and shows the session" do
@@ -50,6 +51,11 @@ RSpec.describe "Agent tasks and sessions", type: :request do
     expect(response).to redirect_to(agent_computer_agent_session_path(computer, session))
     get agent_computer_agent_session_path(computer, session)
     expect(response.body).to include("Slack check", "No screenshots yet")
+    expect(response.body).not_to include("Run again") # while it's going
+
+    session.finish!(:succeeded, summary: "Done")
+    get agent_computer_agent_session_path(computer, session)
+    expect(response.body).to include("Run again", run_now_agent_computer_agent_task_path(computer, task))
     # The task list shows the schedule in words and recent runs, not the model; the task's page shows its definition
     # and its runs; the old sessions list sends you to the tasks
     get agent_computer_agent_tasks_path(computer)
@@ -75,6 +81,10 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       expect(response).to redirect_to(agent_computer_agent_posts_path(computer))
       get agent_computer_agent_posts_path(computer)
       expect(response.body).to include("Starting · last step")
+      get agent_computer_agent_tasks_path(computer) # a one-off has no cron to put in words
+      expect(response.body).to include("Runs once, when started")
+      get agent_computer_agent_task_path(computer, task)
+      expect(response).to have_http_status(:ok)
 
       # Schedule: a preset becomes a cron, enabled, and no session starts now.
       expect {
@@ -82,6 +92,20 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       }.to change { computer.tasks.count }.by(1).and change { computer.sessions.count }.by(0)
       scheduled = computer.tasks.order(:created_at).last
       expect(scheduled.schedule).to eq("0 * * * *")
+      expect(scheduled.pinned_workspace).to be_nil
+
+      # A workspace picked in the compose box pins the task there; the picker lists what's open on each
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Reply to Sam", every: "1h", workspace: "2" }
+      expect(computer.tasks.order(:created_at).last.pinned_workspace).to eq(2)
+      allow_any_instance_of(AgentComputers::ComputerUse).to receive(:workspaces)
+        .and_return("workspaces" => [ { "workspace" => 2, "visible" => true, "windows" => [ { "id" => "0xa", "app" => "chromium", "title" => "Inbox - Chromium" } ] } ])
+      get workspaces_agent_computer_path(computer)
+      expect(response.body).to include("Workspace 2", "on screen", "Inbox - Chromium")
+      expect(scheduled.name).to eq("Check issues") # untitled: the model gave nothing
+
+      allow(AgentLoop::Titler).to receive(:title).and_return("Triage new GitHub issues")
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "every hour look at new github issues and label them", every: "1h" }
+      expect(computer.tasks.order(:created_at).last.name).to eq("Triage new GitHub issues")
       expect(scheduled.enabled?).to be(true)
 
       # Feed renders the compose box and the scheduled task in the sidebar.
@@ -89,15 +113,27 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       expect(response.body).to include("What should your agent do?", "Scheduled", "Check issues")
     end
 
-    it "builds a daily cron from the time, and won't run now when the computer is stopped" do
+    it "builds a daily cron from the time, and queues a run now until a stopped computer is back up, or it's cancelled" do
       post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Morning digest", every: "daily", daily_time: "08:30" }
       expect(computer.tasks.order(:created_at).last.schedule).to eq("30 8 * * *")
 
       computer.update!(status: :stopped)
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do it", every: "now" }
+      expect(flash[:notice]).to match(/once the computer is running/)
+      session = computer.sessions.sole
+      AgentSessions::TurnJob.perform_now(session) # waits without touching the computer
+      expect(session.reload).to be_queued
+      get agent_computer_agent_posts_path(computer)
+      expect(response.body).to include("once the computer is running")
+
+      computer.update!(status: :running)
+      expect { computer.start_queued_sessions }.to have_enqueued_job(AgentSessions::TurnJob).with(session)
+
       expect {
-        post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "do it", every: "now" }
-      }.not_to change { computer.tasks.count }
-      expect(flash[:alert]).to match(/must be running/)
+        post cancel_agent_computer_agent_session_path(computer, session), headers: { "HTTP_REFERER" => agent_computer_agent_posts_url(computer) }
+      }.not_to have_enqueued_job(AgentSessions::WrapupJob)
+      expect(response).to redirect_to(agent_computer_agent_posts_url(computer))
+      expect(session.reload).to be_cancelled
     end
 
     it "starts runs side by side, and queues one once the computer has as many going as it takes" do

@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe AgentLoop::Turn do
+  include ActiveSupport::Testing::TimeHelpers
   let(:account_user) { create(:account_user) }
   let(:computer) { AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running) }
   let(:task) do
@@ -46,6 +47,54 @@ RSpec.describe AgentLoop::Turn do
 
     expect(described_class.new(session, key).run).to eq(:finished)
     expect(session.reload).to have_attributes(status: "succeeded", summary: "my-app is three repos.", turns: 3, input_tokens: 300)
+  end
+
+  it "pushes back once on stopping short with budget left, then records the outcome and what it tried" do
+    allow(client).to receive(:chat).and_return(
+      reply(nil, [ "finish", { summary: "Couldn't add the key.", outcome: "blocked" } ]),
+      reply(nil, [ "finish", { summary: "Couldn't add the key.", outcome: "blocked", tried: "browse; the gh CLI" } ])
+    )
+
+    expect(described_class.new(session, key).run).to eq(:continue)
+    expect(session.messages.last.content).to start_with(AgentLoop::Tools::FINISH_PUSHBACK)
+    expect(described_class.new(session, key).run).to eq(:finished)
+    expect(session.reload).to have_attributes(status: "succeeded", outcome: "blocked", summary: "Couldn't add the key.\n\nTried: browse; the gh CLI")
+    expect(ApplicationController.render(partial: "agent_computers/sessions/status_badge", locals: { session: })).to include("blocked")
+  end
+
+  it "remembers notes on the computer for later runs, and forgets them" do
+    allow(client).to receive(:chat).and_return(
+      reply(nil, [ "remember", { intent: "Noting GitHub", note: "GitHub asks for an emailed code before changing SSH keys" } ],
+               [ "remember", { intent: "Noting GitHub", note: "Slack's #dev is muted" } ]),
+      reply(nil, [ "forget", { intent: "Noting GitHub", text: "slack's #DEV" } ])
+    )
+
+    described_class.new(session, key).run
+    expect(computer.reload.long_term_memory).to eq("- GitHub asks for an emailed code before changing SSH keys\n- Slack's #dev is muted")
+    expect(session.actions.first.label).to eq("Remembered: GitHub asks for an emailed code before changing SSH keys")
+    expect(AgentLoop::SystemPrompt.build(task.sessions.create!(trigger: :manual, model: "test/model"))).to include("- Slack's #dev is muted")
+
+    described_class.new(session, key).run
+    expect(computer.reload.long_term_memory).to eq("- GitHub asks for an emailed code before changing SSH keys")
+    expect(session.messages.last.content).to eq("Forgot 1 note.")
+  end
+
+  it "pauses on a question for the person, without the wait counting against its time limit, until they answer" do
+    allow(client).to receive(:chat).and_return(reply(nil, [ "ask_person", { intent: "Signing in to GitHub", question: "The code GitHub texted you", kind: "code" } ]))
+    session.update!(started_at: Time.current)
+
+    expect(described_class.new(session, key).run).to eq(:waiting_for_person)
+    session.wait_for_person! # (TurnJob does this with the outcome)
+    expect(session.question).to have_attributes(tool: "ask_person", status: "running", label: "Asked you: The code GitHub texted you")
+
+    travel(task.max_minutes.minutes + 5.minutes) do
+      expect(AgentLoop::Policy.limit_reached(session)).to be_nil # the hour it waited isn't working time
+      expect { expect(session.answer!("123456")).to be(true) }.to have_enqueued_job(AgentSessions::TurnJob)
+      expect(session.reload).to have_attributes(status: "running", waiting_since: nil, waited_seconds: be >= task.max_minutes.minutes)
+      expect(session.messages.last.content).to eq("The person answered your question: 123456")
+      expect(session.actions.sole).to have_attributes(status: "done", result: { "text" => "Answered." })
+      expect(session.answer!("again")).to be(false) # only while it's waiting
+    end
   end
 
   it "hands a browser task to browse and waits for its job" do

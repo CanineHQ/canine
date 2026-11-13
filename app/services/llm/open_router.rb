@@ -20,11 +20,12 @@ module Llm
     # `provider` pins the request to one of the model's providers (by the name a reply reports), so its prompt cache
     # can be reused; it falls back to others if that one is down
     # `reasoning: { enabled: false }` turns a reasoning model's thinking off (https://openrouter.ai/docs/use-cases/reasoning-tokens)
-    def chat(model:, messages:, tools: nil, response_format: nil, max_tokens: nil, provider: nil, reasoning: nil)
+    # `timeout` is for calls someone is waiting on, which would rather give up than wait as long as a turn can take
+    def chat(model:, messages:, tools: nil, response_format: nil, max_tokens: nil, provider: nil, reasoning: nil, timeout: TIMEOUT)
       body = { model:, messages:, tools:, response_format:, max_tokens:, reasoning:, usage: { include: true }, # include: report cost
                provider: provider && { order: [ provider ], allow_fallbacks: true } }.compact
       started_at = Time.current
-      response = Net::HTTP.start(URL.host, URL.port, use_ssl: true, read_timeout: TIMEOUT, open_timeout: 15) do |http|
+      response = Net::HTTP.start(URL.host, URL.port, use_ssl: true, read_timeout: timeout, open_timeout: [ timeout, 15 ].min) do |http|
         http.post(URL.path, body.to_json, "Authorization" => "Bearer #{@api_key}", "Content-Type" => "application/json",
                                           "X-Title" => "Canine agent")
       end

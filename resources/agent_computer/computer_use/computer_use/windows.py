@@ -73,6 +73,8 @@ def open_url(url, workspace=None, maximize=False):
     Chromium's debugging port: from the command line, the running browser would activate the window the person used
     last, taking their focus (and without --new-window, open a tab in it)."""
     workspace = workspaces.resolve(workspace)
+    if not cdp.running():  # starting it opens the window
+        return open_app(f"chromium --new-window {shlex.quote(url)}", workspace=workspace, maximize=maximize)
     before = {w["id"] for w in desktop.windows()}
     with workspaces.placing(workspace):
         with cdp.connect() as call:

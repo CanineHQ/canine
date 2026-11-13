@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_06_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,6 +89,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
     t.index ["name"], name: "index_add_ons_on_name"
   end
 
+  create_table "agent_computer_comments", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "user_id", null: false
+    t.text "body", null: false
+    t.bigint "session_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_agent_computer_comments_on_post_id"
+    t.index ["session_id"], name: "index_agent_computer_comments_on_session_id"
+    t.index ["user_id"], name: "index_agent_computer_comments_on_user_id"
+  end
+
   create_table "agent_computer_posts", force: :cascade do |t|
     t.bigint "session_id", null: false
     t.bigint "activity_id"
@@ -104,6 +116,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
     t.index ["session_id"], name: "index_agent_computer_posts_on_session_id"
   end
 
+  create_table "agent_computer_reactions", force: :cascade do |t|
+    t.bigint "post_id", null: false
+    t.bigint "user_id", null: false
+    t.string "tag", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "user_id"], name: "index_agent_computer_reactions_on_post_id_and_user_id", unique: true
+    t.index ["post_id"], name: "index_agent_computer_reactions_on_post_id"
+    t.index ["user_id"], name: "index_agent_computer_reactions_on_user_id"
+  end
+
   create_table "agent_computer_session_actions", force: :cascade do |t|
     t.bigint "activity_id", null: false
     t.string "tool", null: false
@@ -115,7 +138,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
     t.integer "duration_ms"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "parent_id"
     t.index ["activity_id"], name: "index_agent_computer_session_actions_on_activity_id"
+    t.index ["parent_id"], name: "index_agent_computer_session_actions_on_parent_id"
   end
 
   create_table "agent_computer_session_activities", force: :cascade do |t|
@@ -168,6 +193,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
     t.integer "workspace"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "waiting_since"
+    t.integer "waited_seconds", default: 0, null: false
+    t.string "kept_tab"
+    t.integer "outcome"
+    t.jsonb "found_windows"
     t.index ["task_id", "status"], name: "index_agent_computer_sessions_on_task_id_and_status"
     t.index ["task_id"], name: "index_agent_computer_sessions_on_task_id"
   end
@@ -209,8 +239,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
     t.text "failure"
     t.integer "provision_stage", default: 0, null: false
     t.string "memory", default: "8Gi", null: false
+    t.text "long_term_memory"
+    t.bigint "screen_session_id"
+    t.string "screen_model"
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
+    t.index ["screen_session_id"], name: "index_agent_computers_on_screen_session_id"
   end
 
   create_table "agent_provider_keys", force: :cascade do |t|
@@ -1018,15 +1052,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_22_000000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "add_ons", "clusters"
+  add_foreign_key "agent_computer_comments", "agent_computer_posts", column: "post_id", on_delete: :cascade
+  add_foreign_key "agent_computer_comments", "agent_computer_sessions", column: "session_id", on_delete: :nullify
+  add_foreign_key "agent_computer_comments", "users"
   add_foreign_key "agent_computer_posts", "agent_computer_session_actions", column: "screenshot_action_id", on_delete: :nullify
   add_foreign_key "agent_computer_posts", "agent_computer_session_activities", column: "activity_id", on_delete: :nullify
   add_foreign_key "agent_computer_posts", "agent_computer_sessions", column: "session_id"
+  add_foreign_key "agent_computer_reactions", "agent_computer_posts", column: "post_id", on_delete: :cascade
+  add_foreign_key "agent_computer_reactions", "users"
+  add_foreign_key "agent_computer_session_actions", "agent_computer_session_actions", column: "parent_id", on_delete: :cascade
   add_foreign_key "agent_computer_session_actions", "agent_computer_session_activities", column: "activity_id"
   add_foreign_key "agent_computer_session_activities", "agent_computer_sessions", column: "session_id"
   add_foreign_key "agent_computer_session_messages", "agent_computer_sessions", column: "session_id"
   add_foreign_key "agent_computer_sessions", "agent_computer_tasks", column: "task_id"
   add_foreign_key "agent_computer_tasks", "agent_computers"
   add_foreign_key "agent_computers", "account_users"
+  add_foreign_key "agent_computers", "agent_computer_sessions", column: "screen_session_id", on_delete: :nullify
   add_foreign_key "agent_computers", "clusters"
   add_foreign_key "agent_provider_keys", "accounts"
   add_foreign_key "api_tokens", "users"

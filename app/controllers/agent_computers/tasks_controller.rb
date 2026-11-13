@@ -5,7 +5,9 @@ class AgentComputers::TasksController < AgentComputers::BaseController
   before_action :require_openrouter_key, only: %i[compose run_now]
 
   def index
-    @tasks = @agent_computer.tasks.order(:name)
+    # Most recently run first (as the last run column shows it: by when the run was created); never run, last
+    @tasks = @agent_computer.tasks.left_joins(:sessions).group(:id)
+                            .order(Arel.sql("MAX(agent_computer_sessions.created_at) DESC NULLS LAST"), :name)
   end
 
   # A task and its runs, newest first (they update live: AgentComputer::Session broadcasts to the task's stream)
@@ -24,10 +26,10 @@ class AgentComputers::TasksController < AgentComputers::BaseController
     return to_feed(alert: "Describe what the agent should do first.") if instruction.blank?
 
     schedule = compose_schedule
-    return to_feed(alert: "The computer must be running to run a task now.") if schedule.blank? && !@agent_computer.running?
-
-    @task = @agent_computer.tasks.new(instruction:, name: instruction.truncate(70), model: @agent_computer.default_model,
-                                            schedule:, enabled: schedule.present?)
+    model = @agent_computer.default_model
+    name = AgentLoop::Titler.title(instruction, api_key: current_account.agent_provider_keys.find_by(provider: "openrouter").api_key, model:)
+    @task = @agent_computer.tasks.new(instruction:, name: name || instruction.truncate(70), model:, schedule:, enabled: schedule.present?,
+                                      pinned_workspace: params[:workspace].presence)
     return to_feed(alert: @task.errors.full_messages.to_sentence) unless @task.save
 
     return run_now_and_redirect(@task) if schedule.blank?
@@ -77,10 +79,10 @@ class AgentComputers::TasksController < AgentComputers::BaseController
   end
 
   def run_now
-    return redirect_to(agent_computer_agent_tasks_path(@agent_computer), alert: "Computer must be running.") unless @agent_computer.running?
     session = AgentComputer::Session.start!(@task, trigger: :manual)
 
-    redirect_to agent_computer_agent_session_path(@agent_computer, session)
+    redirect_to agent_computer_agent_session_path(@agent_computer, session),
+                notice: ("Queued — it'll start once the computer is running." if session.waiting_for_computer?)
   end
 
   # The recurring presets the compose box offers, in order, as label => cron. "now" (one-off) and "daily" (with a time)
@@ -107,9 +109,13 @@ class AgentComputers::TasksController < AgentComputers::BaseController
   def run_now_and_redirect(task)
     session = AgentComputer::Session.start!(task, trigger: :manual)
 
-    # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer has as many runs
-    # going as it takes, it queues and starts when one finishes.
-    to_feed(notice: session.waiting_in_queue? ? "Queued — it'll start when one of the runs going now finishes." : "On it — watch it run below.")
+    # Stay on the feed — the run shows up at the top and updates live, like posting. If the computer is off, or has as
+    # many runs going as it takes, it queues and starts when the computer is back up or a run finishes.
+    notice = if session.waiting_for_computer? then "Queued — it'll start once the computer is running."
+    elsif session.waiting_in_queue? then "Queued — it'll start when one of the runs going now finishes."
+    else "On it — watch it run below."
+    end
+    to_feed(notice:)
   end
 
   def require_openrouter_key

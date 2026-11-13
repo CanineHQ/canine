@@ -6,6 +6,7 @@ module AgentLoop
   #   :continue            another turn (AgentSessions::TurnJob enqueues it)
   #   :finished            the model called finish (or answered without tools)
   #   :waiting_for_tool    a browse or delegate job is running (its watch job resumes the session)
+  #   :waiting_for_person  it asked the person something (ask_person); their answer resumes it (Session#answer!)
   #   :stopped             the session was cancelled while the turn ran
   class Turn
     # A model can get stuck repeating itself: one reply once held 2,941 tool calls. So a reply is capped, and only
@@ -133,7 +134,7 @@ module AgentLoop
     # Every tool call gets a tool message back (the API requires one per call), even when an earlier call ended the turn
     def run_tools(calls)
       outcome = :continue
-      summary = nil
+      finished = nil
       seen = []
       calls.each do |call|
         name = call.dig("function", "name")
@@ -157,11 +158,11 @@ module AgentLoop
         result = act(name, args, call["id"])
         append(role: "tool", tool_call_id: call["id"], content: result.text)
         case result.signal
-        when :finish then outcome, summary = :finished, args["summary"]
-        when :waiting_for_tool then outcome = :waiting_for_tool
+        when :finish then outcome, finished = :finished, args
+        when :waiting_for_tool, :waiting_for_person then outcome = result.signal
         end
       end
-      return finish(summary) if outcome == :finished
+      return finish(finished["summary"], outcome: finished["outcome"], tried: finished["tried"]) if outcome == :finished
 
       outcome
     end
@@ -174,8 +175,9 @@ module AgentLoop
         action = activity_for(args["intent"]).actions.create!(tool: name, tool_call_id:, arguments: args, started_at: Time.current)
         result = call_tool(name, args)
         traced.output = result.text
-        # browse and delegate finish when their watch job does; the action stays running until then
-        unless result.signal == :waiting_for_tool
+        # browse and delegate finish when their watch job does, and a question when it's answered; the action stays
+        # running until then
+        unless result.signal.in?(%i[waiting_for_tool waiting_for_person])
           action.update!(status: result.error ? :failed : :done, result: { "text" => result.text.to_s.truncate(4000) },
                          duration_ms: ((Time.current - action.started_at) * 1000).round)
         end
@@ -221,8 +223,11 @@ module AgentLoop
       activity.update!(description: [ activity.description, text ].compact.join("\n\n").truncate(2000))
     end
 
-    def finish(summary)
-      @session.finish!(:succeeded, summary:)
+    # What it tried goes under the summary when it didn't get it all done, for the person to see what's been ruled out
+    def finish(summary, outcome: nil, tried: nil)
+      outcome = outcome.presence_in(AgentComputer::Session.outcomes.keys)
+      summary = [ summary, ("Tried: #{tried}" if tried.present? && outcome && outcome != "done") ].compact.join("\n\n").presence
+      @session.finish!(:succeeded, summary:, outcome:)
       :finished
     end
 

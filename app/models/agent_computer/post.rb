@@ -32,11 +32,13 @@ class AgentComputer::Post < ApplicationRecord
   # with it if any: the session's (AgentComputer::Session::*), which the name alone wouldn't find from here
   belongs_to :activity, class_name: "AgentComputer::Session::Activity", optional: true
   belongs_to :screenshot_action, class_name: "AgentComputer::Session::Action", optional: true
+  has_many :comments, -> { order(:id) }, dependent: :delete_all
+  has_many :reactions, dependent: :delete_all
 
   validates :text, presence: true
 
-  # Show up live at the top of the computer's feed when written.
-  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_posts", partial: "agent_computers/posts/post", locals: { post: self } }
+  # Show up live at the top of the computer's feed when written (for everyone watching, so nobody's own tag shows).
+  after_create_commit -> { broadcast_prepend_to [ agent_computer, :feed ], target: "agent_feed_posts", partial: "agent_computers/posts/post", locals: { post: self, viewer: nil } }
 
   # Newest first; posts from one run keep the order they were written in
   scope :newest_first, -> { order(posted_at: :desc, id: :asc) } # (a run's posts share a time, and are saved in order)

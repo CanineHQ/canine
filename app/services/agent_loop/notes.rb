@@ -48,7 +48,7 @@ module AgentLoop
     end
 
     def self.task(session)
-      session.task.instruction
+      session.comment ? "#{session.task.instruction}\n\nThis run acts on the person's comment: #{session.comment.body}" : session.task.instruction
     end
 
     # Where the work starts: everything before the first model reply (the system prompt, "Start now") is always sent

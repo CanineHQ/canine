@@ -1,6 +1,7 @@
 <%# An activity's contents. Inline for the running activity (so streamed actions and screenshots land in it); for
     finished ones, fetched when the activity is opened (AgentComputers::ActivitiesController), inside the same frame. %>
-<% doing = activity.actions.reject(&:look_only?) %>
+<% doing = activity.actions.reject { |action| action.look_only? || action.parent_id } %>
+<% steps = activity.actions.select(&:parent_id).group_by(&:parent_id) %>
 <%= turbo_frame_tag dom_id(activity, :body) do %>
   <div class="px-3 pb-3 pl-11 space-y-2">
     <% if activity.description.present? %>
@@ -9,7 +10,7 @@
     <% end %>
     <ul id="<%= dom_id(activity, :actions) %>" class="space-y-1">
       <% doing.each do |action| %>
-        <%= render "agent_computers/sessions/action", action: action %>
+        <%= render "agent_computers/sessions/action", action: action, steps: steps.fetch(action.id, []) %>
       <% end %>
     </ul>
     <%= render "agent_computers/sessions/shots", activity: activity %>

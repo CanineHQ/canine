@@ -8,28 +8,33 @@
 #  coding_model       :string
 #  computer_use_token :string
 #  failure            :text
+#  long_term_memory   :text
 #  memory             :string           default("8Gi"), not null
 #  name               :string           not null
 #  namespace          :string           not null
 #  password           :string
 #  planning_model     :string
 #  provision_stage    :integer          default(0), not null
+#  screen_model       :string
 #  ssh_private_key    :text
 #  status             :integer          default("pending"), not null
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  account_user_id    :bigint           not null
 #  cluster_id         :bigint           not null
+#  screen_session_id  :bigint
 #
 # Indexes
 #
 #  index_agent_computers_on_account_user_id      (account_user_id)
 #  index_agent_computers_on_cluster_id_and_name  (cluster_id,name) UNIQUE
+#  index_agent_computers_on_screen_session_id    (screen_session_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (account_user_id => account_users.id)
 #  fk_rails_...  (cluster_id => clusters.id)
+#  fk_rails_...  (screen_session_id => agent_computer_sessions.id) ON DELETE => nullify
 #
 require "net/ssh" # adds ssh_type/to_blob to OpenSSL keys
 
@@ -62,14 +67,25 @@ class AgentComputer < ApplicationRecord
   PROVISION_STAGES = [ "Creating the VM", "Downloading Omarchy", "Installing Omarchy", "Setting up the desktop", "Starting the stream" ].freeze
 
   # A pickable option in the machine's model settings: id is the value stored (blank means "inherit"), name and note
-  # are shown, recommended flags the ones we've seen work well. planning_model/browse_model/coding_model and
-  # coding_agent are plain columns; null means inherit. The list is curated from our own benchmark runs.
+  # are shown, recommended flags the ones we've seen work well. planning_model/browse_model/screen_model/coding_model
+  # and coding_agent are plain columns; null means inherit. The list is curated from our own benchmark runs.
   # price is OpenRouter's input / output cost per 1M tokens, shown in the picker. Update if OpenRouter's pricing moves.
   Option = Data.define(:id, :name, :note, :recommended, :icon, :price)
   MODELS = [
+    Option.new("qwen/qwen3.8-27b", "Qwen3.8 27B", "84% on OSWorld (reported) · very cheap", false, "logos:qwen", "$0.15 / $1.88"),
+    Option.new("qwen/qwen3.8-max-0902", "Qwen3.8 Max", "86% on OSWorld (reported)", false, "logos:qwen", "$2 / $6"),
+    Option.new("xiaomi/mimo-v2.6-pro", "MiMo V2.6 Pro", "82% on OSWorld (reported) · cheap", false, "simple-icons:xiaomi", "$0.44 / $0.87"),
     Option.new("openai/gpt-5.1", "GPT-5.1", "reliable for planning & browsing", true, "logos:openai-icon", "$1.25 / $10"),
-    Option.new("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", "great for coding · very cheap", true, "logos:deepseek-icon", "$0.05 / $0.60"),
+    Option.new("deepseek/deepseek-v4.1-flash", "DeepSeek V4.1 Flash", "great for coding · very cheap", true, "logos:deepseek-icon", "$0.05 / $0.50"),
     Option.new("openai/gpt-5-mini", "GPT-5 mini", "cheaper, weaker on heavy sites", false, "logos:openai-icon", "$0.25 / $2")
+  ].freeze
+
+  # The screen agent (AgentLoop::Desktop) works from screenshots alone, so it needs a model whose clicks land. On our
+  # OSWorld runs, Claude passed 6 of the 9 desktop jobs GPT-5.1 failed; it can't be the browse model (browser-use's
+  # calls to it fail), so it's offered here only.
+  SCREEN_MODELS = [
+    Option.new("anthropic/claude-sonnet-5.5", "Claude Sonnet 5.5", "lands its clicks, reports what it sees", true, "logos:claude-icon", "$2 / $10"),
+    *MODELS
   ].freeze
 
   CODING_AGENT_OPTIONS = [
@@ -80,6 +96,9 @@ class AgentComputer < ApplicationRecord
   # The VM's RAM, picked per computer (the memory column; a change takes effect on its next start). The desktop idles
   # at ~2GiB, and an agent run (Chromium + the computer-use server + a coding agent) pushes well past 4GiB, where the
   # VM swaps hard and stalls. 8GiB keeps it out of swap. Memory, not CPU, decides how many fit on a node.
+  # Characters of long-term memory (#remember!), all of it in every run's system prompt
+  LONG_TERM_MEMORY_LIMIT = 6_000
+
   MEMORY_OPTIONS = [
     Option.new("4Gi", "4Gi", "slows down once an agent opens a browser", false, "lucide:memory-stick", nil),
     Option.new("6Gi", "6Gi", "fine for one agent at a time", false, "lucide:memory-stick", nil),
@@ -91,6 +110,8 @@ class AgentComputer < ApplicationRecord
   belongs_to :account_user
   belongs_to :cluster
   has_many :tasks, dependent: :destroy
+  # The run using the screen now (AgentLoop::Desktop), if one is: only one at a time can
+  belongs_to :screen_session, class_name: "AgentComputer::Session", optional: true
   has_many :sessions, through: :tasks # (tasks delete their sessions, and sessions their posts)
   has_many :posts, through: :sessions
 
@@ -110,6 +131,49 @@ class AgentComputer < ApplicationRecord
     Rails.logger.info("Couldn't clear workspace #{workspace} on #{name}: #{e.message}")
   end
 
+  # Runs started while the computer was off wait, queued, for it to come back up (AgentSessions::TurnJob); this starts
+  # them once it has (StartJob)
+  def start_queued_sessions
+    sessions.queued.where(workspace: nil).find_each { |session| AgentSessions::TurnJob.perform_later(session) }
+  end
+
+  # The agent's notes for later runs, one per line (the remember tool). Under a row lock: runs going at the same time
+  # would otherwise overwrite each other's. Returns false when it's full.
+  def remember!(note)
+    with_lock do
+      lines = long_term_memory.to_s.lines.map(&:chomp).reject(&:blank?)
+      line = "- #{note.squish}"
+      next true if lines.include?(line)
+      next false if [ *lines, line ].join("\n").length > LONG_TERM_MEMORY_LIMIT
+
+      update!(long_term_memory: [ *lines, line ].join("\n"))
+    end
+  end
+
+  # Takes the screen for a run (the desktop tool), unless another run that's still going has it. Returns whether it got it.
+  def take_screen!(session)
+    with_lock do
+      holder = screen_session
+      next false if holder && holder != session && holder.active?
+
+      update!(screen_session: session)
+    end
+  end
+
+  def release_screen!(session)
+    with_lock { update!(screen_session: nil) if screen_session_id == session.id }
+  end
+
+  # Drops the notes containing `text`; returns how many it dropped
+  def forget!(text)
+    with_lock do
+      lines = long_term_memory.to_s.lines.map(&:chomp)
+      kept = lines.reject { |line| line.downcase.include?(text.downcase.strip) }
+      update!(long_term_memory: kept.join("\n").presence) if kept.size < lines.size
+      lines.size - kept.size
+    end
+  end
+
   # The planning model a new task on this computer starts with: the machine's, or the global default.
   def default_model = planning_model.presence || AgentComputer::Task::DEFAULT_MODEL
 
@@ -127,6 +191,7 @@ class AgentComputer < ApplicationRecord
                    length: { maximum: 63 - NAMESPACE_PREFIX.length },
                    format: { with: /\A[a-z0-9-]+\z/, message: "must be lowercase, numbers, and hyphens only" }
   validates :memory, inclusion: { in: MEMORY_OPTIONS.map(&:id) }
+  validates :long_term_memory, length: { maximum: LONG_TERM_MEMORY_LIMIT }
 
   validate :cluster_in_account
   before_validation :assign_namespace, on: :create

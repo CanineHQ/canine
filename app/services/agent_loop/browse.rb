@@ -5,18 +5,25 @@ module AgentLoop
   # as a message. The browsing model is the computer's browse_model, or the task's own model.
   module Browse
     MAX_STEPS = 40
+    # browser-use sees nothing on a page that isn't http or https (it skips them as empty), so a browse there only waits
+    INTERNAL_PAGE = "browse can't see Chromium's own pages (chrome://): to the browser agent they're empty. Use the desktop " \
+                    "tool for them."
 
     def self.start(session, args)
       return Tools::Result.new(text: "browse needs a task: what to do in the browser, in words.", error: true) if args["task"].blank?
+      return Tools::Result.new(text: INTERNAL_PAGE, error: true) if "#{args["url"]} #{args["task"]}".include?("chrome://")
 
       key = session.agent_computer.account.agent_provider_keys.find_by(provider: "openrouter")
       return Tools::Result.new(text: "Add an OpenRouter key in Agent settings first.", error: true) unless key
 
       model = session.agent_computer.browse_model.presence || session.model
+      # A tab the last browse left open when it stopped to ask the person (the code form): this one carries on in it
+      continue_tab = session.kept_tab
       response = session.computer_use.browse_start(
         task: args["task"], url: args["url"].presence, model:, api_key: key.api_key,
-        files: Array(args["files"]).presence, max_steps: MAX_STEPS, workspace: session.workspace
+        files: Array(args["files"]).presence, max_steps: MAX_STEPS, workspace: session.workspace, continue_tab:
       )
+      session.update!(kept_tab: nil) if continue_tab
       # A short wait so the turn has committed waiting_for_tool! before the watch job's first poll (as DelegateWatchJob)
       AgentSessions::BrowseWatchJob.set(wait: 5.seconds).perform_later(session, response["id"], args["task"].to_s)
       Tools::Result.new(text: "Started browsing (job #{response["id"]}, in a window on workspace #{response["workspace"]}): " \

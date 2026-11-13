@@ -177,6 +177,7 @@ Rails.application.routes.draw do
     member do
       get :connect
       get :stats
+      get :workspaces
       post :stop
       post :start
     end
@@ -188,10 +189,14 @@ Rails.application.routes.draw do
       end
       resources :agent_sessions, path: "sessions", controller: "sessions", only: %i[index show] do
         post :cancel, on: :member
+        post :answer, on: :member
         get :screenshots, on: :member
         resources :activities, only: :show
       end
-      resources :agent_posts, path: "feed", controller: "posts", only: :index
+      resources :agent_posts, path: "feed", controller: "posts", only: :index do
+        resources :comments, only: :create
+        resource :reaction, only: %i[create destroy]
+      end
     end
   end
   resources :agent_provider_keys, only: %i[index create destroy]
