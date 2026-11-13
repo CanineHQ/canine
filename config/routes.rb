@@ -177,6 +177,7 @@ Rails.application.routes.draw do
     member do
       get :connect
       get :stats
+      get :workspaces
       post :stop
       post :start
     end

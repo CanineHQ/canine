@@ -25,6 +25,10 @@ module AgentLoop
           with curl, running tools. computer_terminal is for programs you interact with over time.
         - delegate: hand a coding job to a coding agent (opencode) in a repository on the computer. Use it for any real
           code change; you get its output back.
+        - desktop: for what browse can't reach: Chromium's own pages (chrome://settings, chrome://extensions; e.g.
+          installing an extension from a folder: Developer mode, Load unpacked, pick the folder), native dialogs (a
+          file picker), desktop apps. A screen agent uses the mouse and keyboard, taking over the screen. Change
+          Chromium's settings and extensions this way, not by editing its files. For web pages, use browse.
         - ask_person: ask the person for something only they can give (a one-time code, approving a sign-in, a yes
           before something risky) and wait for their answer.
         - remember / forget: your long-term memory on this computer, which every later run starts with.
@@ -74,9 +78,17 @@ module AgentLoop
     def self.workspace(session)
       return "" unless session.workspace
 
-      " Your windows (browser pages, terminals) open on workspace #{session.workspace}, without disturbing the " \
-        "person, who may be using the computer on another workspace meanwhile: leave the other workspaces and their " \
-        "windows alone."
+      where = " Your windows (browser pages, terminals) open on workspace #{session.workspace}, without disturbing the " \
+              "person, who may be using the computer on another workspace meanwhile: leave the other workspaces and their " \
+              "windows alone."
+      found = Array(session.found_windows)
+      return where if found.empty?
+
+      # A workspace the person picked for this run (Session#claim_workspace!), often set up for it
+      open = found.map { |w| [ w["app"], w["title"].presence && "“#{w["title"]}”" ].compact.join(" ") }.join("; ")
+      "#{where} The person picked that workspace for this run, and left these windows open on it: #{open}. " \
+        "Carry on from what's there (a page they opened is where to start, and the browser shares their sign-ins), " \
+        "and leave those windows open."
     end
 
     # The run's window, in the person's time zone when the task has one. The computer's clock is UTC, but apps like

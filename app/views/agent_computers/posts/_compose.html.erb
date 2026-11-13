@@ -25,6 +25,7 @@
             class: "w-full resize-none border-0 bg-transparent px-1 text-[15px] leading-relaxed placeholder:text-base-content/40 focus:border-0 focus:outline-none focus:ring-0" %>
 
       <input type="hidden" name="every" value="now" data-agent-computers--compose-target="every">
+      <input type="hidden" name="workspace" value="" data-agent-computers--compose-target="workspace">
 
       <%# The "daily at" time, shown only when the daily preset is chosen. %>
       <div class="hidden" data-agent-computers--compose-target="dailyRow">
@@ -48,6 +49,28 @@
               <% [["now", "Run now"], ["10m", "Every 10 minutes"], ["30m", "Every 30 minutes"], ["1h", "Every hour"], ["6h", "Every 6 hours"], ["daily", "Daily at…"]].each do |key, label| %>
                 <li><a data-key="<%= key %>" data-action="agent-computers--compose#choose"><%= label %></a></li>
               <% end %>
+            </ul>
+          </details>
+
+          <%# Where it runs: a free workspace (cleared for it), or one you pick to carry on from what's open there. The
+              list loads from the computer when the menu opens. %>
+          <details class="dropdown" data-agent-computers--compose-target="workspaceMenu">
+            <summary class="btn btn-ghost btn-sm gap-1 font-normal text-base-content/70">
+              <iconify-icon icon="lucide:app-window" height="15"></iconify-icon>
+              <span data-agent-computers--compose-target="workspaceLabel">Any workspace</span>
+              <iconify-icon icon="lucide:chevron-down" height="14"></iconify-icon>
+            </summary>
+            <ul class="dropdown-content menu z-10 mt-1 w-80 rounded-box border border-base-300 bg-base-100 p-1 shadow">
+              <li>
+                <a data-workspace="" data-label="Any workspace" data-action="agent-computers--compose#chooseWorkspace" class="flex flex-col items-start gap-0">
+                  <span class="font-medium">Any free one</span>
+                  <span class="text-xs text-base-content/50">cleared for the run</span>
+                </a>
+              </li>
+              <li class="menu-title pt-2"><span class="text-xs">Or carry on from what's open on one</span></li>
+              <turbo-frame id="agent_computer_workspaces" src="<%= workspaces_agent_computer_path(@agent_computer) %>" loading="lazy">
+                <li class="menu-disabled"><span class="text-xs">Loading…</span></li>
+              </turbo-frame>
             </ul>
           </details>
 

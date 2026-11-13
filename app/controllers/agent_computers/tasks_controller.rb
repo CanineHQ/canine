@@ -28,7 +28,8 @@ class AgentComputers::TasksController < AgentComputers::BaseController
     schedule = compose_schedule
     model = @agent_computer.default_model
     name = AgentLoop::Titler.title(instruction, api_key: current_account.agent_provider_keys.find_by(provider: "openrouter").api_key, model:)
-    @task = @agent_computer.tasks.new(instruction:, name: name || instruction.truncate(70), model:, schedule:, enabled: schedule.present?)
+    @task = @agent_computer.tasks.new(instruction:, name: name || instruction.truncate(70), model:, schedule:, enabled: schedule.present?,
+                                      pinned_workspace: params[:workspace].presence)
     return to_feed(alert: @task.errors.full_messages.to_sentence) unless @task.save
 
     return run_now_and_redirect(@task) if schedule.blank?

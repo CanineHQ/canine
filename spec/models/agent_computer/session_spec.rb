@@ -7,6 +7,7 @@
 #  cost_usd       :decimal(10, 6)   default(0.0), not null
 #  error          :text
 #  finished_at    :datetime
+#  found_windows  :jsonb
 #  input_tokens   :integer          default(0), not null
 #  kept_tab       :string
 #  model          :string           not null
@@ -74,5 +75,21 @@ RSpec.describe AgentComputer::Session do
     stub_const("AgentComputer::PARALLEL_RUNS", 3)
     computer.sessions.where(workspace: 3).update_all(status: AgentComputer::Session.statuses[:succeeded])
     expect(run.call.claim_workspace!).to be_nil # 3 is free again, but three runs are going (4, 5, 6): it waits
+  end
+
+  it "keeps what's open on a workspace the person picked, and tells the agent about it" do
+    account_user = create(:account_user)
+    computer = AgentComputer.create!(name: "desk", cluster: create(:cluster, account: account_user.account), account_user:, status: :running)
+    listing = [ { "workspace" => 2, "visible" => true, "windows" => [ { "id" => "0xa", "app" => "chromium", "title" => "Inbox - Chromium", "agent" => false } ] } ]
+    computer_use = instance_double(AgentComputers::ComputerUse, workspaces: { "workspaces" => listing })
+    allow_any_instance_of(AgentComputer).to receive(:computer_use).and_return(computer_use)
+    allow(computer_use).to receive(:clear_workspace)
+    task = computer.tasks.create!(name: "Inbox", instruction: "Reply to Sam", model: "test/model", pinned_workspace: 2)
+    session = task.sessions.create!(trigger: :manual, model: "test/model", status: :running)
+
+    expect(session.claim_workspace!).to eq(2)
+    expect(computer_use).not_to have_received(:clear_workspace)
+    expect(session.reload.found_windows).to eq([ { "id" => "0xa", "app" => "chromium", "title" => "Inbox - Chromium" } ])
+    expect(AgentLoop::SystemPrompt.build(session)).to include("picked that workspace", "chromium “Inbox - Chromium”", "leave those windows open")
   end
 end

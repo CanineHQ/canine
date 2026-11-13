@@ -123,6 +123,7 @@ module AgentSessions
       if done["kind"] == "error" || (done["result"].blank? && !done["finished"])
         reason = Array(done["errors"]).first || done["message"] || "it ended without finishing"
         return [ "The browse task “#{task}” didn't finish: #{reason}.", last_steps(parent),
+                 (AgentLoop::Browse::INTERNAL_PAGE if parent&.steps&.any? { |step| step.arguments["url"].to_s.start_with?("chrome://") }),
                  "Carry on from where it got to: a narrower browse that starts there, or another way." ].compact.join("\n")
       end
       visited = Array(done["visited"]).last(8).join(" → ")

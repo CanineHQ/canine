@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_01_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_06_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -197,6 +197,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_01_000001) do
     t.integer "waited_seconds", default: 0, null: false
     t.string "kept_tab"
     t.integer "outcome"
+    t.jsonb "found_windows"
     t.index ["task_id", "status"], name: "index_agent_computer_sessions_on_task_id_and_status"
     t.index ["task_id"], name: "index_agent_computer_sessions_on_task_id"
   end
@@ -239,8 +240,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_01_000001) do
     t.integer "provision_stage", default: 0, null: false
     t.string "memory", default: "8Gi", null: false
     t.text "long_term_memory"
+    t.bigint "screen_session_id"
+    t.string "screen_model"
     t.index ["account_user_id"], name: "index_agent_computers_on_account_user_id"
     t.index ["cluster_id", "name"], name: "index_agent_computers_on_cluster_id_and_name", unique: true
+    t.index ["screen_session_id"], name: "index_agent_computers_on_screen_session_id"
   end
 
   create_table "agent_provider_keys", force: :cascade do |t|
@@ -1063,6 +1067,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_01_000001) do
   add_foreign_key "agent_computer_sessions", "agent_computer_tasks", column: "task_id"
   add_foreign_key "agent_computer_tasks", "agent_computers"
   add_foreign_key "agent_computers", "account_users"
+  add_foreign_key "agent_computers", "agent_computer_sessions", column: "screen_session_id", on_delete: :nullify
   add_foreign_key "agent_computers", "clusters"
   add_foreign_key "agent_provider_keys", "accounts"
   add_foreign_key "api_tokens", "users"

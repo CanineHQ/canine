@@ -30,6 +30,18 @@ module AgentLoop
                                                     cwd: { type: "string", description: "The repository, e.g. ~/my-app" } },
                       required: %w[instructions cwd] }
       },
+      "desktop" => {
+        description: "For what browse can't reach: Chromium's own pages (chrome://extensions, chrome://settings; e.g. installing " \
+                     "an extension from a folder), a native dialog (a file picker), or a desktop app. A screen agent does it with the mouse and " \
+                     "keyboard, showing your workspace while it works, and you get back what it did. Say the task in words. Only one run " \
+                     "can use the screen at a time, and a run gets a few uses, so use browse for web pages.",
+        parameters: { type: "object", properties: {
+          task: { type: "string", description: "What to do on the screen, with any specifics (paths, names)" },
+          reason: { type: "string", enum: AgentLoop::Desktop::REASONS.keys,
+                    description: AgentLoop::Desktop::REASONS.map { |key, text| "#{key}: #{text}" }.join("; ") },
+          url: { type: "string", description: "A page to open first, e.g. chrome://extensions (optional)" }
+        }, required: %w[task reason] }
+      },
       "ask_person" => {
         description: "Ask the person for something only they can give, and wait for their answer: a one-time or verification code " \
                      "(SMS, email, authenticator app), approving a sign-in on their phone, a CAPTCHA, a password you don't have, or a yes " \
@@ -106,6 +118,7 @@ module AgentLoop
       when "finish" then finish(session, args)
       when "browse" then Browse.start(session, args)
       when "delegate" then Delegate.start(session, args)
+      when "desktop" then Desktop.start(session, args)
       when "ask_person" then ask_person(args)
       when "remember" then remember(session, args)
       when "forget" then forget(session, args)

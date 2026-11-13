@@ -58,6 +58,8 @@ class AgentComputer::Session::Action < ApplicationRecord
   def label
     return "browse: #{arguments["task"].to_s.truncate(70)}" if tool == "browse"
     return browse_step_label if tool == "browse_step"
+    return "desktop: #{arguments["task"].to_s.truncate(70)}" if tool == "desktop"
+    return desktop_step_label if tool == "desktop_step"
     return "Asked you: #{arguments["question"].to_s.truncate(80)}" if tool == "ask_person"
     return "Remembered: #{arguments["note"].to_s.truncate(80)}" if tool == "remember"
     return "Forgot notes about “#{arguments["text"].to_s.truncate(60)}”" if tool == "forget"
@@ -70,6 +72,8 @@ class AgentComputer::Session::Action < ApplicationRecord
 
   # Where its screenshot was taken: "before" what it says it did (the screen it decided from), or "after"
   def screenshot_moment
+    return "before" if tool == "desktop_step"
+
     tool == "browse_step" && arguments["marked"] != "after" ? "before" : "after"
   end
 
@@ -83,12 +87,26 @@ class AgentComputer::Session::Action < ApplicationRecord
       [ [ "Screenshot", screenshot_moment == "before" ? "The page it decided from, before this step#{marked}" : "The page after this step#{marked}" ],
         [ "Goal", arguments["goal"] ], [ "Did", (Array(arguments["did"]).presence || Array(arguments["actions"])).join("; ") ],
         [ "Last step", line.("Before") ], [ "Result", line.("Result")&.truncate(400) ], [ "Error", line.("Error") ], [ "Page", arguments["url"] ] ]
+    elsif tool == "desktop_step"
+      [ [ "Screenshot", "The screen it decided from, before this step" ], [ "Did", label ], [ "Result", text ] ]
     else
       [ [ "Screenshot", "The screen after this call" ], [ "Call", label ], [ "Result", text.truncate(400) ] ]
     end.select { |_, value| value.present? }
   end
 
   private
+
+  # "Clicked at (640, 400) · Turn on Developer mode", "Typed “~/Projects/ext”", "Pressed ctrl+l"
+  def desktop_step_label
+    did = case arguments["action"]
+    when "type" then "Typed “#{arguments["text"].to_s.truncate(40)}”"
+    when "key" then "Pressed #{arguments["text"]}"
+    when "scroll" then "Scrolled #{arguments["scroll_direction"] || "down"}"
+    when "wait" then "Waited"
+    else "#{arguments["action"].to_s.humanize} at (#{Array(arguments["coordinate"]).join(", ")})"
+    end
+    [ did, arguments["why"].presence ].compact.join(" · ").truncate(120)
+  end
 
   # What the step did ("Clicked “Pay invoice”"); steps from before those were recorded say what it was trying to do
   def browse_step_label

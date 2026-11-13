@@ -89,6 +89,7 @@
       <% [
            [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
            [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+           [:screen_model, "Screen model", "Drives the mouse and keyboard from screenshots, for Chromium's own pages and desktop apps. Unset, it's the browse model.", AgentComputer::SCREEN_MODELS, @agent_computer.browse_model.presence || AgentComputer::Task::DEFAULT_MODEL],
            [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
            [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
          ].each do |field, label, description, options, fallback| %>

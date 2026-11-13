@@ -5,9 +5,13 @@ module AgentLoop
   # as a message. The browsing model is the computer's browse_model, or the task's own model.
   module Browse
     MAX_STEPS = 40
+    # browser-use sees nothing on a page that isn't http or https (it skips them as empty), so a browse there only waits
+    INTERNAL_PAGE = "browse can't see Chromium's own pages (chrome://): to the browser agent they're empty. Use the desktop " \
+                    "tool for them."
 
     def self.start(session, args)
       return Tools::Result.new(text: "browse needs a task: what to do in the browser, in words.", error: true) if args["task"].blank?
+      return Tools::Result.new(text: INTERNAL_PAGE, error: true) if "#{args["url"]} #{args["task"]}".include?("chrome://")
 
       key = session.agent_computer.account.agent_provider_keys.find_by(provider: "openrouter")
       return Tools::Result.new(text: "Add an OpenRouter key in Agent settings first.", error: true) unless key

@@ -43,6 +43,7 @@ null when nothing's marked).
 import asyncio
 import contextvars
 import logging
+import shutil
 import threading
 import time
 import uuid
@@ -164,10 +165,16 @@ def _run_job(job, body):
     job.finish_with(done)  # the result and running=False together, so the watcher never misses it
 
 
+# browser-use's own notepad, in the job's scratch folder: the main agent has the computer's shell for real files, and
+# every action is in the schema each step must match, which Anthropic's models refuse once it's too big. read_file
+# stays: extract saves a long result there to be read back, and it reads the files given to upload.
+EXCLUDED_ACTIONS = ["write_file", "replace_file"]
+
+
 async def _drive(job, body):
     # Imported here so the server starts even when browser-use isn't installed; a browse call then fails with a clear
     # message instead of the whole server failing to import.
-    from browser_use import Agent, BrowserSession
+    from browser_use import Agent, BrowserSession, Tools
     from browser_use.llm import ChatOpenRouter
 
     cdp.ensure_running(body["workspace"])
@@ -200,6 +207,7 @@ async def _drive(job, body):
     agent = Agent(
         task=task_with_rules(body["task"]),
         llm=llm,
+        tools=Tools(exclude_actions=EXCLUDED_ACTIONS),
         browser_session=browser,
         initial_actions=initial_actions,
         available_file_paths=list(body.get("files") or []),
@@ -233,6 +241,8 @@ async def _drive(job, body):
         # event bus), and if it did, _drive would never return — stranding the result that's already computed. So
         # cap it; keep_alive leaves Chromium running regardless.
         await _cleanup(browser, set() if job.needs_person else opened)
+        # Its scratch folder (todo.md, saved extracts, step screenshots): a new job starts a new one, so nothing reads it after
+        shutil.rmtree(agent.agent_directory, ignore_errors=True)
     return done
 
 

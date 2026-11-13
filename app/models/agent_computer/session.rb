@@ -7,6 +7,7 @@
 #  cost_usd       :decimal(10, 6)   default(0.0), not null
 #  error          :text
 #  finished_at    :datetime
+#  found_windows  :jsonb
 #  input_tokens   :integer          default(0), not null
 #  kept_tab       :string
 #  model          :string           not null
@@ -180,13 +181,16 @@ class AgentComputer::Session < ApplicationRecord
 
   # The workspace this run's windows open on, claimed before its first turn: its task's pinned one, or a free one — not the one
   # the person is looking at, nothing of theirs on it, and no other run on it (empty ones first). Under a lock on the
-  # computer, so two runs starting together can't take the same one. Cleared first, of anything an earlier run left
-  # there. nil while none is free, or the computer already has PARALLEL_RUNS going: the run waits until one is.
-  # Raises ComputerUse::Error if the computer can't be reached.
+  # computer, so two runs starting together can't take the same one. nil while none is free, or the computer already
+  # has PARALLEL_RUNS going: the run waits until one is. Raises ComputerUse::Error if the computer can't be reached.
+  #
+  # A free one is cleared first, of anything an earlier run left there. A pinned one is the person's pick, often set
+  # up for the run (a browser signed in, a page open): what's on it is kept, and noted in found_windows, so the agent
+  # is told about it and the wrap-up closes only what the run opened (WrapupJob).
   def claim_workspace!
     return workspace if workspace
 
-    listing = agent_computer.computer_use.workspaces["workspaces"] unless task.pinned_workspace
+    listing = agent_computer.computer_use.workspaces["workspaces"]
     picked = agent_computer.with_lock do
       taken = agent_computer.sessions.active.where.not(id:).where.not(workspace: nil).pluck(:workspace)
       choice = if taken.size >= AgentComputer::PARALLEL_RUNS then nil
@@ -196,7 +200,14 @@ class AgentComputer::Session < ApplicationRecord
       update!(workspace: choice) if choice
       choice
     end
-    agent_computer.clear_workspace(picked) if picked
+    return picked unless picked
+
+    if task.pinned_workspace
+      found = listing.find { |w| w["workspace"] == picked }&.dig("windows").to_a
+      update!(found_windows: found.map { |w| w.slice("id", "app", "title") })
+    else
+      agent_computer.clear_workspace(picked)
+    end
     picked
   end
 

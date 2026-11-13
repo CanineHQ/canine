@@ -92,6 +92,15 @@ RSpec.describe "Agent tasks and sessions", type: :request do
       }.to change { computer.tasks.count }.by(1).and change { computer.sessions.count }.by(0)
       scheduled = computer.tasks.order(:created_at).last
       expect(scheduled.schedule).to eq("0 * * * *")
+      expect(scheduled.pinned_workspace).to be_nil
+
+      # A workspace picked in the compose box pins the task there; the picker lists what's open on each
+      post compose_agent_computer_agent_tasks_path(computer), params: { instruction: "Reply to Sam", every: "1h", workspace: "2" }
+      expect(computer.tasks.order(:created_at).last.pinned_workspace).to eq(2)
+      allow_any_instance_of(AgentComputers::ComputerUse).to receive(:workspaces)
+        .and_return("workspaces" => [ { "workspace" => 2, "visible" => true, "windows" => [ { "id" => "0xa", "app" => "chromium", "title" => "Inbox - Chromium" } ] } ])
+      get workspaces_agent_computer_path(computer)
+      expect(response.body).to include("Workspace 2", "on screen", "Inbox - Chromium")
       expect(scheduled.name).to eq("Check issues") # untitled: the model gave nothing
 
       allow(AgentLoop::Titler).to receive(:title).and_return("Triage new GitHub issues")
