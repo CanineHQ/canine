@@ -47,3 +47,6 @@
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# macOS client, built separately (see canine-connect/README.md)
+/canine-connect/

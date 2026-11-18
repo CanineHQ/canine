@@ -1,0 +1,45 @@
+name: Canine Connect release
+
+# Builds the Canine Connect macOS app and attaches it to a GitHub release.
+# Release by bumping CFBundleShortVersionString in canine-connect/Resources/Info.plist and
+# CanineConnectRelease::VERSION, then pushing a tag: git tag canine-connect-v0.1.0 && git push origin canine-connect-v0.1.0
+on:
+  push:
+    tags: [ "canine-connect-v*" ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: canine-connect
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the app version
+        run: |
+          plist_version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
+          tag_version="${GITHUB_REF_NAME#canine-connect-v}"
+          if [[ "$plist_version" != "$tag_version" ]]; then
+            echo "Tag says $tag_version but Info.plist says $plist_version" >&2
+            exit 1
+          fi
+
+      - name: Build Apple Silicon
+        run: ARCH=arm64 script/build.sh --zip
+
+      - name: Build Intel
+        run: ARCH=x86_64 script/build.sh --zip
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+            gh release create "$GITHUB_REF_NAME" --title "Canine Connect ${GITHUB_REF_NAME#canine-connect-v}" \
+              --notes "Canine Connect for macOS. Download it from the Canine Connect page in Canine." --latest=false
+          gh release upload "$GITHUB_REF_NAME" dist/CanineConnect-macos-arm64.zip dist/CanineConnect-macos-x86_64.zip --clobber

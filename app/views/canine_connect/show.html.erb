@@ -1,0 +1,173 @@
+<%= content_for :title, "Canine Connect" %>
+<% install_command = CanineConnectRelease.install_command("arm64") %>
+
+<div class="max-w-6xl space-y-10">
+  <%# Hero %>
+  <div class="relative overflow-hidden rounded-2xl border border-base-300 bg-base-200">
+    <div class="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-32 right-40 h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl"></div>
+
+    <div class="relative grid items-center gap-10 p-6 md:p-10 lg:grid-cols-5">
+      <div class="space-y-6 lg:col-span-3">
+        <div class="flex items-center gap-3">
+          <%= image_tag "/images/logo-compact.webp", alt: "", class: "h-12 w-12" %>
+          <div>
+            <div class="font-semibold">Canine Connect</div>
+            <div class="text-sm text-base-content/60">for macOS · v<%= CanineConnectRelease::VERSION %></div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h1 class="text-3xl font-bold leading-tight md:text-4xl">
+            Your cluster's private network,<br class="hidden md:block"> one switch away.
+          </h1>
+          <p class="max-w-xl text-base-content/70">
+            Canine Connect puts your Mac on a cluster's private network. Databases, caches and internal services
+            that aren't public become reachable at their cluster addresses, with no port-forwarding and nothing exposed
+            to the internet.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <%= link_to CanineConnectRelease.download_url("arm64"), class: "btn btn-primary" do %>
+            <iconify-icon icon="mdi:apple" height="20"></iconify-icon>
+            Download for Apple Silicon
+          <% end %>
+          <%= link_to CanineConnectRelease.download_url("x86_64"), class: "btn btn-outline" do %>
+            Intel Mac
+          <% end %>
+        </div>
+        <p class="text-xs text-base-content/50">
+          Requires macOS 13 Ventura or later. Includes Telepresence <%= CanineConnectRelease.telepresence_version %>.
+          Not sure which Mac you have? Apple menu → About This Mac: "Chip: Apple M…" means Apple Silicon.
+        </p>
+
+        <div class="space-y-2">
+          <div class="text-sm font-medium">Or install from Terminal</div>
+          <div class="flex items-start gap-2 rounded-lg bg-base-300 p-3">
+            <code class="flex-1 [overflow-wrap:anywhere] font-mono text-xs leading-relaxed text-base-content/80"><%= install_command %></code>
+            <button class="btn btn-ghost btn-xs btn-square shrink-0" title="Copy" data-controller="clipboard" data-clipboard-text="<%= install_command %>">
+              <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+            </button>
+          </div>
+          <p class="text-xs text-base-content/50">For Apple Silicon. Installs into ~/Applications and opens it.</p>
+        </div>
+      </div>
+
+      <div class="flex justify-center lg:col-span-2">
+        <%= image_tag "/images/canine_connect/connected.png",
+              alt: "Canine Connect connected to a cluster called production",
+              class: "w-full max-w-[320px] rounded-2xl border border-base-content/10 shadow-2xl" %>
+      </div>
+    </div>
+  </div>
+
+  <%# Setup steps %>
+  <div class="space-y-4">
+    <h2 class="text-xl font-bold">Set up in a minute</h2>
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body gap-3 p-5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">1</div>
+          <h3 class="font-semibold">Download and open</h3>
+          <p class="text-sm text-base-content/70">
+            Unzip it and move <span class="font-medium">Canine Connect</span> to Applications.
+          </p>
+          <p class="text-xs text-base-content/50">
+            If macOS says it can't verify the developer, open System Settings → Privacy &amp; Security and click
+            <span class="font-medium">Open Anyway</span>. The Terminal install skips this.
+          </p>
+        </div>
+      </div>
+
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body gap-3 p-5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">2</div>
+          <h3 class="font-semibold">Sign in</h3>
+          <p class="text-sm text-base-content/70">Click the dog in your menu bar and enter this Canine's URL:</p>
+          <div class="flex items-center gap-2 rounded-md bg-base-300 px-3 py-1.5">
+            <code class="flex-1 truncate font-mono text-xs"><%= request.base_url %></code>
+            <button class="btn btn-ghost btn-xs btn-square" title="Copy" data-controller="clipboard" data-clipboard-text="<%= request.base_url %>">
+              <iconify-icon icon="lucide:copy" height="12"></iconify-icon>
+            </button>
+          </div>
+          <p class="text-sm text-base-content/70">and an API token.</p>
+          <%= link_to new_api_token_path, class: "btn btn-sm btn-outline self-start" do %>
+            <iconify-icon icon="lucide:key-round" height="14"></iconify-icon>
+            Create an API token
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body gap-3 p-5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">3</div>
+          <h3 class="font-semibold">Flip the switch</h3>
+          <p class="text-sm text-base-content/70">
+            Pick a cluster and turn it on. The first time, macOS asks for your password so Telepresence can set up
+            the network tunnel.
+          </p>
+        </div>
+      </div>
+
+      <div class="card card-bordered bg-base-100">
+        <div class="card-body gap-3 p-5">
+          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">4</div>
+          <h3 class="font-semibold">Reach anything</h3>
+          <p class="text-sm text-base-content/70">Every service answers at its cluster address, in your browser or any tool:</p>
+          <code class="rounded-md bg-base-300 px-3 py-1.5 font-mono text-xs [overflow-wrap:anywhere]">http://&lt;service&gt;.&lt;namespace&gt;.svc.cluster.local</code>
+          <p class="text-xs text-base-content/50">Each service and add-on shows its address under Networking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Clusters %>
+  <div class="space-y-4">
+    <div>
+      <h2 class="text-xl font-bold">Your clusters</h2>
+      <p class="text-sm text-base-content/60">Canine Connect works with clusters that have the Telepresence package installed.</p>
+    </div>
+    <div class="card card-bordered bg-base-100">
+      <div class="card-body p-0">
+        <% if @clusters.empty? %>
+          <div class="p-6 text-sm text-base-content/60">
+            No clusters yet. <%= link_to "Add a cluster", new_cluster_path, class: "link" %> to get started.
+          </div>
+        <% else %>
+          <ul class="divide-y divide-base-300">
+            <% @clusters.each do |cluster| %>
+              <li class="flex items-center gap-4 px-5 py-3">
+                <iconify-icon icon="lucide:server" height="18" class="text-base-content/50"></iconify-icon>
+                <%= link_to cluster.name, cluster_path(cluster), class: "flex-1 font-medium hover:underline" %>
+                <% if CanineConnectRelease.ready_on?(cluster) %>
+                  <span class="badge badge-success badge-outline gap-1">
+                    <iconify-icon icon="lucide:check" height="12"></iconify-icon>
+                    Ready
+                  </span>
+                <% else %>
+                  <%= link_to cluster_path(cluster), class: "badge badge-warning badge-outline gap-1 hover:underline" do %>
+                    <iconify-icon icon="lucide:triangle-alert" height="12"></iconify-icon>
+                    Install Telepresence package
+                  <% end %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# CLI %>
+  <div class="collapse collapse-arrow rounded-xl border border-base-300 bg-base-100">
+    <input type="checkbox" aria-label="Show command line instructions">
+    <div class="collapse-title font-semibold">
+      Prefer the command line, or not on a Mac?
+      <div class="text-sm font-normal text-base-content/60">Canine Connect runs Telepresence for you. You can run it yourself on macOS, Linux or Windows.</div>
+    </div>
+    <div class="collapse-content">
+      <%= render "canine_connect/cli_steps", cluster: @clusters.first %>
+    </div>
+  </div>
+</div>

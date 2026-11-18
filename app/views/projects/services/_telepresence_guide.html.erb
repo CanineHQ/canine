@@ -1,49 +1,85 @@
+<%# "Connect from your computer" link + modal for a private service or add-on endpoint. Locals: cluster, url %>
 <% random_id = "id_#{SecureRandom.hex(8)}" %>
-<a
-  class="text-sm text-gray-500 hover:text-gray-300 cursor-pointer block"
+<% ready = CanineConnectRelease.ready_on?(cluster) %>
+<button
+  type="button"
+  class="inline-flex items-center gap-1.5 text-sm text-base-content/60 hover:text-base-content cursor-pointer"
   onclick="<%= random_id %>.showModal()">
-  How do I connect to this?
-</a>
+  <iconify-icon icon="lucide:laptop" height="14"></iconify-icon>
+  Connect from your computer
+</button>
 <dialog id="<%= random_id %>" class="modal">
-  <div class="modal-box w-11/12 max-w-5xl bg-base-300">
+  <div class="modal-box w-11/12 max-w-2xl bg-base-200 p-0">
     <form method="dialog">
-      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+      <button aria-label="Close modal" class="btn btn-circle btn-ghost btn-sm absolute right-3 top-3">
         <iconify-icon icon="lucide:x" height="16"></iconify-icon>
       </button>
     </form>
-    <h3 class="mb-8 w-full text-xl font-bold">Connecting to private services</h3>
-    <p>
-      Inside a cluster, your services are not exposed to the public internet unless you explicitly check <span class="font-bold">Allow Public Networking</span>.
-    </p>
-    <p>
-      All clusters set up in Canine are configured to install Telepresence by default.
-    </p>
-    <div class="my-4 space-y-4">
-      <div>
-        <h4 class="font-bold mb-2">Step 1: <a class="text-blue-500 hover:text-blue-600" href="https://www.telepresence.io/docs/install/manager" target="_blank">Install Telepresence</a> to your local machine.</h4>
-      </div>
-      <div>
-        <h4 class="font-bold mb-2">Step 2: Download your Kubeconfig file</h4>
-        <%= link_to(
-          "Download Kubeconfig",
-          download_kubeconfig_cluster_path(cluster),
-          class: "btn btn-sm btn-outline",
-          target: "_blank"
-        ) %>
-      </div>
-      <div>
-        <h4 class="font-bold mb-2">Step 3: Connect to your cluster with Telepresence</h4>
 
-        <p class="text-lg">
-          <div class="mockup-code before:content-none">
-            <pre data-prefix="$"><code>KUBECONFIG=/path/to/kubeconfig.yml telepresence connect</code></pre>
-            <pre data-prefix=">"><code>Connected to context</code></pre>
-          </div>
+    <div class="space-y-5 p-6">
+      <div class="space-y-1.5">
+        <h3 class="pr-8 text-xl font-bold">Connect from your computer</h3>
+        <p class="text-sm text-base-content/70">
+          This address only works inside <span class="font-medium"><%= cluster.name %></span>, unless you turn on
+          <span class="font-medium">Allow Public Networking</span>. Put your computer on the cluster's private network
+          to reach it directly:
         </p>
+        <div class="flex items-center gap-2 rounded-lg bg-base-300 px-3 py-2">
+          <code class="flex-1 [overflow-wrap:anywhere] font-mono text-sm"><%= url %></code>
+          <button type="button" class="btn btn-ghost btn-xs btn-square" title="Copy" data-controller="clipboard" data-clipboard-text="<%= url %>">
+            <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+          </button>
+        </div>
       </div>
-      <p class="py-4">
-        You can now access your service at <a class="text-blue-500 hover:text-blue-600" target="_blank"><code><%= url %></code></a>
-      </p>
+
+      <% unless ready %>
+        <div role="alert" class="alert alert-warning py-3 text-sm">
+          <iconify-icon icon="lucide:triangle-alert" height="18"></iconify-icon>
+          <span>
+            Telepresence isn't installed on <%= cluster.name %> yet.
+            <%= link_to "Install it from the cluster's packages", cluster_path(cluster), class: "link font-medium" %>.
+          </span>
+        </div>
+      <% end %>
+
+      <div class="relative overflow-hidden rounded-xl border border-base-300 bg-base-100">
+        <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/15 blur-3xl"></div>
+        <div class="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center">
+          <div class="flex-1 space-y-3">
+            <div class="flex items-center gap-3">
+              <%= image_tag "/images/logo-compact.webp", alt: "", class: "h-10 w-10" %>
+              <div>
+                <div class="flex items-center gap-2 font-semibold">
+                  Canine Connect
+                  <span class="badge badge-primary badge-sm">Recommended</span>
+                </div>
+                <div class="text-xs text-base-content/60">Menu bar app for macOS</div>
+              </div>
+            </div>
+            <ol class="space-y-1 text-sm text-base-content/80">
+              <li><span class="text-base-content/50">1.</span> Install Canine Connect and sign in with an API token</li>
+              <li><span class="text-base-content/50">2.</span> Pick <span class="font-medium"><%= cluster.name %></span> and flip the switch</li>
+              <li><span class="text-base-content/50">3.</span> Open the address above</li>
+            </ol>
+          </div>
+          <div class="flex shrink-0 flex-col gap-2">
+            <%= link_to canine_connect_path, class: "btn btn-primary" do %>
+              <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+              Get Canine Connect
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="collapse collapse-arrow rounded-xl border border-base-300 bg-base-100">
+        <input type="checkbox" aria-label="Show command line instructions">
+        <div class="collapse-title text-sm font-medium">
+          Use the Telepresence CLI instead (Linux, Windows, scripts)
+        </div>
+        <div class="collapse-content">
+          <%= render "canine_connect/cli_steps", cluster: cluster %>
+        </div>
+      </div>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
