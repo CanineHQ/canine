@@ -33,6 +33,31 @@ struct CanineCluster: Decodable, Identifiable, Hashable {
     }
 }
 
+/// How the app proves who it is to Canine's /api/v1.
+enum CanineCredential: Equatable {
+    /// From browser sign-in (OAuth), sent as `Authorization: Bearer`.
+    case oauth(String)
+    /// Pasted from Settings → API Tokens, sent as `X-API-Key`.
+    case apiKey(String)
+
+    var secret: String {
+        switch self {
+        case .oauth(let token), .apiKey(let token): return token
+        }
+    }
+
+    var kind: String {
+        switch self {
+        case .oauth: return "oauth"
+        case .apiKey: return "apiKey"
+        }
+    }
+
+    init(kind: String?, secret: String) {
+        self = kind == "oauth" ? .oauth(secret) : .apiKey(secret)
+    }
+}
+
 enum CanineAPIError: LocalizedError {
     case unauthorized
     case http(Int, String)
@@ -40,17 +65,17 @@ enum CanineAPIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unauthorized: return "Canine rejected the API token. It may have expired."
+        case .unauthorized: return "Canine didn't accept your sign-in. It may have expired or been revoked. Sign in again."
         case .http(let code, let message): return "Canine returned \(code): \(message)"
         case .badResponse: return "Canine sent a response the app couldn't read."
         }
     }
 }
 
-/// Talks to Canine's /api/v1 using an API token (Settings → API Tokens in Canine).
+/// Talks to Canine's /api/v1 with an OAuth access token or an API token.
 struct CanineAPI {
     let baseURL: URL
-    let token: String
+    let credential: CanineCredential
     var accountSlug: String?
 
     func me() async throws -> CanineMe {
@@ -80,7 +105,10 @@ struct CanineAPI {
 
     private func get(_ path: String) async throws -> Data {
         var request = URLRequest(url: baseURL.appendingPathComponent(path))
-        request.setValue(token, forHTTPHeaderField: "X-API-Key")
+        switch credential {
+        case .oauth(let token): request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        case .apiKey(let token): request.setValue(token, forHTTPHeaderField: "X-API-Key")
+        }
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         if let accountSlug { request.setValue(accountSlug, forHTTPHeaderField: "X-Account-Id") }
         request.timeoutInterval = 30

@@ -81,6 +81,10 @@ if [[ "${1:-}" == "--install" ]]; then
   sleep 1
   rm -rf "$DEST"
   cp -R "$APP" "$DEST"
+  # The browser hands sign-in back on canine-connect://, which must reach the installed copy, not the one in dist/
+  LSREGISTER=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
+  "$LSREGISTER" -u "$PWD/$APP" >/dev/null 2>&1 || true
+  "$LSREGISTER" -f "$DEST"
   open "$DEST"
   echo "==> Installed and launched ${DEST}"
 fi

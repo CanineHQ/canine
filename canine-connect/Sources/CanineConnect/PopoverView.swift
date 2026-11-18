@@ -592,8 +592,20 @@ private struct SignInView: View {
     @EnvironmentObject private var model: AppModel
     @State private var baseURL = ""
     @State private var token = ""
+    @State private var usesAPIToken = false
 
     var body: some View {
+        Group {
+            if let attempt = model.browserSignIn {
+                WaitingForBrowser(host: attempt.baseURL.host ?? attempt.baseURL.absoluteString)
+            } else {
+                form
+            }
+        }
+        .onAppear { if baseURL.isEmpty { baseURL = model.baseURLString } }
+    }
+
+    private var form: some View {
         VStack(spacing: 18) {
             VStack(spacing: 8) {
                 Image(nsImage: Brand.logo)
@@ -613,37 +625,130 @@ private struct SignInView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Field(label: "Canine URL") {
                     TextField("https://canine.sh", text: $baseURL)
+                        .onSubmit { if !usesAPIToken { signInWithBrowser() } }
                 }
-                Field(label: "API token") {
-                    SecureField("Paste your API token", text: $token)
-                        .onSubmit(signIn)
+                if usesAPIToken {
+                    Field(label: "API token") {
+                        SecureField("Paste your API token", text: $token)
+                            .onSubmit(signInWithToken)
+                    }
                 }
             }
 
             VStack(spacing: 10) {
-                Button(action: signIn) {
-                    ZStack {
-                        Text("Sign In").opacity(model.isSigningIn ? 0 : 1)
-                        if model.isSigningIn { ProgressView().controlSize(.small).tint(.white) }
+                if usesAPIToken {
+                    Button(action: signInWithToken) {
+                        ButtonLabel(title: "Sign In with Token", isBusy: model.isSigningIn)
                     }
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                .keyboardShortcut(.defaultAction)
-                .disabled(model.isSigningIn)
+                    .buttonStyle(PrimaryButtonStyle())
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(model.isSigningIn)
 
-                Button("Don't have a token? Create one in Canine →") {
-                    let base = baseURL.isEmpty ? AppModel.defaultBaseURL : baseURL
-                    if let url = URL(string: base)?.appendingPathComponent("api_tokens/new") { model.open(url) }
+                    HStack(spacing: 12) {
+                        Button("Create a token in Canine") {
+                            if let url = URL(string: base)?.appendingPathComponent("api_tokens/new") { model.open(url) }
+                        }
+                        Text("·").foregroundStyle(.tertiary)
+                        Button("Sign in with browser") { usesAPIToken = false }
+                    }
+                    .buttonStyle(.link)
+                    .font(.system(size: 11))
+                } else {
+                    Button(action: signInWithBrowser) {
+                        ButtonLabel(title: "Sign In with Canine", systemImage: "safari", isBusy: model.isSigningIn)
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(model.isSigningIn)
+
+                    Text("Opens Canine in your browser to approve this Mac.")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+
+                    Button("Use an API token instead") { usesAPIToken = true }
+                        .buttonStyle(.link)
+                        .font(.system(size: 11))
                 }
-                .buttonStyle(.link)
-                .font(.system(size: 11))
             }
         }
-        .onAppear { if baseURL.isEmpty { baseURL = model.baseURLString } }
     }
 
-    private func signIn() {
-        Task { await model.signIn(baseURL: baseURL, token: token) }
+    private var base: String { baseURL.isEmpty ? AppModel.defaultBaseURL : baseURL }
+
+    private func signInWithBrowser() {
+        Task { await model.signInWithBrowser(baseURL: base) }
+    }
+
+    private func signInWithToken() {
+        Task { await model.signIn(baseURL: base, token: token) }
+    }
+}
+
+private struct ButtonLabel: View {
+    let title: String
+    var systemImage: String?
+    let isBusy: Bool
+
+    var body: some View {
+        ZStack {
+            HStack(spacing: 6) {
+                if let systemImage { Image(systemName: systemImage) }
+                Text(title)
+            }
+            .opacity(isBusy ? 0 : 1)
+            if isBusy { ProgressView().controlSize(.small).tint(.white) }
+        }
+    }
+}
+
+/// Shown while the person approves Canine Connect in their browser.
+private struct WaitingForBrowser: View {
+    @EnvironmentObject private var model: AppModel
+    let host: String
+
+    var body: some View {
+        VStack(spacing: 18) {
+            ZStack(alignment: .bottomTrailing) {
+                Image(nsImage: Brand.logo)
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: 64, height: 64)
+                Image(systemName: "safari.fill")
+                    .font(.system(size: 20))
+                    .foregroundStyle(.white, Brand.accent)
+                    .background(Circle().fill(Color(nsColor: .windowBackgroundColor)).padding(-2))
+                    .offset(x: 6, y: 4)
+            }
+            .padding(.top, 10)
+
+            VStack(spacing: 6) {
+                Text("Continue in your browser")
+                    .font(.system(size: 17, weight: .semibold))
+                Text("Approve Canine Connect on \(host).\nThis window updates when you're done.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small)
+                Text(model.isSigningIn ? "Finishing sign-in…" : "Waiting for approval…")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 2)
+
+            VStack(spacing: 10) {
+                Button { model.reopenBrowser() } label: {
+                    ButtonLabel(title: "Open Browser Again", systemImage: "arrow.up.forward.app", isBusy: false)
+                }
+                .buttonStyle(SecondaryButtonStyle())
+
+                Button("Cancel") { model.cancelBrowserSignIn() }
+                    .buttonStyle(.link)
+                    .font(.system(size: 11))
+            }
+        }
     }
 }
 
@@ -667,6 +772,19 @@ private struct Field<Content: View>: View {
 }
 
 // MARK: - Shared pieces
+
+private struct SecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 13, weight: .medium))
+            .frame(maxWidth: .infinity, minHeight: 34)
+            .background(
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(Color.primary.opacity(configuration.isPressed ? 0.12 : 0.07))
+            )
+            .contentShape(Rectangle())
+    }
+}
 
 private struct PrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled

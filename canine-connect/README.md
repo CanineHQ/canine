@@ -25,7 +25,8 @@ swift build && .build/debug/CanineConnect --snapshot /tmp/canine-connect-snapsho
 ## Using it
 
 1. Click the Canine dog in the menu bar.
-2. Sign in with your Canine URL and an API token (**Create one** opens Canine's API token page).
+2. Check the Canine URL and click **Sign In with Canine**. Approve Canine Connect in your browser and the app
+   signs in. (**Use an API token instead** works too, e.g. without a browser or against an older Canine.)
 3. Choose a cluster and flip the switch. The first time, macOS asks for your password so Telepresence's
    network daemon can create the tunnel.
 
@@ -34,10 +35,16 @@ Telepresence daemons.
 
 ## How it works
 
-- **Canine:** calls `GET /api/v1/me` and `GET /api/v1/clusters` with the `X-API-Key` header, and `X-Account-Id`
-  for the selected account. On connect it downloads that cluster's kubeconfig from
+- **Sign-in:** OAuth 2.0 authorization code with PKCE, as a public native client. On first sign-in to a Canine
+  the app registers itself through dynamic client registration (`POST /oauth/register`, RFC 7591), so nobody has
+  to create an OAuth application. It opens `/oauth/authorize` in your default browser, where you're probably
+  already signed in, and the browser hands the code back on `canine-connect://oauth/callback`, a URL scheme
+  declared in `Info.plist`. The app exchanges the code at `/oauth/token`, and revokes the token at
+  `/oauth/revoke` when you sign out.
+- **Canine:** calls `GET /api/v1/me` and `GET /api/v1/clusters` with `Authorization: Bearer` (or `X-API-Key`
+  when signed in with an API token), plus `X-Account-Id` for the selected account. On connect it downloads that cluster's kubeconfig from
   `GET /api/v1/clusters/:name/download_kubeconfig` to `~/Library/Application Support/Canine Connect/kubeconfigs/`
-  (mode 0600). The token is kept in the login keychain.
+  (mode 0600). The access token is kept in the login keychain.
 - **Telepresence:** the app ships its own CLI in `Contents/Resources/bin/telepresence`, pinned to the same version
   as the Traffic Manager chart Canine installs (`resources/helm/system_packages.yml`). It runs
   `telepresence connect --kubeconfig <file> --manager-namespace canine-system`, and polls

@@ -27,6 +27,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var me: CanineMe?
     @Published private(set) var clusters: [CanineCluster] = []
     @Published private(set) var isSigningIn = false
+    /// Set while waiting for the browser to hand back an OAuth code.
+    @Published private(set) var browserSignIn: OAuthClient.Attempt?
     @Published private(set) var isLoadingClusters = false
     @Published private(set) var telepresenceVersion: String?
     @Published var errorMessage: String?
@@ -54,7 +56,7 @@ final class AppModel: ObservableObject {
 
     let telepresence: Telepresence?
     private let defaults = UserDefaults.standard
-    private var token: String?
+    private var credential: CanineCredential?
     private var pollTask: Task<Void, Never>?
 
     init() {
@@ -65,7 +67,9 @@ final class AppModel: ObservableObject {
         accountSlug = defaults.string(forKey: "accountSlug")
         connectedSince = defaults.object(forKey: "connectedSince") as? Date
         telepresence = Telepresence.locate()
-        token = Keychain.read(Self.tokenKey)
+        credential = Keychain.read(Self.tokenKey).map {
+            CanineCredential(kind: UserDefaults.standard.string(forKey: "credentialKind"), secret: $0)
+        }
 
         pollTask = Task { [weak self] in
             await self?.loadTelepresenceVersion()
@@ -74,11 +78,11 @@ final class AppModel: ObservableObject {
                 try? await Task.sleep(nanoseconds: 4_000_000_000)
             }
         }
-        if token != nil { Task { await loadAccount() } }
+        if credential != nil { Task { await loadAccount() } }
     }
 
     /// A model with canned state and no side effects, for `--snapshot` renders.
-    init(preview connection: Connection, signedIn: Bool = true, error: String? = nil) {
+    init(preview connection: Connection, signedIn: Bool = true, awaitingBrowser: Bool = false, error: String? = nil) {
         let account = CanineAccount(id: 1, name: "Acme Inc", slug: "acme")
         let pkgs = [CanineCluster.Package(name: "telepresence", status: "installed")]
         baseURLString = Self.defaultBaseURL
@@ -87,8 +91,11 @@ final class AppModel: ObservableObject {
         self.connection = connection
         errorMessage = error
         telepresenceVersion = "v2.21.1"
+        if awaitingBrowser, let url = URL(string: Self.defaultBaseURL) {
+            browserSignIn = OAuthClient(baseURL: url).begin(clientID: "preview")
+        }
         guard signedIn else { return }
-        token = "preview"
+        credential = .oauth("preview")
         accountSlug = "acme"
         me = CanineMe(email: "you@example.com", name: "You", currentAccount: account, accounts: [account])
         clusters = [
@@ -113,12 +120,12 @@ final class AppModel: ObservableObject {
     // MARK: - Derived state
 
     var isSignedIn: Bool { me != nil }
-    var hasToken: Bool { token != nil }
+    var hasToken: Bool { credential != nil }
     var isConnected: Bool { connection == .connected }
 
     var api: CanineAPI? {
-        guard let token, let url = URL(string: baseURLString) else { return nil }
-        return CanineAPI(baseURL: url, token: token, accountSlug: accountSlug)
+        guard let credential, let url = URL(string: baseURLString) else { return nil }
+        return CanineAPI(baseURL: url, credential: credential, accountSlug: accountSlug)
     }
 
     var currentAccount: CanineAccount? {
@@ -132,30 +139,85 @@ final class AppModel: ObservableObject {
 
     // MARK: - Canine
 
-    func signIn(baseURL: String, token newToken: String) async {
-        var trimmedURL = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        while trimmedURL.hasSuffix("/") { trimmedURL.removeLast() }
-        let trimmedToken = newToken.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let url = URL(string: trimmedURL), url.scheme?.hasPrefix("http") == true else {
-            errorMessage = "Enter your Canine URL, like https://canine.sh"
-            return
-        }
-        guard !trimmedToken.isEmpty else {
-            errorMessage = "Paste an API token from Canine."
-            return
-        }
-
+    /// Signs in through the browser: the person approves Canine Connect on Canine's own sign-in page, and the
+    /// browser hands a code back on canine-connect://. Finishes in `handleCallback(_:)`.
+    func signInWithBrowser(baseURL: String) async {
+        guard let url = normalizedBaseURL(baseURL) else { return }
         isSigningIn = true
         defer { isSigningIn = false }
         errorMessage = nil
         do {
-            let me = try await CanineAPI(baseURL: url, token: trimmedToken).me()
-            Keychain.write(trimmedToken, for: Self.tokenKey)
-            token = trimmedToken
-            baseURLString = trimmedURL
+            let client = OAuthClient(baseURL: url)
+            let clientID = try await registeredClientID(for: url, client: client)
+            let attempt = client.begin(clientID: clientID)
+            browserSignIn = attempt
+            open(attempt.authorizeURL)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func reopenBrowser() {
+        if let browserSignIn { open(browserSignIn.authorizeURL) }
+    }
+
+    func cancelBrowserSignIn() {
+        // A stale registration (e.g. Canine's database was reset) would fail in the browser where the app can't
+        // see it; registering again next time costs nothing.
+        if let browserSignIn { forgetClientID(for: browserSignIn.baseURL) }
+        browserSignIn = nil
+    }
+
+    /// The browser calling back with canine-connect://oauth/callback?code=…&state=…
+    func handleCallback(_ url: URL) async {
+        guard url.scheme == OAuthClient.callbackScheme else { return }
+        guard let attempt = browserSignIn else {
+            errorMessage = "That sign-in has expired. Sign in again."
+            return
+        }
+        isSigningIn = true
+        defer { isSigningIn = false }
+        do {
+            let code = try OAuthClient.code(from: url, attempt: attempt)
+            let token = try await OAuthClient(baseURL: attempt.baseURL).exchange(code: code, attempt: attempt)
+            browserSignIn = nil
+            await finishSignIn(baseURL: attempt.baseURL, credential: .oauth(token)) {
+                // Signed in with OAuth but the API still wants an API key: Canine is older than this app
+                OAuthError.unsupported
+            }
+        } catch {
+            if case OAuthError.stateMismatch = error { errorMessage = error.localizedDescription; return }
+            browserSignIn = nil
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func signIn(baseURL: String, token newToken: String) async {
+        guard let url = normalizedBaseURL(baseURL) else { return }
+        let trimmedToken = newToken.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedToken.isEmpty else {
+            errorMessage = "Paste an API token from Canine."
+            return
+        }
+        isSigningIn = true
+        defer { isSigningIn = false }
+        await finishSignIn(baseURL: url, credential: .apiKey(trimmedToken))
+    }
+
+    private func finishSignIn(baseURL url: URL, credential newCredential: CanineCredential,
+                              whenUnauthorized: (() -> Error)? = nil) async {
+        errorMessage = nil
+        do {
+            let me = try await CanineAPI(baseURL: url, credential: newCredential).me()
+            Keychain.write(newCredential.secret, for: Self.tokenKey)
+            defaults.set(newCredential.kind, forKey: "credentialKind")
+            credential = newCredential
+            baseURLString = url.absoluteString
             accountSlug = me.currentAccount.slug
             self.me = me
             await refreshClusters()
+        } catch CanineAPIError.unauthorized where whenUnauthorized != nil {
+            errorMessage = whenUnauthorized?().localizedDescription
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -163,8 +225,11 @@ final class AppModel: ObservableObject {
 
     func signOut() async {
         if isConnected { await disconnect() }
+        if case .oauth(let token) = credential, let url = URL(string: baseURLString) {
+            await OAuthClient(baseURL: url).revoke(token: token, clientID: clientIDs[baseURLString])
+        }
         Keychain.delete(Self.tokenKey)
-        token = nil
+        credential = nil
         me = nil
         clusters = []
         accountSlug = nil
@@ -195,6 +260,33 @@ final class AppModel: ObservableObject {
         } catch {
             handle(error)
         }
+    }
+
+    private func normalizedBaseURL(_ value: String) -> URL? {
+        var trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        while trimmed.hasSuffix("/") { trimmed.removeLast() }
+        guard let url = URL(string: trimmed), url.scheme?.hasPrefix("http") == true, url.host != nil else {
+            errorMessage = "Enter your Canine URL, like https://canine.sh"
+            return nil
+        }
+        return url
+    }
+
+    /// Canine Connect registers itself once per Canine it signs in to (RFC 7591) and reuses that client_id.
+    private var clientIDs: [String: String] {
+        get { defaults.dictionary(forKey: "oauthClientIDs") as? [String: String] ?? [:] }
+        set { defaults.set(newValue, forKey: "oauthClientIDs") }
+    }
+
+    private func registeredClientID(for url: URL, client: OAuthClient) async throws -> String {
+        if let existing = clientIDs[url.absoluteString] { return existing }
+        let clientID = try await client.register()
+        clientIDs[url.absoluteString] = clientID
+        return clientID
+    }
+
+    private func forgetClientID(for url: URL) {
+        clientIDs[url.absoluteString] = nil
     }
 
     private func loadAccount() async {
@@ -304,7 +396,7 @@ final class AppModel: ObservableObject {
     private func handle(_ error: Error) {
         if case CanineAPIError.unauthorized = error {
             Keychain.delete(Self.tokenKey)
-            token = nil
+            credential = nil
             me = nil
             clusters = []
         }

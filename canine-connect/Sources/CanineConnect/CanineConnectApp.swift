@@ -33,6 +33,28 @@ struct CanineConnectApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     weak var model: AppModel?
 
+    /// Receives canine-connect:// URLs (the OAuth callback). An Apple Event handler rather than SwiftUI's
+    /// onOpenURL, which only fires while a view is on screen, and the popover is closed while you're in the browser.
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSAppleEventManager.shared().setEventHandler(
+            self,
+            andSelector: #selector(handleGetURL(_:withReplyEvent:)),
+            forEventClass: AEEventClass(kInternetEventClass),
+            andEventID: AEEventID(kAEGetURL)
+        )
+    }
+
+    @objc private func handleGetURL(_ event: NSAppleEventDescriptor, withReplyEvent reply: NSAppleEventDescriptor) {
+        guard let string = event.paramDescriptor(forKeyword: keyDirectObject)?.stringValue,
+              let url = URL(string: string) else { return }
+        Task { @MainActor in
+            guard let model = self.model else { return }
+            await model.handleCallback(url)
+            // Bring the result into view: the person is still looking at their browser.
+            MenuBarPopover.show()
+        }
+    }
+
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let model else { return .terminateNow }
         Task { @MainActor in
@@ -40,6 +62,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             sender.reply(toApplicationShouldTerminate: true)
         }
         return .terminateLater
+    }
+}
+
+/// Opens the menu bar popover from code. MenuBarExtra has no API for it, so this clicks its status item button.
+@MainActor
+enum MenuBarPopover {
+    static func show() {
+        NSApp.activate(ignoringOtherApps: true)
+        for window in NSApp.windows where window.className.contains("NSStatusBarWindow") {
+            if let button = findButton(in: window.contentView) {
+                // Already open? A click would close it.
+                if NSApp.windows.contains(where: { $0.isVisible && $0.className.contains("MenuBarExtraWindow") }) { return }
+                button.performClick(nil)
+                return
+            }
+        }
+    }
+
+    private static func findButton(in view: NSView?) -> NSStatusBarButton? {
+        guard let view else { return nil }
+        if let button = view as? NSStatusBarButton { return button }
+        for subview in view.subviews {
+            if let button = findButton(in: subview) { return button }
+        }
+        return nil
     }
 }
 
@@ -124,6 +171,7 @@ enum Snapshot {
 
         let states: [(String, AppModel)] = [
             ("signed-out", AppModel(preview: .disconnected, signedIn: false)),
+            ("waiting-for-browser", AppModel(preview: .disconnected, signedIn: false, awaitingBrowser: true)),
             ("disconnected", AppModel(preview: .disconnected)),
             ("connecting", AppModel(preview: .connecting("Connecting to production…"))),
             ("connected", AppModel(preview: .connected)),

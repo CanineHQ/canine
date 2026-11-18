@@ -37,11 +37,17 @@ RSpec.configure do |config|
             type: :apiKey,
             name: 'X-API-Key',
             in: :header
+          },
+          oauth2: {
+            type: :http,
+            scheme: :bearer,
+            description: 'An OAuth access token from /oauth/token (authorization code + PKCE)'
           }
         }
       },
       security: [
-        { x_api_key: [] }
+        { x_api_key: [] },
+        { oauth2: [] }
       ],
       paths: {},
       servers:

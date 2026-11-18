@@ -18,6 +18,18 @@
     <string>0.1.0</string>
     <key>CFBundleVersion</key>
     <string>1</string>
+    <!-- canine-connect://oauth/callback: where the browser hands back the OAuth code after signing in -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>sh.canine.connect.oauth</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>canine-connect</string>
+            </array>
+        </dict>
+    </array>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <!-- Menu bar only: no Dock icon, no app menu -->

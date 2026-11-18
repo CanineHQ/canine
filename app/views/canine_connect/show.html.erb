@@ -91,11 +91,12 @@
               <iconify-icon icon="lucide:copy" height="12"></iconify-icon>
             </button>
           </div>
-          <p class="text-sm text-base-content/70">and an API token.</p>
-          <%= link_to new_api_token_path, class: "btn btn-sm btn-outline self-start" do %>
-            <iconify-icon icon="lucide:key-round" height="14"></iconify-icon>
-            Create an API token
-          <% end %>
+          <p class="text-sm text-base-content/70">
+            then click <span class="font-medium">Sign In with Canine</span> and approve it in your browser.
+          </p>
+          <p class="text-xs text-base-content/50">
+            Can't use a browser? Sign in with an <%= link_to "API token", new_api_token_path, class: "link" %> instead.
+          </p>
         </div>
       </div>
 
