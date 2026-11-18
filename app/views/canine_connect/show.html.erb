@@ -13,7 +13,7 @@
           <%= image_tag "/images/logo-compact.webp", alt: "", class: "h-12 w-12" %>
           <div>
             <div class="font-semibold">Canine Connect</div>
-            <div class="text-sm text-base-content/60">for macOS · v<%= CanineConnectRelease::VERSION %></div>
+            <div class="text-sm text-base-content/60">for macOS · <%= link_to "Source & releases", CanineConnectRelease.repository_url, class: "link", target: "_blank", rel: "noopener" %></div>
           </div>
         </div>
 

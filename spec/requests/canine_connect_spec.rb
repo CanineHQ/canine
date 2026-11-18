@@ -7,7 +7,7 @@ RSpec.describe "Canine Connect", type: :request do
 
   before { sign_in account.owner }
 
-  it "links both macOS downloads, shows which clusters are ready, and matches the app's version" do
+  it "links both macOS downloads and shows which clusters are ready" do
     create(:cluster, account:, name: "ready-cluster").cluster_packages.create!(name: "telepresence", status: :installed)
     create(:cluster, account:, name: "bare-cluster")
 
@@ -20,7 +20,5 @@ RSpec.describe "Canine Connect", type: :request do
       "ready-cluster", "bare-cluster", "Install Telepresence package",
       "--manager-namespace canine-system"
     )
-    expect(Rails.root.join("canine-connect/Resources/Info.plist").read)
-      .to include("<string>#{CanineConnectRelease::VERSION}</string>")
   end
 end

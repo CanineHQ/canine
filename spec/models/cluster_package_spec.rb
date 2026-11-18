@@ -65,7 +65,6 @@ RSpec.describe ClusterPackage, type: :model do
     chart_version = package.definition["chart_version"]
     expect(Rails.root.join("Dockerfile").read).to include("ARG TELEPRESENCE_VERSION=v#{chart_version}\n")
     expect(Rails.root.join("resources/system_install.sh").read).to include("/v#{chart_version}/telepresence-linux")
-    expect(Rails.root.join("canine-connect/script/build.sh").read).to include("TELEPRESENCE_VERSION=#{chart_version}\n")
 
     helm = instance_double(K8::Helm::Client)
     kubectl = double(connection: double, runner: double)

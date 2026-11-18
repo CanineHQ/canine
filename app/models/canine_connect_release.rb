@@ -1,9 +1,7 @@
-# The Canine Connect macOS app (canine-connect/), published to GitHub releases by
-# .github/workflows/canine-connect.yml. VERSION must match CFBundleShortVersionString in
-# canine-connect/Resources/Info.plist.
+# The Canine Connect macOS app, which lives in CanineHQ/connect. Its release workflow attaches
+# CanineConnect-macos-<arch>.zip to each release; these links always take the latest one.
 class CanineConnectRelease
-  VERSION = "0.1.0".freeze
-  REPOSITORY = "CanineHQ/canine".freeze
+  REPOSITORY = "CanineHQ/connect".freeze
   ARCHITECTURES = {
     "arm64" => "Apple Silicon",
     "x86_64" => "Intel"
@@ -12,7 +10,7 @@ class CanineConnectRelease
   def self.download_url(arch)
     raise ArgumentError, "Unknown architecture: #{arch}" unless ARCHITECTURES.key?(arch)
 
-    "https://github.com/#{REPOSITORY}/releases/download/canine-connect-v#{VERSION}/CanineConnect-macos-#{arch}.zip"
+    "https://github.com/#{REPOSITORY}/releases/latest/download/CanineConnect-macos-#{arch}.zip"
   end
 
   # Installs from the terminal. curl doesn't quarantine what it downloads, so Gatekeeper doesn't block the
@@ -28,6 +26,10 @@ class CanineConnectRelease
   # Canine Connect needs the cluster's Traffic Manager, installed by the telepresence cluster package
   def self.ready_on?(cluster)
     cluster.cluster_packages.any? { |package| package.name == "telepresence" && package.installed? }
+  end
+
+  def self.repository_url
+    "https://github.com/#{REPOSITORY}"
   end
 
   def self.telepresence_version

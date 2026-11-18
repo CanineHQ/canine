@@ -99,7 +99,8 @@ packages:
     install_type: helm
     chart_name: traffic-manager
     # The Traffic Manager must match the telepresence CLI version, which is pinned to TELEPRESENCE_VERSION in the
-    # Dockerfile, resources/system_install.sh and canine-connect/script/build.sh. Bump them together.
+    # Dockerfile and resources/system_install.sh, and bundled by Canine Connect (TELEPRESENCE_VERSION in
+    # CanineHQ/connect's script/build.sh). Bump them together.
     chart_url: oci://ghcr.io/telepresenceio/telepresence-oss
     chart_version: 2.21.1
     check_command: get deployment traffic-manager
