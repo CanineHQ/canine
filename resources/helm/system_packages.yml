@@ -97,10 +97,11 @@ packages:
     default: true
     recommended: false
     install_type: helm
-    repo_name: datawire
-    repo_url: https://getambassador.io
     chart_name: traffic-manager
-    chart_url: datawire/telepresence
+    # The Traffic Manager must match the telepresence CLI version, which is pinned to TELEPRESENCE_VERSION in the
+    # Dockerfile, resources/system_install.sh and canine-connect/script/build.sh. Bump them together.
+    chart_url: oci://ghcr.io/telepresenceio/telepresence-oss
+    chart_version: 2.21.1
     check_command: get deployment traffic-manager
 
   - name: fluent-bit
