@@ -4,6 +4,30 @@ RSpec.describe Providers::Create do
   let(:subject) { described_class.call(provider) }
 
   describe '.call' do
+    context 'when the provider is Rancher' do
+      let(:user) { create(:user) }
+      let(:provider) do
+        build(
+          :provider,
+          user:,
+          provider: Provider::RANCHER_PROVIDER,
+          access_token: "rancher_access_token"
+        )
+      end
+
+      it 'saves the provider for the user and returns its access token' do
+        expect { subject }.to change(Provider, :count).by(1)
+
+        expect(subject).to be_success
+        expect(provider.reload).to have_attributes(
+          user:,
+          provider: Provider::RANCHER_PROVIDER,
+          access_token: "rancher_access_token"
+        )
+        expect(user.stack_manager_access_token(build(:stack_manager, stack_manager_type: :rancher))).to eq("rancher_access_token")
+      end
+    end
+
     context 'when the provider is container registry' do
       let(:provider) { build(:provider, :container_registry) }
 

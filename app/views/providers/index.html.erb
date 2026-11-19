@@ -23,6 +23,9 @@
           <li>
             <%= link_to "Container Registry", new_provider_path(provider_type: Provider::CUSTOM_REGISTRY_PROVIDER) %>
           </li>
+          <li>
+            <%= link_to "Rancher", new_provider_path(provider_type: Provider::RANCHER_PROVIDER) %>
+          </li>
         </ul>
       </div>
       <% if current_account.stack_manager&.stack&.provides_registries? %>
