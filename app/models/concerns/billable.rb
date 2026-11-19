@@ -45,6 +45,11 @@ module Billable
     active?
   end
 
+  # Pro without paying: given by a site admin (Avo::Actions::CompProPlan), with no Stripe subscription behind it
+  def complimentary?
+    pro? && stripe_subscription_id.blank?
+  end
+
   def needs_subscription?
     clusters.count > FREE_CLUSTER_LIMIT && !active_subscription?
   end
