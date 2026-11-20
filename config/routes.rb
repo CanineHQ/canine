@@ -250,6 +250,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get "cluster_registrations/:token", to: "cluster_registrations#show", as: :cluster_registration
+  post "cluster_registrations/:token", to: "cluster_registrations#create"
   resources :clusters do
     member do
       post :transfer_ownership

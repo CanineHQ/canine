@@ -23,12 +23,20 @@
 
   <%= render(FormFieldComponent.new(
     label: "Kubeconfig File",
-    description: "The kubeconfig file for your cluster. Only YAML files are accepted."
+    description: "The kubeconfig file for your cluster. Canine uses it once to create its own service account and does not store it. Only YAML files are accepted."
   )) do %>
     <%= form.file_field :kubeconfig_file, class: "file-input w-full", accept: ".yaml,.yml", data: { "cluster-form-target": "kubeconfigInput", action: "change->cluster-form#updateSubmitState" } %>
     <label class="label">
       <span class="label-text-alt">* Required</span>
     </label>
   <% end %>
+
+  <div class="text-sm text-gray-500 space-y-2">
+    <p>
+      On EKS, GKE or AKS, or anywhere your kubeconfig signs in through a command-line tool, the file will not work from Canine.
+      Create the cluster without one and connect it by running a command where <code>kubectl</code> already works.
+    </p>
+    <%= form.button "Connect with a command instead", name: "registration", value: "1", class: "btn btn-outline btn-sm", data: { turbo_submits_with: "Creating..." } %>
+  </div>
 
 </div>

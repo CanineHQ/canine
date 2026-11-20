@@ -79,17 +79,21 @@ class ClustersController < ApplicationController
 
   def download_kubeconfig
     connection = K8::Connection.new(@cluster, current_user)
-    send_data connection.kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
+    send_data connection.temporary_kubeconfig.to_yaml, filename: "#{@cluster.name}-kubeconfig.yml", type: "application/yaml"
   end
 
   def create
-    result = Clusters::Create.call(params, current_account_user)
+    result = if params[:registration].present?
+      Clusters::CreateForRegistration.call(params, current_account_user)
+    else
+      Clusters::Create.call(params, current_account_user)
+    end
     @cluster = result.cluster
 
     respond_to do |format|
       if result.success?
-        # Kick off cluster job
-        Clusters::InstallJob.perform_later(@cluster, current_user)
+        # A cluster waiting for its registration command has nothing to install on yet.
+        Clusters::InstallJob.perform_later(@cluster, current_user) unless @cluster.registration_pending?
         format.html { redirect_to @cluster, notice: "Cluster was successfully created." }
         format.json { render :show, status: :created, location: @cluster }
       else
@@ -101,8 +105,7 @@ class ClustersController < ApplicationController
 
   def update
     respond_to do |format|
-      cluster_params = Clusters::ParseParams.parse_params(params)
-      if @cluster.update(cluster_params)
+      if Clusters::Update.call(@cluster, params, current_user).success?
         format.html { redirect_to @cluster, notice: "Cluster was successfully updated." }
         format.json { render :show, status: :ok, location: @cluster }
       else

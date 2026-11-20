@@ -327,6 +327,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_20_010000) do
     t.string "external_id"
     t.jsonb "options", default: {}, null: false
     t.boolean "skip_tls_verify", default: false, null: false
+    t.string "server_url"
+    t.text "certificate_authority_data"
+    t.text "service_account_token"
+    t.datetime "unreachable_since"
     t.index ["account_id", "name"], name: "index_clusters_on_account_id_and_name", unique: true
   end
 

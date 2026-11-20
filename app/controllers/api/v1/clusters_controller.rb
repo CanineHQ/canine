@@ -9,7 +9,8 @@ module Api
 
       def download_kubeconfig
         connection = K8::Connection.new(@cluster, current_user)
-        render json: { kubeconfig: connection.kubeconfig }
+        kubeconfig = connection.temporary_kubeconfig
+        render json: { kubeconfig:, expires_at: K8::Kubeconfig.token_expires_at(kubeconfig)&.iso8601 }
       end
 
       private

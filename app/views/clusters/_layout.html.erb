@@ -9,14 +9,20 @@
       </h3>
       <%= render "clusters/status", cluster: cluster %>
       <div class="mt-1">
-        <%= render "clusters/info", cluster: @cluster %>
+        <% if cluster.registration_pending? %>
+          <span class="text-sm text-gray-500">Waiting for the registration command to be run</span>
+        <% else %>
+          <%= render "clusters/info", cluster: @cluster %>
+        <% end %>
       </div>
     </div>
-    <div class="flex">
-      <%= turbo_frame_tag "test_connection_frame" do %>
-        <%= button_to "Test Connection", test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" %>
-      <% end %>
-    </div>
+    <% unless cluster.registration_pending? %>
+      <div class="flex">
+        <%= turbo_frame_tag "test_connection_frame" do %>
+          <%= button_to "Test Connection", test_connection_cluster_path(@cluster), class: "btn btn-ghost m-1" %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
   <div class="md:card md:card-bordered md:bg-base-100">
     <div class="md:card-body overflow-x-auto">
