@@ -73,27 +73,38 @@
         <%= image_tag "/images/canine_connect/connected.png",
               alt: "A menu bar switch on a Mac, connected to the private network of a cluster called production",
               class: "mx-auto w-full max-w-[320px] rounded-2xl shadow-2xl ring-1 ring-white/10" %>
-        <div class="min-w-0 rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
-          <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
-            <span class="w-3 h-3 rounded-full bg-red-500"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-            <span class="w-3 h-3 rounded-full bg-green-500"></span>
-            <span class="ml-4 text-xs text-gray-500 font-mono">zsh — a teammate's Mac</span>
-            <span class="ml-auto text-xs text-emerald-500 font-mono flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-              production connected
-            </span>
-          </div>
-          <pre class="bg-gray-950 p-6 font-mono text-sm leading-relaxed overflow-x-auto text-gray-100"><code><span class="text-gray-500"># On an authorized device, with the switch on</span>
-<span class="text-emerald-400">$</span> open http://web.admin-tool.svc.cluster.local
-<span class="text-gray-500">Opens your internal admin tool in the browser</span>
-
-<span class="text-emerald-400">$</span> psql -h postgres.admin-tool.svc.cluster.local -U app
-<span class="text-gray-500">psql (16.4) connected to "app"</span>
-
-<span class="text-gray-500"># From anywhere else</span>
-<span class="text-emerald-400">$</span> curl http://web.admin-tool.svc.cluster.local
-<span class="text-red-400">curl: (6) Could not resolve host</span></code></pre>
+        <div class="min-w-0 space-y-6">
+          <% [
+            [ true, "On an authorized device", "Your admin tool opens like any other site." ],
+            [ false, "Everywhere else", "There is no public address, so there is nothing to reach." ]
+          ].each do |reachable, label, caption| %>
+            <div>
+              <div class="mb-2 flex items-center gap-2 text-sm font-semibold <%= reachable ? "text-emerald-400" : "text-gray-400" %>">
+                <iconify-icon icon="<%= reachable ? "lucide:laptop" : "lucide:globe" %>"></iconify-icon>
+                <%= label %>
+              </div>
+              <div class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
+                <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
+                  <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                  <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                  <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                  <div class="ml-3 flex min-w-0 flex-1 items-center gap-2 rounded-md bg-gray-800 px-3 py-1 font-mono text-xs text-gray-300">
+                    <iconify-icon icon="<%= reachable ? "lucide:lock" : "lucide:circle-alert" %>" class="shrink-0 <%= reachable ? "text-emerald-400" : "text-gray-500" %>"></iconify-icon>
+                    <span class="truncate">web.admin-tool.svc.cluster.local</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 bg-gray-950 px-6 py-6">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg <%= reachable ? "bg-emerald-500/10 text-emerald-400" : "bg-white/5 text-gray-500" %>">
+                    <iconify-icon icon="<%= reachable ? "lucide:layout-dashboard" : "lucide:cloud-off" %>" class="text-xl"></iconify-icon>
+                  </div>
+                  <div>
+                    <div class="text-sm font-semibold <%= reachable ? "text-white" : "text-gray-400" %>"><%= reachable ? "Admin tool" : "This site can't be reached" %></div>
+                    <div class="text-sm text-gray-400"><%= caption %></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
