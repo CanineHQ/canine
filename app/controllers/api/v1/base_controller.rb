@@ -14,6 +14,13 @@ module Api
 
       # Accepts an API token in X-API-Key, or an OAuth access token (from /oauth/token, e.g. Canine Connect's
       # browser sign-in) as `Authorization: Bearer`.
+      #
+      # Only tokens granted an API scope get in. Canine is also the sign-in provider for the auth proxies in front
+      # of deployed apps, whose tokens carry only openid/profile/email: those prove who someone is and must not act
+      # as them here. A token with `read` alone is limited to requests that change nothing.
+      OAUTH_READ_SCOPES = %w[public read write].freeze
+      OAUTH_WRITE_SCOPES = %w[public write].freeze
+
       def authenticate_with_api_token!
         token = request.headers["X-API-Key"]
         return authenticate_with_oauth_token! if token.blank? && request.authorization.to_s.start_with?("Bearer ")
@@ -37,12 +44,19 @@ module Api
       def authenticate_with_oauth_token!
         oauth_token = Doorkeeper::OAuth::Token.authenticate(request, *Doorkeeper.config.access_token_methods)
 
-        unless oauth_token&.accessible?
+        user = User.find_by(id: oauth_token.resource_owner_id) if oauth_token&.accessible?
+        if user.nil?
           render json: { error: "Invalid or expired access token" }, status: :unauthorized
           return
         end
 
-        @current_user = User.find(oauth_token.resource_owner_id)
+        required_scopes = request.get? || request.head? ? OAUTH_READ_SCOPES : OAUTH_WRITE_SCOPES
+        unless oauth_token.includes_scope?(*required_scopes)
+          render json: { error: "This access token is not allowed to do that" }, status: :forbidden
+          return
+        end
+
+        @current_user = user
       end
 
       def current_user
