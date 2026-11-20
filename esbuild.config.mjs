@@ -20,12 +20,16 @@ const clients = []
 const entryPoints = [
   "application.js",
 ]
-const watchDirectories = [
-  "./app/javascript/**/*.js",
-  "./app/views/**/*.html.erb",
-  "./app/assets/builds/**/*.css", // Wait for cssbundling changes
-  "./config/locales/**/*.yml",
-]
+// Chokidar 4 no longer expands globs, so watch the directories and filter by extension here.
+const watchTargets = {
+  "app/javascript": ".js",
+  "app/views": ".html.erb",
+  "app/assets/builds": ".css", // Wait for cssbundling changes
+  "config/locales": ".yml",
+}
+const watchDirectories = Object.keys(watchTargets)
+const isWatched = (file) =>
+  Object.entries(watchTargets).some(([dir, extension]) => file.startsWith(dir + path.sep) && file.endsWith(extension))
 const config = {
   absWorkingDir: path.join(process.cwd(), "app/javascript"),
   bundle: true,
@@ -77,10 +81,10 @@ async function buildAndReload() {
       console.log("[reload] ready")
       ready = true
     })
-    .on("all", async (event, path) => {
-      if (ready === false)  return
+    .on("all", async (event, changedPath) => {
+      if (ready === false || !isWatched(changedPath)) return
 
-      if (path.includes("javascript")) {
+      if (changedPath.includes("javascript")) {
         try {
           await setTimeout(20)
           await context.rebuild()
@@ -102,8 +106,10 @@ if (process.argv.includes("--reload")) {
   console.log("[watch] initial build succeeded")
 
   chokidar
-    .watch(["./app/javascript/**/*.js"], { ignoreInitial: true })
+    .watch("app/javascript", { ignoreInitial: true })
     .on("all", async (event, changedPath) => {
+      if (!changedPath.endsWith(".js")) return
+
       try {
         await context.rebuild()
         console.log(`[watch] build finished`)
