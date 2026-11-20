@@ -19,6 +19,11 @@ Rails.application.configure do
         class: "Scheduled::CheckHealthJob",
         description: "Check service health every 15 minutes"
       },
+      check_cluster_connections: {
+        cron: "*/5 * * * *",
+        class: "Scheduled::CheckClusterConnectionsJob",
+        description: "Check that every running cluster is still reachable every 5 minutes"
+      },
       fetch_metrics: {
         cron: "*/15 * * * *",
         class: "Scheduled::FetchMetricsJob",
@@ -79,11 +84,6 @@ Rails.application.configure do
         cron: "0 */6 * * *",
         class: "AgentComputers::RefreshTurnJob",
         description: "Write fresh TURN credentials into running agent computers before theirs expire"
-      },
-      sync_stripe_usage: {
-        cron: "*/30 * * * *",
-        class: "StripeSyncUsageJob",
-        description: "Sync cluster usage to Stripe every 30 minutes"
       }
     }
   }

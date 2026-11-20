@@ -23,7 +23,7 @@ module K8
     end
 
     def get_raw_secret_value(secret_name, namespace, key)
-      result = K8::Kubectl.new(@_kubeconfig).call(%w[get secret] + [ secret_name, "-n", namespace, "-o", "json" ])
+      result = K8::Kubectl.new(@connection).call(%w[get secret] + [ secret_name, "-n", namespace, "-o", "json" ])
       data = JSON.parse(result, object_class: OpenStruct).data
       Base64.decode64(data.to_h[key.to_sym])
       # Base64.decode64(JSON.parse(r)['auths']['registry.gitlab.com']['auth'])
@@ -38,7 +38,7 @@ module K8
       @client.discover
       true
     rescue StandardError => e
-      puts "Connection failed: #{e.message}"
+      Rails.logger.warn("Connection to #{server} failed: #{e.class} - #{e.message}")
       false
     end
 
@@ -107,8 +107,16 @@ module K8
       )
     end
 
+    # Same rules as kubectl: verify the API server against the CA in the kubeconfig (or the system
+    # CAs when it has none) unless verification was explicitly turned off.
     def ssl_options(user_info, cluster_info)
-      _ssl_options = {}
+      skip_verify = @connection.cluster.skip_tls_verify || cluster_info["insecure-skip-tls-verify"]
+      _ssl_options = { verify_ssl: skip_verify ? OpenSSL::SSL::VERIFY_NONE : OpenSSL::SSL::VERIFY_PEER }
+      if !skip_verify && cluster_info["certificate-authority-data"].present?
+        _ssl_options[:cert_store] = OpenSSL::X509::Store.new.tap do |store|
+          OpenSSL::X509::Certificate.load(Base64.decode64(cluster_info["certificate-authority-data"])).each { |cert| store.add_cert(cert) }
+        end
+      end
       if user_info["client-certificate-data"] && user_info["client-key-data"]
 
         begin
@@ -118,11 +126,7 @@ module K8
         end
         _ssl_options[:client_cert] =
           OpenSSL::X509::Certificate.new(Base64.decode64(user_info["client-certificate-data"]))
-        _ssl_options[:verify_ssl] = OpenSSL::SSL::VERIFY_NONE
       end
-      # if cluster_info['certificate-authority-data']
-      #  ssl_options[:ca_file] = write_temp_file(Base64.decode64(cluster_info['certificate-authority-data']))
-      # end
       _ssl_options
     end
 

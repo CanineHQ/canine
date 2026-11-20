@@ -22,6 +22,16 @@ module K8
       kubeconfig_hash
     end
 
+    # When the bearer token in a kubeconfig stops working, if the token says so. Service account tokens
+    # minted for people are JWTs with an expiry; client certificates and opaque tokens give nil.
+    def self.token_expires_at(kubeconfig)
+      payload = kubeconfig.dig("users", 0, "user", "token").to_s.split(".")[1]
+      expiry = JSON.parse(Base64.urlsafe_decode64(payload.to_s))["exp"]
+      Time.zone.at(expiry) if expiry.is_a?(Numeric)
+    rescue JSON::ParserError, ArgumentError
+      nil
+    end
+
     def self.is_localhost?(address)
       host = URI.parse(address).host
       host == "127.0.0.1" || host == "localhost"

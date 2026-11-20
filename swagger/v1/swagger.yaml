@@ -823,6 +823,12 @@ paths:
                   kubeconfig:
                     type: object
                     description: Kubernetes configuration object
+                  expires_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    description: When the credentials in the kubeconfig stop working,
+                      if they expire. Fetch a new kubeconfig before then.
                 required:
                 - kubeconfig
   "/api/v1/me":

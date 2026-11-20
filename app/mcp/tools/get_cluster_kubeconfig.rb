@@ -23,7 +23,7 @@ module Tools
     )
 
     def self.call(cluster_id:, server_context:)
-      with_account_users(server_context: server_context) do |_user, account_users|
+      with_account_users(server_context: server_context) do |user, account_users|
         # Team-scoped like the web UI's cluster pages: a member of an account with teams only gets their teams' clusters.
         cluster = account_users.lazy.filter_map { |au|
           ::Clusters::VisibleToUser.execute(account_user: au).clusters.find_by(id: cluster_id)
@@ -36,16 +36,18 @@ module Tools
           } ], error: true)
         end
 
-        if cluster.kubeconfig.blank?
+        kubeconfig = begin
+          K8::Connection.new(cluster, user).temporary_kubeconfig
+        rescue StandardError => e
           return MCP::Tool::Response.new([ {
             type: "text",
-            text: "No kubeconfig available for this cluster"
+            text: "No kubeconfig available for this cluster: #{e.message}"
           } ], error: true)
         end
 
         MCP::Tool::Response.new([ {
           type: "text",
-          text: { cluster_id: cluster.id, name: cluster.name, kubeconfig: cluster.kubeconfig }.to_json
+          text: { cluster_id: cluster.id, name: cluster.name, kubeconfig: kubeconfig }.to_json
         } ])
       end
     end

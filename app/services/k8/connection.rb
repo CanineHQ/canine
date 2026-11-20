@@ -22,24 +22,24 @@ class K8::Connection
   def kubeconfig
     config = if cluster.in_cluster?
       build_in_cluster_kubeconfig
-    elsif cluster.kubeconfig.present?
-      cluster.kubeconfig
+    elsif (stored = cluster.connection_kubeconfig).present?
+      stored
     else
       raise StandardError.new("No stack manager found") if stack_manager.blank?
       stack = stack_manager.stack.connect(user, allow_anonymous:)
       stack.fetch_kubeconfig(cluster)
     end
 
-    if Rails.configuration.remap_localhost.present?
-      remap_host = Rails.configuration.remap_localhost
-      config.dup.tap do |remapped|
-        remapped['clusters']&.each do |c|
-          c['cluster']['server'] = K8::Kubeconfig.remap_localhost(c['cluster']['server'], remap_host)
-        end
-      end
-    else
-      config
-    end
+    remap_localhost(config)
+  end
+
+  # The kubeconfig to hand to a person or an external tool. Canine's own service account token never
+  # expires, so it stays on the server and callers get a token that does.
+  def temporary_kubeconfig(duration: K8::ManagerServiceAccount::TEMPORARY_TOKEN_DURATION)
+    return kubeconfig unless cluster.manager_service_account?
+
+    token = K8::ManagerServiceAccount.new(cluster.service_account_name).connect(self).temporary_token(duration:)
+    remap_localhost(cluster.service_account_kubeconfig(token:))
   end
 
   def stack_manager
@@ -62,6 +62,17 @@ class K8::Connection
   end
 
   private
+
+  def remap_localhost(config)
+    remap_host = Rails.configuration.remap_localhost
+    return config if remap_host.blank?
+
+    config.deep_dup.tap do |remapped|
+      remapped['clusters']&.each do |c|
+        c['cluster']['server'] = K8::Kubeconfig.remap_localhost(c['cluster']['server'], remap_host)
+      end
+    end
+  end
 
   def build_in_cluster_kubeconfig
     host = ENV.fetch("KUBERNETES_SERVICE_HOST")
