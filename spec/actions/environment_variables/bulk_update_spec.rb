@@ -25,9 +25,9 @@ RSpec.describe EnvironmentVariables::BulkUpdate do
         expect(project.environment_variables.find_by(name: 'NEW_VAR_2').storage_type).to eq('secret')
       end
 
-      it 'defaults to config storage_type when not specified' do
-        subject
-        expect(project.environment_variables.find_by(name: 'NEW_VAR').storage_type).to eq('config')
+      it 'defaults to secret storage_type when not specified' do
+        described_class.execute(project: project, params: { environment_variables: [ { name: 'UNTYPED_VAR', value: 'value' } ] })
+        expect(project.environment_variables.find_by(name: 'UNTYPED_VAR').storage_type).to eq('secret')
       end
     end
 

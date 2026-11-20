@@ -1,11 +1,18 @@
 module AgentComputers
   # Live stats for an agent computer's VM: KubeVirt's view of the VM, metrics-server CPU of its launcher pod (QEMU
   # included), memory and who has the screen from inside the guest (the computer-use server), disk usage from the
-  # guest agent, and port probes for the services inside the guest.
+  # guest agent, port probes for the services inside the guest, and how Selkies is streaming the desktop.
   class Stats
     include StorageHelper
 
     Service = Struct.new(:name, :state, :detail, keyword_init: true)
+
+    # How Selkies streams the desktop, as it reports it: its transport ("webrtc" or "websockets") and the TURN relays
+    # it hands the browser (hosts only; the credentials that come with them are dropped)
+    Stream = Struct.new(:mode, :relays, keyword_init: true) do
+      def webrtc? = mode == "webrtc"
+      def cloudflare_turn? = relays.any? { |host| host == "turn.cloudflare.com" }
+    end
 
     # Probed from the launcher pod, where the guest is reachable at KubeVirt's masquerade address
     GUEST_ADDRESS = "10.0.2.2"
@@ -14,8 +21,9 @@ module AgentComputers
       "ssh" => AgentComputer::SSH_PORT,
       "computer-use" => AgentComputer::COMPUTER_USE_PORT
     }.freeze
+    STREAM_SEPARATOR = "--canine-selkies--" # between the HTTP responses in fetch_stream's output
 
-    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services
+    attr_reader :vmi, :pod, :cpu_used, :memory_used, :memory_total, :disk_used, :disk_size, :services, :stream
 
     def initialize(agent_computer, user)
       @agent_computer = agent_computer
@@ -38,6 +46,7 @@ module AgentComputers
       fetch_cpu(namespace)
       fetch_disk(namespace)
       probe_services(namespace)
+      fetch_stream(namespace)
       @memory_used, @memory_total = ActiveSupport::Dependencies.interlock.permit_concurrent_loads { guest.value }
       self
     end
@@ -97,6 +106,30 @@ module AgentComputers
       @disk_size = root&.dig("totalBytes")
     rescue StandardError => e
       Rails.logger.warn("Agent computer #{@agent_computer.id} disk stats unavailable: #{e.message}")
+    end
+
+    # Asks Selkies itself, from the launcher pod: /api/status for its transport, /api/turn for the ICE servers it gives
+    # the browser (404 without TURN credentials, 409 when it's streaming over WebSockets)
+    def fetch_stream(namespace)
+      requests = %w[/api/status /api/turn].map do |path|
+        %(echo "#{STREAM_SEPARATOR}"; exec 3<>/dev/tcp/#{GUEST_ADDRESS}/#{AgentComputer::DESKTOP_PORT} && ) +
+          %(printf 'GET #{path} HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && timeout 2 cat <&3)
+      end
+      output = @kubectl.(%W[exec -n #{namespace} #{@pod.metadata.name} -c compute -- bash -c #{requests.map { |r| "(#{r})" }.join("; ")}])
+      @stream = self.class.parse_stream(output)
+    rescue StandardError => e
+      # Only the class: the output holds TURN credentials, and parse errors quote it
+      Rails.logger.warn("Agent computer #{@agent_computer.id} stream check failed: #{e.class}")
+    end
+
+    # The two HTTP responses fetch_stream prints; nil if Selkies didn't answer
+    def self.parse_stream(output)
+      status, turn = output.split("#{STREAM_SEPARATOR}\n").drop(1).map { |response| response.split("\r\n\r\n", 2) }
+      return unless status&.first&.match?(%r{\AHTTP/\S+ 200})
+
+      ice_servers = turn&.first&.match?(%r{\AHTTP/\S+ 200}) ? JSON.parse(turn.last).fetch("iceServers", []) : []
+      relays = ice_servers.flat_map { |server| Array(server["urls"]) }.grep(/\Aturns?:/).map { |url| url[/\Aturns?:([^:?]+)/, 1] }
+      Stream.new(mode: JSON.parse(status.last)["current_mode"], relays: relays.uniq)
     end
 
     def probe_services(namespace)

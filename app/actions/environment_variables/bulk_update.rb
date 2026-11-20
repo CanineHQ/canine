@@ -54,7 +54,7 @@ class EnvironmentVariables::BulkUpdate
           project.environment_variables.create!(
             name: ev[:name].strip.upcase,
             value: ev[:value].strip,
-            storage_type: ev[:storage_type] || :config,
+            storage_type: ev[:storage_type] || :secret,
             current_user: context.current_user
           )
           # eventable automatically creates an event

@@ -17,7 +17,7 @@ export default class extends Controller {
 
   add(e) {
     e.preventDefault();
-    this._add("", "", null, true, 'config')
+    this._add("", "", null, true, 'secret')
   }
 
   _add(name, value, id=null, isNew=false, storageType='config') {
@@ -60,7 +60,7 @@ export default class extends Controller {
           type="button"
           class="btn btn-square btn-ghost ${lockColor}"
           data-action="environment-variables#toggleStorageType"
-          title="${isSecret ? 'Secret (stored in Kubernetes Secrets)' : 'Config (stored in ConfigMap)'}"
+          title="${isSecret ? 'Secret (stored in Kubernetes Secrets, not passed to builds)' : 'Config (stored in ConfigMap, passed to builds as a build arg)'}"
         >
           <iconify-icon icon="${lockIcon}" height="20"></iconify-icon>
         </button>
@@ -177,7 +177,7 @@ export default class extends Controller {
     button.classList.add(isSecret ? 'text-warning' : 'text-base-content');
 
     // Update title
-    button.setAttribute('title', isSecret ? 'Secret (stored in Kubernetes Secrets)' : 'Config (stored in ConfigMap)');
+    button.setAttribute('title', isSecret ? 'Secret (stored in Kubernetes Secrets, not passed to builds)' : 'Config (stored in ConfigMap, passed to builds as a build arg)');
   }
 
   async remove(event) {
