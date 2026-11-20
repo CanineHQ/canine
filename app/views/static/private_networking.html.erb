@@ -158,14 +158,17 @@
         </p>
       </div>
       <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-        <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition" do %>
-          <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
-          Download for Mac
-        <% end %>
-        <p class="mt-4 text-sm text-gray-400">
-          Apple Silicon, macOS 13 or later.
-          <%= link_to "Intel version", CanineConnectRelease.download_url("x86_64"), class: "text-white underline underline-offset-4 hover:text-emerald-400" %>
-        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition" do %>
+            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+            Download for Apple Silicon
+          <% end %>
+          <%= link_to CanineConnectRelease.download_url("x86_64"), class: "inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/10 transition" do %>
+            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+            Download for Intel
+          <% end %>
+        </div>
+        <p class="mt-4 text-sm text-gray-400">macOS 13 or later</p>
       </div>
     </div>
 

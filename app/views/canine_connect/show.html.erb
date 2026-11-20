@@ -30,14 +30,15 @@
         <div class="flex flex-wrap items-center gap-3">
           <%= link_to CanineConnectRelease.download_url("arm64"), class: "btn btn-primary" do %>
             <iconify-icon icon="mdi:apple" height="20"></iconify-icon>
-            Download for Mac
+            Download for Apple Silicon
           <% end %>
           <%= link_to CanineConnectRelease.download_url("x86_64"), class: "btn btn-outline" do %>
-            Intel version
+            <iconify-icon icon="mdi:apple" height="20"></iconify-icon>
+            Download for Intel
           <% end %>
         </div>
         <p class="text-xs text-base-content/50">
-          For Apple Silicon (M1 and later). Requires macOS 13 Ventura or later. Includes Telepresence <%= CanineConnectRelease.telepresence_version %>.
+          Requires macOS 13 Ventura or later. Includes Telepresence <%= CanineConnectRelease.telepresence_version %>.
           Not sure which Mac you have? Apple menu → About This Mac: "Chip: Apple M…" means Apple Silicon.
         </p>
       </div>
