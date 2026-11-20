@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :authenticate_user!
   before_action :check_password_change_required
+  before_action :require_account
 
   layout :determine_layout
 
@@ -83,6 +84,18 @@ class ApplicationController < ActionController::Base
         format.html { redirect_back fallback_location: root_path, alert: message }
         format.json { render json: { message: message }, status: :unprocessable_entity }
       end
+    end
+
+    def require_account
+      return if devise_controller? && !profile_action?
+      return unless user_signed_in?
+      return if current_account.present?
+
+      render "static/no_account", layout: "homepage", status: :forbidden
+    end
+
+    def profile_action?
+      controller_name == "registrations" && action_name.in?(%w[edit update])
     end
 
     def check_password_change_required

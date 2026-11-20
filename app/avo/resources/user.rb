@@ -16,6 +16,8 @@ class Avo::Resources::User < Avo::BaseResource
     field :email, as: :text, link_to_record: true
     field :first_name, as: :text
     field :last_name, as: :text
+    field :password, as: :password, only_on: :new, required: true
+    field :password_confirmation, as: :password, only_on: :new, required: true
     field :created_at, as: :date_time, sortable: true
     field :avatar, as: :file, only_on: [ :show, :edit ]
 

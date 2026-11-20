@@ -5,6 +5,7 @@ class StaticController < ApplicationController
   HELM_REPO_SCRIPT = "helm repo add canine https://caninehq.github.io/canine && helm repo update"
   HELM_INSTALL_SCRIPT = "helm install canine canine/canine \\\n  --namespace canine \\\n  --create-namespace \\\n  --set ingress.enabled=true \\\n  --set ingress.hostname=canine.your-domain.com \\\n  --set canine.acmeEmail=you@your-domain.com"
   skip_before_action :authenticate_user!
+  skip_before_action :require_account
   ILLUSTRATIONS = [
     {
       src: "/images/illustrations/design_2.webp",

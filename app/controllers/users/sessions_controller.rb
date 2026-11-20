@@ -26,7 +26,7 @@ class Users::SessionsController < Devise::SessionsController
     super do
       # If the account has a stack manager that provides authentication,
       # redirect to the custom account login URL after logout
-      redirect_url = if account.custom_login?
+      redirect_url = if account&.custom_login?
         account_sign_in_path(account.slug)
       else
         root_path
