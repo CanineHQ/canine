@@ -320,7 +320,7 @@ Rails.application.routes.draw do
   get "/model-context-protocol", to: "static#mcp_tools"
   get "/self-hosted", to: "static#self_hosted"
   get "/dev-environments", to: "static#dev_environments"
-  get "/connect", to: "static#connect"
+  get "/private-networking", to: "static#private_networking"
   # Public marketing homepage
   if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do

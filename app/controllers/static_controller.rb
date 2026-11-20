@@ -87,9 +87,9 @@ class StaticController < ApplicationController
     redirect_to root_path if user_signed_in?
   end
 
-  # The public page for the Canine Connect macOS app. Signed in, the in-app page has the same downloads plus
-  # this Canine's own address and clusters.
-  def connect
+  # The public page for private networking: internal apps with no public address, reached through the Canine
+  # Connect macOS app. Signed in, the in-app page has the downloads plus this Canine's own address and clusters.
+  def private_networking
     redirect_to canine_connect_path if user_signed_in?
   end
 
