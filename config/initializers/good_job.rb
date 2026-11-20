@@ -79,11 +79,6 @@ Rails.application.configure do
         cron: "0 */6 * * *",
         class: "AgentComputers::RefreshTurnJob",
         description: "Write fresh TURN credentials into running agent computers before theirs expire"
-      },
-      sync_stripe_usage: {
-        cron: "*/30 * * * *",
-        class: "StripeSyncUsageJob",
-        description: "Sync cluster usage to Stripe every 30 minutes"
       }
     }
   }

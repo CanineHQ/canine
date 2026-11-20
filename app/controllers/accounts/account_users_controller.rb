@@ -2,12 +2,7 @@ class Accounts::AccountUsersController < ApplicationController
   include SettingsHelper
   include SmtpUtilities
 
-  include BillableEnforcement
-
   def create
-    enforce_plan_limit!(:team_members)
-    return if performed?
-
     email = user_params[:email].downcase
     existing_member = current_account.users.find_by(email: email)
 
@@ -73,9 +68,6 @@ class Accounts::AccountUsersController < ApplicationController
 
   def index
     @pagy, @account_users = pagy(current_account.account_users)
-    if Rails.configuration.cloud_mode
-      @plan_usage = current_account.plan_usage(:team_members)
-    end
   end
 
 

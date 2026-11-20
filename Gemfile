@@ -122,5 +122,3 @@ gem "doorkeeper-openid_connect", "~> 1.8"
 
 gem "rotp", "~> 6.3"
 gem "rqrcode", "~> 2.2"
-
-gem "stripe", "~> 19.5"

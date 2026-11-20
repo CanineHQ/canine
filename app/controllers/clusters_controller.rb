@@ -1,6 +1,4 @@
 class ClustersController < ApplicationController
-  include BillableEnforcement
-
   before_action :set_cluster, only: [
     :show, :edit, :update, :destroy,
     :test_connection, :download_kubeconfig, :logs, :download_yaml,
@@ -11,7 +9,6 @@ class ClustersController < ApplicationController
     sortable_column = params[:sort] || "created_at"
     clusters = Clusters::List.call(account_user: current_account_user, params: params).clusters
     @pagy, @clusters = pagy(clusters.order(sortable_column => "asc"))
-    @plan_usage = current_account.plan_usage(:clusters) if Rails.configuration.cloud_mode
 
     respond_to do |format|
       format.html
@@ -24,9 +21,6 @@ class ClustersController < ApplicationController
 
   def new
     @cluster = Cluster.new
-    if Rails.configuration.cloud_mode
-      @plan_usage = current_account.plan_usage(:clusters)
-    end
   end
 
   def edit
@@ -89,9 +83,6 @@ class ClustersController < ApplicationController
   end
 
   def create
-    enforce_plan_limit!(:clusters)
-    return if performed?
-
     result = Clusters::Create.call(params, current_account_user)
     @cluster = result.cluster
 
