@@ -38,7 +38,7 @@ RSpec.describe "Canine Connect", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(CanineConnectRelease.download_url("arm64"), CanineConnectRelease.download_url("x86_64"), "http://www.example.com/private-networking")
     expect(response.body).not_to include("https://canine.sh")
-    # The page sells the outcome; the app's own name only appears in the file the install command opens
-    expect(response.body.scan("Canine Connect").size).to eq(response.body.scan("Canine Connect.app").size)
+    # The page sells the outcome, not the app's name
+    expect(response.body).not_to include("Canine Connect")
   end
 end

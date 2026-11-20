@@ -13,16 +13,6 @@ class CanineConnectRelease
     "https://github.com/#{REPOSITORY}/releases/latest/download/CanineConnect-macos-#{arch}.zip"
   end
 
-  # Installs from the terminal. curl doesn't quarantine what it downloads, so Gatekeeper doesn't block the
-  # app the way it does a browser download of an app that isn't notarized.
-  def self.install_command(arch = "arm64")
-    [
-      "curl -fsSL #{download_url(arch)} -o /tmp/CanineConnect.zip",
-      "ditto -x -k /tmp/CanineConnect.zip ~/Applications",
-      "open ~/Applications/\"Canine Connect.app\""
-    ].join(" && ")
-  end
-
   # Canine Connect needs the cluster's Traffic Manager, installed by the telepresence cluster package
   def self.ready_on?(cluster)
     cluster.cluster_packages.any? { |package| package.name == "telepresence" && package.installed? }
