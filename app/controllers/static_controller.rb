@@ -87,6 +87,12 @@ class StaticController < ApplicationController
     redirect_to root_path if user_signed_in?
   end
 
+  # The public page for the Canine Connect macOS app. Signed in, the in-app page has the same downloads plus
+  # this Canine's own address and clusters.
+  def connect
+    redirect_to canine_connect_path if user_signed_in?
+  end
+
   def install
     GoogleAnalytics.track("install_script_download", client_id: request.remote_ip, params: { user_agent: request.user_agent.to_s })
     send_file Rails.root.join("install", "install.sh"), type: "text/plain", disposition: "inline"

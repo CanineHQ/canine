@@ -28,6 +28,12 @@ class CanineConnectRelease
     cluster.cluster_packages.any? { |package| package.name == "telepresence" && package.installed? }
   end
 
+  # Opens the installed app with this Canine's address in its sign-in form. Canine can be self-hosted, so the
+  # app cannot know where to sign in until it is told.
+  def self.open_url(canine_url)
+    "canine-connect://connect?#{{ url: canine_url }.to_query}"
+  end
+
   def self.repository_url
     "https://github.com/#{REPOSITORY}"
   end

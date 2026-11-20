@@ -9,6 +9,7 @@ SitemapGenerator::Sitemap.create do
   add "/self-hosted", priority: 0.7, changefreq: "monthly"
   add "/model-context-protocol", priority: 0.5, changefreq: "monthly"
   add "/dev-environments", priority: 0.5, changefreq: "monthly"
+  add "/connect", priority: 0.5, changefreq: "monthly"
   add "/api-docs", priority: 0.5, changefreq: "monthly"
   add "/llms.txt", priority: 0.3, changefreq: "monthly"
 end

@@ -84,7 +84,11 @@
         <div class="card-body gap-3 p-5">
           <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">2</div>
           <h3 class="font-semibold">Sign in</h3>
-          <p class="text-sm text-base-content/70">Click the dog in your menu bar and enter this Canine's URL:</p>
+          <%= link_to CanineConnectRelease.open_url(request.base_url), class: "btn btn-primary btn-sm" do %>
+            <iconify-icon icon="lucide:external-link" height="14"></iconify-icon>
+            Open in Canine Connect
+          <% end %>
+          <p class="text-sm text-base-content/70">Or click the dog in your menu bar and enter this Canine's URL:</p>
           <div class="flex items-center gap-2 rounded-md bg-base-300 px-3 py-1.5">
             <code class="flex-1 truncate font-mono text-xs"><%= request.base_url %></code>
             <button class="btn btn-ghost btn-xs btn-square" title="Copy" data-controller="clipboard" data-clipboard-text="<%= request.base_url %>">
@@ -168,7 +172,7 @@
       <div class="text-sm font-normal text-base-content/60">Canine Connect runs Telepresence for you. You can run it yourself on macOS, Linux or Windows.</div>
     </div>
     <div class="collapse-content">
-      <%= render "canine_connect/cli_steps", cluster: @clusters.first %>
+      <%= render "canine_connect/cli_steps", cluster: @clusters.find { |cluster| CanineConnectRelease.ready_on?(cluster) } || @clusters.first %>
     </div>
   </div>
 </div>
