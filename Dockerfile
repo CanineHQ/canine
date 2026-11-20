@@ -51,6 +51,7 @@ RUN set -eux; \
     install -m 0755 "${os}-${arch}/helm" /usr/local/bin/helm; \
     rm -rf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz" "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum" "${os}-${arch}"
 
+# Must match the telepresence chart_version in resources/helm/system_packages.yml
 ARG TELEPRESENCE_VERSION=v2.21.1
 RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/${TELEPRESENCE_VERSION}/telepresence-linux-${TARGETARCH} -o /usr/local/bin/telepresence && \
     chmod a+x /usr/local/bin/telepresence

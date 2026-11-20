@@ -50,4 +50,17 @@ RSpec.describe Api::V1::MeController, :swagger, type: :request do
       end
     end
   end
+
+  it "accepts an OAuth access token instead of an API key, until it's revoked" do
+    application = Doorkeeper::Application.create!(name: "Canine Connect", redirect_uri: "canine-connect://oauth/callback", confidential: false)
+    token = Doorkeeper::AccessToken.create!(application:, resource_owner_id: user.id, scopes: "read")
+
+    get "/api/v1/me", headers: { "Authorization" => "Bearer #{token.token}" }
+    expect(response).to have_http_status(:ok)
+    expect(JSON.parse(response.body)["email"]).to eq(user.email)
+
+    token.revoke
+    get "/api/v1/me", headers: { "Authorization" => "Bearer #{token.token}" }
+    expect(response).to have_http_status(:unauthorized)
+  end
 end
