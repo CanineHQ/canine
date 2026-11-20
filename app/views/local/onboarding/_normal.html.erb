@@ -34,7 +34,7 @@
           data: { email_validation_target: "input", action: "input->email-validation#validate" },
         ) %>
       </div>
-      <div class="form-group" data-controller="toggle-password">
+      <div class="form-group" data-controller="toggle-password password-complexity">
         <%= form.label :password, "Password" %>
         <div class="flex items-center">
           <%= form.password_field(
@@ -43,7 +43,7 @@
             name: "user[password]",
             class: "input input-bordered w-full",
             required: true,
-            data: { toggle_password_target: "input" },
+            data: { toggle_password_target: "input", password_complexity_target: "input", action: "input->password-complexity#validate" },
           ) %>
           <button type="button" class="btn btn-outline" data-action="toggle-password#toggle">
             <iconify-icon data-toggle-password-target="icon" icon="mdi:eye"></iconify-icon>
