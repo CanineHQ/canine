@@ -33,6 +33,9 @@ class AgentComputer::Task < ApplicationRecord
   belongs_to :agent_computer
   has_many :sessions, dependent: :destroy
 
+  # A one-off has no schedule: nil, also when the form leaves the field empty
+  normalizes :schedule, with: ->(schedule) { schedule.strip.presence }
+
   validates :name, :instruction, :model, presence: true
   # Canine stops a run at whichever of these it reaches first (AgentLoop::Policy)
   validates :max_minutes, :max_turns, numericality: { only_integer: true, greater_than: 0 }

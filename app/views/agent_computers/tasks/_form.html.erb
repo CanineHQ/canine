@@ -27,7 +27,7 @@
             { include_blank: "Not set (the computer's clock is UTC)" }, class: "select select-bordered w-full" %>
     <% end %>
 
-    <%= render(FormFieldComponent.new(label: "Workspace", description: "Where its windows open on the computer, without switching your screen to it. A free one is picked for each run if you leave it: one you're not on, with nothing of yours on it. Everything on it is closed before and after each run.")) do %>
+    <%= render(FormFieldComponent.new(label: "Workspace", description: "Where its windows open on the computer, without switching your screen to it. Left blank, a free one is picked for each run (one you're not on, with nothing of yours on it) and cleared before and after. Pick one to have runs carry on from what's open there, a browser you've signed in or a page you've opened: they keep it open and close only what they open.")) do %>
       <%= form.select :pinned_workspace, (1..10).to_a, { include_blank: "Any free one" }, class: "select select-bordered w-full" %>
     <% end %>
 

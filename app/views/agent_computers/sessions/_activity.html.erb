@@ -1,6 +1,6 @@
 <%# One activity on the live timeline: collapsed to a line once it's done; open, with its actions ticking in, while it runs %>
 <% current = activity.current? %>
-<% doing = activity.actions.reject(&:look_only?) %>
+<% doing = activity.actions.reject { |action| action.look_only? || action.parent_id } %>
 <li id="<%= dom_id(activity) %>" class="rounded-lg border border-base-content/10 <%= "agent-enter" if local_assigns[:animate] %> <%= "agent-current" if current %>">
   <details <%= "open" if current %> class="group">
     <summary class="flex cursor-pointer list-none items-start gap-3 p-3">

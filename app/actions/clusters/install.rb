@@ -30,6 +30,8 @@ class Clusters::Install
     cluster.failed! if result.failure?
     result
   rescue StandardError => e
+    # A command that failed has logged its own output and why; anything else would end the install without a word
+    cluster.error("Installation failed: #{e.message}") unless e.is_a?(Cli::CommandFailedError)
     cluster.failed!
     raise e
   end

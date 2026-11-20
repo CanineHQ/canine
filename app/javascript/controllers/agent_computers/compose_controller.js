@@ -1,9 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
 // The feed's compose box. Picks when the instruction runs — now (one-off) or a recurring preset — and keeps the
-// hidden `every` field, the dropdown label, and the submit button in sync. "daily" reveals a time input.
+// hidden `every` field, the dropdown label, and the submit button in sync. "daily" reveals a time input. Also picks
+// where: any free workspace, or one to carry on from (the hidden `workspace` field).
 export default class extends Controller {
-  static targets = ["every", "label", "submit", "dailyRow", "dailyTime", "menu", "instruction", "dialog"]
+  static targets = ["every", "label", "submit", "dailyRow", "dailyTime", "menu", "instruction", "dialog", "workspace", "workspaceLabel", "workspaceMenu"]
   static values = { labels: Object }
 
   // Open the full task editor (name, schedule, model, details) in a modal, carrying over whatever's already typed.
@@ -22,6 +23,13 @@ export default class extends Controller {
     this.dailyRowTarget.classList.toggle("hidden", key !== "daily")
     this.render(key)
     if (this.hasMenuTarget) this.menuTarget.open = false
+  }
+
+  chooseWorkspace(event) {
+    event.preventDefault()
+    this.workspaceTarget.value = event.currentTarget.dataset.workspace
+    this.workspaceLabelTarget.textContent = event.currentTarget.dataset.label
+    this.workspaceMenuTarget.open = false
   }
 
   dailyChanged() {

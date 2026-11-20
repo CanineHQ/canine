@@ -19,6 +19,9 @@ module AgentComputers
       kubectl = K8::Kubectl.new(connection, Cli::RunAndLog.new(agent_computer))
       omarchy = AgentComputers::Omarchy.new(agent_computer)
 
+      agent_computer.info("Checking the cluster can run it...", color: :yellow)
+      Precheck.new(agent_computer, K8::Kubectl.new(connection)).run! { |line| agent_computer.info("✓ #{line}") }
+
       kubectl.apply_yaml(K8::Namespace.new(agent_computer).to_yaml)
       kubectl.apply_yaml(build_network_policy_yaml(agent_computer))
       kubectl.apply_yaml(omarchy.cidata_config_map_yaml)
@@ -41,6 +44,9 @@ module AgentComputers
 
       agent_computer.running!
       agent_computer.success("#{agent_computer.name} is ready")
+    rescue Precheck::Failed => e # the cluster can't run it (yet): the person's to fix, not a bug to raise
+      agent_computer.error(e.message)
+      agent_computer.fail!(e)
     rescue StandardError => e
       agent_computer.error(e.message)
       agent_computer.fail!(e)

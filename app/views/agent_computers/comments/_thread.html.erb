@@ -1,0 +1,11 @@
+<%# A post's comments, oldest first, and the comment box, hidden until Comment is clicked
+    (agent_computers/post_controller.js). Each comment starts a follow-up run; new comments and their replies stream in
+    (AgentComputer::Comment). %>
+<div id="<%= dom_id(post, :comments) %>" class="space-y-5 empty:hidden">
+  <% post.comments.each do |comment| %>
+    <%= render "agent_computers/comments/comment", comment: comment %>
+  <% end %>
+</div>
+<div class="hidden" data-agent-computers--post-target="composer">
+  <%= render "agent_computers/comments/form", post: post, viewer: local_assigns.fetch(:viewer) { current_user } %>
+</div>

@@ -7,8 +7,11 @@ module AgentSessionsHelper
       case session.actions.last&.tool
       when "delegate" then "coding agent working"
       when "browse", "browse_step" then "browsing the web"
+      when "desktop", "desktop_step" then "using the desktop"
       else "working"
       end
+    when "waiting_for_person" then "needs you"
+    when "succeeded" then session.outcome_partly_done? || session.outcome_blocked? ? session.outcome.humanize(capitalize: false) : "succeeded"
     else session.status
     end
   end

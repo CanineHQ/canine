@@ -5,14 +5,18 @@
     <% shot = session.actions.joins(:screenshot_attachment).order(:id).last %>
     <article class="border-b border-base-content/15 pb-5 mb-5 agent-enter">
       <div class="flex flex-col gap-3">
-        <% waiting = session.waiting_in_queue? %>
+        <% off = session.waiting_for_computer? %>
+        <% waiting = off || session.waiting_in_queue? %>
+        <% asking = session.waiting_for_person? %>
         <% progress = session.last_progress_at %>
         <%# Past STALLED_AFTER with nothing new, the spinner and line turn into a warning (agent_computers/stalled_controller.js) %>
         <header class="flex items-center gap-3" data-controller="agent-computers--stalled" data-agent-computers--stalled-since-value="<%= progress.iso8601 %>"
-                data-agent-computers--stalled-after-value="<%= waiting ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
+                data-agent-computers--stalled-after-value="<%= waiting || asking ? 0 : AgentComputer::Session::STALLED_AFTER.to_i %>">
           <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-base-200">
             <% if waiting %>
               <iconify-icon icon="lucide:clock" height="16" class="text-base-content/50"></iconify-icon>
+            <% elsif asking %>
+              <iconify-icon icon="lucide:hand" height="16" class="text-warning"></iconify-icon>
             <% else %>
               <span data-agent-computers--stalled-target="working" class="loading loading-spinner loading-sm text-primary"></span>
               <iconify-icon data-agent-computers--stalled-target="stuck" icon="lucide:circle-alert" height="16" class="hidden text-warning"></iconify-icon>
@@ -22,7 +26,9 @@
             <div class="truncate text-sm font-semibold"><%= session.task.name %></div>
             <div class="truncate text-xs text-base-content/50">
               <% if waiting %>
-                Queued · starts when a run going now finishes
+                Queued · starts <%= off ? "once the computer is running" : "when a run going now finishes" %>
+              <% elsif asking %>
+                <span class="text-warning">Paused · needs your answer to carry on</span>
               <% else %>
                 <span data-agent-computers--stalled-target="working"><%= agent_session_doing(session) %> · last step
                   <time datetime="<%= progress.iso8601 %>" data-local="time-ago"><%= time_ago_in_words(progress) %> ago</time></span>
@@ -31,11 +37,17 @@
               <% end %>
             </div>
           </div>
+          <% if session.queued? %>
+            <%= button_to "Cancel", cancel_agent_computer_agent_session_path(session.agent_computer, session),
+                  class: "btn btn-ghost btn-xs text-error", form: { data: { turbo_confirm: "Remove this run from the queue?" } } %>
+          <% end %>
           <%= link_to agent_computer_agent_session_path(session.agent_computer, session),
                 class: "btn btn-ghost btn-xs text-base-content/60" do %>
             Watch <iconify-icon icon="lucide:arrow-right" height="13"></iconify-icon>
           <% end %>
         </header>
+
+        <%= render "agent_computers/sessions/question", session: session %>
 
         <%# A small live thumbnail of what's on screen right now, swapped in as new screenshots arrive. %>
         <% if shot&.screenshot&.attached? %>

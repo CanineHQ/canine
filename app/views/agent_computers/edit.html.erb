@@ -89,6 +89,7 @@
       <% [
            [:planning_model, "Planning model", "Plans and runs the session.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
            [:browse_model, "Browse model", "Drives the web browser.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
+           [:screen_model, "Screen model", "Drives the mouse and keyboard from screenshots, for Chromium's own pages and desktop apps. Unset, it's the browse model.", AgentComputer::SCREEN_MODELS, @agent_computer.browse_model.presence || AgentComputer::Task::DEFAULT_MODEL],
            [:coding_model, "Coding model", "Drives the coding agent.", AgentComputer::MODELS, AgentComputer::Task::DEFAULT_MODEL],
            [:coding_agent, "Coding agent", "Which coding agent delegate runs.", AgentComputer::CODING_AGENT_OPTIONS, "opencode"]
          ].each do |field, label, description, options, fallback| %>
@@ -106,6 +107,21 @@
     </div>
     <div class="form-footer">
       <%= form.button "Save models", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
+    </div>
+  <% end %>
+
+  <div class="divider"></div>
+  <div class="mb-4">
+    <h6 class="text-sm font-semibold">Long-term memory</h6>
+    <p class="text-xs text-base-content/60">What agents have learned on this computer, one note per line. Every run starts
+      with it, and they add to it as they go. Edit it to correct a note or tell them something up front.</p>
+  </div>
+  <%= form_with(model: @agent_computer) do |form| %>
+    <%= form.text_area :long_term_memory, rows: 8, maxlength: AgentComputer::LONG_TERM_MEMORY_LIMIT,
+          placeholder: "- GitHub asks for an emailed code before changing SSH keys",
+          class: "textarea textarea-bordered w-full font-mono text-sm" %>
+    <div class="form-footer">
+      <%= form.button "Save long-term memory", class: "btn btn-primary", data: { turbo_submits_with: "Saving..." } %>
     </div>
   <% end %>
 
