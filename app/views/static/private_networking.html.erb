@@ -149,7 +149,7 @@
 
     <!-- Install -->
     <div id="authorize-a-device" class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
+      <div class="mx-auto max-w-2xl text-center mb-10" data-aos="fade-up">
         <h2 class="text-base font-semibold leading-7 text-emerald-400"><a href="#authorize-a-device" class="hover:underline underline-offset-4">Authorize a device</a></h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Install the Mac app and sign in</p>
         <p class="mt-4 text-gray-400">
@@ -157,25 +157,14 @@
           host yourself.
         </p>
       </div>
-      <div class="mx-auto max-w-xl" data-aos="fade-up" data-aos-delay="100">
-        <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8 text-center">
-          <%= image_tag "/images/logo-compact.webp", alt: "", class: "mx-auto h-16 w-16" %>
-          <%= link_to CanineConnectRelease.download_url("arm64"), class: "mt-6 inline-flex w-full items-center justify-center gap-3 rounded-xl bg-emerald-500 px-6 py-4 text-base font-semibold text-white shadow-lg hover:bg-emerald-400 transition sm:w-auto sm:min-w-[320px]" do %>
-            <iconify-icon icon="mdi:apple" height="24"></iconify-icon>
-            Download for Mac
-          <% end %>
-          <p class="mt-3 text-sm text-gray-400">For Apple Silicon (M1 and later) · macOS 13 or later</p>
-          <p class="mt-6 text-sm text-gray-400">
-            On an Intel Mac?
-            <%= link_to "Download the Intel version", CanineConnectRelease.download_url("x86_64"), class: "text-white underline underline-offset-4 hover:text-emerald-400" %>
-          </p>
-          <p class="mt-2 text-sm text-gray-500">
-            Not sure which you have? Apple menu → About This Mac. "Chip: Apple M…" means Apple Silicon.
-          </p>
-        </div>
-        <p class="mt-4 text-sm text-gray-400 text-center">
-          Free and open source.
-          <%= link_to "Source on GitHub", CanineConnectRelease.repository_url, class: "text-white underline underline-offset-4", target: "_blank", rel: "noopener" %>.
+      <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+        <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition" do %>
+          <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+          Download for Mac
+        <% end %>
+        <p class="mt-4 text-sm text-gray-400">
+          Apple Silicon, macOS 13 or later.
+          <%= link_to "Intel version", CanineConnectRelease.download_url("x86_64"), class: "text-white underline underline-offset-4 hover:text-emerald-400" %>
         </p>
       </div>
     </div>
