@@ -101,14 +101,11 @@
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Security you do not have to build into every app</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <% [
-          [ "lucide:globe-lock", "No public URL to find", "Nothing to scan, guess or stumble on. An app with no public address cannot be reached from the internet at all." ],
+          [ "lucide:globe-lock", "No public URL to find", "Nothing to scan, guess or stumble on. Your apps and databases have no public address and no open ports." ],
           [ "lucide:sparkles", "Safe home for vibe-coded apps", "Ship the tool you built in an afternoon without first auditing its login page. The network decides who gets in." ],
-          [ "lucide:users", "Access follows your team", "People get in with their Canine account, on devices where they have signed in. There are no shared passwords or VPN profiles to hand out." ],
-          [ "lucide:database", "Databases stay private too", "Reach Postgres, Redis and every other internal service the same way, with no port-forwarding and no open ports." ],
-          [ "lucide:shield-check", "A secure private network", "Devices connect through an encrypted tunnel to your own cluster. Apps and data stay on infrastructure you control." ],
-          [ "lucide:git-fork", "Open source", "Built on Telepresence, with the source on GitHub. On Linux or Windows, use the Telepresence CLI the same way." ]
+          [ "lucide:users", "Access follows your team", "People get in with their Canine account, over an encrypted tunnel to your own cluster. No shared passwords or VPN profiles to hand out." ]
         ].each_with_index do |(icon, title, text), index| %>
           <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="<%= (index % 3) * 100 %>">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 mb-5">
