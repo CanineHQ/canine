@@ -40,9 +40,9 @@
     57%, 94% { transform: translate(-12rem, 12rem); }
     100% { transform: translate(-13rem, 13rem); }
   }
-  @keyframes pia-step-1 { 0%, 26% { opacity: 1; } 30%, 96% { opacity: .35; } 100% { opacity: 1; } }
-  @keyframes pia-step-2 { 0%, 26% { opacity: .35; } 30%, 41% { opacity: 1; } 45%, 100% { opacity: .35; } }
-  @keyframes pia-step-3 { 0%, 41% { opacity: .35; } 45%, 94% { opacity: 1; } 100% { opacity: .35; } }
+  @keyframes pia-step-1 { 0%, 17% { opacity: 1; } 20%, 96% { opacity: .35; } 100% { opacity: 1; } }
+  @keyframes pia-step-2 { 0%, 17% { opacity: .35; } 20%, 39% { opacity: 1; } 41%, 100% { opacity: .35; } }
+  @keyframes pia-step-3 { 0%, 39% { opacity: .35; } 41%, 94% { opacity: 1; } 100% { opacity: .35; } }
 
   @media (prefers-reduced-motion: reduce) {
     .pia-scene * { animation: none !important; }
@@ -144,12 +144,13 @@
     </div>
   </div>
 
-  <%# Each caption jumps the loop to its part. data-pia-seek is where that part starts, in milliseconds. %>
+  <%# Each caption jumps the loop to its part. data-pia-seek is where that part starts, in milliseconds,
+      and has to land inside the window where that caption's own highlight is on (the pia-step keyframes). %>
   <div class="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
     <% [
       [ 1, 0, "1. Open it from the menu bar", "It starts disconnected. Your internal app has no public address, so its URL goes nowhere." ],
-      [ 2, 2700, "2. Flip the switch", "One click puts this Mac on your cluster's private network." ],
-      [ 3, 5700, "3. Open your app", "The same address now loads in the browser, like any other site." ]
+      [ 2, 2800, "2. Flip the switch", "One click puts this Mac on your cluster's private network." ],
+      [ 3, 5740, "3. Open your app", "The same address now loads in the browser, like any other site." ]
     ].each do |number, seek, title, text| %>
       <button type="button" data-pia-seek="<%= seek %>" class="pia-step-<%= number %> cursor-pointer rounded-lg p-3 text-left transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
         <div class="font-semibold text-white"><%= title %></div>
