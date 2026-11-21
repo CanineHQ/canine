@@ -1,9 +1,11 @@
 <%# A Mac desktop on a 14 second loop: the internal app cannot be reached, the pointer opens the menu bar app
-    (disconnected), turns its switch on, and the same address loads in the browser. Pure CSS, so there is nothing
-    to keep in sync with a script. The popover and pointer are anchored to the menu bar icon, so they line up at
+    (disconnected), turns its switch on, and the same address loads in the browser. The animation itself is CSS; the
+    script at the end only starts it once the scene is on screen. The popover and pointer are anchored to the menu bar icon, so they line up at
     any width. %>
 <style>
   .pia-scene * { animation-duration: 14s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+  /* Held on its first frame until the scene is on screen (see the script below it) */
+  .pia-scene.pia-waiting * { animation-play-state: paused; }
   .pia-popover { animation-name: pia-popover; opacity: 0; }
   .pia-when-on { animation-name: pia-when-on; opacity: 0; }
   .pia-when-off { animation-name: pia-when-off; }
@@ -157,3 +159,15 @@
     </div>
   </div>
 </div>
+<script>
+  (function() {
+    // Start the loop when the scene scrolls into view, and hold it while it is off screen. Without
+    // IntersectionObserver it simply plays.
+    var scene = document.currentScript.previousElementSibling;
+    if (!scene || !("IntersectionObserver" in window)) return;
+    scene.classList.add("pia-waiting");
+    new IntersectionObserver(function(entries) {
+      scene.classList.toggle("pia-waiting", !entries[0].isIntersecting);
+    }, { threshold: 0.5 }).observe(scene);
+  })();
+</script>
