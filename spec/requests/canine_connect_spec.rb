@@ -26,17 +26,17 @@ RSpec.describe "Canine Connect", type: :request do
     )
     expect(CanineConnectRelease.open_url("https://canine.acme.internal:8443")).to eq("canine-connect://connect?url=https%3A%2F%2Fcanine.acme.internal%3A8443")
 
-    get "/private-networking"
+    get "/private-internal-apps"
     expect(response).to redirect_to(canine_connect_path)
   end
 
   it "has a public landing page" do
     sign_out account.owner
 
-    get "/private-networking"
+    get "/private-internal-apps"
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include(CanineConnectRelease.download_url("arm64"), CanineConnectRelease.download_url("x86_64"), "http://www.example.com/private-networking")
+    expect(response.body).to include(CanineConnectRelease.download_url("arm64"), CanineConnectRelease.download_url("x86_64"), "http://www.example.com/private-internal-apps")
     expect(response.body).not_to include("https://canine.sh")
     # The page sells the outcome, not the app's name
     expect(response.body).not_to include("Canine Connect")

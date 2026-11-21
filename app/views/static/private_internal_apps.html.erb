@@ -1,7 +1,7 @@
-<% page_url = "#{request.base_url}/private-networking" %>
-<% content_for :title, "Private Networking — Internal Apps That Never Touch the Public Internet" %>
+<% page_url = "#{request.base_url}/private-internal-apps" %>
+<% content_for :title, "Private Internal Apps — Deploy Apps That Never Touch the Public Internet" %>
 <% content_for :meta_description, "Deploy internal tools and vibe-coded apps to your own Kubernetes cluster with no public address. Only teammates on authorized devices can reach them." %>
-<% content_for :og_title, "Private Networking — Internal apps that never touch the public internet" %>
+<% content_for :og_title, "Private Internal Apps — Apps that never touch the public internet" %>
 <% content_for :og_description, "Deploy internal tools and vibe-coded apps to your own cluster with no public address. Only teammates on authorized devices can reach them." %>
 <% content_for :og_url, page_url %>
 <% content_for :og_image, "#{request.base_url}/images/canine_connect/connected.png" %>
@@ -9,7 +9,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  "name": "Private Networking",
+  "name": "Private Internal Apps",
   "description": "Deploy internal apps to your own Kubernetes cluster with no public address, reachable only from authorized devices.",
   "url": "<%= page_url %>"
 }
@@ -36,7 +36,7 @@
         <div class="mx-auto max-w-3xl text-center" data-aos="fade-up">
           <div class="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-400 ring-1 ring-sky-500/20 mb-8">
             <iconify-icon icon="lucide:lock" class="text-base"></iconify-icon>
-            Private Networking
+            Private Internal Apps
           </div>
           <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
             Internal apps that never touch the public internet
@@ -69,42 +69,75 @@
         </p>
       </div>
 
-      <div class="mx-auto mt-16 grid max-w-5xl grid-cols-1 items-center gap-8 lg:grid-cols-[320px_1fr]" data-aos="fade-up" data-aos-delay="150">
-        <%= image_tag "/images/canine_connect/connected.png",
-              alt: "A menu bar switch on a Mac, connected to the private network of a cluster called production",
-              class: "mx-auto w-full max-w-[320px] rounded-2xl shadow-2xl ring-1 ring-white/10" %>
-        <div class="min-w-0 space-y-6">
-          <% [
-            [ true, "On an authorized device", "Your admin tool opens like any other site." ],
-            [ false, "Everywhere else", "There is no public address, so there is nothing to reach." ]
-          ].each do |reachable, label, caption| %>
-            <div>
-              <div class="mb-2 flex items-center gap-2 text-sm font-semibold <%= reachable ? "text-sky-400" : "text-gray-400" %>">
-                <iconify-icon icon="<%= reachable ? "lucide:laptop" : "lucide:globe" %>"></iconify-icon>
-                <%= label %>
-              </div>
-              <div class="rounded-xl overflow-hidden ring-1 ring-white/10 shadow-2xl">
-                <div class="flex items-center gap-2 px-4 py-3 bg-gray-900 border-b border-white/10">
-                  <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                  <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                  <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                  <div class="ml-3 flex min-w-0 flex-1 items-center gap-2 rounded-md bg-gray-800 px-3 py-1 font-mono text-xs text-gray-300">
-                    <iconify-icon icon="<%= reachable ? "lucide:lock" : "lucide:circle-alert" %>" class="shrink-0 <%= reachable ? "text-sky-400" : "text-gray-500" %>"></iconify-icon>
-                    <span class="truncate">web.admin-tool.svc.cluster.local</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-4 bg-gray-950 px-6 py-6">
-                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg <%= reachable ? "bg-sky-500/10 text-sky-400" : "bg-white/5 text-gray-500" %>">
-                    <iconify-icon icon="<%= reachable ? "lucide:layout-dashboard" : "lucide:cloud-off" %>" class="text-xl"></iconify-icon>
-                  </div>
-                  <div>
-                    <div class="text-sm font-semibold <%= reachable ? "text-white" : "text-gray-400" %>"><%= reachable ? "Admin tool" : "This site can't be reached" %></div>
-                    <div class="text-sm text-gray-400"><%= caption %></div>
-                  </div>
-                </div>
+      <%# Disconnected -> connected -> open the internal address. Drawn in HTML so it stays this simple. %>
+      <div class="mx-auto mt-16 grid max-w-5xl grid-cols-1 items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr]" data-aos="fade-up" data-aos-delay="150">
+        <%# 1. Disconnected %>
+        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-white/10">
+          <div class="text-xs font-semibold uppercase tracking-widest text-gray-500">1 · Disconnected</div>
+          <div class="flex flex-1 flex-col items-center justify-center gap-4 py-8">
+            <div class="flex h-12 w-24 items-center rounded-full bg-gray-700 p-1.5">
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-500 text-gray-800">
+                <iconify-icon icon="lucide:power"></iconify-icon>
               </div>
             </div>
-          <% end %>
+            <div class="text-sm font-semibold text-gray-400">Off</div>
+          </div>
+          <p class="text-sm leading-relaxed text-gray-400">Your internal apps have no public address. From here, they do not exist.</p>
+        </div>
+
+        <div class="flex items-center justify-center text-gray-600">
+          <iconify-icon icon="lucide:arrow-right" class="hidden text-2xl lg:block"></iconify-icon>
+          <iconify-icon icon="lucide:arrow-down" class="text-2xl lg:hidden"></iconify-icon>
+        </div>
+
+        <%# 2. Connected %>
+        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-sky-500/40">
+          <div class="text-xs font-semibold uppercase tracking-widest text-sky-400">2 · Connected</div>
+          <div class="flex flex-1 flex-col items-center justify-center gap-4 py-8">
+            <div class="flex h-12 w-24 items-center justify-end rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 p-1.5 shadow-lg shadow-sky-500/30">
+              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sky-500">
+                <iconify-icon icon="lucide:power"></iconify-icon>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 text-sm font-semibold text-white">
+              <span class="relative flex h-2 w-2">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-sky-400"></span>
+              </span>
+              production
+            </div>
+          </div>
+          <p class="text-sm leading-relaxed text-gray-400">Flip one switch in your menu bar. This device joins your cluster's secure private network.</p>
+        </div>
+
+        <div class="flex items-center justify-center text-gray-600">
+          <iconify-icon icon="lucide:arrow-right" class="hidden text-2xl lg:block"></iconify-icon>
+          <iconify-icon icon="lucide:arrow-down" class="text-2xl lg:hidden"></iconify-icon>
+        </div>
+
+        <%# 3. Open the internal address %>
+        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-white/10">
+          <div class="text-xs font-semibold uppercase tracking-widest text-gray-500">3 · Open your app</div>
+          <div class="flex flex-1 flex-col justify-center py-8">
+            <div class="overflow-hidden rounded-lg ring-1 ring-white/10">
+              <div class="flex items-center gap-1.5 border-b border-white/10 bg-gray-900 px-3 py-2">
+                <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                <span class="h-2 w-2 rounded-full bg-yellow-500"></span>
+                <span class="h-2 w-2 rounded-full bg-green-500"></span>
+                <div class="ml-2 flex min-w-0 flex-1 items-center gap-1.5 rounded bg-gray-800 px-2 py-0.5 font-mono text-[11px] text-gray-300">
+                  <iconify-icon icon="lucide:lock" class="shrink-0 text-sky-400"></iconify-icon>
+                  <span class="truncate">admin-tool.svc.cluster.local</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-gray-950 px-4 py-4">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sky-500/10 text-sky-400">
+                  <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
+                </div>
+                <div class="text-sm font-semibold text-white">Admin tool</div>
+              </div>
+            </div>
+          </div>
+          <p class="text-sm leading-relaxed text-gray-400">Its internal address now opens in your browser, like any other site.</p>
         </div>
       </div>
     </div>
