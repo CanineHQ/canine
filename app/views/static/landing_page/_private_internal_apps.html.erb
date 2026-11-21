@@ -1,0 +1,34 @@
+<div id="private-internal-apps" class="mx-auto mt-16 max-w-7xl px-6 sm:mt-32 lg:px-8">
+  <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+    <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#private-internal-apps" class="hover:underline underline-offset-4">Private internal apps</a></h2>
+    <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Not every app belongs on the internet</p>
+    <p class="mt-6 text-lg leading-8 text-gray-300">
+      Deploy the internal tools and vibe-coded apps your team builds to your own cluster, with no public address.
+      Authorized devices reach them over a secure private network, and nobody else can.
+    </p>
+  </div>
+
+  <%= render "static/landing_page/private_apps_steps" %>
+
+  <div class="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-3" data-aos="fade-up">
+    <% [
+      [ "lucide:globe-lock", "No public URL to find", "Nothing to scan, guess or stumble on. An app with no public address cannot be reached from the internet." ],
+      [ "lucide:sparkles", "Safe home for vibe-coded apps", "Ship the tool you built in an afternoon without first auditing its login page. The network decides who gets in." ],
+      [ "lucide:users", "Access follows your team", "People get in with their Canine account, on devices where they have signed in. No shared passwords or VPN profiles." ]
+    ].each do |icon, title, text| %>
+      <div>
+        <div class="flex items-center gap-2 text-sm font-semibold text-white">
+          <iconify-icon icon="<%= icon %>" class="text-sky-400"></iconify-icon>
+          <%= title %>
+        </div>
+        <p class="mt-2 text-sm leading-relaxed text-gray-400"><%= text %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-10 text-center" data-aos="fade-up">
+    <a href="/private-internal-apps" data-turbo="false" class="text-sm font-semibold text-sky-400 hover:text-sky-300 transition">
+      How private internal apps work <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</div>

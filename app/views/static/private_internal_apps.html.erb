@@ -69,77 +69,7 @@
         </p>
       </div>
 
-      <%# Disconnected -> connected -> open the internal address. Drawn in HTML so it stays this simple. %>
-      <div class="mx-auto mt-16 grid max-w-5xl grid-cols-1 items-stretch gap-4 lg:grid-cols-[1fr_auto_1fr_auto_1fr]" data-aos="fade-up" data-aos-delay="150">
-        <%# 1. Disconnected %>
-        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-white/10">
-          <div class="text-xs font-semibold uppercase tracking-widest text-gray-500">1 · Disconnected</div>
-          <div class="flex flex-1 flex-col items-center justify-center gap-4 py-8">
-            <div class="flex h-12 w-24 items-center rounded-full bg-gray-700 p-1.5">
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-500 text-gray-800">
-                <iconify-icon icon="lucide:power"></iconify-icon>
-              </div>
-            </div>
-            <div class="text-sm font-semibold text-gray-400">Off</div>
-          </div>
-          <p class="text-sm leading-relaxed text-gray-400">Your internal apps have no public address. From here, they do not exist.</p>
-        </div>
-
-        <div class="flex items-center justify-center text-gray-600">
-          <iconify-icon icon="lucide:arrow-right" class="hidden text-2xl lg:block"></iconify-icon>
-          <iconify-icon icon="lucide:arrow-down" class="text-2xl lg:hidden"></iconify-icon>
-        </div>
-
-        <%# 2. Connected %>
-        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-sky-500/40">
-          <div class="text-xs font-semibold uppercase tracking-widest text-sky-400">2 · Connected</div>
-          <div class="flex flex-1 flex-col items-center justify-center gap-4 py-8">
-            <div class="flex h-12 w-24 items-center justify-end rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 p-1.5 shadow-lg shadow-sky-500/30">
-              <div class="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sky-500">
-                <iconify-icon icon="lucide:power"></iconify-icon>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 text-sm font-semibold text-white">
-              <span class="relative flex h-2 w-2">
-                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
-                <span class="relative inline-flex h-2 w-2 rounded-full bg-sky-400"></span>
-              </span>
-              production
-            </div>
-          </div>
-          <p class="text-sm leading-relaxed text-gray-400">Flip one switch in your menu bar. This device joins your cluster's secure private network.</p>
-        </div>
-
-        <div class="flex items-center justify-center text-gray-600">
-          <iconify-icon icon="lucide:arrow-right" class="hidden text-2xl lg:block"></iconify-icon>
-          <iconify-icon icon="lucide:arrow-down" class="text-2xl lg:hidden"></iconify-icon>
-        </div>
-
-        <%# 3. Open the internal address %>
-        <div class="flex flex-col rounded-2xl bg-gray-800/50 p-6 ring-1 ring-white/10">
-          <div class="text-xs font-semibold uppercase tracking-widest text-gray-500">3 · Open your app</div>
-          <div class="flex flex-1 flex-col justify-center py-8">
-            <div class="overflow-hidden rounded-lg ring-1 ring-white/10">
-              <div class="flex items-center gap-1.5 border-b border-white/10 bg-gray-900 px-3 py-2">
-                <span class="h-2 w-2 rounded-full bg-red-500"></span>
-                <span class="h-2 w-2 rounded-full bg-yellow-500"></span>
-                <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                <div class="ml-2 flex min-w-0 flex-1 items-center gap-1.5 rounded bg-gray-800 px-2 py-0.5 font-mono text-[11px] text-gray-300">
-                  <iconify-icon icon="lucide:lock" class="shrink-0 text-sky-400"></iconify-icon>
-                  <span class="truncate">admin-tool.svc.cluster.local</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-3 bg-gray-950 px-4 py-4">
-                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sky-500/10 text-sky-400">
-                  <iconify-icon icon="lucide:layout-dashboard"></iconify-icon>
-                </div>
-                <div class="text-sm font-semibold text-white">Admin tool</div>
-              </div>
-            </div>
-          </div>
-          <p class="text-sm leading-relaxed text-gray-400">Its internal address now opens in your browser, like any other site.</p>
-        </div>
-      </div>
+      <%= render "static/landing_page/private_apps_steps" %>
     </div>
 
     <!-- How it works -->
