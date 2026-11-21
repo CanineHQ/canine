@@ -29,12 +29,12 @@
     <!-- Hero -->
     <div class="relative isolate">
       <div class="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl" aria-hidden="true">
-        <div class="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#10b981] to-[#6366f1] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
+        <div class="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#0ea5e9] to-[#22d3ee] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
       </div>
 
       <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
         <div class="mx-auto max-w-3xl text-center" data-aos="fade-up">
-          <div class="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-400 ring-1 ring-emerald-500/20 mb-8">
+          <div class="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-400 ring-1 ring-sky-500/20 mb-8">
             <iconify-icon icon="lucide:lock" class="text-base"></iconify-icon>
             Private Networking
           </div>
@@ -46,10 +46,10 @@
             Authorized devices connect to them over a secure private network.
           </p>
           <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-            <a href="<%= new_user_registration_path %>" class="rounded-md bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition">
+            <a href="<%= new_user_registration_path %>" class="rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition">
               Get Started
             </a>
-            <a href="#authorize-a-device" class="text-sm font-semibold text-white hover:text-emerald-400 transition">
+            <a href="#authorize-a-device" class="text-sm font-semibold text-white hover:text-sky-400 transition">
               Authorize a device <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -60,7 +60,7 @@
     <!-- Preview -->
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-emerald-400">Private by default</h2>
+        <h2 class="text-base font-semibold leading-7 text-sky-400">Private by default</h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Not every app belongs on the internet</p>
         <p class="mt-6 text-lg leading-8 text-gray-300">
           An admin panel built over a weekend should not be one guessed URL away from your customer data. Apps you
@@ -79,7 +79,7 @@
             [ false, "Everywhere else", "There is no public address, so there is nothing to reach." ]
           ].each do |reachable, label, caption| %>
             <div>
-              <div class="mb-2 flex items-center gap-2 text-sm font-semibold <%= reachable ? "text-emerald-400" : "text-gray-400" %>">
+              <div class="mb-2 flex items-center gap-2 text-sm font-semibold <%= reachable ? "text-sky-400" : "text-gray-400" %>">
                 <iconify-icon icon="<%= reachable ? "lucide:laptop" : "lucide:globe" %>"></iconify-icon>
                 <%= label %>
               </div>
@@ -89,12 +89,12 @@
                   <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
                   <span class="w-3 h-3 rounded-full bg-green-500"></span>
                   <div class="ml-3 flex min-w-0 flex-1 items-center gap-2 rounded-md bg-gray-800 px-3 py-1 font-mono text-xs text-gray-300">
-                    <iconify-icon icon="<%= reachable ? "lucide:lock" : "lucide:circle-alert" %>" class="shrink-0 <%= reachable ? "text-emerald-400" : "text-gray-500" %>"></iconify-icon>
+                    <iconify-icon icon="<%= reachable ? "lucide:lock" : "lucide:circle-alert" %>" class="shrink-0 <%= reachable ? "text-sky-400" : "text-gray-500" %>"></iconify-icon>
                     <span class="truncate">web.admin-tool.svc.cluster.local</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-4 bg-gray-950 px-6 py-6">
-                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg <%= reachable ? "bg-emerald-500/10 text-emerald-400" : "bg-white/5 text-gray-500" %>">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg <%= reachable ? "bg-sky-500/10 text-sky-400" : "bg-white/5 text-gray-500" %>">
                     <iconify-icon icon="<%= reachable ? "lucide:layout-dashboard" : "lucide:cloud-off" %>" class="text-xl"></iconify-icon>
                   </div>
                   <div>
@@ -112,7 +112,7 @@
     <!-- How it works -->
     <div id="how-it-works" class="mt-16 sm:mt-24 mx-auto max-w-7xl px-6 lg:px-8 pb-24">
       <div class="mx-auto max-w-4xl text-center mb-16" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-emerald-400"><a href="#how-it-works" class="hover:underline underline-offset-4">How it works</a></h2>
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#how-it-works" class="hover:underline underline-offset-4">How it works</a></h2>
         <p class="mt-2 text-2xl font-bold tracking-tight text-white sm:text-4xl">Three steps, about a minute</p>
       </div>
 
@@ -123,7 +123,7 @@
           [ "Open it like any site", "Flip the switch to join the secure private network. The app answers at its internal address, in the browser or any tool. Switch it off and the address stops resolving." ]
         ].each_with_index do |(title, text), index| %>
           <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 text-xl font-bold mb-6"><%= index + 1 %></div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 text-xl font-bold mb-6"><%= index + 1 %></div>
             <h3 class="text-lg font-semibold text-white mb-2"><%= title %></h3>
             <p class="text-gray-400 text-sm leading-relaxed"><%= text %></p>
           </div>
@@ -134,7 +134,7 @@
     <!-- What you get -->
     <div id="what-you-get" class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
       <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-emerald-400"><a href="#what-you-get" class="hover:underline underline-offset-4">What you get</a></h2>
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#what-you-get" class="hover:underline underline-offset-4">What you get</a></h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Security you do not have to build into every app</p>
       </div>
 
@@ -148,8 +148,8 @@
           [ "lucide:git-fork", "Open source", "Built on Telepresence, with the source on GitHub. On Linux or Windows, use the Telepresence CLI the same way." ]
         ].each_with_index do |(icon, title, text), index| %>
           <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="<%= (index % 3) * 100 %>">
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 mb-5">
-              <iconify-icon icon="<%= icon %>" class="text-emerald-400"></iconify-icon>
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 mb-5">
+              <iconify-icon icon="<%= icon %>" class="text-sky-400"></iconify-icon>
             </div>
             <h3 class="text-base font-semibold text-white mb-2"><%= title %></h3>
             <p class="text-gray-400 text-sm leading-relaxed"><%= text %></p>
@@ -161,7 +161,7 @@
     <!-- Install -->
     <div id="authorize-a-device" class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
       <div class="mx-auto max-w-2xl text-center mb-10" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-emerald-400"><a href="#authorize-a-device" class="hover:underline underline-offset-4">Authorize a device</a></h2>
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#authorize-a-device" class="hover:underline underline-offset-4">Authorize a device</a></h2>
         <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Install the Mac app and sign in</p>
         <p class="mt-4 text-gray-400">
           Unzip it, open it, and sign in with your Canine account. It works with Canine Cloud and with a Canine you
@@ -170,7 +170,7 @@
       </div>
       <div class="text-center" data-aos="fade-up" data-aos-delay="100">
         <div class="flex flex-wrap items-center justify-center gap-4">
-          <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition" do %>
+          <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition" do %>
             <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
             Download for Apple Silicon
           <% end %>
@@ -189,10 +189,10 @@
         <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Keep internal apps internal</h2>
         <p class="mt-4 text-gray-400 max-w-xl mx-auto">Deploy to your own cluster with Canine and decide which devices can reach what you build.</p>
         <div class="mt-8 flex items-center justify-center gap-x-6">
-          <a href="<%= new_user_registration_path %>" class="rounded-md bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-400 transition">
+          <a href="<%= new_user_registration_path %>" class="rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition">
             Get Started Free
           </a>
-          <a href="/self-hosted" data-turbo="false" class="text-sm font-semibold text-white hover:text-emerald-400 transition">
+          <a href="/self-hosted" data-turbo="false" class="text-sm font-semibold text-white hover:text-sky-400 transition">
             Self-host Canine <span aria-hidden="true">→</span>
           </a>
         </div>
