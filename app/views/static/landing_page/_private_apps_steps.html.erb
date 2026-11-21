@@ -1,7 +1,10 @@
-<%# A Mac desktop on a 12 second loop: the menu bar switch is off and the internal app cannot be reached, the
-    switch is turned on, and the same address loads. Pure CSS, so there is nothing to keep in sync with a script. %>
+<%# A Mac desktop on a 14 second loop: the internal app cannot be reached, the pointer opens the menu bar app
+    (disconnected), turns its switch on, and the same address loads in the browser. Pure CSS, so there is nothing
+    to keep in sync with a script. The popover and pointer are anchored to the menu bar icon, so they line up at
+    any width. %>
 <style>
-  .pia-scene * { animation-duration: 12s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+  .pia-scene * { animation-duration: 14s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+  .pia-popover { animation-name: pia-popover; opacity: 0; }
   .pia-when-on { animation-name: pia-when-on; opacity: 0; }
   .pia-when-off { animation-name: pia-when-off; }
   .pia-knob { animation-name: pia-knob; }
@@ -9,44 +12,97 @@
   .pia-error { animation-name: pia-error; }
   .pia-loading { animation-name: pia-loading; transform: scaleX(0); transform-origin: left; }
   .pia-app { animation-name: pia-app; opacity: 0; }
-  .pia-cursor { animation-name: pia-cursor; left: 34%; top: 72%; }
+  .pia-cursor { animation-name: pia-cursor; transform: translate(-13rem, 13rem); }
   .pia-step-1 { animation-name: pia-step-1; }
   .pia-step-2 { animation-name: pia-step-2; opacity: .35; }
   .pia-step-3 { animation-name: pia-step-3; opacity: .35; }
 
-  @keyframes pia-when-on { 0%, 25% { opacity: 0; } 28%, 94% { opacity: 1; } 100% { opacity: 0; } }
-  @keyframes pia-when-off { 0%, 25% { opacity: 1; } 28%, 94% { opacity: 0; } 100% { opacity: 1; } }
-  @keyframes pia-knob { 0%, 25% { transform: translateX(0); } 28%, 94% { transform: translateX(2.25rem); } 100% { transform: translateX(0); } }
-  @keyframes pia-icon { 0%, 25% { filter: grayscale(1) opacity(.6); } 28%, 94% { filter: grayscale(0) opacity(1); } 100% { filter: grayscale(1) opacity(.6); } }
-  @keyframes pia-error { 0%, 36% { opacity: 1; } 40%, 94% { opacity: 0; } 100% { opacity: 1; } }
-  @keyframes pia-loading { 0%, 30% { transform: scaleX(0); opacity: 1; } 39% { transform: scaleX(1); opacity: 1; } 42%, 100% { transform: scaleX(1); opacity: 0; } }
-  @keyframes pia-app { 0%, 38% { opacity: 0; } 43%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes pia-popover { 0%, 12% { opacity: 0; } 14%, 54% { opacity: 1; } 57%, 100% { opacity: 0; } }
+  @keyframes pia-when-on { 0%, 30% { opacity: 0; } 33%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes pia-when-off { 0%, 30% { opacity: 1; } 33%, 94% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes pia-knob { 0%, 30% { transform: translateX(0); } 33%, 94% { transform: translateX(2.25rem); } 100% { transform: translateX(0); } }
+  @keyframes pia-icon { 0%, 30% { filter: grayscale(1) opacity(.6); } 33%, 94% { filter: grayscale(0) opacity(1); } 100% { filter: grayscale(1) opacity(.6); } }
+  @keyframes pia-error { 0%, 41% { opacity: 1; } 45%, 94% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes pia-loading { 0%, 34% { transform: scaleX(0); opacity: 1; } 44% { transform: scaleX(1); opacity: 1; } 47%, 100% { transform: scaleX(1); opacity: 0; } }
+  @keyframes pia-app { 0%, 43% { opacity: 0; } 48%, 94% { opacity: 1; } 100% { opacity: 0; } }
   @keyframes pia-cursor {
-    0%, 8% { left: 34%; top: 72%; transform: scale(1); }
-    22% { left: var(--pia-switch-x); top: var(--pia-switch-y); transform: scale(1); }
-    25% { left: var(--pia-switch-x); top: var(--pia-switch-y); transform: scale(.8); }
-    28%, 34% { left: var(--pia-switch-x); top: var(--pia-switch-y); transform: scale(1); }
-    48%, 94% { left: 30%; top: 66%; transform: scale(1); }
-    100% { left: 34%; top: 72%; transform: scale(1); }
+    0%, 3% { transform: translate(-13rem, 13rem); }
+    10% { transform: translate(0.1rem, 0.2rem); }
+    12% { transform: translate(0.1rem, 0.2rem) scale(.8); }
+    14%, 19% { transform: translate(0.1rem, 0.2rem); }
+    27% { transform: translate(-0.3rem, 3.7rem); }
+    30% { transform: translate(-0.3rem, 3.7rem) scale(.8); }
+    33%, 40% { transform: translate(-0.3rem, 3.7rem); }
+    52% { transform: translate(-12rem, 12rem); }
+    54% { transform: translate(-12rem, 12rem) scale(.8); }
+    57%, 94% { transform: translate(-12rem, 12rem); }
+    100% { transform: translate(-13rem, 13rem); }
   }
-  @keyframes pia-step-1 { 0%, 22% { opacity: 1; } 26%, 96% { opacity: .35; } 100% { opacity: 1; } }
-  @keyframes pia-step-2 { 0%, 22% { opacity: .35; } 26%, 36% { opacity: 1; } 40%, 100% { opacity: .35; } }
-  @keyframes pia-step-3 { 0%, 36% { opacity: .35; } 40%, 94% { opacity: 1; } 100% { opacity: .35; } }
+  @keyframes pia-step-1 { 0%, 26% { opacity: 1; } 30%, 96% { opacity: .35; } 100% { opacity: 1; } }
+  @keyframes pia-step-2 { 0%, 26% { opacity: .35; } 30%, 41% { opacity: 1; } 45%, 100% { opacity: .35; } }
+  @keyframes pia-step-3 { 0%, 41% { opacity: .35; } 45%, 94% { opacity: 1; } 100% { opacity: .35; } }
 
   @media (prefers-reduced-motion: reduce) {
     .pia-scene * { animation: none !important; }
     .pia-when-on, .pia-app, .pia-step-2, .pia-step-3 { opacity: 1; }
-    .pia-when-off, .pia-error, .pia-cursor { opacity: 0; }
+    .pia-when-off, .pia-error, .pia-cursor, .pia-popover { opacity: 0; }
     .pia-knob { transform: translateX(2.25rem); }
     .pia-icon { filter: none; }
   }
 </style>
 
-<div class="pia-scene mx-auto mt-16 max-w-4xl" data-aos="fade-up" data-aos-delay="150">
-  <div class="relative h-[26rem] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 sm:h-[30rem]"
-       style="--pia-switch-x: calc(100% - 7rem); --pia-switch-y: 6.25rem; background: radial-gradient(120% 90% at 20% 10%, #1e3a8a 0%, #0f172a 55%), #0f172a;">
+<div class="pia-scene mx-auto mt-16 max-w-5xl" data-aos="fade-up" data-aos-delay="150">
+  <div class="relative h-[28rem] overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10 sm:h-[36rem]"
+       style="background: radial-gradient(120% 90% at 20% 10%, #1e3a8a 0%, #0f172a 55%), #0f172a;">
 
-    <%# Menu bar %>
+    <%# Browser window, filling the desktop %>
+    <div class="absolute inset-x-3 bottom-3 top-11 flex flex-col overflow-hidden rounded-xl bg-gray-950 shadow-2xl ring-1 ring-white/10 sm:inset-x-8 sm:bottom-8 sm:top-14">
+      <div class="flex items-center gap-1.5 border-b border-white/10 bg-gray-900 px-3 py-2.5">
+        <span class="h-2.5 w-2.5 rounded-full bg-red-500"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-yellow-500"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-green-500"></span>
+        <div class="ml-2 flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-gray-800 px-2.5 py-1 font-mono text-xs text-gray-300">
+          <iconify-icon icon="lucide:lock" class="shrink-0 text-gray-500"></iconify-icon>
+          <span class="truncate">admin-tool.svc.cluster.local</span>
+        </div>
+      </div>
+      <div class="pia-loading h-0.5 bg-sky-400"></div>
+      <div class="relative flex-1">
+        <div class="pia-error absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
+          <iconify-icon icon="lucide:cloud-off" class="text-4xl text-gray-600"></iconify-icon>
+          <div class="text-base font-semibold text-gray-300">This site can't be reached</div>
+          <div class="text-sm text-gray-500">There is no public address to find.</div>
+        </div>
+        <div class="pia-app absolute inset-0 flex">
+          <div class="hidden w-40 shrink-0 space-y-3 border-r border-white/10 bg-gray-900/60 p-4 sm:block">
+            <div class="flex items-center gap-2 text-sm font-semibold text-white">
+              <iconify-icon icon="lucide:layout-dashboard" class="text-sky-400"></iconify-icon>
+              Admin
+            </div>
+            <div class="h-2 w-24 rounded bg-sky-400/40"></div>
+            <div class="h-2 w-16 rounded bg-white/10"></div>
+            <div class="h-2 w-20 rounded bg-white/10"></div>
+            <div class="h-2 w-14 rounded bg-white/10"></div>
+          </div>
+          <div class="flex-1 space-y-4 p-5">
+            <div class="text-base font-semibold text-white">Admin tool</div>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="h-16 rounded-lg bg-sky-500/15 ring-1 ring-sky-500/20 sm:h-20"></div>
+              <div class="h-16 rounded-lg bg-white/5 ring-1 ring-white/10 sm:h-20"></div>
+              <div class="h-16 rounded-lg bg-white/5 ring-1 ring-white/10 sm:h-20"></div>
+            </div>
+            <div class="space-y-2.5 rounded-lg bg-white/5 p-4 ring-1 ring-white/10">
+              <div class="h-2 w-full rounded bg-white/10"></div>
+              <div class="h-2 w-5/6 rounded bg-white/10"></div>
+              <div class="h-2 w-2/3 rounded bg-white/10"></div>
+              <div class="h-2 w-3/4 rounded bg-white/10"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Menu bar. The app's icon is the first of the status items; its popover and the pointer hang off it. %>
     <div class="absolute inset-x-0 top-0 z-20 flex h-7 items-center gap-4 bg-black/40 px-3 text-xs font-medium text-white/90 backdrop-blur">
       <iconify-icon icon="mdi:apple" class="text-sm"></iconify-icon>
       <span class="font-semibold">Safari</span>
@@ -54,93 +110,46 @@
       <span class="hidden text-white/70 sm:inline">Edit</span>
       <span class="hidden text-white/70 sm:inline">View</span>
       <span class="ml-auto"></span>
+      <span class="relative flex h-5 w-6 items-center justify-center rounded bg-white/15">
+        <img src="/images/logo-compact.webp" alt="" class="pia-icon h-4 w-4">
+
+        <div class="pia-popover absolute left-1/2 top-7 w-48 -translate-x-[60%] rounded-xl bg-gray-900 p-4 shadow-2xl ring-1 ring-white/15 sm:w-52 sm:-translate-x-1/2">
+          <div class="relative mx-auto h-9 w-[4.5rem] rounded-full bg-gray-700 p-1">
+            <div class="pia-when-on absolute inset-0 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 shadow-lg shadow-sky-500/40"></div>
+            <div class="pia-knob relative flex h-7 w-7 items-center justify-center rounded-full bg-white text-gray-500">
+              <iconify-icon icon="lucide:power" class="text-sm"></iconify-icon>
+            </div>
+          </div>
+          <div class="relative mt-3 h-9 text-center">
+            <div class="pia-when-off absolute inset-0">
+              <div class="text-sm font-semibold text-white">Not connected</div>
+              <div class="text-[11px] font-normal text-gray-400">Turn on to reach internal apps</div>
+            </div>
+            <div class="pia-when-on absolute inset-0">
+              <div class="text-sm font-semibold text-white">production</div>
+              <div class="text-[11px] font-normal text-sky-300">Private network connected</div>
+            </div>
+          </div>
+        </div>
+
+        <svg class="pia-cursor pointer-events-none absolute left-1/2 top-1/2 z-30 h-5 w-5 drop-shadow" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 3l14 8-6.5 1.5L10 19z" fill="#fff" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round" />
+        </svg>
+      </span>
       <iconify-icon icon="lucide:wifi" class="text-white/70"></iconify-icon>
       <iconify-icon icon="lucide:battery-medium" class="text-white/70"></iconify-icon>
-      <span class="relative mr-9 flex h-5 w-6 items-center justify-center rounded bg-white/15">
-        <img src="/images/logo-compact.webp" alt="" class="pia-icon h-4 w-4">
-      </span>
       <span class="hidden text-white/80 sm:inline">Mon 9:41</span>
     </div>
-
-    <%# The menu bar app, open under its icon %>
-    <div class="absolute right-3 top-9 z-10 w-44 rounded-xl bg-gray-900/95 p-4 shadow-2xl ring-1 ring-white/10 sm:w-52">
-      <div class="relative mx-auto h-9 w-[4.5rem] rounded-full bg-gray-700 p-1">
-        <div class="pia-when-on absolute inset-0 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 shadow-lg shadow-sky-500/40"></div>
-        <div class="pia-knob relative flex h-7 w-7 items-center justify-center rounded-full bg-white text-gray-500">
-          <iconify-icon icon="lucide:power" class="text-sm"></iconify-icon>
-        </div>
-      </div>
-      <div class="relative mt-3 h-9 text-center">
-        <div class="pia-when-off absolute inset-0">
-          <div class="text-sm font-semibold text-white">Not connected</div>
-          <div class="text-[11px] text-gray-400">Turn on to reach internal apps</div>
-        </div>
-        <div class="pia-when-on absolute inset-0">
-          <div class="text-sm font-semibold text-white">production</div>
-          <div class="text-[11px] text-sky-300">Private network connected</div>
-        </div>
-      </div>
-    </div>
-
-    <%# Browser window %>
-    <div class="absolute bottom-6 left-4 w-[78%] overflow-hidden rounded-xl bg-gray-950 shadow-2xl ring-1 ring-white/10 sm:left-8 sm:w-[62%]">
-      <div class="flex items-center gap-1.5 border-b border-white/10 bg-gray-900 px-3 py-2.5">
-        <span class="h-2.5 w-2.5 rounded-full bg-red-500"></span>
-        <span class="h-2.5 w-2.5 rounded-full bg-yellow-500"></span>
-        <span class="h-2.5 w-2.5 rounded-full bg-green-500"></span>
-        <div class="ml-2 flex min-w-0 flex-1 items-center gap-1.5 rounded-md bg-gray-800 px-2.5 py-1 font-mono text-[11px] text-gray-300">
-          <iconify-icon icon="lucide:lock" class="shrink-0 text-gray-500"></iconify-icon>
-          <span class="truncate">admin-tool.svc.cluster.local</span>
-        </div>
-      </div>
-      <div class="pia-loading h-0.5 bg-sky-400"></div>
-      <div class="relative h-44 sm:h-52">
-        <div class="pia-error absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
-          <iconify-icon icon="lucide:cloud-off" class="text-3xl text-gray-600"></iconify-icon>
-          <div class="text-sm font-semibold text-gray-300">This site can't be reached</div>
-          <div class="text-xs text-gray-500">There is no public address to find.</div>
-        </div>
-        <div class="pia-app absolute inset-0 flex">
-          <div class="hidden w-28 shrink-0 space-y-2 border-r border-white/10 bg-gray-900/60 p-3 sm:block">
-            <div class="flex items-center gap-2 text-xs font-semibold text-white">
-              <iconify-icon icon="lucide:layout-dashboard" class="text-sky-400"></iconify-icon>
-              Admin
-            </div>
-            <div class="h-2 w-16 rounded bg-white/10"></div>
-            <div class="h-2 w-12 rounded bg-white/10"></div>
-            <div class="h-2 w-14 rounded bg-white/10"></div>
-          </div>
-          <div class="flex-1 space-y-3 p-4">
-            <div class="text-sm font-semibold text-white">Admin tool</div>
-            <div class="grid grid-cols-3 gap-2">
-              <div class="h-12 rounded-lg bg-sky-500/15 ring-1 ring-sky-500/20"></div>
-              <div class="h-12 rounded-lg bg-white/5 ring-1 ring-white/10"></div>
-              <div class="h-12 rounded-lg bg-white/5 ring-1 ring-white/10"></div>
-            </div>
-            <div class="space-y-2">
-              <div class="h-2 w-full rounded bg-white/10"></div>
-              <div class="h-2 w-5/6 rounded bg-white/10"></div>
-              <div class="h-2 w-2/3 rounded bg-white/10"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <%# Pointer %>
-    <svg class="pia-cursor pointer-events-none absolute z-30 h-5 w-5 drop-shadow" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 3l14 8-6.5 1.5L10 19z" fill="#fff" stroke="#0f172a" stroke-width="1.5" stroke-linejoin="round" />
-    </svg>
   </div>
 
   <div class="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
     <div class="pia-step-1">
-      <div class="font-semibold text-white">1. Off: nothing to reach</div>
-      <p class="mt-1 text-gray-400">Your internal app has no public address, so its URL goes nowhere.</p>
+      <div class="font-semibold text-white">1. Open it from the menu bar</div>
+      <p class="mt-1 text-gray-400">It starts disconnected. Your internal app has no public address, so its URL goes nowhere.</p>
     </div>
     <div class="pia-step-2">
       <div class="font-semibold text-white">2. Flip the switch</div>
-      <p class="mt-1 text-gray-400">One click in the menu bar puts this Mac on your cluster's private network.</p>
+      <p class="mt-1 text-gray-400">One click puts this Mac on your cluster's private network.</p>
     </div>
     <div class="pia-step-3">
       <div class="font-semibold text-white">3. Open your app</div>
