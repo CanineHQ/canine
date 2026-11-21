@@ -26,8 +26,10 @@ RSpec.describe "Canine Connect", type: :request do
     )
     expect(CanineConnectRelease.open_url("https://canine.acme.internal:8443")).to eq("canine-connect://connect?url=https%3A%2F%2Fcanine.acme.internal%3A8443")
 
+    # The marketing page is a page of its own, signed in or not
     get "/private-internal-apps"
-    expect(response).to redirect_to(canine_connect_path)
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Deploy apps only your team can access")
   end
 
   it "has a public landing page" do

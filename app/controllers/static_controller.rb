@@ -87,10 +87,10 @@ class StaticController < ApplicationController
     redirect_to root_path if user_signed_in?
   end
 
-  # The public page for private internal apps: apps with no public address, reached through the Canine
-  # Connect macOS app. Signed in, the in-app page has the downloads plus this Canine's own address and clusters.
+  # The marketing page for private internal apps. It is its own page whether or not you are signed in; the
+  # in-app Canine Connect page (canine_connect#show) is separate.
   def private_internal_apps
-    redirect_to canine_connect_path if user_signed_in?
+    render layout: "homepage"
   end
 
   def install
