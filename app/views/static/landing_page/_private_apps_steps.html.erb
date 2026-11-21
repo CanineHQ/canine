@@ -1,6 +1,6 @@
 <%# A Mac desktop on a 14 second loop: the internal app cannot be reached, the pointer opens the menu bar app
     (disconnected), turns its switch on, and the same address loads in the browser. The animation itself is CSS; the
-    script at the end only starts it once the scene is on screen. The popover and pointer are anchored to the menu bar icon, so they line up at
+    script at the end starts it once the scene is on screen and lets the captions jump to a part of it. The popover and pointer are anchored to the menu bar icon, so they line up at
     any width. %>
 <style>
   .pia-scene * { animation-duration: 14s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
@@ -144,19 +144,18 @@
     </div>
   </div>
 
+  <%# Each caption jumps the loop to its part. data-pia-seek is where that part starts, in milliseconds. %>
   <div class="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
-    <div class="pia-step-1">
-      <div class="font-semibold text-white">1. Open it from the menu bar</div>
-      <p class="mt-1 text-gray-400">It starts disconnected. Your internal app has no public address, so its URL goes nowhere.</p>
-    </div>
-    <div class="pia-step-2">
-      <div class="font-semibold text-white">2. Flip the switch</div>
-      <p class="mt-1 text-gray-400">One click puts this Mac on your cluster's private network.</p>
-    </div>
-    <div class="pia-step-3">
-      <div class="font-semibold text-white">3. Open your app</div>
-      <p class="mt-1 text-gray-400">The same address now loads in the browser, like any other site.</p>
-    </div>
+    <% [
+      [ 1, 0, "1. Open it from the menu bar", "It starts disconnected. Your internal app has no public address, so its URL goes nowhere." ],
+      [ 2, 2700, "2. Flip the switch", "One click puts this Mac on your cluster's private network." ],
+      [ 3, 5700, "3. Open your app", "The same address now loads in the browser, like any other site." ]
+    ].each do |number, seek, title, text| %>
+      <button type="button" data-pia-seek="<%= seek %>" class="pia-step-<%= number %> cursor-pointer rounded-lg p-3 text-left transition hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        <div class="font-semibold text-white"><%= title %></div>
+        <p class="mt-1 text-gray-400"><%= text %></p>
+      </button>
+    <% end %>
   </div>
 </div>
 <script>
@@ -164,7 +163,19 @@
     // Start the loop when the scene scrolls into view, and hold it while it is off screen. Without
     // IntersectionObserver it simply plays.
     var scene = document.currentScript.previousElementSibling;
-    if (!scene || !("IntersectionObserver" in window)) return;
+    if (!scene) return;
+
+    // Clicking a caption jumps every animation in the scene to where that part of the loop starts.
+    scene.querySelectorAll("[data-pia-seek]").forEach(function(step) {
+      step.addEventListener("click", function() {
+        if (!scene.getAnimations) return;
+        var time = Number(step.dataset.piaSeek);
+        scene.classList.remove("pia-waiting");
+        scene.getAnimations({ subtree: true }).forEach(function(animation) { animation.currentTime = time; });
+      });
+    });
+
+    if (!("IntersectionObserver" in window)) return;
     scene.classList.add("pia-waiting");
     new IntersectionObserver(function(entries) {
       scene.classList.toggle("pia-waiting", !entries[0].isIntersecting);
