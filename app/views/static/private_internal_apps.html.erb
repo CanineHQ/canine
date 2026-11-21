@@ -1,0 +1,167 @@
+<% page_url = "#{request.base_url}/private-internal-apps" %>
+<% content_for :title, "Private Internal Apps — Deploy Apps Only Your Team Can Access" %>
+<% content_for :meta_description, "Deploy internal tools and vibe-coded apps to your own Kubernetes cluster with no public address. Only teammates on authorized devices can reach them." %>
+<% content_for :og_title, "Private Internal Apps — Deploy apps only your team can access" %>
+<% content_for :og_description, "Deploy internal tools and vibe-coded apps to your own cluster with no public address. Only teammates on authorized devices can reach them." %>
+<% content_for :og_url, page_url %>
+<% content_for :og_image, "#{request.base_url}/images/canine_connect/connected.png" %>
+<% content_for :schema_json do %>
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Private Internal Apps",
+  "description": "Deploy internal apps to your own Kubernetes cluster with no public address, reachable only from authorized devices.",
+  "url": "<%= page_url %>"
+}
+<% end %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  ["DOMContentLoaded"].forEach(function(e) {
+    document.addEventListener(e, function() { AOS.init({ once: true, duration: 300, offset: 80, easing: "ease-out-cubic" }); });
+  });
+</script>
+
+<div class="bg-gray-900 min-h-screen">
+  <%= render "static/landing_page/navbar" %>
+
+  <main>
+    <!-- Hero -->
+    <div class="relative isolate">
+      <div class="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl" aria-hidden="true">
+        <div class="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#0ea5e9] to-[#22d3ee] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
+      </div>
+
+      <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center" data-aos="fade-up">
+          <div class="inline-flex items-center gap-2 rounded-full bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-400 ring-1 ring-sky-500/20 mb-8">
+            <iconify-icon icon="lucide:lock" class="text-base"></iconify-icon>
+            Private Internal Apps
+          </div>
+          <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+            Deploy apps only your team can access
+          </h1>
+          <p class="mt-6 text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
+            Deploy the internal tools and vibe-coded apps your team builds to your own cluster, with no public address.
+            Authorized devices connect to them over a secure private network.
+          </p>
+          <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+            <a href="<%= new_user_registration_path %>" class="rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition">
+              Get Started
+            </a>
+            <a href="#authorize-a-device" class="text-sm font-semibold text-white hover:text-sky-400 transition">
+              Authorize a device <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center" data-aos="fade-up">
+        <h2 class="text-base font-semibold leading-7 text-sky-400">Private by default</h2>
+        <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Not every app belongs on the internet</p>
+        <p class="mt-6 text-lg leading-8 text-gray-300">
+          An admin panel built over a weekend should not be one guessed URL away from your customer data. Apps you
+          deploy with Canine get no public address unless you ask for one. An authorized device joins your cluster's
+          secure private network with one switch, and they open like any other site.
+        </p>
+      </div>
+
+      <%= render "static/landing_page/private_apps_steps" %>
+    </div>
+
+    <!-- How it works -->
+    <div id="how-it-works" class="mt-16 sm:mt-24 mx-auto max-w-7xl px-6 lg:px-8 pb-24">
+      <div class="mx-auto max-w-4xl text-center mb-16" data-aos="fade-up">
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#how-it-works" class="hover:underline underline-offset-4">How it works</a></h2>
+        <p class="mt-2 text-2xl font-bold tracking-tight text-white sm:text-4xl">Three steps, about a minute</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <% [
+          [ "Deploy it privately", "Push your app to your own cluster with Canine and leave public networking off. It gets an internal address and nothing else." ],
+          [ "Authorize your devices", "Each teammate installs the Mac app and signs in with their Canine account. A device is authorized only while someone on your team is signed in on it." ],
+          [ "Open it like any site", "Flip the switch to join the secure private network. The app answers at its internal address, in the browser or any tool. Switch it off and the address stops resolving." ]
+        ].each_with_index do |(title, text), index| %>
+          <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="<%= index * 100 %>">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 text-xl font-bold mb-6"><%= index + 1 %></div>
+            <h3 class="text-lg font-semibold text-white mb-2"><%= title %></h3>
+            <p class="text-gray-400 text-sm leading-relaxed"><%= text %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- What you get -->
+    <div id="what-you-get" class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center mb-16" data-aos="fade-up">
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#what-you-get" class="hover:underline underline-offset-4">What you get</a></h2>
+        <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Security you do not have to build into every app</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <% [
+          [ "lucide:globe-lock", "No public URL to find", "Nothing to scan, guess or stumble on. An app with no public address cannot be reached from the internet at all." ],
+          [ "lucide:sparkles", "Safe home for vibe-coded apps", "Ship the tool you built in an afternoon without first auditing its login page. The network decides who gets in." ],
+          [ "lucide:users", "Access follows your team", "People get in with their Canine account, on devices where they have signed in. There are no shared passwords or VPN profiles to hand out." ],
+          [ "lucide:database", "Databases stay private too", "Reach Postgres, Redis and every other internal service the same way, with no port-forwarding and no open ports." ],
+          [ "lucide:shield-check", "A secure private network", "Devices connect through an encrypted tunnel to your own cluster. Apps and data stay on infrastructure you control." ],
+          [ "lucide:git-fork", "Open source", "Built on Telepresence, with the source on GitHub. On Linux or Windows, use the Telepresence CLI the same way." ]
+        ].each_with_index do |(icon, title, text), index| %>
+          <div class="rounded-2xl bg-gray-800/50 ring-1 ring-white/10 p-8" data-aos="fade-up" data-aos-delay="<%= (index % 3) * 100 %>">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-500/10 mb-5">
+              <iconify-icon icon="<%= icon %>" class="text-sky-400"></iconify-icon>
+            </div>
+            <h3 class="text-base font-semibold text-white mb-2"><%= title %></h3>
+            <p class="text-gray-400 text-sm leading-relaxed"><%= text %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Install -->
+    <div id="authorize-a-device" class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center mb-10" data-aos="fade-up">
+        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#authorize-a-device" class="hover:underline underline-offset-4">Authorize a device</a></h2>
+        <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Install the Mac app and sign in</p>
+        <p class="mt-4 text-gray-400">
+          Unzip it, open it, and sign in with your Canine account. It works with Canine Cloud and with a Canine you
+          host yourself.
+        </p>
+      </div>
+      <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition" do %>
+            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+            Download for Apple Silicon
+          <% end %>
+          <%= link_to CanineConnectRelease.download_url("x86_64"), class: "inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/10 transition" do %>
+            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+            Download for Intel
+          <% end %>
+        </div>
+        <p class="mt-4 text-sm text-gray-400">macOS 13 or later</p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
+      <div class="relative rounded-2xl bg-gray-800/50 ring-1 ring-white/10 px-8 py-16 sm:px-16 text-center" data-aos="fade-up">
+        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Keep internal apps internal</h2>
+        <p class="mt-4 text-gray-400 max-w-xl mx-auto">Deploy to your own cluster with Canine and decide which devices can reach what you build.</p>
+        <div class="mt-8 flex items-center justify-center gap-x-6">
+          <a href="<%= new_user_registration_path %>" class="rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition">
+            Get Started Free
+          </a>
+          <a href="/self-hosted" data-turbo="false" class="text-sm font-semibold text-white hover:text-sky-400 transition">
+            Self-host Canine <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <%= render "static/landing_page/footer" %>
+</div>
