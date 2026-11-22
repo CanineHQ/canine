@@ -59,4 +59,22 @@ RSpec.describe ClusterPackage, type: :model do
     pkg = build(:cluster_package, name: "unknown-package")
     expect { pkg.installer }.to raise_error(RuntimeError, /No installer registered for package: unknown-package/)
   end
+
+  it "installs the telepresence traffic manager from OCI at the same version as the bundled CLI" do
+    package = build(:cluster_package, name: "telepresence")
+    chart_version = package.definition["chart_version"]
+    expect(Rails.root.join("Dockerfile").read).to include("ARG TELEPRESENCE_VERSION=v#{chart_version}\n")
+    expect(Rails.root.join("resources/system_install.sh").read).to include("/v#{chart_version}/telepresence-linux")
+
+    helm = instance_double(K8::Helm::Client)
+    kubectl = double(connection: double, runner: double)
+    allow(K8::Helm::Client).to receive(:connect).and_return(helm)
+    expect(helm).not_to receive(:add_repo)
+    expect(helm).to receive(:install).with(
+      "traffic-manager", "oci://ghcr.io/telepresenceio/telepresence-oss", chart_version,
+      values: {}, namespace: "canine-system", create_namespace: true
+    )
+
+    package.installer.install!(kubectl)
+  end
 end
