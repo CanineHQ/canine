@@ -15,7 +15,7 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-      curl libjemalloc2 libvips postgresql-client \
+      curl imagemagick libjemalloc2 postgresql-client \
       build-essential git libpq-dev pkg-config \
       ca-certificates gnupg && \
     curl -k -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/${TARGETARCH}/kubectl && \
