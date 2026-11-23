@@ -27,7 +27,7 @@
 
   <main>
     <!-- Hero -->
-    <div class="relative isolate">
+    <div id="authorize-a-device" class="relative isolate">
       <div class="absolute inset-x-0 top-10 -z-10 flex transform-gpu justify-center overflow-hidden blur-3xl" aria-hidden="true">
         <div class="aspect-[1108/632] w-[69.25rem] flex-none bg-gradient-to-r from-[#0ea5e9] to-[#22d3ee] opacity-20" style="clip-path: polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)"></div>
       </div>
@@ -45,13 +45,24 @@
             Deploy the internal tools and vibe-coded apps your team builds to your own cluster, with no public address.
             Authorized devices connect to them over a secure private network.
           </p>
-          <div class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
-            <a href="<%= new_user_registration_path %>" class="rounded-md bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition">
-              Get Started
-            </a>
-            <a href="#authorize-a-device" class="text-sm font-semibold text-white hover:text-sky-400 transition">
-              Authorize a device <span aria-hidden="true">→</span>
-            </a>
+          <div class="mt-10">
+            <div class="flex flex-wrap items-center justify-center gap-4">
+              <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition" do %>
+                <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+                Download for Apple Silicon
+              <% end %>
+              <%= link_to CanineConnectRelease.download_url("x86_64"), class: "inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/10 transition" do %>
+                <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
+                Download for Intel
+              <% end %>
+            </div>
+            <p class="mt-4 text-sm text-gray-400">
+              The Mac app that authorizes a device. macOS 13 or later.
+            </p>
+            <p class="mt-2 text-sm text-gray-400">
+              New to Canine?
+              <a href="<%= new_user_registration_path %>" class="font-semibold text-white hover:text-sky-400 transition">Get started <span aria-hidden="true">→</span></a>
+            </p>
           </div>
         </div>
       </div>
@@ -115,31 +126,6 @@
             <p class="text-gray-400 text-sm leading-relaxed"><%= text %></p>
           </div>
         <% end %>
-      </div>
-    </div>
-
-    <!-- Install -->
-    <div id="authorize-a-device" class="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-      <div class="mx-auto max-w-2xl text-center mb-10" data-aos="fade-up">
-        <h2 class="text-base font-semibold leading-7 text-sky-400"><a href="#authorize-a-device" class="hover:underline underline-offset-4">Authorize a device</a></h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Install the Mac app and sign in</p>
-        <p class="mt-4 text-gray-400">
-          Unzip it, open it, and sign in with your Canine account. It works with Canine Cloud and with a Canine you
-          host yourself.
-        </p>
-      </div>
-      <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <%= link_to CanineConnectRelease.download_url("arm64"), class: "inline-flex items-center gap-2 rounded-md bg-sky-500 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-sky-400 transition" do %>
-            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
-            Download for Apple Silicon
-          <% end %>
-          <%= link_to CanineConnectRelease.download_url("x86_64"), class: "inline-flex items-center gap-2 rounded-md px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/10 transition" do %>
-            <iconify-icon icon="mdi:apple" height="18"></iconify-icon>
-            Download for Intel
-          <% end %>
-        </div>
-        <p class="mt-4 text-sm text-gray-400">macOS 13 or later</p>
       </div>
     </div>
 
