@@ -29,6 +29,10 @@ module Canine
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.2
 
+    # Images are resized with ImageMagick. Rails 7.2.4 refuses to boot when ruby-vips is installed next to a libvips
+    # older than 8.13, which is what Ubuntu 22.04 ships, so the bundle doesn't include ruby-vips.
+    config.active_storage.variant_processor = :mini_magick
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
