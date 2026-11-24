@@ -46,6 +46,16 @@ module Canine
     config.autoload_paths << Rails.root.join("lib")
     config.eager_load_paths << Rails.root.join("lib")
 
+    # Cluster credentials are encrypted at rest. The keys default to ones derived from the secret key base so an
+    # existing install needs no new configuration; set the ACTIVE_RECORD_ENCRYPTION_* variables to manage them separately.
+    initializer "canine.active_record_encryption_keys", before: "active_record_encryption.configuration" do |app|
+      encryption = app.config.active_record.encryption
+      %i[primary_key deterministic_key key_derivation_salt].each do |name|
+        encryption[name] ||= ENV["ACTIVE_RECORD_ENCRYPTION_#{name.to_s.upcase}"].presence ||
+          app.key_generator.generate_key("active_record_encryption.#{name}", 32).unpack1("H*")
+      end
+    end
+
     require_relative "../lib/agent_computer_proxy"
     config.middleware.insert_after Warden::Manager, AgentComputerProxy
 

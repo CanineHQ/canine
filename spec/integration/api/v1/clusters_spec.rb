@@ -38,7 +38,8 @@ RSpec.describe Api::V1::ClustersController, :swagger, type: :request do
       response(200, 'successful') do
         schema type: :object,
                properties: {
-                 kubeconfig: { type: :object, description: 'Kubernetes configuration object' }
+                 kubeconfig: { type: :object, description: 'Kubernetes configuration object' },
+                 expires_at: { type: :string, format: 'date-time', nullable: true, description: 'When the credentials in the kubeconfig stop working, if they expire. Fetch a new kubeconfig before then.' }
                },
                required: %w[kubeconfig]
         run_test!

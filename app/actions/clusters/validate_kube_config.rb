@@ -2,6 +2,8 @@ class Clusters::ValidateKubeConfig
   extend LightService::Action
   expects :cluster, :user
 
+  CONNECT_TIMEOUT = 15.seconds
+
   executed do |context|
     # Validate structure first
     connection = K8::Connection.new(context.cluster, context.user)
@@ -19,8 +21,14 @@ class Clusters::ValidateKubeConfig
   end
 
   def self.can_connect?(connection)
-    client = K8::Client.new(connection)
-    client.can_connect?
+    # Bounded, because this runs inside a web request against an address someone typed in.
+    Timeout.timeout(CONNECT_TIMEOUT) { K8::Client.new(connection).can_connect? }
+  rescue Timeout::Error
+    false
+  rescue StandardError => e
+    # A kubeconfig that cannot even build a client (an unreadable certificate, a missing context) cannot connect.
+    Rails.logger.warn("Could not build a Kubernetes client: #{e.class} - #{e.message}")
+    false
   end
 
   def self.valid_kubeconfig_structure?(kubeconfig_json)

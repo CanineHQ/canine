@@ -18,6 +18,11 @@
   <div aria-label="Badge" class="badge badge-<%= badge_color %> font-medium capitalize">
     <%= cluster.status %>
   </div>
+  <% if cluster.running? && cluster.unreachable_since.present? %>
+    <div aria-label="Badge" class="badge badge-error font-medium" title="Canine has not been able to reach this cluster since <%= cluster.unreachable_since.to_fs(:long) %>">
+      Unreachable for <%= time_ago_in_words(cluster.unreachable_since) %>
+    </div>
+  <% end %>
   <% if cluster.status == "failed" %>
     <div>
       <%= button_to "Retry installation", retry_install_cluster_path(cluster), class: "btn btn-primary btn-outline btn-xs" %>

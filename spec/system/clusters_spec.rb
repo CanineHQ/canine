@@ -93,6 +93,8 @@ RSpec.describe "Clusters", type: :system do
 
     before do
       allow(Clusters::InstallJob).to receive(:perform_later)
+      allow(K8::ManagerServiceAccount).to receive(:full_access?).and_return(true)
+      allow_any_instance_of(K8::ManagerServiceAccount).to receive(:install!).and_return(server_url: "https://example.com", service_account_token: "manager-token")
     end
 
     it "creates a new external k3s cluster" do

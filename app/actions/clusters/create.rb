@@ -9,6 +9,7 @@ class Clusters::Create
     ).reduce(
       Clusters::ParseParams,
       Clusters::ValidateKubeConfig,
+      Clusters::BootstrapServiceAccount,
       Clusters::Save,
     )
   end

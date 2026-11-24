@@ -1,0 +1,18 @@
+<div class="card card-bordered bg-base-100">
+  <div class="card-body space-y-4">
+    <h6 class="text-xl font-bold">Connect this cluster</h6>
+    <p class="text-sm text-gray-500">
+      Run this where <code>kubectl</code> already works against the cluster, with cluster-admin access. It creates a
+      <code>canine-manager</code> service account and sends Canine that account's token. Your own credentials stay on your machine.
+      The cluster's API server has to be reachable from Canine.
+    </p>
+    <% command = "curl -fsSL #{cluster_registration_url(cluster.generate_token_for(:registration))} | sh" %>
+    <div class="bg-base-200 rounded-lg p-4">
+      <code class="registration-command block cursor-pointer text-sm font-mono whitespace-pre-wrap break-all" title="Click to copy" data-controller="clipboard" data-clipboard-text="<%= command %>"><%= command %></code>
+    </div>
+    <p class="text-sm text-gray-500">
+      The command is valid for 24 hours; reload this page for a new one. This page updates once the cluster connects.
+      Alternatively, <%= link_to "import a kubeconfig", edit_cluster_path(cluster), class: "link link-primary" %>.
+    </p>
+  </div>
+</div>

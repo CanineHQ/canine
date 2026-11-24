@@ -1,0 +1,38 @@
+#!/bin/sh
+# Connects the cluster your kubectl currently points at to Canine as "<%= cluster.name %>".
+# It creates a service account for Canine and sends Canine that account's token. Your own
+# credentials never leave this machine.
+set -eu
+
+command -v kubectl >/dev/null 2>&1 || { echo "kubectl is required" >&2; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "curl is required" >&2; exit 1; }
+
+echo "Connecting $(kubectl config current-context) to Canine as <%= cluster.name %>..."
+
+kubectl apply -f - <<'CANINE_MANIFEST'
+<%= to_yaml %>
+CANINE_MANIFEST
+
+BINDING_UID=$(kubectl get clusterrolebinding <%= service_account_name %> -o jsonpath='{.metadata.uid}')
+# The binding owns the service account, so removing the binding later removes Canine's access completely.
+kubectl patch serviceaccount <%= service_account_name %> -n <%= namespace %> --type=merge \
+  -p "{\"metadata\":{\"ownerReferences\":[{\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"kind\":\"ClusterRoleBinding\",\"name\":\"<%= service_account_name %>\",\"uid\":\"$BINDING_UID\"}]}}" >/dev/null
+
+TOKEN=""
+ATTEMPTS=0
+while [ -z "$TOKEN" ] && [ "$ATTEMPTS" -lt 30 ]; do
+  TOKEN=$(kubectl get secret <%= token_secret_name %> -n <%= namespace %> -o jsonpath='{.data.token}' 2>/dev/null || true)
+  ATTEMPTS=$((ATTEMPTS + 1))
+  [ -n "$TOKEN" ] || sleep 1
+done
+[ -n "$TOKEN" ] || { echo "The cluster did not issue a token for the <%= service_account_name %> service account" >&2; exit 1; }
+
+SERVER=$(kubectl config view --minify --flatten -o jsonpath='{.clusters[0].cluster.server}')
+CA=$(kubectl config view --minify --flatten -o jsonpath='{.clusters[0].cluster.certificate-authority-data}')
+
+RESPONSE=$(curl -sS -w '\n%{http_code}' -X POST '<%= callback_url %>' \
+  --data-urlencode "server_url=$SERVER" \
+  --data-urlencode "certificate_authority_data=$CA" \
+  --data-urlencode "service_account_token=$TOKEN")
+printf '%s\n' "$RESPONSE" | sed '$d'
+[ "$(printf '%s' "$RESPONSE" | tail -n 1)" = "200" ] || exit 1

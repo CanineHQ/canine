@@ -2,49 +2,53 @@
 
 <%= cluster_layout(@cluster) do %>
   <div id="<%= dom_id @cluster %>">
-    <div class="grid grid-cols-2 gap-4">
-      <%= link_to download_kubeconfig_cluster_path(@cluster), class: "btn btn-sm btn-outline", target: "_blank" do %>
-        <div class="flex items-center gap-2">
-          Download Kubeconfig File
-        </div>
-      <% end %>
-      <button class="btn btn-sm btn-outline" onclick="export_yaml_modal.showModal()">
-        <div class="flex items-center gap-2">
-          Download All YAML Files
-        </div>
-      </button>
-    </div>
-
-    <div class="mt-4">
-      <h6 class="text-xl font-bold">Configuration</h6>
-      <div class="mb-4">
-        <%= render(
-          "shared/partials/async_renderer",
-          view_model: Async::K8::ConfigurationViewModel.new(
-            current_user,
-            cluster_id: @cluster.id
-          )
-        ) %>
-      </div>
-    </div>
-
-    <% if @cluster.projects.any? %>
-      <h4 class="mt-4 text-2xl font-bold">Projects</h4>
-      <hr class="mt-2 mb-6 border-base-content/10" />
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <% @cluster.projects.each do |project| %>
-          <%= render project %>
+    <% if @cluster.registration_pending? %>
+      <%= render "clusters/registration", cluster: @cluster %>
+    <% else %>
+      <div class="grid grid-cols-2 gap-4">
+        <%= link_to download_kubeconfig_cluster_path(@cluster), class: "btn btn-sm btn-outline", target: "_blank" do %>
+          <div class="flex items-center gap-2">
+            Download Kubeconfig File
+          </div>
         <% end %>
+        <button class="btn btn-sm btn-outline" onclick="export_yaml_modal.showModal()">
+          <div class="flex items-center gap-2">
+            Download All YAML Files
+          </div>
+        </button>
       </div>
-    <% end %>
-    <% if @cluster.add_ons.any? %>
-      <h4 class="mt-4 text-2xl font-bold">Add Ons</h4>
-      <hr class="mt-2 mb-6 border-base-content/10" />
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-      <% @cluster.add_ons.each do |add_on| %>
-        <%= render add_on %>
+
+      <div class="mt-4">
+        <h6 class="text-xl font-bold">Configuration</h6>
+        <div class="mb-4">
+          <%= render(
+            "shared/partials/async_renderer",
+            view_model: Async::K8::ConfigurationViewModel.new(
+              current_user,
+              cluster_id: @cluster.id
+            )
+          ) %>
+        </div>
+      </div>
+
+      <% if @cluster.projects.any? %>
+        <h4 class="mt-4 text-2xl font-bold">Projects</h4>
+        <hr class="mt-2 mb-6 border-base-content/10" />
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <% @cluster.projects.each do |project| %>
+            <%= render project %>
+          <% end %>
+        </div>
       <% end %>
-      </div>
+      <% if @cluster.add_ons.any? %>
+        <h4 class="mt-4 text-2xl font-bold">Add Ons</h4>
+        <hr class="mt-2 mb-6 border-base-content/10" />
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <% @cluster.add_ons.each do |add_on| %>
+          <%= render add_on %>
+        <% end %>
+        </div>
+      <% end %>
     <% end %>
     <h6 class="mt-4 text-xl font-bold">Install Logs</h6>
     <div class="collapse">

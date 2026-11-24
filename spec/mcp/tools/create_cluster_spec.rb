@@ -20,6 +20,7 @@ RSpec.describe Tools::CreateCluster do
     create(:account_user, account: account, user: user)
 
     allow(Clusters::ValidateKubeConfig).to receive(:execute)
+    allow(Clusters::BootstrapServiceAccount).to receive(:execute)
     allow(Clusters::InstallJob).to receive(:perform_later)
 
     response = described_class.call(
