@@ -5,6 +5,8 @@
     <button type="button" data-action="agent-computers--lightbox#open" data-lightbox-id="<%= action.id %>" class="block w-full">
       <%= image_tag rails_representation_path(action.screenshot.variant(:medium)), class: "rounded border border-base-content/10 w-full agent-fade hover:border-primary" %>
     </button>
+    <%# A new element (new id) with each screenshot, so the open lightbox notices it and adds it %>
+    <span id="latest_shot_<%= action.id %>" data-agent-computers--lightbox-target="latest" hidden></span>
     <div class="text-xs text-base-content/50 mt-1"><%= action.screenshot_moment %> <span class="font-mono"><%= action.label %></span></div>
   <% else %>
     <div class="rounded border border-dashed border-base-content/20 aspect-video flex items-center justify-center text-sm text-base-content/40">No screenshots yet</div>

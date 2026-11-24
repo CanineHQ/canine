@@ -1,8 +1,11 @@
 module AgentTasksHelper
-  # A schedule in words, as services describe cron jobs ("Runs every hour of every day")
+  # A schedule in words, as services describe cron jobs ("Runs every hour of every day"). A task composed to run now
+  # has none. (Cron2English's ParseException is an Exception, not a StandardError.)
   def schedule_in_words(schedule)
+    return "Runs once, when started" if schedule.blank?
+
     "Runs #{Cron2English.parse(schedule).join(" ")}"
-  rescue StandardError
+  rescue StandardError, Cron2English::ParseException
     schedule
   end
 

@@ -51,7 +51,7 @@
                     <td>
                       <div class="inline-flex w-fit gap-1">
                         <% if computer.running? %>
-                          <%= link_to connect_agent_computer_path(computer), aria: { label: "Open desktop" }, class: "btn btn-square btn-ghost btn-sm", title: "Open desktop" do %>
+                          <%= link_to connect_agent_computer_path(computer), target: "_blank", rel: "noopener", aria: { label: "Open desktop" }, class: "btn btn-square btn-ghost btn-sm", title: "Open desktop" do %>
                             <iconify-icon icon="lucide:monitor" height="15" class="text-base-content/70"></iconify-icon>
                           <% end %>
                         <% end %>

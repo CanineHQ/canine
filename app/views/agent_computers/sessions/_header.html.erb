@@ -22,8 +22,14 @@
       <% end %>
     </div>
   </div>
+  <%= render "agent_computers/sessions/question", session: session %>
   <% if session.active? %>
     <%= button_to "Cancel", cancel_agent_computer_agent_session_path(session.agent_computer, session), class: "btn btn-ghost btn-sm text-error",
       form: { data: { turbo_confirm: "Stop this session?" } } %>
+  <% else %>
+    <%= button_to run_now_agent_computer_agent_task_path(session.agent_computer, session.task), class: "btn btn-primary btn-sm" do %>
+      <iconify-icon icon="lucide:rotate-ccw" height="14"></iconify-icon>
+      Run again
+    <% end %>
   <% end %>
 </div>

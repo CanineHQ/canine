@@ -1,6 +1,9 @@
 <% colors = { "queued" => "badge-ghost", "running" => "badge-info", "waiting_for_tool" => "badge-info",
-              "succeeded" => "badge-success", "failed" => "badge-error", "cancelled" => "badge-ghost" } %>
-<span class="badge badge-sm <%= colors[session.status] %> gap-1">
+              "succeeded" => "badge-success", "failed" => "badge-error", "cancelled" => "badge-ghost",
+              "waiting_for_person" => "badge-warning" } %>
+<%# A run that ended but didn't get it all done (the model's finish outcome) shows that instead of "succeeded" %>
+<% color = session.succeeded? && (session.outcome_partly_done? || session.outcome_blocked?) ? "badge-warning" : colors[session.status] %>
+<span class="badge badge-sm <%= color %> gap-1">
   <% if session.running? || session.waiting_for_tool? %><span class="loading loading-spinner loading-xs"></span><% end %>
   <%= agent_session_status_label(session) %>
 </span>

@@ -15,6 +15,11 @@ import os
 import struct
 
 TRUNCATE = 60
+POINT = 24  # the size of the box marking a click at a point (pixels of the model's screenshot)
+# The size the model's screenshots are scaled to (browse.py passes it to browser-use). The model clicks at points on
+# that image, and browser-use maps them onto the page in proportion; without it, they'd be taken as CSS pixels while
+# the model sees device pixels, missing by the display's scale (by 25% at 1.25).
+LLM_SCREENSHOT_SIZE = (1400, 850)
 
 # Actions on an element worth showing after the step when it wasn't on the screenshot before
 SHOWN_AFTER = {"click", "input", "select_dropdown", "upload_file"}
@@ -41,7 +46,7 @@ def plan(state, output):
         for name, params in action.model_dump(exclude_none=True).items():
             params = params if isinstance(params, dict) else {}
             node = selector_map.get(params.get("index")) if params.get("index") is not None else None
-            rect = _rect(getattr(node, "absolute_position", None), ratio)
+            rect = _rect(getattr(node, "absolute_position", None), ratio) or _point(params, size)
             planned.append({"did": describe(name, params, node), "rect": rect if _on(rect, size) else None,
                             "action": name, "node": node, "ratio": ratio})
     return planned
@@ -61,15 +66,45 @@ async def after(browser, planned):
 
 
 async def _after(browser, missing):
+    """Each element is found on either side of the screenshot, and marked only where it was both times: a page still
+    moving after the step (Amazon's Add to cart opens its cart panel and swaps the button for a stepper) would
+    otherwise get a box where the element ended up, not where the screenshot shows it."""
+    before = [await _locate(browser, p) for p in missing]
     screenshot = base64.b64encode(await browser.take_screenshot()).decode()
     size = _png_size(screenshot)
     marks = []
-    for p in missing:
-        session = await browser.get_or_create_cdp_session(p["node"].target_id, focus=False)
-        rect = _rect(await browser.get_element_coordinates(p["node"].backend_node_id, session), p["ratio"])
-        if _on(rect, size):
+    for p, rect in zip(missing, before):
+        if _on(rect, size) and _same(rect, await _locate(browser, p)):
             marks.append({"did": p["did"], "rect": rect})
     return (screenshot, marks) if marks else None
+
+
+async def _locate(browser, p):
+    session = await browser.get_or_create_cdp_session(p["node"].target_id, focus=False)
+    return _rect(await browser.get_element_coordinates(p["node"].backend_node_id, session), p["ratio"])
+
+
+def _same(a, b, tolerance=4):
+    """Whether two rects are the same place, give or take a few pixels of rounding."""
+    return a is not None and b is not None and all(abs(x - y) <= tolerance for x, y in zip(a, b))
+
+
+def check_clicks(planned, results):
+    """Moves a click's mark to where browser-use actually clicked, when that's not on the element planned (`results`:
+    the step's ActionResults, in the same order as its actions, a click's with click_x/click_y in viewport CSS pixels).
+    The element and its place come from the page as the model saw it, which can be out of date by the time of the click:
+    on a GitHub dialog still opening, the button clicked was listed under a toolbar tooltip's name ("Heading"), in the
+    wrong place. The name goes too, as it was the wrong element's."""
+    for p, result in zip(planned, results):
+        metadata = getattr(result, "metadata", None) or {}
+        x, y = metadata.get("click_x"), metadata.get("click_y")
+        if p["action"] != "click" or p["rect"] is None or x is None or y is None:
+            continue  # an element that was off the screenshot is found again after the step (`after`)
+        point = [x * p["ratio"], y * p["ratio"]]
+        left, top, width, height = p["rect"]
+        if not (left <= point[0] <= left + width and top <= point[1] <= top + height):
+            p["rect"] = [round(point[0] - POINT / 2), round(point[1] - POINT / 2), POINT, POINT]
+            p["did"] = "Clicked here"
 
 
 def draw(screenshot, marks):
@@ -89,6 +124,8 @@ def describe(name, params, node=None):
     """One action as a short past-tense sentence."""
     target = _quoted(element_name(node)) or "an element"
     if name == "click":
+        if node is None and params.get("coordinate_x") is not None:
+            return f"Clicked at ({params['coordinate_x']}, {params['coordinate_y']})"
         return f"Clicked {target}"
     if name == "input":
         secret = node is not None and (node.attributes or {}).get("type") == "password"
@@ -163,6 +200,16 @@ def _png_size(screenshot):
         return struct.unpack(">II", header[16:24]) if header[:8] == b"\x89PNG\r\n\x1a\n" else None
     except Exception:
         return None
+
+
+def _point(params, size):
+    """A small box round a click at a point (on the model's LLM_SCREENSHOT_SIZE image) as [x, y, width, height] on a
+    screenshot of `size`, for an action without an element"""
+    x, y = params.get("coordinate_x"), params.get("coordinate_y")
+    if x is None or y is None or not size:
+        return None
+    scale_x, scale_y = size[0] / LLM_SCREENSHOT_SIZE[0], size[1] / LLM_SCREENSHOT_SIZE[1]
+    return [round(x * scale_x - POINT / 2), round(y * scale_y - POINT / 2), POINT, POINT]
 
 
 def _rect(position, ratio):

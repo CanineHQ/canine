@@ -1,0 +1,26 @@
+<%# The compose box's workspace picker (posts/_compose): each workspace with what's open on it. Picking one runs the
+    task there, keeping what's open (Session#claim_workspace!). %>
+<turbo-frame id="agent_computer_workspaces">
+  <% if @error || @workspaces.nil? %>
+    <li class="menu-disabled"><span class="text-xs"><%= @error ? "Couldn't reach the computer: #{@error}" : "The computer isn't running." %></span></li>
+  <% else %>
+    <% @workspaces.each do |w| %>
+      <% number = w["workspace"] %>
+      <% windows = w["windows"].to_a %>
+      <% busy = @taken.include?(number) %>
+      <li class="<%= "menu-disabled" if busy %>">
+        <a data-workspace="<%= number %>" data-label="Workspace <%= number %>"
+           data-action="<%= "agent-computers--compose#chooseWorkspace" unless busy %>" class="flex flex-col items-start gap-0">
+          <span class="font-medium">
+            Workspace <%= number %>
+            <% if w["visible"] %><span class="text-xs font-normal text-base-content/50">· on screen</span><% end %>
+            <% if busy %><span class="text-xs font-normal text-base-content/50">· a run is using it</span><% end %>
+          </span>
+          <span class="w-full truncate text-xs text-base-content/50">
+            <%= windows.any? ? windows.map { |win| win["title"].presence || win["app"] }.join(" · ") : "empty" %>
+          </span>
+        </a>
+      </li>
+    <% end %>
+  <% end %>
+</turbo-frame>

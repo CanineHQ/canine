@@ -12,6 +12,7 @@ module AgentComputers
     def perform(agent_computer)
       agent_computer.starting!
       kubectl = K8::Kubectl.new(K8::Connection.new(agent_computer.cluster, agent_computer.user))
+      Precheck.new(agent_computer, kubectl).run! # (a node may have gone, or filled up, since it last ran)
       patch = { spec: { runStrategy: "Always", template: { spec: { domain: { memory: { guest: agent_computer.memory } } } } } }
       kubectl.(%W[patch vm #{agent_computer.name} -n #{agent_computer.namespace} --type merge -p #{patch.to_json}])
 
@@ -25,6 +26,8 @@ module AgentComputers
         sleep POLL_INTERVAL
       end
       raise "Agent computer desktop wasn't back within #{TIMEOUT.inspect}"
+    rescue Precheck::Failed => e
+      agent_computer.fail!(e)
     rescue StandardError => e
       agent_computer.fail!(e)
       Rails.logger.error("Failed to start agent computer #{agent_computer.id}: #{e.message}")
@@ -37,6 +40,7 @@ module AgentComputers
     # they're written
     def started(agent_computer)
       agent_computer.running!
+      agent_computer.start_queued_sessions
       AgentComputers::Turn.refresh(agent_computer) if AgentComputers::Turn.configured?
     rescue AgentComputers::Turn::Error, AgentComputers::GuestShell::Error => e
       Rails.logger.warn("Couldn't refresh TURN credentials on #{agent_computer.name}: #{e.message}") # RefreshTurnJob tries again

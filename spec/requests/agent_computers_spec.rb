@@ -40,8 +40,10 @@ RSpec.describe "Agent computers", type: :request do
     get agent_computers_path
     expect(response.body).to include("mine", ours.name, "New Computer")
 
-    patch agent_computer_path(computer), params: { agent_computer: { name: "moved", cluster_id: others.id, coding_agent: "pi" } }
-    expect(computer.reload).to have_attributes(name: "desk", cluster: computer.cluster, coding_agent: "pi")
+    patch agent_computer_path(computer), params: { agent_computer: { name: "moved", cluster_id: others.id, coding_agent: "pi", screen_model: "anthropic/claude-sonnet-5.5" } }
+    expect(computer.reload).to have_attributes(name: "desk", cluster: computer.cluster, coding_agent: "pi", screen_model: "anthropic/claude-sonnet-5.5")
+    get edit_agent_computer_path(computer)
+    expect(response.body).to include("Screen model", "Claude Sonnet 5.5")
   end
 
   it "reserves the memory picked, recommending 8Gi, and applies a change on the next start" do

@@ -21,12 +21,15 @@ module AgentSessions
     private
 
     def turn(session, attempt)
-      return unless session.active? && !session.waiting_for_tool?
+      return unless session.active? && !session.paused?
       limit = AgentLoop::Policy.limit_reached(session)
       return session.finish!(:failed, error: limit) if limit
 
       key = session.agent_computer.account.agent_provider_keys.find_by(provider: "openrouter")
       return session.finish!(:failed, error: "Add an OpenRouter key in Agent settings first.") unless key
+      # Started while the computer was off: it waits, queued, and the computer starts it once it's back up
+      # (AgentComputer#start_queued_sessions)
+      return if session.workspace.nil? && !session.agent_computer.running?
       # Before the first turn, so the system prompt can say where its windows open (and that workspace starts empty).
       # Runs go side by side, each on its own; with none free, this one waits, queued
       return self.class.set(wait: RETRY_FOR_WORKSPACE).perform_later(session) unless session.claim_workspace!
@@ -34,6 +37,7 @@ module AgentSessions
       case AgentLoop::Turn.new(session, key).run
       when :continue then self.class.perform_later(session)
       when :waiting_for_tool then session.waiting_for_tool!
+      when :waiting_for_person then session.wait_for_person!
       end
     rescue Llm::OpenRouter::Error, AgentComputers::PortForward::Error, AgentComputers::ComputerUse::Error => e
       # A provider hiccup, or the computer out of reach (the tunnel's opened, and the workspace claimed, before the turn

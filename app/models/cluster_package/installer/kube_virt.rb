@@ -19,8 +19,8 @@ class ClusterPackage::Installer::KubeVirt < ClusterPackage::Installer::Base
       MANIFESTS.each { |url| kubectl.(%W[apply -f #{url}]) }
       package.update!(config: package.config.merge("installed_by_canine" => true))
       cluster.info("Waiting for KubeVirt and CDI to become available...", color: :yellow)
-      kubectl.(%w[wait kubevirt/kubevirt -n kubevirt --for=condition=Available --timeout=10m])
-      kubectl.(%w[wait cdi/cdi --for=condition=Available --timeout=10m])
+      wait_available!(kubectl, %w[kubevirt/kubevirt -n kubevirt], "KubeVirt", "kubevirt")
+      wait_available!(kubectl, %w[cdi/cdi], "CDI", "cdi")
     end
 
     ensure_kvm!(kubectl)
@@ -46,12 +46,24 @@ class ClusterPackage::Installer::KubeVirt < ClusterPackage::Installer::Base
     false
   end
 
+  # kubectl's own timeout error ("Command `kubectl wait ...` failed with exit code 1: error: timed out waiting for the
+  # condition on kubevirts/kubevirt") said nothing about what to do
+  def wait_available!(kubectl, resource, name, namespace)
+    kubectl.(%w[wait] + resource + %w[--for=condition=Available --timeout=10m])
+  rescue Cli::CommandFailedError
+    raise "#{name} didn't come up within 10 minutes. Its pods are probably failing to start: check them with " \
+          "kubectl get pods -n #{namespace}, then install the package again."
+  end
+
   # KubeVirt advertises KVM as a node resource; without it VMs would fall back to (very slow) emulation or not start
   def ensure_kvm!(kubectl)
     kvm = output_reader(kubectl).(%w[get nodes -o jsonpath={.items[*].status.allocatable.devices\.kubevirt\.io/kvm}]).split
     return if kvm.any? { |count| count.to_i.positive? || count.end_with?("k") }
 
-    raise "No node in this cluster exposes KVM (/dev/kvm). Agent computers need bare-metal nodes or VMs with nested virtualization."
+    raise "KubeVirt is installed, but none of this cluster's nodes can run VMs: none exposes KVM (/dev/kvm).\n" \
+          "- On your own machine or a bare-metal server: turn on virtualization (Intel VT-x or AMD-V) in the BIOS, " \
+          "and check the kvm module is loaded (lsmod | grep kvm).\n" \
+          "- On a cloud VM: use an instance type with nested virtualization (or a bare-metal one), and turn it on."
   end
 
   # The install job's kubectl logs output to the cluster and returns the exit status, so reads need their own

@@ -1,6 +1,6 @@
 class AgentComputersController < ApplicationController
   include AgentComputers::FeatureGate
-  before_action :set_agent_computer, only: %i[show edit update destroy connect stats stop start]
+  before_action :set_agent_computer, only: %i[show edit update destroy connect stats workspaces stop start]
   before_action :require_running, only: %i[connect]
 
   def index
@@ -78,6 +78,18 @@ class AgentComputersController < ApplicationController
     render layout: false
   end
 
+  # The computer's workspaces and what's open on each, for the compose box's workspace picker (lazy-loaded when it opens)
+  def workspaces
+    if @agent_computer.running?
+      @workspaces = @agent_computer.computer_use.workspaces["workspaces"].select { |w| w["workspace"].between?(1, 10) }
+      @taken = @agent_computer.sessions.active.where.not(workspace: nil).pluck(:workspace)
+    end
+    render layout: false
+  rescue AgentComputers::ComputerUse::Error => e
+    @error = e.message
+    render layout: false
+  end
+
   private
 
   def require_running
@@ -95,11 +107,12 @@ class AgentComputersController < ApplicationController
 
   # What can change after create: a computer's name and cluster are fixed (its namespace and VM live there)
   def model_params
-    params.require(:agent_computer).permit(:planning_model, :browse_model, :coding_model, :coding_agent, :memory)
+    params.require(:agent_computer).permit(:planning_model, :browse_model, :screen_model, :coding_model, :coding_agent, :memory, :long_term_memory)
   end
 
   # A booted VM keeps the memory it started with; StartJob applies the new size
   def update_notice
+    return "Long-term memory saved." if @agent_computer.saved_change_to_long_term_memory?
     return "Settings saved." unless @agent_computer.saved_change_to_memory?
     return "Memory set to #{@agent_computer.memory}." if @agent_computer.stopped?
 

@@ -1,0 +1,14 @@
+<%# Enter sends, Shift+Enter is a new line %>
+<%= form_with url: agent_computer_agent_post_comments_path(post.agent_computer, post), id: dom_id(post, :comment_form),
+      class: "flex items-start gap-2" do %>
+  <div class="avatar shrink-0"><div class="mask mask-squircle h-8 w-8"><%= image_tag avatar_path(local_assigns.fetch(:viewer) { current_user }, size: 64), alt: "" %></div></div>
+  <div class="flex min-w-0 flex-1 items-end rounded-2xl bg-base-200 pl-4 pr-1 focus-within:ring-1 focus-within:ring-base-content/20">
+    <%= text_area_tag :body, nil, rows: 1, required: true, spellcheck: false, autocorrect: "off", autocapitalize: "off",
+          data: { controller: "textarea-autogrow", action: "keydown->agent-computers--post#send" },
+          placeholder: "Ask for something about this…",
+          class: "min-h-0 flex-1 resize-none border-0 bg-transparent px-0 py-2 text-sm leading-5 placeholder:text-base-content/40 focus:border-0 focus:outline-none focus:ring-0" %>
+    <%= button_tag type: "submit", class: "btn btn-circle btn-ghost btn-sm my-0.5 text-base-content/60", aria: { label: "Send" } do %>
+      <iconify-icon icon="lucide:send-horizontal" height="16"></iconify-icon>
+    <% end %>
+  </div>
+<% end %>
