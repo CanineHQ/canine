@@ -8,6 +8,6 @@ sudo curl -fsSLo get_helm.sh https://raw.githubusercontent.com/helm/helm/main/sc
 sudo chmod a+x get_helm.sh
 sudo ./get_helm.sh
 
-# Install telepresence
+# Install telepresence (must match the telepresence chart_version in resources/helm/system_packages.yml)
 sudo curl -fL https://app.getambassador.io/download/tel2oss/releases/download/v2.21.1/telepresence-linux-amd64 -o /usr/local/bin/telepresence
 sudo chmod a+x /usr/local/bin/telepresence

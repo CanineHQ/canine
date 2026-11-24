@@ -1,0 +1,39 @@
+<%# Connecting with the Telepresence CLI directly. `cluster` (optional) adds its kubeconfig download button. %>
+<% cluster = local_assigns[:cluster] %>
+<% version = CanineConnectRelease.telepresence_version %>
+<% connect_command = "telepresence connect --kubeconfig /path/to/kubeconfig.yml --manager-namespace #{Clusters::Install::DEFAULT_NAMESPACE}" %>
+
+<ol class="space-y-4 text-sm">
+  <li class="space-y-1">
+    <div class="font-medium">1. Install the Telepresence CLI</div>
+    <p class="text-base-content/70">
+      Use version <span class="font-mono"><%= version %></span> to match the Traffic Manager Canine installs.
+      <a class="link" href="https://telepresence.io/docs/install/client" target="_blank" rel="noopener">Install instructions</a>
+    </p>
+  </li>
+  <li class="space-y-1">
+    <div class="font-medium">2. Download the cluster's kubeconfig</div>
+    <% if cluster %>
+      <%= link_to download_kubeconfig_cluster_path(cluster), class: "btn btn-sm btn-outline", target: "_blank" do %>
+        <iconify-icon icon="lucide:download" height="14"></iconify-icon>
+        Download kubeconfig for <%= cluster.name %>
+      <% end %>
+    <% else %>
+      <p class="text-base-content/70">From the cluster's page in Canine.</p>
+    <% end %>
+  </li>
+  <li class="space-y-2">
+    <div class="font-medium">3. Connect</div>
+    <div class="flex items-start gap-2 rounded-lg bg-base-300 p-3">
+      <code class="flex-1 [overflow-wrap:anywhere] font-mono text-xs leading-relaxed">$ <%= connect_command %></code>
+      <button type="button" class="btn btn-ghost btn-xs btn-square shrink-0" title="Copy" data-controller="clipboard" data-clipboard-text="<%= connect_command %>">
+        <iconify-icon icon="lucide:copy" height="14"></iconify-icon>
+      </button>
+    </div>
+    <p class="text-xs text-base-content/50">
+      <span class="font-mono">--manager-namespace</span> is needed because Canine installs the Traffic Manager in
+      <span class="font-mono"><%= Clusters::Install::DEFAULT_NAMESPACE %></span>. Run
+      <span class="font-mono">telepresence quit</span> to disconnect.
+    </p>
+  </li>
+</ol>

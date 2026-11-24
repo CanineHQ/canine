@@ -50,8 +50,11 @@ class ClusterPackage::Installer::Base
     namespace = Clusters::Install::DEFAULT_NAMESPACE
     helm = build_helm(kubectl)
 
-    helm.add_repo(definition["repo_name"], definition["repo_url"])
-    helm.repo_update(repo_name: definition["repo_name"])
+    # OCI charts (oci://...) are pulled directly and have no repo to add
+    if definition["repo_url"].present?
+      helm.add_repo(definition["repo_name"], definition["repo_url"])
+      helm.repo_update(repo_name: definition["repo_name"])
+    end
 
     values = build_values
 

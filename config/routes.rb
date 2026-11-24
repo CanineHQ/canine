@@ -169,6 +169,7 @@ Rails.application.routes.draw do
   resource :email_preference, only: %i[show update]
   resources :providers, only: %i[index new create edit update destroy]
   resources :api_tokens, only: %i[index new create destroy]
+  get "/canine_connect", to: "canine_connect#show", as: :canine_connect
   resources :shell_sessions, only: %i[destroy], controller: "shell_sessions" do
     post :upload, on: :member
   end
@@ -324,6 +325,7 @@ Rails.application.routes.draw do
   get "/model-context-protocol", to: "static#mcp_tools"
   get "/self-hosted", to: "static#self_hosted"
   get "/dev-environments", to: "static#dev_environments"
+  get "/private-internal-apps", to: "static#private_internal_apps"
   # Public marketing homepage
   if Rails.application.config.local_mode || Rails.application.config.cluster_mode
     namespace :local do

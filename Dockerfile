@@ -5,7 +5,7 @@
 # docker run -d -p 80:80 -p 443:443 --name my-app -e RAILS_MASTER_KEY=<value from config/master.key> my-app
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.3.4
+ARG RUBY_VERSION=4.0.10
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -13,7 +13,7 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    apt-get install --no-install-recommends -y curl imagemagick libjemalloc2 postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
@@ -51,6 +51,7 @@ RUN set -eux; \
     install -m 0755 "${os}-${arch}/helm" /usr/local/bin/helm; \
     rm -rf "helm-${HELM_VERSION}-${os}-${arch}.tar.gz" "helm-${HELM_VERSION}-${os}-${arch}.tar.gz.sha256sum" "${os}-${arch}"
 
+# Must match the telepresence chart_version in resources/helm/system_packages.yml
 ARG TELEPRESENCE_VERSION=v2.21.1
 RUN curl -fL https://app.getambassador.io/download/tel2oss/releases/download/${TELEPRESENCE_VERSION}/telepresence-linux-${TARGETARCH} -o /usr/local/bin/telepresence && \
     chmod a+x /usr/local/bin/telepresence

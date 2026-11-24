@@ -1,7 +1,9 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2.2"
+gem "rails", "~> 7.2.4"
+# OpenStruct left Ruby's default gems in Ruby 4.0; the app uses it directly (K8 JSON parsing, OIDC)
+gem "ostruct"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 # Use postgresql as the database for Active Record
@@ -73,7 +75,8 @@ gem "dotenv", "~> 3.1"
 gem "friendly_id", "~> 5.4"
 gem "good_job", "~> 4.19"
 gem "httparty", "~> 0.24.2"
-gem "image_processing", "~> 1.13"
+gem "image_processing", "~> 2.2"
+gem "mini_magick", "~> 5.3"
 gem "jsbundling-rails"
 gem "json-schema", "~> 5.1"
 gem "k8s-ruby", "~> 0.17.2"
