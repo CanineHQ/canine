@@ -1,9 +1,65 @@
 <div class="leftmenu-wrapper z-50">
-  <%= link_to root_path, class: "flex h-16 items-center justify-center" do %>
-    <img src="/images/logo-compact.webp" class="w-[40px] h-[40px] lg:hidden" />
-    <img src="/images/logo-full.webp" class="h-[40px] hidden lg:block" />
-    <span class="sr-only"><%= Rails.configuration.application_name %></span>
-  <% end %>
+  <% other_accounts = current_user.accounts.where.not(id: current_account.id).order(name: :asc) %>
+  <div class="flex h-16 items-center px-3" data-controller="account-switcher">
+    <button type="button" class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-colors hover:bg-base-content/10" data-action="account-switcher#open">
+      <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-base-content/10 text-sm font-semibold text-base-content/80">
+        <%= current_account.name.strip.first&.upcase %>
+      </span>
+      <span class="min-w-0 flex-1 truncate text-sm font-medium"><%= current_account.name %></span>
+      <iconify-icon icon="lucide:chevrons-up-down" height="16" class="shrink-0 text-base-content/50"></iconify-icon>
+    </button>
+
+    <dialog aria-label="Switch organization" class="modal !items-start" data-account-switcher-target="dialog">
+      <div class="modal-box mt-[12vh] flex !max-h-[76vh] max-w-lg flex-col p-0">
+        <div class="flex items-center justify-between px-6 pb-2 pt-5">
+          <h3 class="text-base font-semibold">Switch organization</h3>
+          <form method="dialog">
+            <button aria-label="Close" class="btn btn-circle btn-ghost btn-sm">
+              <iconify-icon icon="lucide:x" height="16"></iconify-icon>
+            </button>
+          </form>
+        </div>
+
+        <div class="px-6 pb-3">
+          <label class="input input-bordered flex items-center gap-2 focus-within:border-base-content/40 focus-within:!outline-none">
+            <iconify-icon icon="lucide:search" class="opacity-60"></iconify-icon>
+            <input type="search" class="grow border-0 bg-transparent p-0 text-base shadow-none focus:outline-none focus:ring-0" placeholder="Search organizations" autocomplete="off"
+                   data-account-switcher-target="query" data-action="input->account-switcher#filter" />
+          </label>
+        </div>
+
+        <ul class="flex-1 overflow-y-auto px-3">
+          <% ([current_account] + other_accounts.to_a).each do |account| %>
+            <% current = account == current_account %>
+            <li data-account-switcher-target="item" data-name="<%= account.name %>">
+              <%= link_to (current ? root_path : switch_account_path(account)),
+                    data: (current ? {} : { turbo_method: :put }),
+                    class: "flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-base-content/10" do %>
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-base-content/10 text-sm font-semibold text-base-content/80">
+                  <%= account.name.strip.first&.upcase %>
+                </span>
+                <span class="min-w-0 flex-1 truncate text-base" title="<%= account.name %>"><%= account.name %></span>
+                <% if current %>
+                  <iconify-icon icon="lucide:check" class="shrink-0 text-base-content/70" height="18"></iconify-icon>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+          <li class="p-4 text-center text-base-content/60" data-account-switcher-target="empty" hidden>No organizations match.</li>
+        </ul>
+
+        <div class="border-t border-base-content/15 px-3 py-3">
+          <button type="button" class="btn btn-ghost btn-sm w-full justify-start" data-action="account-switcher#newOrganization">
+            <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
+            <span>New organization</span>
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  </div>
 
   <% if current_account.stack_manager.present? %>
     <div class="flex items-center justify-center">
@@ -12,42 +68,8 @@
                  logged_in: true %>
     </div>
   <% end %>
-  <div class="flex items-center justify-center">
-    <details class="mx-auto dropdown">
-      <summary class="btn m-1"><%= truncate(current_account.name, length: 20) %> <iconify-icon icon="lucide:chevron-down"></iconify-icon></summary>
-      <ul class="menu dropdown-content w-52 z-50 rounded-box bg-base-300 p-2 shadow flex-nowrap max-h-[60vh] overflow-y-auto">
-        <!-- Current Account Section -->
-        <li class="menu-title text-xs opacity-60 px-4 py-2">CURRENT ORGANIZATION</li>
-        <li>
-          <div class="flex items-center gap-3 px-4 py-3 cursor-default hover:bg-base-200">
-            <span class="font-semibold"><%= truncate(current_account.name, length: 24) %></span>
-          </div>
-        </li>
 
-        <!-- Other Accounts Section -->
-        <% other_accounts = current_user.accounts.where.not(id: current_account.id).order(name: :asc) %>
-        <% if other_accounts.any? %>
-          <li class="menu-title text-xs opacity-60 px-4 py-2 mt-2">OTHER ORGANIZATIONS</li>
-          <% other_accounts.each do |account| %>
-            <li>
-              <%= link_to switch_account_path(account), data: { turbo_method: :put }, class: "flex items-center gap-3 px-4 py-3" do %>
-                <span class="font-semibold"><%= truncate(account.name, length: 24) %></span>
-              <% end %>
-            </li>
-          <% end %>
-        <% end %>
-
-        <li class="sticky -bottom-2 -mb-2 mt-2 border-t border-base-content/15 bg-base-300 py-2">
-          <button class="btn btn-ghost btn-sm justify-start" onclick="click_outside_modal_2.showModal()">
-            <iconify-icon icon="lucide:plus" height="16"></iconify-icon>
-            <span>New organization</span>
-          </button>
-        </li>
-      </ul>
-    </details>
-  </div>
-
-  <div data-simplebar="init" class="h-[calc(100vh-128px)] lg:h-[calc(100vh-294px)] simplebar-scrollable-y">
+  <div data-simplebar="init" class="h-[calc(100vh-64px)] lg:h-[calc(100vh-230px)] simplebar-scrollable-y">
     <div class="simplebar-wrapper">
       <div class="simplebar-mask">
         <div class="simplebar-offset">

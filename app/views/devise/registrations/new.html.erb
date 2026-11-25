@@ -6,15 +6,6 @@
         <%= link_to "Sign in", new_user_session_path, class: "underline" %> instead
       </div>
 
-      <% if @account_invitation %>
-        <div class="flex items-center justify-center mb-4 text-center">
-          <%= image_tag avatar_url_for(@account_invitation.account), class: "h-5 w-5 rounded-full inline-block mr-1" %>
-          <div>
-            <strong><%= @account_invitation.invited_by.name %></strong> invited you to join <strong><%= @account_invitation.account.name %></strong>
-          </div>
-        </div>
-      <% end %>
-
       <%= form_with(
         model: resource,
         as: resource_name,
